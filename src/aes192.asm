@@ -137,15 +137,15 @@ gen_round_key:
                                ;        -
                                ;        RotWord(SubWord(x5)) * Rcon * x3 * x2 * x1 * x0
                                ;        RotWord(SubWord(x5)) * Rcon * x3 * x2 * x1 * x0
-    pxor xmm7, xmm2           ; xmm7 = -
-                              ;        -
-                              ;        RotWord(SubWord(x5)) * Rcon * x5 * x3 * x2 * x1 * x0
-                              ;        RotWord(SubWord(x5)) * Rcon * x4 * x3 * x2 * x1 * x0
-    pslldq xmm2, 4            ; xmm2 = - k5 k4 0
-    pxor xmm7, xmm2           ; xmm7 = -
-                              ;        -
-                              ;        RotWord(SubWord(x5)) * Rcon * x5 * x4 * x3 * x2 * x1 * x0
-                              ;        RotWord(SubWord(x5)) * Rcon * x4 * x3 * x2 * x1 * x0
+    pxor xmm7, xmm2            ; xmm7 = -
+                               ;        -
+                               ;        RotWord(SubWord(x5)) * Rcon * x5 * x3 * x2 * x1 * x0
+                               ;        RotWord(SubWord(x5)) * Rcon * x4 * x3 * x2 * x1 * x0
+    pslldq xmm2, 4             ; xmm2 = - k5 k4 0
+    pxor xmm7, xmm2            ; xmm7 = -
+                               ;        -
+                               ;        RotWord(SubWord(x5)) * Rcon * x5 * x4 * x3 * x2 * x1 * x0
+                               ;        RotWord(SubWord(x5)) * Rcon * x4 * x3 * x2 * x1 * x0
 
     movq xmm2, xmm7
     pslldq xmm7, 8
