@@ -24,6 +24,11 @@ AesState aes_block_to_state(AesBlock block)
     return state;
 }
 
+AesBlock aes_state_to_block(AesState state)
+{
+    return _mm_loadu_si128((__m128i*) &state.bytes);
+}
+
 void print_aes_block(AesBlock block)
 {
     int i, j;

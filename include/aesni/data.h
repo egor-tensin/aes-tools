@@ -37,5 +37,6 @@ typedef struct
 AesState;
 
 AesState aes_block_to_state(AesBlock);
+AesBlock aes_state_to_block(AesState);
 
 void print_aes_block(AesBlock);
