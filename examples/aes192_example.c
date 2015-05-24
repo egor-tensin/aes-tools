@@ -25,6 +25,7 @@ int main()
     printf("\n");
     printf("Key: %s\n", format_aes_block192(&key).str);
     printf("     %s\n", format_aes_block192_fips_style(&key).str);
+    print_aes_block192_fips_matrix_style(&key);
 
     cypher = aes192ecb_encrypt(plain, &key);
     printf("\n");

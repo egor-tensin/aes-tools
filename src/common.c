@@ -163,3 +163,35 @@ void print_aes_block128_fips_matrix_style(AesBlock128* block)
         printf("%02x\n", bytes[3][i]);
     }
 }
+
+void print_aes_block192_fips_matrix_style(AesBlock192* block)
+{
+    int i, j;
+    __declspec(align(16)) unsigned char bytes[8][4];
+
+    _mm_store_si128((AesBlock128*) bytes, block->lo);
+    _mm_store_si128((AesBlock128*) bytes + 1, block->hi);
+
+    for (i = 0; i < 4; ++i)
+    {
+        for (j = 0; j < 5; ++j)
+            printf("%02x ", bytes[j][i]);
+        printf("%02x\n", bytes[5][i]);
+    }
+}
+
+void print_aes_block256_fips_matrix_style(AesBlock256* block)
+{
+    int i, j;
+    __declspec(align(16)) unsigned char bytes[8][4];
+
+    _mm_store_si128((AesBlock128*) bytes, block->lo);
+    _mm_store_si128((AesBlock128*) bytes + 1, block->hi);
+
+    for (i = 0; i < 4; ++i)
+    {
+        for (j = 0; j < 7; ++j)
+            printf("%02x ", bytes[j][i]);
+        printf("%02x\n", bytes[7][i]);
+    }
+}

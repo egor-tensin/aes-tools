@@ -51,3 +51,5 @@ void print_aes_block192_fips_style(AesBlock192*);
 void print_aes_block256_fips_style(AesBlock256*);
 
 void print_aes_block128_fips_matrix_style(AesBlock128*);
+void print_aes_block192_fips_matrix_style(AesBlock192*);
+void print_aes_block256_fips_matrix_style(AesBlock256*);
