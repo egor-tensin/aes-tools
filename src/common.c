@@ -11,6 +11,7 @@
 #include <intrin.h>
 
 #include <stdio.h>
+#include <string.h>
 
 AesBlock128 make_aes_block128(int hi3, int hi2, int lo1, int lo0)
 {
@@ -224,4 +225,37 @@ void print_aes_block192_fips_matrix_style(AesBlock192* block)
 void print_aes_block256_fips_matrix_style(AesBlock256* block)
 {
     printf("%s", format_aes_block256_fips_matrix_style(block).str);
+}
+
+int parse_aes_block128(AesBlock128* block, const char* src)
+{
+    int n;
+    int xs[4];
+    if (sscanf(src, "%8x%8x%8x%8x%n", &xs[0], &xs[1], &xs[2], &xs[3], &n) != 4
+        || n != strlen(src))
+        return 1;
+    *block = make_aes_block128(xs[0], xs[1], xs[2], xs[3]);
+    return 0;
+}
+
+int parse_aes_block192(AesBlock192* block, const char* src)
+{
+    int n;
+    int xs[6];
+    if (sscanf(src, "%8x%8x%8x%8x%8x%8x%n", &xs[0], &xs[1], &xs[2], &xs[3], &xs[4], &xs[5], &n) != 6
+        || n != strlen(src))
+        return 1;
+    *block = make_aes_block192(xs[0], xs[1], xs[2], xs[3], xs[4], xs[5]);
+    return 0;
+}
+
+int parse_aes_block256(AesBlock256* block, const char* src)
+{
+    int n;
+    int xs[8];
+    if (sscanf(src, "%8x%8x%8x%8x%8x%8x%8x%8x%n", &xs[0], &xs[1], &xs[2], &xs[3], &xs[4], &xs[5], &xs[6], &xs[7], &n) != 8
+        || n != strlen(src))
+        return 1;
+    *block = make_aes_block256(xs[0], xs[1], xs[2], xs[3], xs[4], xs[5], xs[6], xs[7]);
+    return 0;
 }
