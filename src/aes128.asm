@@ -16,7 +16,7 @@ inverted_key_schedule oword 11 dup(0)
 
 .code
 
-@aes128ecb_encrypt@32 proc
+@raw_aes128ecb_encrypt@32 proc
     call expand_keys_128ecb
     pxor xmm0, [key_schedule]
     aesenc xmm0, [key_schedule + 10h]
@@ -30,9 +30,9 @@ inverted_key_schedule oword 11 dup(0)
     aesenc xmm0, [key_schedule + 90h]
     aesenclast xmm0, [key_schedule + 0A0h]
     ret
-@aes128ecb_encrypt@32 endp
+@raw_aes128ecb_encrypt@32 endp
 
-@aes128ecb_decrypt@32 proc
+@raw_aes128ecb_decrypt@32 proc
     call expand_keys_128ecb
     pxor xmm0, [inverted_key_schedule]
     aesdec xmm0, [inverted_key_schedule + 10h]
@@ -46,7 +46,7 @@ inverted_key_schedule oword 11 dup(0)
     aesdec xmm0, [inverted_key_schedule + 90h]
     aesdeclast xmm0, [inverted_key_schedule + 0A0h]
     ret
-@aes128ecb_decrypt@32 endp
+@raw_aes128ecb_decrypt@32 endp
 
 expand_keys_128ecb proc
     lea ecx, [key_schedule + 10h]

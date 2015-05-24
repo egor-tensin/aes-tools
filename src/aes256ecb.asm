@@ -16,7 +16,7 @@ inverse_key_schedule oword 15 dup(0)
 
 .code
 
-@aes256ecb_encrypt@48 proc
+@raw_aes256ecb_encrypt@48 proc
     call expand_keys_256ecb
     pxor xmm0, [key_schedule]
     aesenc xmm0, [key_schedule + 10h]
@@ -34,7 +34,7 @@ inverse_key_schedule oword 15 dup(0)
     aesenc xmm0, [key_schedule + 0D0h]
     aesenclast xmm0, [key_schedule + 0E0h]
     ret
-@aes256ecb_encrypt@48 endp
+@raw_aes256ecb_encrypt@48 endp
 
 expand_keys_256ecb proc
     lea edx, [key_schedule + 20h]
@@ -158,7 +158,7 @@ invert_key_schedule:
     ret
 expand_keys_256ecb endp
 
-@aes256ecb_decrypt@48 proc
+@raw_aes256ecb_decrypt@48 proc
     call expand_keys_256ecb
     pxor xmm0, [inverse_key_schedule]
     aesdec xmm0, [inverse_key_schedule + 10h]
@@ -174,8 +174,8 @@ expand_keys_256ecb endp
     aesdec xmm0, [inverse_key_schedule + 0B0h]
     aesdec xmm0, [inverse_key_schedule + 0C0h]
     aesdec xmm0, [inverse_key_schedule + 0D0h]
-    aesdeclast xmm0, [inverse_key_schedule + 0E0h]    
+    aesdeclast xmm0, [inverse_key_schedule + 0E0h]
     ret
-@aes256ecb_decrypt@48 endp
+@raw_aes256ecb_decrypt@48 endp
 
 end

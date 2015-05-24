@@ -8,5 +8,6 @@
 
 #pragma once
 
+#include "api.h"
 #include "data.h"
 #include "raw.h"

@@ -16,7 +16,7 @@ inverted_key_schedule oword 13 dup(0)
 
 .code
 
-@aes192ecb_encrypt@48 proc
+@raw_aes192ecb_encrypt@48 proc
     call expand_keys_192ecb
     pxor xmm0, [key_schedule]
     aesenc xmm0, [key_schedule + 10h]
@@ -32,9 +32,9 @@ inverted_key_schedule oword 13 dup(0)
     aesenc xmm0, [key_schedule + 0B0h]
     aesenclast xmm0, [key_schedule + 0C0h]
     ret
-@aes192ecb_encrypt@48 endp
+@raw_aes192ecb_encrypt@48 endp
 
-@aes192ecb_decrypt@48 proc
+@raw_aes192ecb_decrypt@48 proc
     call expand_keys_192ecb
     pxor xmm0, [inverted_key_schedule]
     aesdec xmm0, [inverted_key_schedule + 10h]
@@ -50,7 +50,7 @@ inverted_key_schedule oword 13 dup(0)
     aesdec xmm0, [inverted_key_schedule + 0B0h]
     aesdeclast xmm0, [inverted_key_schedule + 0C0h]
     ret
-@aes192ecb_decrypt@48 endp
+@raw_aes192ecb_decrypt@48 endp
 
 expand_keys_192ecb proc
     ; key = k0 k1 k2 k3 k4 k5
@@ -189,7 +189,7 @@ invert_key_schedule:
 
     aesimc xmm7, [key_schedule + 60h]
     movdqa [inverted_key_schedule + 60h], xmm7
-    
+
     ret
 expand_keys_192ecb endp
 
