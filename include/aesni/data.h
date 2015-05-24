@@ -10,33 +10,44 @@
 
 #include <emmintrin.h>
 
-typedef __m128i AesBlock;
-
-AesBlock make_aes_block(int highest, int high, int low, int lowest);
-
-typedef AesBlock Aes128Key;
+typedef __m128i AesBlock128;
 
 typedef struct
 {
-    AesBlock hi;
-    AesBlock lo;
+    AesBlock128 hi;
+    AesBlock128 lo;
 }
-Aes192Key;
+AesBlock192;
 
 typedef struct
 {
-    AesBlock hi;
-    AesBlock lo;
+    AesBlock128 hi;
+    AesBlock128 lo;
 }
-Aes256Key;
+AesBlock256;
 
-typedef struct
-{
-    unsigned char bytes[4][4];
-}
-AesState;
+AesBlock128 make_aes_block128(int hi3, int hi2, int lo1, int lo0);
+AesBlock192 make_aes_block192(int hi5, int hi4, int lo3, int lo2, int lo1, int lo0);
+AesBlock256 make_aes_block256(int hi7, int hi6, int hi5, int hi4, int lo3, int lo2, int lo1, int lo0);
 
-AesState aes_block_to_state(AesBlock);
-AesBlock aes_state_to_block(AesState);
+typedef struct { char str[33]; } AesBlockString128;
+typedef struct { char str[49]; } AesBlockString192;
+typedef struct { char str[65]; } AesBlockString256;
 
-void print_aes_block(AesBlock);
+AesBlockString128 format_aes_block128(AesBlock128*);
+AesBlockString192 format_aes_block192(AesBlock192*);
+AesBlockString256 format_aes_block256(AesBlock256*);
+
+AesBlockString128 format_aes_block128_fips_style(AesBlock128*);
+AesBlockString192 format_aes_block192_fips_style(AesBlock192*);
+AesBlockString256 format_aes_block256_fips_style(AesBlock256*);
+
+void print_aes_block128(AesBlock128*);
+void print_aes_block192(AesBlock192*);
+void print_aes_block256(AesBlock256*);
+
+void print_aes_block128_fips_style(AesBlock128*);
+void print_aes_block192_fips_style(AesBlock192*);
+void print_aes_block256_fips_style(AesBlock256*);
+
+void print_aes_block128_fips_matrix_style(AesBlock128*);

@@ -12,24 +12,31 @@
 
 int main()
 {
-    __declspec(align(16)) AesBlock plain, key, cypher, decrypted;
+    __declspec(align(16)) AesBlock128 plain, key, cypher, decrypted;
 
-    plain = make_aes_block(0xffeeddcc, 0xbbaa9988, 0x77665544, 0x33221100);
-    key   = make_aes_block(0x0f0e0d0c, 0x0b0a0908, 0x07060504, 0x03020100);
+    plain = make_aes_block128(0xffeeddcc, 0xbbaa9988, 0x77665544, 0x33221100);
+    key   = make_aes_block128(0x0f0e0d0c, 0x0b0a0908, 0x07060504, 0x03020100);
 
-    printf("Plain:\n");
-    print_aes_block(plain);
+    printf("Plain: %s\n", format_aes_block128(&plain).str);
+    printf("       %s\n", format_aes_block128_fips_style(&plain).str);
+    print_aes_block128_fips_matrix_style(&plain);
 
-    printf("\nKey:\n");
-    print_aes_block(key);
+    printf("\n");
+    printf("Key: %s\n", format_aes_block128(&key).str);
+    printf("     %s\n", format_aes_block128_fips_style(&key).str);
+    print_aes_block128_fips_matrix_style(&key);
 
-    printf("\nCypher:\n");
     cypher = aes128ecb_encrypt(plain, key);
-    print_aes_block(cypher);
+    printf("\n");
+    printf("Cypher: %s\n", format_aes_block128(&cypher).str);
+    printf("        %s\n", format_aes_block128_fips_style(&cypher).str);
+    print_aes_block128_fips_matrix_style(&cypher);
 
-    printf("\nDecrypted:\n");
     decrypted = aes128ecb_decrypt(cypher, key);
-    print_aes_block(decrypted);
+    printf("\n");
+    printf("Decrypted: %s\n", format_aes_block128(&decrypted).str);
+    printf("           %s\n", format_aes_block128_fips_style(&decrypted).str);
+    print_aes_block128_fips_matrix_style(&decrypted);
 
     return 0;
 }
