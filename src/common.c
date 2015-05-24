@@ -49,11 +49,13 @@ AesBlockString128 format_aes_block128(AesBlock128* block)
 AesBlockString192 format_aes_block192(AesBlock192* block)
 {
     int i;
-    char *cursor;
     AesBlockString192 result;
+    char *cursor = result.str;
 
-    for (i = 0, cursor = result.str; i < 24; ++i, cursor += 2)
-        sprintf(cursor, "%02x", *((unsigned char*) block + 15 - i));
+    for (i = 0; i < 8; ++i, cursor += 2)
+        sprintf(cursor, "%02x", *((unsigned char*) &block->hi + 7 - i));
+    for (i = 0; i < 16; ++i, cursor += 2)
+        sprintf(cursor, "%02x", *((unsigned char*) &block->lo + 15 - i));
 
     *cursor = '\0';
     return result;
@@ -62,11 +64,13 @@ AesBlockString192 format_aes_block192(AesBlock192* block)
 AesBlockString256 format_aes_block256(AesBlock256* block)
 {
     int i;
-    char *cursor;
     AesBlockString256 result;
+    char *cursor = result.str;
 
-    for (i = 0, cursor = result.str; i < 32; ++i, cursor += 2)
-        sprintf(cursor, "%02x", *((unsigned char*) block + 15 - i));
+    for (i = 0; i < 16; ++i, cursor += 2)
+        sprintf(cursor, "%02x", *((unsigned char*) &block->hi + 15 - i));
+    for (i = 0; i < 16; ++i, cursor += 2)
+        sprintf(cursor, "%02x", *((unsigned char*) &block->lo + 15 - i));
 
     *cursor = '\0';
     return result;
@@ -88,11 +92,13 @@ AesBlockString128 format_aes_block128_fips_style(AesBlock128* block)
 AesBlockString192 format_aes_block192_fips_style(AesBlock192* block)
 {
     int i;
-    char *cursor;
     AesBlockString192 result;
+    char *cursor = result.str;
 
-    for (i = 0, cursor = result.str; i < 24; ++i, cursor += 2)
-        sprintf(cursor, "%02x", *((unsigned char*) block + i));
+    for (i = 0; i < 16; ++i, cursor += 2)
+        sprintf(cursor, "%02x", *((unsigned char*) &block->lo + i));
+    for (i = 0; i < 8; ++i, cursor += 2)
+        sprintf(cursor, "%02x", *((unsigned char*) &block->hi + i));
 
     *cursor = '\0';
     return result;
@@ -101,11 +107,13 @@ AesBlockString192 format_aes_block192_fips_style(AesBlock192* block)
 AesBlockString256 format_aes_block256_fips_style(AesBlock256* block)
 {
     int i;
-    char *cursor;
     AesBlockString256 result;
+    char *cursor = result.str;
 
-    for (i = 0, cursor = result.str; i < 32; ++i, cursor += 2)
-        sprintf(cursor, "%02x", *((unsigned char*) block + i));
+    for (i = 0; i < 16; ++i, cursor += 2)
+        sprintf(cursor, "%02x", *((unsigned char*) &block->lo + i));
+    for (i = 0; i < 16; ++i, cursor += 2)
+        sprintf(cursor, "%02x", *((unsigned char*) &block->hi + i));
 
     *cursor = '\0';
     return result;
