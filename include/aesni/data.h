@@ -42,6 +42,14 @@ AesBlockString128 format_aes_block128_fips_style(AesBlock128*);
 AesBlockString192 format_aes_block192_fips_style(AesBlock192*);
 AesBlockString256 format_aes_block256_fips_style(AesBlock256*);
 
+typedef struct { char str[49]; } AesBlockMatrixString128;
+typedef struct { char str[73]; } AesBlockMatrixString192;
+typedef struct { char str[97]; } AesBlockMatrixString256;
+
+AesBlockMatrixString128 format_aes_block128_fips_matrix_style(AesBlock128*);
+AesBlockMatrixString192 format_aes_block192_fips_matrix_style(AesBlock192*);
+AesBlockMatrixString256 format_aes_block256_fips_matrix_style(AesBlock256*);
+
 void print_aes_block128(AesBlock128*);
 void print_aes_block192(AesBlock192*);
 void print_aes_block256(AesBlock256*);

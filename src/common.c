@@ -119,6 +119,68 @@ AesBlockString256 format_aes_block256_fips_style(AesBlock256* block)
     return result;
 }
 
+AesBlockMatrixString128 format_aes_block128_fips_matrix_style(AesBlock128* block)
+{
+    int i, j;
+    __declspec(align(16)) unsigned char bytes[4][4];
+    AesBlockMatrixString128 result;
+    char* cursor = result.str;
+
+    _mm_store_si128((AesBlock128*) bytes, *block);
+
+    for (i = 0; i < 4; ++i, cursor += 3)
+    {
+        for (j = 0; j < 3; ++j, cursor += 3)
+            sprintf(cursor, "%02x ", bytes[j][i]);
+        sprintf(cursor, "%02x\n", bytes[3][i]);
+    }
+
+    *cursor = '\0';
+    return result;
+}
+
+AesBlockMatrixString192 format_aes_block192_fips_matrix_style(AesBlock192* block)
+{
+    int i, j;
+    __declspec(align(16)) unsigned char bytes[8][4];
+    AesBlockMatrixString192 result;
+    char* cursor = result.str;
+
+    _mm_store_si128((AesBlock128*) bytes, block->lo);
+    _mm_store_si128((AesBlock128*) bytes + 1, block->hi);
+
+    for (i = 0; i < 4; ++i, cursor += 3)
+    {
+        for (j = 0; j < 5; ++j, cursor += 3)
+            sprintf(cursor, "%02x ", bytes[j][i]);
+        sprintf(cursor, "%02x\n", bytes[5][i]);
+    }
+
+    *cursor = '\0';
+    return result;
+}
+
+AesBlockMatrixString256 format_aes_block256_fips_matrix_style(AesBlock256* block)
+{
+    int i, j;
+    __declspec(align(16)) unsigned char bytes[8][4];
+    AesBlockMatrixString256 result;
+    char* cursor = result.str;
+
+    _mm_store_si128((AesBlock128*) bytes, block->lo);
+    _mm_store_si128((AesBlock128*) bytes + 1, block->hi);
+
+    for (i = 0; i < 4; ++i, cursor += 3)
+    {
+        for (j = 0; j < 7; ++j, cursor += 3)
+            sprintf(cursor, "%02x ", bytes[j][i]);
+        sprintf(cursor, "%02x\n", bytes[7][i]);
+    }
+
+    *cursor = '\0';
+    return result;
+}
+
 void print_aes_block128(AesBlock128* block)
 {
     printf("%s\n", format_aes_block128(block).str);
@@ -151,47 +213,15 @@ void print_aes_block256_fips_style(AesBlock256* block)
 
 void print_aes_block128_fips_matrix_style(AesBlock128* block)
 {
-    int i, j;
-    __declspec(align(16)) unsigned char bytes[4][4];
-
-    _mm_store_si128((AesBlock128*) bytes, *block);
-
-    for (i = 0; i < 4; ++i)
-    {
-        for (j = 0; j < 3; ++j)
-            printf("%02x ", bytes[j][i]);
-        printf("%02x\n", bytes[3][i]);
-    }
+    printf("%s", format_aes_block128_fips_matrix_style(block).str);
 }
 
 void print_aes_block192_fips_matrix_style(AesBlock192* block)
 {
-    int i, j;
-    __declspec(align(16)) unsigned char bytes[8][4];
-
-    _mm_store_si128((AesBlock128*) bytes, block->lo);
-    _mm_store_si128((AesBlock128*) bytes + 1, block->hi);
-
-    for (i = 0; i < 4; ++i)
-    {
-        for (j = 0; j < 5; ++j)
-            printf("%02x ", bytes[j][i]);
-        printf("%02x\n", bytes[5][i]);
-    }
+    printf("%s", format_aes_block192_fips_matrix_style(block).str);
 }
 
 void print_aes_block256_fips_matrix_style(AesBlock256* block)
 {
-    int i, j;
-    __declspec(align(16)) unsigned char bytes[8][4];
-
-    _mm_store_si128((AesBlock128*) bytes, block->lo);
-    _mm_store_si128((AesBlock128*) bytes + 1, block->hi);
-
-    for (i = 0; i < 4; ++i)
-    {
-        for (j = 0; j < 7; ++j)
-            printf("%02x ", bytes[j][i]);
-        printf("%02x\n", bytes[7][i]);
-    }
+    printf("%s", format_aes_block256_fips_matrix_style(block).str);
 }
