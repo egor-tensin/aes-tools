@@ -6,6 +6,8 @@ macro(example prefix)
 endmacro()
 
 example(aes128ecb)
+example(aes128cbc)
 example(aes192ecb)
+example(aes192cbc)
 example(aes256ecb)
 example(aes256cbc)

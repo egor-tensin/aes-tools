@@ -62,7 +62,9 @@ inverse_key_schedule oword 15 dup(0)
 @raw_aes256ecb_decrypt@48 endp
 
 @raw_aes256cbc_decrypt@52 proc
+    push ecx
     call @raw_aes256ecb_decrypt@48
+    pop ecx
     pxor xmm0, [ecx]
     ret
 @raw_aes256cbc_decrypt@52 endp
@@ -138,7 +140,7 @@ expand_keys256 proc
     movdqa [key_schedule], xmm1          ; sets w[0], w[1], w[2], w[3]
     movdqa [key_schedule + 10h], xmm2    ; sets w[4], w[5], w[6], w[7]
 
-    lea edx, [key_schedule + 20h]        ; ecx = &w[8]
+    lea ecx, [key_schedule + 20h]        ; ecx = &w[8]
 
     aeskeygenassist xmm7, xmm2, 1h       ; xmm7[127:96] = RotWord(SubWord(w[7]))^Rcon
     pshufd xmm7, xmm7, 0FFh              ; xmm7[95:64] = xmm7[63:32] = xmm7[31:0] = xmm7[127:96]
@@ -251,11 +253,11 @@ gen_round_key:
                        ; xmm1[31:0]   == w[i+8]  == HWGEN^w[i]
 
     ; Set w[i+8], w[i+9], w[i+10] and w[i+11].
-    movdqa [edx], xmm1    ; w[i+8]  = HWGEN^w[i]
+    movdqa [ecx], xmm1    ; w[i+8]  = HWGEN^w[i]
                           ; w[i+9]  = HWGEN^w[i+1]^w[i]
                           ; w[i+10] = HWGEN^w[i+2]^w[i+1]^w[i]
                           ; w[i+11] = HWGEN^w[i+3]^w[i+2]^w[i+1]^w[i]
-    add edx, 10h          ; ecx = &w[i+12]
+    add ecx, 10h          ; ecx = &w[i+12]
 
     ; Swap the values in xmm1 and xmm2.
     pxor xmm1, xmm2

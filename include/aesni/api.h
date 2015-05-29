@@ -25,6 +25,22 @@ static __inline AesBlock128 __fastcall aes128ecb_decrypt(
     return raw_aes128ecb_decrypt(cypher, key);
 }
 
+static __inline AesBlock128 __fastcall aes128cbc_encrypt(
+    AesBlock128 plain,
+    AesBlock128 key,
+    AesBlock128* initialization_vector)
+{
+    return raw_aes128cbc_encrypt(plain, key, initialization_vector);
+}
+
+static __inline AesBlock128 __fastcall aes128cbc_decrypt(
+    AesBlock128 cypher,
+    AesBlock128 key,
+    AesBlock128* initialization_vector)
+{
+    return raw_aes128cbc_decrypt(cypher, key, initialization_vector);
+}
+
 static __inline AesBlock128 __fastcall aes192ecb_encrypt(
     AesBlock128 plain,
     AesBlock192* key)
@@ -37,6 +53,22 @@ static __inline AesBlock128 __fastcall aes192ecb_decrypt(
     AesBlock192* key)
 {
     return raw_aes192ecb_decrypt(cypher, key->lo, key->hi);
+}
+
+static __inline AesBlock128 __fastcall aes192cbc_encrypt(
+    AesBlock128 plain,
+    AesBlock192* key,
+    AesBlock128* initialization_vector)
+{
+    return raw_aes192cbc_encrypt(plain, key->lo, key->hi, initialization_vector);
+}
+
+static __inline AesBlock128 __fastcall aes192cbc_decrypt(
+    AesBlock128 cypher,
+    AesBlock192* key,
+    AesBlock128* initialization_vector)
+{
+    return raw_aes192cbc_decrypt(cypher, key->lo, key->hi, initialization_vector);
 }
 
 static __inline AesBlock128 __fastcall aes256ecb_encrypt(

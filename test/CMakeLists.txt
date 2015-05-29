@@ -9,6 +9,8 @@ macro(test prefix)
 endmacro()
 
 test(aes128ecb)
+test(aes128cbc)
 test(aes192ecb)
+test(aes192cbc)
 test(aes256ecb)
 test(aes256cbc)
