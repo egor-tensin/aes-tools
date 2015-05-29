@@ -17,7 +17,7 @@ inverse_key_schedule oword 15 dup(0)
 .code
 
 @raw_aes256ecb_encrypt@48 proc
-    call expand_keys_256ecb
+    call expand_keys256
     pxor xmm0, [key_schedule]
     aesenc xmm0, [key_schedule + 10h]
     aesenc xmm0, [key_schedule + 20h]
@@ -36,7 +36,38 @@ inverse_key_schedule oword 15 dup(0)
     ret
 @raw_aes256ecb_encrypt@48 endp
 
-expand_keys_256ecb proc
+@raw_aes256cbc_encrypt@52 proc
+    pxor xmm0, [ecx]
+    jmp @raw_aes256ecb_encrypt@48
+@raw_aes256cbc_encrypt@52 endp
+
+@raw_aes256ecb_decrypt@48 proc
+    call expand_keys256
+    pxor xmm0, [inverse_key_schedule]
+    aesdec xmm0, [inverse_key_schedule + 10h]
+    aesdec xmm0, [inverse_key_schedule + 20h]
+    aesdec xmm0, [inverse_key_schedule + 30h]
+    aesdec xmm0, [inverse_key_schedule + 40h]
+    aesdec xmm0, [inverse_key_schedule + 50h]
+    aesdec xmm0, [inverse_key_schedule + 60h]
+    aesdec xmm0, [inverse_key_schedule + 70h]
+    aesdec xmm0, [inverse_key_schedule + 80h]
+    aesdec xmm0, [inverse_key_schedule + 90h]
+    aesdec xmm0, [inverse_key_schedule + 0A0h]
+    aesdec xmm0, [inverse_key_schedule + 0B0h]
+    aesdec xmm0, [inverse_key_schedule + 0C0h]
+    aesdec xmm0, [inverse_key_schedule + 0D0h]
+    aesdeclast xmm0, [inverse_key_schedule + 0E0h]
+    ret
+@raw_aes256ecb_decrypt@48 endp
+
+@raw_aes256cbc_decrypt@52 proc
+    call @raw_aes256ecb_decrypt@48
+    pxor xmm0, [ecx]
+    ret
+@raw_aes256cbc_decrypt@52 endp
+
+expand_keys256 proc
     ; A "word" (in terms of the FIPS 187 standard) is a 32-bit block.
     ; Words are denoted by `w[N]`.
     ;
@@ -273,26 +304,6 @@ invert_key_schedule:
     movdqa [inverse_key_schedule + 70h], xmm7
 
     ret
-expand_keys_256ecb endp
-
-@raw_aes256ecb_decrypt@48 proc
-    call expand_keys_256ecb
-    pxor xmm0, [inverse_key_schedule]
-    aesdec xmm0, [inverse_key_schedule + 10h]
-    aesdec xmm0, [inverse_key_schedule + 20h]
-    aesdec xmm0, [inverse_key_schedule + 30h]
-    aesdec xmm0, [inverse_key_schedule + 40h]
-    aesdec xmm0, [inverse_key_schedule + 50h]
-    aesdec xmm0, [inverse_key_schedule + 60h]
-    aesdec xmm0, [inverse_key_schedule + 70h]
-    aesdec xmm0, [inverse_key_schedule + 80h]
-    aesdec xmm0, [inverse_key_schedule + 90h]
-    aesdec xmm0, [inverse_key_schedule + 0A0h]
-    aesdec xmm0, [inverse_key_schedule + 0B0h]
-    aesdec xmm0, [inverse_key_schedule + 0C0h]
-    aesdec xmm0, [inverse_key_schedule + 0D0h]
-    aesdeclast xmm0, [inverse_key_schedule + 0E0h]
-    ret
-@raw_aes256ecb_decrypt@48 endp
+expand_keys256 endp
 
 end

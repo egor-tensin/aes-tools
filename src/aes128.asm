@@ -17,7 +17,7 @@ inverted_key_schedule oword 11 dup(0)
 .code
 
 @raw_aes128ecb_encrypt@32 proc
-    call expand_keys_128ecb
+    call expand_keys128
     pxor xmm0, [key_schedule]
     aesenc xmm0, [key_schedule + 10h]
     aesenc xmm0, [key_schedule + 20h]
@@ -33,7 +33,7 @@ inverted_key_schedule oword 11 dup(0)
 @raw_aes128ecb_encrypt@32 endp
 
 @raw_aes128ecb_decrypt@32 proc
-    call expand_keys_128ecb
+    call expand_keys128
     pxor xmm0, [inverted_key_schedule]
     aesdec xmm0, [inverted_key_schedule + 10h]
     aesdec xmm0, [inverted_key_schedule + 20h]
@@ -48,7 +48,7 @@ inverted_key_schedule oword 11 dup(0)
     ret
 @raw_aes128ecb_decrypt@32 endp
 
-expand_keys_128ecb proc
+expand_keys128 proc
     ; A "word" (in terms of the FIPS 187 standard) is a 32-bit block.
     ; Words are denoted by `w[N]`.
     ;
@@ -208,6 +208,6 @@ invert_key_schedule:
     movdqa [inverted_key_schedule + 50h], xmm7
 
     ret
-expand_keys_128ecb endp
+expand_keys128 endp
 
 end
