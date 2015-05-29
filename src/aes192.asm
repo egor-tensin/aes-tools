@@ -165,11 +165,11 @@ gen_round_key:
     ;     w[i+1]^w[i] and
     ;     w[i].
     movdqa xmm6, xmm1    ; xmm6 = xmm1
-    pslldq xmm6, 4       ; xmm6 <<= 4
+    pslldq xmm6, 4       ; xmm6 <<= 32
     pxor xmm1, xmm6      ; xmm1 ^= xmm6
-    pslldq xmm6, 4       ; xmm6 <<= 4
+    pslldq xmm6, 4       ; xmm6 <<= 32
     pxor xmm1, xmm6      ; xmm1 ^= xmm6
-    pslldq xmm6, 4       ; xmm6 <<= 4
+    pslldq xmm6, 4       ; xmm6 <<= 32
     pxor xmm1, xmm6      ; xmm1 ^= xmm6
                          ; xmm1[127:96] == w[i+3]^w[i+2]^w[i+1]^w[i]
                          ; xmm1[95:64]  == w[i+2]^w[i+1]^w[i]
@@ -198,7 +198,7 @@ gen_round_key:
     ; Calculate
     ;     w[i+5]^w[i+4],
     ;     w[i+4].
-    pshufd xmm6, xmm2, 0F3h    ; xmm6 = xmm2[31:0] << 4
+    pshufd xmm6, xmm2, 0F3h    ; xmm6 = xmm2[31:0] << 32
     pxor xmm2, xmm6            ; xmm2 ^= xmm7
                                ; xmm2[63:32] == w[i+5]^w[i+4]
                                ; xmm2[31:0]  == w[i+4]
@@ -207,7 +207,7 @@ gen_round_key:
     ;     w[i+10] == RotWord(SubWord(w[i+5]))^Rcon^w[i+5]^w[i+4]^w[i+3]^w[i+2]^w[i+1]^w[i],
     ;     w[i+11] == RotWord(SubWord(w[i+5]))^Rcon^w[i+4]^w[i+3]^w[i+2]^w[i+1]^w[i].
     pshufd xmm6, xmm1, 0FFh    ; xmm6[127:96] = xmm6[95:64] = xmm6[63:32] = xmm6[31:0] = xmm1[127:96]
-    psrldq xmm6, 8             ; xmm6 >>= 8
+    psrldq xmm6, 8             ; xmm6 >>= 64
     pxor xmm2, xmm6            ; xmm2 ^= xmm6
                                ; xmm2[63:32] == w[i+11] == RotWord(SubWord(w[i+5]))^Rcon^w[i+5]^w[i+4]^w[i+3]^w[i+2]^w[i+1]^w[i]
                                ; xmm2[31:0]  == w[i+10] == RotWord(SubWord(w[i+5]))^Rcon^w[i+4]^w[i+3]^w[i+2]^w[i+1]^w[i]
