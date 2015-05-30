@@ -20,6 +20,7 @@ static void exit_with_usage(const char* argv0)
 int main(int argc, char** argv)
 {
     __declspec(align(16)) AesBlock128 plain, key, cipher;
+    __declspec(align(16)) Aes128KeySchedule key_schedule, inverted_schedule;
 
     if (argc < 2)
         exit_with_usage(argv[0]);
@@ -30,6 +31,9 @@ int main(int argc, char** argv)
         exit_with_usage(argv[0]);
     }
 
+    aes128_expand_key_schedule(key, &key_schedule);
+    aes128_invert_key_schedule(&key_schedule, &inverted_schedule);
+
     for (int i = 2; i < argc; ++i)
     {
         if (parse_aes_block128(&cipher, argv[i]) != 0)
@@ -37,7 +41,7 @@ int main(int argc, char** argv)
             fprintf(stderr, "Invalid 128-bit AES block '%s'\n", argv[i]);
             continue;
         }
-        plain = aes128ecb_decrypt(cipher, key);
+        plain = aes128ecb_decrypt(cipher, &inverted_schedule);
         print_aes_block128(&plain);
     }
 

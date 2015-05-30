@@ -26,6 +26,25 @@ typedef struct
 }
 AesBlock256;
 
+typedef struct
+{
+    AesBlock128 keys[11];
+}
+Aes128KeySchedule;
+
+typedef struct
+{
+    AesBlock128 keys[13];
+    char fillers[8];
+}
+Aes192KeySchedule;
+
+typedef struct
+{
+    AesBlock128 keys[15];
+}
+Aes256KeySchedule;
+
 AesBlock128 make_aes_block128(int hi3, int hi2, int lo1, int lo0);
 AesBlock192 make_aes_block192(int hi5, int hi4, int lo3, int lo2, int lo1, int lo0);
 AesBlock256 make_aes_block256(int hi7, int hi6, int hi5, int hi4, int lo3, int lo2, int lo1, int lo0);

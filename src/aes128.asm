@@ -6,68 +6,55 @@
 .xmm
 .model flat
 
-.data
-
-align 10h
-key_schedule oword 11 dup(0)
-
-align 10h
-inverted_key_schedule oword 11 dup(0)
-
 .code
 
-@raw_aes128ecb_encrypt@32 proc
-    call expand_keys128
-    pxor xmm0, [key_schedule]
-    aesenc xmm0, [key_schedule + 10h]
-    aesenc xmm0, [key_schedule + 20h]
-    aesenc xmm0, [key_schedule + 30h]
-    aesenc xmm0, [key_schedule + 40h]
-    aesenc xmm0, [key_schedule + 50h]
-    aesenc xmm0, [key_schedule + 60h]
-    aesenc xmm0, [key_schedule + 70h]
-    aesenc xmm0, [key_schedule + 80h]
-    aesenc xmm0, [key_schedule + 90h]
-    aesenclast xmm0, [key_schedule + 0A0h]
-    ret
-@raw_aes128ecb_encrypt@32 endp
-
-@raw_aes128cbc_encrypt@36 proc
+@raw_aes128ecb_encrypt@20 proc
     pxor xmm0, [ecx]
-    jmp @raw_aes128ecb_encrypt@32
-@raw_aes128cbc_encrypt@36 endp
-
-@raw_aes128ecb_decrypt@32 proc
-    call expand_keys128
-    pxor xmm0, [inverted_key_schedule]
-    aesdec xmm0, [inverted_key_schedule + 10h]
-    aesdec xmm0, [inverted_key_schedule + 20h]
-    aesdec xmm0, [inverted_key_schedule + 30h]
-    aesdec xmm0, [inverted_key_schedule + 40h]
-    aesdec xmm0, [inverted_key_schedule + 50h]
-    aesdec xmm0, [inverted_key_schedule + 60h]
-    aesdec xmm0, [inverted_key_schedule + 70h]
-    aesdec xmm0, [inverted_key_schedule + 80h]
-    aesdec xmm0, [inverted_key_schedule + 90h]
-    aesdeclast xmm0, [inverted_key_schedule + 0A0h]
+    aesenc xmm0, [ecx + 10h]
+    aesenc xmm0, [ecx + 20h]
+    aesenc xmm0, [ecx + 30h]
+    aesenc xmm0, [ecx + 40h]
+    aesenc xmm0, [ecx + 50h]
+    aesenc xmm0, [ecx + 60h]
+    aesenc xmm0, [ecx + 70h]
+    aesenc xmm0, [ecx + 80h]
+    aesenc xmm0, [ecx + 90h]
+    aesenclast xmm0, [ecx + 0A0h]
     ret
-@raw_aes128ecb_decrypt@32 endp
+@raw_aes128ecb_encrypt@20 endp
 
-@raw_aes128cbc_decrypt@36 proc
-    push ecx
-    call @raw_aes128ecb_decrypt@32
-    pop ecx
+@raw_aes128cbc_encrypt@24 proc
+    pxor xmm0, [edx]
+    jmp @raw_aes128ecb_encrypt@20
+@raw_aes128cbc_encrypt@24 endp
+
+@raw_aes128ecb_decrypt@20 proc
     pxor xmm0, [ecx]
+    aesdec xmm0, [ecx + 10h]
+    aesdec xmm0, [ecx + 20h]
+    aesdec xmm0, [ecx + 30h]
+    aesdec xmm0, [ecx + 40h]
+    aesdec xmm0, [ecx + 50h]
+    aesdec xmm0, [ecx + 60h]
+    aesdec xmm0, [ecx + 70h]
+    aesdec xmm0, [ecx + 80h]
+    aesdec xmm0, [ecx + 90h]
+    aesdeclast xmm0, [ecx + 0A0h]
     ret
-@raw_aes128cbc_decrypt@36 endp
+@raw_aes128ecb_decrypt@20 endp
 
-expand_keys128 proc
+@raw_aes128cbc_decrypt@24 proc
+    call @raw_aes128ecb_decrypt@20
+    pxor xmm0, [edx]
+    ret
+@raw_aes128cbc_decrypt@24 endp
+
+@raw_aes128_expand_key_schedule@20 proc
     ; A "word" (in terms of the FIPS 187 standard) is a 32-bit block.
     ; Words are denoted by `w[N]`.
     ;
     ; A key schedule is composed of 10 "regular" keys and a dumb key for
     ; the "whitening" step.
-    ; It's stored in `key_schedule`.
     ;
     ; A key schedule is thus composed of 44 "words".
     ; The FIPS standard includes an algorithm to calculate these words via
@@ -104,52 +91,51 @@ expand_keys128 proc
     ; and RotWord using `aeskeygenassist`, which is used in this routine.
     ;
     ; Preconditions:
-    ; * xmm1[127:96] == w[3],
-    ; * xmm1[95:64]  == w[2],
-    ; * xmm1[63:32]  == w[1],
-    ; * xmm1[31:0]   == w[0].
+    ; * xmm0[127:96] == w[3],
+    ; * xmm0[95:64]  == w[2],
+    ; * xmm0[63:32]  == w[1],
+    ; * xmm0[31:0]   == w[0].
 
-    movdqa [key_schedule], xmm1        ; sets w[0], w[1], w[2], w[3]
+    movdqa [ecx], xmm0    ; sets w[0], w[1], w[2], w[3]
+    add ecx, 10h          ; ecx = &w[4]
 
-    lea ecx, [key_schedule + 10h]      ; ecx = &w[4]
-    aeskeygenassist xmm7, xmm1, 01h    ; xmm7[127:96] = RotWord(SubWord(w[3]))^Rcon
+    aeskeygenassist xmm7, xmm0, 01h    ; xmm7[127:96] = RotWord(SubWord(w[3]))^Rcon
     call gen_round_key                 ; sets w[4], w[5], w[6], w[7]
-    aeskeygenassist xmm7, xmm1, 02h    ; xmm7[127:96] = RotWord(SubWord(w[7]))^Rcon
+    aeskeygenassist xmm7, xmm0, 02h    ; xmm7[127:96] = RotWord(SubWord(w[7]))^Rcon
     call gen_round_key                 ; sets w[8], w[9], w[10], w[11]
-    aeskeygenassist xmm7, xmm1, 04h    ; xmm7[127:96] = RotWord(SubWord(w[11]))^Rcon
+    aeskeygenassist xmm7, xmm0, 04h    ; xmm7[127:96] = RotWord(SubWord(w[11]))^Rcon
     call gen_round_key                 ; sets w[12], w[13], w[14], w[15]
-    aeskeygenassist xmm7, xmm1, 08h    ; xmm7[127:96] = RotWord(SubWord(w[15]))^Rcon
+    aeskeygenassist xmm7, xmm0, 08h    ; xmm7[127:96] = RotWord(SubWord(w[15]))^Rcon
     call gen_round_key                 ; sets w[16], w[17], w[18], w[19]
-    aeskeygenassist xmm7, xmm1, 10h    ; xmm7[127:96] = RotWord(SubWord(w[19]))^Rcon
+    aeskeygenassist xmm7, xmm0, 10h    ; xmm7[127:96] = RotWord(SubWord(w[19]))^Rcon
     call gen_round_key                 ; sets w[20], w[21], w[22], w[23]
-    aeskeygenassist xmm7, xmm1, 20h    ; xmm7[127:96] = RotWord(SubWord(w[23]))^Rcon
+    aeskeygenassist xmm7, xmm0, 20h    ; xmm7[127:96] = RotWord(SubWord(w[23]))^Rcon
     call gen_round_key                 ; sets w[24], w[25], w[26], w[27]
-    aeskeygenassist xmm7, xmm1, 40h    ; xmm7[127:96] = RotWord(SubWord(w[27]))^Rcon
+    aeskeygenassist xmm7, xmm0, 40h    ; xmm7[127:96] = RotWord(SubWord(w[27]))^Rcon
     call gen_round_key                 ; sets w[28], w[29], w[30], w[31]
-    aeskeygenassist xmm7, xmm1, 80h    ; xmm7[127:96] = RotWord(SubWord(w[31]))^Rcon
+    aeskeygenassist xmm7, xmm0, 80h    ; xmm7[127:96] = RotWord(SubWord(w[31]))^Rcon
     call gen_round_key                 ; sets w[32], w[33], w[34], w[35]
-    aeskeygenassist xmm7, xmm1, 1Bh    ; xmm7[127:96] = RotWord(SubWord(w[35]))^Rcon
+    aeskeygenassist xmm7, xmm0, 1Bh    ; xmm7[127:96] = RotWord(SubWord(w[35]))^Rcon
     call gen_round_key                 ; sets w[36], w[37], w[38], w[39]
-    aeskeygenassist xmm7, xmm1, 36h    ; xmm7[127:96] = RotWord(SubWord(w[39]))^Rcon
+    aeskeygenassist xmm7, xmm0, 36h    ; xmm7[127:96] = RotWord(SubWord(w[39]))^Rcon
     call gen_round_key                 ; sets w[40], w[41], w[42], w[43]
 
-    call invert_key_schedule
     ret
 
 gen_round_key:
     ; Preconditions:
-    ; * xmm1[127:96] == w[i+3],
-    ; * xmm1[95:64]  == w[i+2],
-    ; * xmm1[63:32]  == w[i+1],
-    ; * xmm1[31:0]   == w[i],
+    ; * xmm0[127:96] == w[i+3],
+    ; * xmm0[95:64]  == w[i+2],
+    ; * xmm0[63:32]  == w[i+1],
+    ; * xmm0[31:0]   == w[i],
     ; * xmm7[127:96] == RotWord(SubWord(w[i+3]))^Rcon,
     ; * ecx == &w[i+4].
     ;
     ; Postconditions:
-    ; * xmm1[127:96] == w[i+7] == RotWord(SubWord(w[i+3]))^Rcon^w[i+3]^w[i+2]^w[i+1]^w[i],
-    ; * xmm1[95:64]  == w[i+6] == RotWord(SubWord(w[i+3]))^Rcon^w[i+2]^w[i+1]^w[i],
-    ; * xmm1[63:32]  == w[i+5] == RotWord(SubWord(w[i+3]))^Rcon^w[i+1]^w[i],
-    ; * xmm1[31:0]   == w[i+4] == RotWord(SubWord(w[i+3]))^Rcon^w[i],
+    ; * xmm0[127:96] == w[i+7] == RotWord(SubWord(w[i+3]))^Rcon^w[i+3]^w[i+2]^w[i+1]^w[i],
+    ; * xmm0[95:64]  == w[i+6] == RotWord(SubWord(w[i+3]))^Rcon^w[i+2]^w[i+1]^w[i],
+    ; * xmm0[63:32]  == w[i+5] == RotWord(SubWord(w[i+3]))^Rcon^w[i+1]^w[i],
+    ; * xmm0[31:0]   == w[i+4] == RotWord(SubWord(w[i+3]))^Rcon^w[i],
     ; * ecx == &w[i+8],
     ; * the value in xmm6 is also modified.
 
@@ -158,17 +144,17 @@ gen_round_key:
     ;     w[i+2]^w[i+1]^w[i],
     ;     w[i+1]^w[i] and
     ;     w[i].
-    movdqa xmm6, xmm1    ; xmm6 = xmm1
+    movdqa xmm6, xmm0    ; xmm6 = xmm0
     pslldq xmm6, 4       ; xmm6 <<= 32
-    pxor xmm1, xmm6      ; xmm1 ^= xmm6
+    pxor xmm0, xmm6      ; xmm0 ^= xmm6
     pslldq xmm6, 4       ; xmm6 <<= 32
-    pxor xmm1, xmm6      ; xmm1 ^= xmm6
+    pxor xmm0, xmm6      ; xmm0 ^= xmm6
     pslldq xmm6, 4       ; xmm6 <<= 32
-    pxor xmm1, xmm6      ; xmm1 ^= xmm6
-                         ; xmm1[127:96] == w[i+3]^w[i+2]^w[i+1]^w[i]
-                         ; xmm1[95:64]  == w[i+2]^w[i+1]^w[i]
-                         ; xmm1[63:32]  == w[i+1]^w[i]
-                         ; xmm1[31:0]   == w[i]
+    pxor xmm0, xmm6      ; xmm0 ^= xmm6
+                         ; xmm0[127:96] == w[i+3]^w[i+2]^w[i+1]^w[i]
+                         ; xmm0[95:64]  == w[i+2]^w[i+1]^w[i]
+                         ; xmm0[63:32]  == w[i+1]^w[i]
+                         ; xmm0[31:0]   == w[i]
 
     ; Calculate
     ;     w[i+7] == RotWord(SubWord(w[i+3]))^Rcon^w[i+3]^w[i+2]^w[i+1]^w[i],
@@ -176,51 +162,52 @@ gen_round_key:
     ;     w[i+5] == RotWord(SubWord(w[i+3]))^Rcon^w[i+1]^w[i] and
     ;     w[i+4] == RotWord(SubWord(w[i+3]))^Rcon^w[i].
     pshufd xmm6, xmm7, 0FFh    ; xmm6[127:96] = xmm6[95:64] = xmm6[63:32] = xmm6[31:0] = xmm7[127:96]
-    pxor xmm1, xmm6            ; xmm1 ^= xmm6
-                               ; xmm1[127:96] == w[i+7] == RotWord(SubWord(w[i+3]))^Rcon^w[i+3]^w[i+2]^w[i+1]^w[i]
-                               ; xmm1[95:64]  == w[i+6] == RotWord(SubWord(w[i+3]))^Rcon^w[i+2]^w[i+1]^w[i]
-                               ; xmm1[63:32]  == w[i+5] == RotWord(SubWord(w[i+3]))^Rcon^w[i+1]^w[i]
-                               ; xmm1[31:0]   == w[i+4] == RotWord(SubWord(w[i+3]))^Rcon^w[i]
+    pxor xmm0, xmm6            ; xmm0 ^= xmm6
+                               ; xmm0[127:96] == w[i+7] == RotWord(SubWord(w[i+3]))^Rcon^w[i+3]^w[i+2]^w[i+1]^w[i]
+                               ; xmm0[95:64]  == w[i+6] == RotWord(SubWord(w[i+3]))^Rcon^w[i+2]^w[i+1]^w[i]
+                               ; xmm0[63:32]  == w[i+5] == RotWord(SubWord(w[i+3]))^Rcon^w[i+1]^w[i]
+                               ; xmm0[31:0]   == w[i+4] == RotWord(SubWord(w[i+3]))^Rcon^w[i]
 
     ; Set w[i+4], w[i+5], w[i+6] and w[i+7].
-    movdqa [ecx], xmm1    ; w[i+7] = RotWord(SubWord(w[i+3]))^Rcon^w[i+3]^w[i+2]^w[i+1]^w[i]
+    movdqa [ecx], xmm0    ; w[i+7] = RotWord(SubWord(w[i+3]))^Rcon^w[i+3]^w[i+2]^w[i+1]^w[i]
                           ; w[i+6] = RotWord(SubWord(w[i+3]))^Rcon^w[i+2]^w[i+1]^w[i]
                           ; w[i+5] = RotWord(SubWord(w[i+3]))^Rcon^w[i+1]^w[i]
                           ; w[i+4] = RotWord(SubWord(w[i+3]))^Rcon^w[i]
     add ecx, 10h          ; ecx = &w[i+8]
 
     ret
+@raw_aes128_expand_key_schedule@20 endp
 
-invert_key_schedule:
-    movdqa xmm7, [key_schedule]
-    movdqa xmm6, [key_schedule + 0A0h]
-    movdqa [inverted_key_schedule], xmm6
-    movdqa [inverted_key_schedule + 0A0h], xmm7
+@raw_aes128_invert_key_schedule@8 proc
+    movdqa xmm7, [ecx]
+    movdqa xmm6, [ecx + 0A0h]
+    movdqa [edx], xmm6
+    movdqa [edx + 0A0h], xmm7
 
-    aesimc xmm7, [key_schedule + 10h]
-    aesimc xmm6, [key_schedule + 90h]
-    movdqa [inverted_key_schedule + 10h], xmm6
-    movdqa [inverted_key_schedule + 90h], xmm7
+    aesimc xmm7, [ecx + 10h]
+    aesimc xmm6, [ecx + 90h]
+    movdqa [edx + 10h], xmm6
+    movdqa [edx + 90h], xmm7
 
-    aesimc xmm7, [key_schedule + 20h]
-    aesimc xmm6, [key_schedule + 80h]
-    movdqa [inverted_key_schedule + 20h], xmm6
-    movdqa [inverted_key_schedule + 80h], xmm7
+    aesimc xmm7, [ecx + 20h]
+    aesimc xmm6, [ecx + 80h]
+    movdqa [edx + 20h], xmm6
+    movdqa [edx + 80h], xmm7
 
-    aesimc xmm7, [key_schedule + 30h]
-    aesimc xmm6, [key_schedule + 70h]
-    movdqa [inverted_key_schedule + 30h], xmm6
-    movdqa [inverted_key_schedule + 70h], xmm7
+    aesimc xmm7, [ecx + 30h]
+    aesimc xmm6, [ecx + 70h]
+    movdqa [edx + 30h], xmm6
+    movdqa [edx + 70h], xmm7
 
-    aesimc xmm7, [key_schedule + 40h]
-    aesimc xmm6, [key_schedule + 60h]
-    movdqa [inverted_key_schedule + 40h], xmm6
-    movdqa [inverted_key_schedule + 60h], xmm7
+    aesimc xmm7, [ecx + 40h]
+    aesimc xmm6, [ecx + 60h]
+    movdqa [edx + 40h], xmm6
+    movdqa [edx + 60h], xmm7
 
-    aesimc xmm7, [key_schedule + 50h]
-    movdqa [inverted_key_schedule + 50h], xmm7
+    aesimc xmm7, [ecx + 50h]
+    movdqa [edx + 50h], xmm7
 
     ret
-expand_keys128 endp
+@raw_aes128_invert_key_schedule@8 endp
 
 end

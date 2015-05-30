@@ -14,6 +14,7 @@ int main()
 {
     __declspec(align(16)) AesBlock128 plain, cypher, decrypted;
     __declspec(align(16)) AesBlock256 key;
+    __declspec(align(16)) Aes256KeySchedule key_schedule, inverted_schedule;
 
     plain = make_aes_block128(0xffeeddcc, 0xbbaa9988, 0x77665544, 0x33221100);
     key = make_aes_block256(0x1f1e1d1c, 0x1b1a1918, 0x17161514, 0x13121110, 0x0f0e0d0c, 0x0b0a0908, 0x07060504, 0x03020100);
@@ -27,13 +28,33 @@ int main()
     printf("     %s\n", format_aes_block256_fips_style(&key).str);
     print_aes_block256_fips_matrix_style(&key);
 
-    cypher = aes256ecb_encrypt(plain, &key);
+    aes256_expand_key_schedule(&key, &key_schedule);
+
+    printf("\n");
+    printf("Key schedule:\n");
+    for (int i = 0; i < 15; ++i)
+    {
+        printf("\t[%d]: %s\n", i, format_aes_block128(&key_schedule.keys[i]).str);
+        printf("\t[%d]: %s\n", i, format_aes_block128_fips_style(&key_schedule.keys[i]).str);
+    }
+
+    cypher = aes256ecb_encrypt(plain, &key_schedule);
     printf("\n");
     printf("Cypher: %s\n", format_aes_block128(&cypher).str);
     printf("        %s\n", format_aes_block128_fips_style(&cypher).str);
     print_aes_block128_fips_matrix_style(&cypher);
 
-    decrypted = aes256ecb_decrypt(cypher, &key);
+    aes256_invert_key_schedule(&key_schedule, &inverted_schedule);
+
+    printf("\n");
+    printf("Inverted key schedule:\n");
+    for (int i = 0; i < 15; ++i)
+    {
+        printf("\t[%d]: %s\n", i, format_aes_block128(&inverted_schedule.keys[i]).str);
+        printf("\t[%d]: %s\n", i, format_aes_block128_fips_style(&inverted_schedule.keys[i]).str);
+    }
+
+    decrypted = aes256ecb_decrypt(cypher, &inverted_schedule);
     printf("\n");
     printf("Decrypted: %s\n", format_aes_block128(&decrypted).str);
     printf("           %s\n", format_aes_block128_fips_style(&decrypted).str);

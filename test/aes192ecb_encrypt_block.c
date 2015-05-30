@@ -21,6 +21,7 @@ int main(int argc, char** argv)
 {
     __declspec(align(16)) AesBlock128 plain, cipher;
     __declspec(align(16)) AesBlock192 key;
+    __declspec(align(16)) Aes192KeySchedule key_schedule;
 
     if (argc < 2)
         exit_with_usage(argv[0]);
@@ -31,6 +32,8 @@ int main(int argc, char** argv)
         exit_with_usage(argv[0]);
     }
 
+    aes192_expand_key_schedule(&key, &key_schedule);
+
     for (int i = 2; i < argc; ++i)
     {
         if (parse_aes_block128(&plain, argv[i]) != 0)
@@ -38,7 +41,7 @@ int main(int argc, char** argv)
             fprintf(stderr, "Invalid 128-bit AES block '%s'\n", argv[i]);
             continue;
         }
-        cipher = aes192ecb_encrypt(plain, &key);
+        cipher = aes192ecb_encrypt(plain, &key_schedule);
         print_aes_block128(&cipher);
     }
 
