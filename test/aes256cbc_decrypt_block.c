@@ -49,6 +49,7 @@ int main(int argc, char** argv)
             continue;
         }
         plain = aes256cbc_decrypt(cipher, &inverted_schedule, &iv);
+        iv = cipher;
         print_aes_block128(&plain);
     }
 
