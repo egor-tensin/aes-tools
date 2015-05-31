@@ -114,22 +114,22 @@
     movdqa [ecx + 10h], xmm1    ; sets w[4], w[5]
     add ecx, 18h                ; ecx = &w[6]
 
-    aeskeygenassist xmm7, xmm1, 1        ; xmm7[63:32] = RotWord(SubWord(w[5]))^Rcon,
-    call gen_round_key                   ; sets w[6], w[7], w[8], w[9], w[10], w[11]
-    aeskeygenassist xmm7, xmm1, 2        ; xmm7[63:32] = RotWord(SubWord(w[11]))^Rcon
-    call gen_round_key                   ; sets w[12], w[13], w[14], w[15], w[16], w[17]
-    aeskeygenassist xmm7, xmm1, 4        ; xmm7[63:32] = RotWord(SubWord(w[17]))^Rcon
-    call gen_round_key                   ; sets w[18], w[19], w[20], w[21], w[22], w[23]
-    aeskeygenassist xmm7, xmm1, 8        ; xmm7[63:32] = RotWord(SubWord(w[23]))^Rcon
-    call gen_round_key                   ; sets w[24], w[25], w[26], w[27], w[28], w[29]
-    aeskeygenassist xmm7, xmm1, 10h      ; xmm7[63:32] = RotWord(SubWord(w[29]))^Rcon
-    call gen_round_key                   ; sets w[30], w[31], w[32], w[33], w[34], w[35]
-    aeskeygenassist xmm7, xmm1, 20h      ; xmm7[63:32] = RotWord(SubWord(w[35]))^Rcon
-    call gen_round_key                   ; sets w[36], w[37], w[38], w[39], w[40], w[41]
-    aeskeygenassist xmm7, xmm1, 40h      ; xmm7[63:32] = RotWord(SubWord(w[41]))^Rcon
-    call gen_round_key                   ; sets w[42], w[43], w[44], w[45], w[46], w[47]
-    aeskeygenassist xmm7, xmm1, 80h      ; xmm7[63:32] = RotWord(SubWord(w[49]))^Rcon
-    call gen_round_key                   ; sets w[48], w[49], w[50], w[51], w[52], w[53] // FIXME
+    aeskeygenassist xmm7, xmm1, 1      ; xmm7[63:32] = RotWord(SubWord(w[5]))^Rcon,
+    call gen_round_key                 ; sets w[6], w[7], w[8], w[9], w[10], w[11]
+    aeskeygenassist xmm7, xmm1, 2      ; xmm7[63:32] = RotWord(SubWord(w[11]))^Rcon
+    call gen_round_key                 ; sets w[12], w[13], w[14], w[15], w[16], w[17]
+    aeskeygenassist xmm7, xmm1, 4      ; xmm7[63:32] = RotWord(SubWord(w[17]))^Rcon
+    call gen_round_key                 ; sets w[18], w[19], w[20], w[21], w[22], w[23]
+    aeskeygenassist xmm7, xmm1, 8      ; xmm7[63:32] = RotWord(SubWord(w[23]))^Rcon
+    call gen_round_key                 ; sets w[24], w[25], w[26], w[27], w[28], w[29]
+    aeskeygenassist xmm7, xmm1, 10h    ; xmm7[63:32] = RotWord(SubWord(w[29]))^Rcon
+    call gen_round_key                 ; sets w[30], w[31], w[32], w[33], w[34], w[35]
+    aeskeygenassist xmm7, xmm1, 20h    ; xmm7[63:32] = RotWord(SubWord(w[35]))^Rcon
+    call gen_round_key                 ; sets w[36], w[37], w[38], w[39], w[40], w[41]
+    aeskeygenassist xmm7, xmm1, 40h    ; xmm7[63:32] = RotWord(SubWord(w[41]))^Rcon
+    call gen_round_key                 ; sets w[42], w[43], w[44], w[45], w[46], w[47]
+    aeskeygenassist xmm7, xmm1, 80h    ; xmm7[63:32] = RotWord(SubWord(w[49]))^Rcon
+    call gen_round_key                 ; sets w[48], w[49], w[50], w[51], w[52], w[53]
 
     ret
 

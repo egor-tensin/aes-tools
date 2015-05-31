@@ -16,7 +16,7 @@ int main()
     __declspec(align(16)) Aes128KeySchedule key_schedule, inverted_schedule;
 
     plain = make_aes_block128(0xffeeddcc, 0xbbaa9988, 0x77665544, 0x33221100);
-    key   = make_aes_block128(0x0f0e0d0c, 0x0b0a0908, 0x07060504, 0x03020100);
+    key = make_aes_block128(0x0f0e0d0c, 0x0b0a0908, 0x07060504, 0x03020100);
 
     printf("Plain: %s\n", format_aes_block128(&plain).str);
     printf("       %s\n", format_aes_block128_fips_style(&plain).str);
