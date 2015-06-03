@@ -42,17 +42,17 @@ static __inline AesBlock128 __fastcall aes128ecb_decrypt(
 static __inline AesBlock128 __fastcall aes128cbc_encrypt(
     AesBlock128 plain,
     Aes128KeySchedule* key_schedule,
-    AesBlock128* init_vector)
+    AesBlock128 init_vector)
 {
-    return raw_aes128cbc_encrypt(plain, key_schedule, init_vector);
+    return raw_aes128ecb_encrypt(_mm_xor_si128(plain, init_vector), key_schedule);
 }
 
 static __inline AesBlock128 __fastcall aes128cbc_decrypt(
     AesBlock128 cypher,
     Aes128KeySchedule* inverted_schedule,
-    AesBlock128* init_vector)
+    AesBlock128 init_vector)
 {
-    return raw_aes128cbc_decrypt(cypher, inverted_schedule, init_vector);
+    return _mm_xor_si128(raw_aes128ecb_decrypt(cypher, inverted_schedule), init_vector);
 }
 
 static __inline void __fastcall aes192_expand_key_schedule(
@@ -86,17 +86,17 @@ static __inline AesBlock128 __fastcall aes192ecb_decrypt(
 static __inline AesBlock128 __fastcall aes192cbc_encrypt(
     AesBlock128 plain,
     Aes192KeySchedule* key_schedule,
-    AesBlock128* initialization_vector)
+    AesBlock128 init_vector)
 {
-    return raw_aes192cbc_encrypt(plain, key_schedule, initialization_vector);
+    return raw_aes192ecb_encrypt(_mm_xor_si128(plain, init_vector), key_schedule);
 }
 
 static __inline AesBlock128 __fastcall aes192cbc_decrypt(
     AesBlock128 cypher,
     Aes192KeySchedule* inverted_schedule,
-    AesBlock128* initialization_vector)
+    AesBlock128 init_vector)
 {
-    return raw_aes192cbc_decrypt(cypher, inverted_schedule, initialization_vector);
+    return _mm_xor_si128(raw_aes192ecb_decrypt(cypher, inverted_schedule), init_vector);
 }
 
 static __inline void __fastcall aes256_expand_key_schedule(
@@ -130,15 +130,15 @@ static __inline AesBlock128 __fastcall aes256ecb_decrypt(
 static __inline AesBlock128 __fastcall aes256cbc_encrypt(
     AesBlock128 plain,
     Aes256KeySchedule* key_schedule,
-    AesBlock128* initialization_vector)
+    AesBlock128 init_vector)
 {
-    return raw_aes256cbc_encrypt(plain, key_schedule, initialization_vector);
+    return raw_aes256ecb_encrypt(_mm_xor_si128(plain, init_vector), key_schedule);
 }
 
 static __inline AesBlock128 __fastcall aes256cbc_decrypt(
     AesBlock128 cypher,
     Aes256KeySchedule* inverted_schedule,
-    AesBlock128* initialization_vector)
+    AesBlock128 init_vector)
 {
-    return raw_aes256cbc_decrypt(cypher, inverted_schedule, initialization_vector);
+    return _mm_xor_si128(raw_aes256ecb_decrypt(cypher, inverted_schedule), init_vector);
 }
