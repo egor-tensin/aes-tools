@@ -12,7 +12,7 @@
 
 int main()
 {
-    __declspec(align(16)) AesBlock128 plain, cypher, decrypted, iv;
+    __declspec(align(16)) AesBlock128 plain, cypher, decrypted, iv, next_iv;
     __declspec(align(16)) AesBlock256 key;
     __declspec(align(16)) Aes256KeySchedule key_schedule, inverted_schedule;
 
@@ -38,10 +38,14 @@ int main()
     for (int i = 0; i < 15; ++i)
         printf("\t[%d]: %s\n", i, format_aes_block128(&key_schedule.keys[i]).str);
 
-    cypher = aes256cbc_encrypt(plain, &key_schedule, iv);
+    cypher = aes256cbc_encrypt(plain, &key_schedule, iv, &next_iv);
     printf("\n");
     printf("Cypher: %s\n", format_aes_block128(&cypher).str);
     print_aes_block128_fips_matrix_style(&cypher);
+
+    printf("\n");
+    printf("Next initialization vector: %s\n", format_aes_block128(&next_iv).str);
+    print_aes_block128_fips_matrix_style(&next_iv);
 
     aes256_invert_key_schedule(&key_schedule, &inverted_schedule);
 
@@ -50,10 +54,14 @@ int main()
     for (int i = 0; i < 15; ++i)
         printf("\t[%d]: %s\n", i, format_aes_block128(&inverted_schedule.keys[i]).str);
 
-    decrypted = aes256cbc_decrypt(cypher, &inverted_schedule, iv);
+    decrypted = aes256cbc_decrypt(cypher, &inverted_schedule, iv, &next_iv);
     printf("\n");
     printf("Decrypted: %s\n", format_aes_block128(&decrypted).str);
     print_aes_block128_fips_matrix_style(&decrypted);
+
+    printf("\n");
+    printf("Next initialization vector: %s\n", format_aes_block128(&next_iv).str);
+    print_aes_block128_fips_matrix_style(&next_iv);
 
     return 0;
 }
