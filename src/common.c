@@ -36,6 +36,9 @@ AesBlock256 make_aes_block256(int hi7, int hi6, int hi5, int hi4, int lo3, int l
 
 AesBlockString128 format_aes_block128(AesBlock128* block)
 {
+#ifdef AESNI_FIPS_STYLE_IO_BY_DEFAULT
+    return format_aes_block128_fips_style(block);
+#else
     AesBlockString128 result;
     char *cursor = result.str;
 
@@ -44,10 +47,14 @@ AesBlockString128 format_aes_block128(AesBlock128* block)
 
     *cursor = '\0';
     return result;
+#endif
 }
 
 AesBlockString192 format_aes_block192(AesBlock192* block)
 {
+#ifdef AESNI_FIPS_STYLE_IO_BY_DEFAULT
+    return format_aes_block192_fips_style(block);
+#else
     AesBlockString192 result;
     char *cursor = result.str;
 
@@ -58,10 +65,14 @@ AesBlockString192 format_aes_block192(AesBlock192* block)
 
     *cursor = '\0';
     return result;
+#endif
 }
 
 AesBlockString256 format_aes_block256(AesBlock256* block)
 {
+#ifdef AESNI_FIPS_STYLE_IO_BY_DEFAULT
+    return format_aes_block256_fips_style(block);
+#else
     AesBlockString256 result;
     char *cursor = result.str;
 
@@ -72,6 +83,7 @@ AesBlockString256 format_aes_block256(AesBlock256* block)
 
     *cursor = '\0';
     return result;
+#endif
 }
 
 AesBlockString128 format_aes_block128_fips_style(AesBlock128* block)
@@ -220,30 +232,128 @@ void print_aes_block256_fips_matrix_style(AesBlock256* block)
 
 int parse_aes_block128(AesBlock128* block, const char* src)
 {
+#if defined AESNI_FIPS_STYLE_IO_BY_DEFAULT && AESNI_FIPS_STYLE_IO_BY_DEFAULT
+    return parse_aes_block128_fips_style(block, src);
+#else
     int n, xs[4];
     if (sscanf(src, "%8x%8x%8x%8x%n", &xs[0], &xs[1], &xs[2], &xs[3], &n) != 4
         || n != strlen(src))
         return 1;
     *block = make_aes_block128(xs[0], xs[1], xs[2], xs[3]);
     return 0;
+#endif
 }
 
 int parse_aes_block192(AesBlock192* block, const char* src)
 {
+#if defined AESNI_FIPS_STYLE_IO_BY_DEFAULT && AESNI_FIPS_STYLE_IO_BY_DEFAULT
+    return parse_aes_block192_fips_style(block, src);
+#else
     int n, xs[6];
     if (sscanf(src, "%8x%8x%8x%8x%8x%8x%n", &xs[0], &xs[1], &xs[2], &xs[3], &xs[4], &xs[5], &n) != 6
         || n != strlen(src))
         return 1;
     *block = make_aes_block192(xs[0], xs[1], xs[2], xs[3], xs[4], xs[5]);
     return 0;
+#endif
 }
 
 int parse_aes_block256(AesBlock256* block, const char* src)
 {
+#if defined AESNI_FIPS_STYLE_IO_BY_DEFAULT && AESNI_FIPS_STYLE_IO_BY_DEFAULT
+    return parse_aes_block256_fips_style(block, src);
+#else
     int n, xs[8];
     if (sscanf(src, "%8x%8x%8x%8x%8x%8x%8x%8x%n", &xs[0], &xs[1], &xs[2], &xs[3], &xs[4], &xs[5], &xs[6], &xs[7], &n) != 8
         || n != strlen(src))
         return 1;
     *block = make_aes_block256(xs[0], xs[1], xs[2], xs[3], xs[4], xs[5], xs[6], xs[7]);
+    return 0;
+#endif
+}
+
+int parse_aes_block128_fips_style(AesBlock128* block, const char* src)
+{
+    unsigned char bytes[16];
+
+    for (int i = 0; i < 16; ++i)
+    {
+        int n;
+        unsigned int byte;
+        if (sscanf(src, "%2x%n", &byte, &n) != 1)
+            return 1;
+        bytes[i] = (unsigned char) byte;
+        src += n;
+    }
+
+    *block = _mm_loadu_si128((AesBlock128*) bytes);
+    return 0;
+}
+
+int parse_aes_block192_fips_style(AesBlock192* block, const char* src)
+{
+    AesBlock128 lo, hi;
+    unsigned char lo_bytes[16], hi_bytes[16] = { 0 };
+
+    for (int i = 0; i < 16; ++i)
+    {
+        int n;
+        unsigned int byte;
+        if (sscanf(src, "%2x%n", &byte, &n) != 1)
+            return 1;
+        lo_bytes[i] = (unsigned char) byte;
+        src += n;
+    }
+
+    lo = _mm_loadu_si128((AesBlock128*) lo_bytes);
+
+    for (int i = 0; i < 8; ++i)
+    {
+        int n;
+        unsigned int byte;
+        if (sscanf(src, "%2x%n", &byte, &n) != 1)
+            return 1;
+        hi_bytes[i] = (unsigned char) byte;
+        src += n;
+    }
+
+    hi = _mm_loadu_si128((AesBlock128*) hi_bytes);
+
+    block->hi = hi;
+    block->lo = lo;
+    return 0;
+}
+
+int parse_aes_block256_fips_style(AesBlock256* block, const char* src)
+{
+    AesBlock128 lo, hi;
+    unsigned char lo_bytes[16], hi_bytes[16];
+
+    for (int i = 0; i < 16; ++i)
+    {
+        int n;
+        unsigned int byte;
+        if (sscanf(src, "%2x%n", &byte, &n) != 1)
+            return 1;
+        lo_bytes[i] = (unsigned char) byte;
+        src += n;
+    }
+
+    lo = _mm_loadu_si128((AesBlock128*) lo_bytes);
+
+    for (int i = 0; i < 16; ++i)
+    {
+        int n;
+        unsigned int byte;
+        if (sscanf(src, "%2x%n", &byte, &n) != 1)
+            return 1;
+        hi_bytes[i] = (unsigned char) byte;
+        src += n;
+    }
+
+    hi = _mm_loadu_si128((AesBlock128*) hi_bytes);
+
+    block->hi = hi;
+    block->lo = lo;
     return 0;
 }
