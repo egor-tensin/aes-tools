@@ -12,7 +12,7 @@
 
 int main()
 {
-    __declspec(align(16)) AesBlock128 plain, cypher, decrypted, iv;
+    __declspec(align(16)) AesBlock128 plain, cipher, decrypted, iv;
     __declspec(align(16)) AesBlock256 key;
     __declspec(align(16)) Aes256KeySchedule key_schedule;
 
@@ -38,12 +38,12 @@ int main()
     for (int i = 0; i < 15; ++i)
         printf("\t[%d]: %s\n", i, format_aes_block128(&key_schedule.keys[i]).str);
 
-    cypher = aes256ctr_encrypt(plain, &key_schedule, iv, 0);
+    cipher = aes256ctr_encrypt(plain, &key_schedule, iv, 0);
     printf("\n");
-    printf("Cypher: %s\n", format_aes_block128(&cypher).str);
-    print_aes_block128_fips_matrix_style(&cypher);
+    printf("Cypher: %s\n", format_aes_block128(&cipher).str);
+    print_aes_block128_fips_matrix_style(&cipher);
 
-    decrypted = aes256ctr_decrypt(cypher, &key_schedule, iv, 0);
+    decrypted = aes256ctr_decrypt(cipher, &key_schedule, iv, 0);
     printf("\n");
     printf("Decrypted: %s\n", format_aes_block128(&decrypted).str);
     print_aes_block128_fips_matrix_style(&decrypted);
