@@ -1,8 +1,9 @@
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SAFESEH:NO")
 
 macro(example prefix)
-    add_executable(${prefix}_example ${prefix}_example.c)
-    target_link_libraries(${prefix}_example libaesni)
+    add_executable(example_${prefix} ${prefix}.c)
+    target_link_libraries(example_${prefix} libaesni)
+    set_target_properties(example_${prefix} PROPERTIES OUTPUT_NAME ${prefix})
 endmacro()
 
 example(aes128ecb)
