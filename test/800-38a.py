@@ -10,7 +10,7 @@ if __name__ == '__main__':
     parser.add_argument('--sde', '-e', action='store_true',
                         help='use Intel SDE to run *.exe files')
     args = parser.parse_args()
-    tools = toolkit.Tools('C:\\build\\test\\Debug', use_sde=args.sde)
+    tools = toolkit.Tools(args.root, use_sde=args.sde)
     vectors = json.load(open('800-38a.json'))
     success = True
     for prefix in vectors:
