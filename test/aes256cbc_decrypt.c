@@ -19,9 +19,9 @@ static void exit_with_usage(const char* argv0)
 
 int main(int argc, char** argv)
 {
-    __declspec(align(16)) AesBlock128 plain, cipher, iv;
-    __declspec(align(16)) AesBlock256 key;
-    __declspec(align(16)) Aes256KeySchedule key_schedule, inverted_schedule;
+    AesBlock128 plain, cipher, iv;
+    AesBlock256 key;
+    Aes256KeySchedule key_schedule, inverted_schedule;
 
     if (argc < 3)
         exit_with_usage(argv[0]);

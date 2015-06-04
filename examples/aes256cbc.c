@@ -12,9 +12,9 @@
 
 int main()
 {
-    __declspec(align(16)) AesBlock128 plain, cipher, decrypted, iv, next_iv;
-    __declspec(align(16)) AesBlock256 key;
-    __declspec(align(16)) Aes256KeySchedule key_schedule, inverted_schedule;
+    AesBlock128 plain, cipher, decrypted, iv, next_iv;
+    AesBlock256 key;
+    Aes256KeySchedule key_schedule, inverted_schedule;
 
     plain = make_aes_block128(0xffeeddcc, 0xbbaa9988, 0x77665544, 0x33221100);
     key = make_aes_block256(0x1f1e1d1c, 0x1b1a1918, 0x17161514, 0x13121110, 0x0f0e0d0c, 0x0b0a0908, 0x07060504, 0x03020100);
