@@ -241,17 +241,17 @@ void print_aes_block256_be(AesBlock256* block)
 
 void print_aes_block128_as_matrix(AesBlock128* block)
 {
-    printf("%s\n", format_aes_block128(block).str);
+    printf("%s", format_aes_block128_as_matrix(block).str);
 }
 
 void print_aes_block192_as_matrix(AesBlock192* block)
 {
-    printf("%s\n", format_aes_block192(block).str);
+    printf("%s", format_aes_block192_as_matrix(block).str);
 }
 
 void print_aes_block256_as_matrix(AesBlock256* block)
 {
-    printf("%s\n", format_aes_block256(block).str);
+    printf("%s", format_aes_block256_as_matrix(block).str);
 }
 
 void print_aes_block128_be_as_matrix(AesBlock128* block)
