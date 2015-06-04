@@ -20,11 +20,11 @@ int main()
     key = make_aes_block192(0x17161514, 0x13121110, 0x0f0e0d0c, 0x0b0a0908, 0x07060504, 0x03020100);
 
     printf("Plain: %s\n", format_aes_block128(&plain).str);
-    print_aes_block128_fips_matrix_style(&plain);
+    print_aes_block128_as_matrix(&plain);
 
     printf("\n");
     printf("Key: %s\n", format_aes_block192(&key).str);
-    print_aes_block192_fips_matrix_style(&key);
+    print_aes_block192_as_matrix(&key);
 
     aes192_expand_key_schedule(&key, &key_schedule);
 
@@ -36,7 +36,7 @@ int main()
     cipher = aes192ecb_encrypt(plain, &key_schedule);
     printf("\n");
     printf("Cipher: %s\n", format_aes_block128(&cipher).str);
-    print_aes_block128_fips_matrix_style(&cipher);
+    print_aes_block128_as_matrix(&cipher);
 
     aes192_invert_key_schedule(&key_schedule, &inverted_schedule);
 
@@ -48,7 +48,7 @@ int main()
     decrypted = aes192ecb_decrypt(cipher, &inverted_schedule);
     printf("\n");
     printf("Decrypted: %s\n", format_aes_block128(&decrypted).str);
-    print_aes_block128_fips_matrix_style(&decrypted);
+    print_aes_block128_as_matrix(&decrypted);
 
     return 0;
 }

@@ -20,15 +20,15 @@ int main()
     iv = make_aes_block128(0xfedcba98, 0x76543210, 0xfedcba98, 0x76543210);
 
     printf("Plain: %s\n", format_aes_block128(&plain).str);
-    print_aes_block128_fips_matrix_style(&plain);
+    print_aes_block128_as_matrix(&plain);
 
     printf("\n");
     printf("Key: %s\n", format_aes_block128(&key).str);
-    print_aes_block128_fips_matrix_style(&key);
+    print_aes_block128_as_matrix(&key);
 
     printf("\n");
     printf("Initialization vector: %s\n", format_aes_block128(&iv).str);
-    print_aes_block128_fips_matrix_style(&iv);
+    print_aes_block128_as_matrix(&iv);
 
     aes128_expand_key_schedule(key, &key_schedule);
 
@@ -40,20 +40,20 @@ int main()
     cipher = aes128cfb_encrypt(plain, &key_schedule, iv, &next_iv);
     printf("\n");
     printf("Cipher: %s\n", format_aes_block128(&cipher).str);
-    print_aes_block128_fips_matrix_style(&cipher);
+    print_aes_block128_as_matrix(&cipher);
 
     printf("\n");
     printf("Next initialization vector: %s\n", format_aes_block128(&next_iv).str);
-    print_aes_block128_fips_matrix_style(&next_iv);
+    print_aes_block128_as_matrix(&next_iv);
 
     decrypted = aes128cfb_decrypt(cipher, &key_schedule, iv, &next_iv);
     printf("\n");
     printf("Decrypted: %s\n", format_aes_block128(&decrypted).str);
-    print_aes_block128_fips_matrix_style(&decrypted);
+    print_aes_block128_as_matrix(&decrypted);
 
     printf("\n");
     printf("Next initialization vector: %s\n", format_aes_block128(&next_iv).str);
-    print_aes_block128_fips_matrix_style(&next_iv);
+    print_aes_block128_as_matrix(&next_iv);
 
     return 0;
 }

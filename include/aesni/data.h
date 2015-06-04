@@ -80,34 +80,54 @@ AesBlockString128 format_aes_block128(AesBlock128*);
 AesBlockString192 format_aes_block192(AesBlock192*);
 AesBlockString256 format_aes_block256(AesBlock256*);
 
-AesBlockString128 format_aes_block128_fips_style(AesBlock128*);
-AesBlockString192 format_aes_block192_fips_style(AesBlock192*);
-AesBlockString256 format_aes_block256_fips_style(AesBlock256*);
+AesBlockString128 format_aes_block128_le(AesBlock128*);
+AesBlockString192 format_aes_block192_le(AesBlock192*);
+AesBlockString256 format_aes_block256_le(AesBlock256*);
+
+AesBlockString128 format_aes_block128_be(AesBlock128*);
+AesBlockString192 format_aes_block192_be(AesBlock192*);
+AesBlockString256 format_aes_block256_be(AesBlock256*);
 
 typedef struct { char str[49]; } AesBlockMatrixString128;
 typedef struct { char str[73]; } AesBlockMatrixString192;
 typedef struct { char str[97]; } AesBlockMatrixString256;
 
-AesBlockMatrixString128 format_aes_block128_fips_matrix_style(AesBlock128*);
-AesBlockMatrixString192 format_aes_block192_fips_matrix_style(AesBlock192*);
-AesBlockMatrixString256 format_aes_block256_fips_matrix_style(AesBlock256*);
+AesBlockMatrixString128 format_aes_block128_as_matrix(AesBlock128*);
+AesBlockMatrixString192 format_aes_block192_as_matrix(AesBlock192*);
+AesBlockMatrixString256 format_aes_block256_as_matrix(AesBlock256*);
+
+AesBlockMatrixString128 format_aes_block128_be_as_matrix(AesBlock128*);
+AesBlockMatrixString192 format_aes_block192_be_as_matrix(AesBlock192*);
+AesBlockMatrixString256 format_aes_block256_be_as_matrix(AesBlock256*);
 
 void print_aes_block128(AesBlock128*);
 void print_aes_block192(AesBlock192*);
 void print_aes_block256(AesBlock256*);
 
-void print_aes_block128_fips_style(AesBlock128*);
-void print_aes_block192_fips_style(AesBlock192*);
-void print_aes_block256_fips_style(AesBlock256*);
+void print_aes_block128_le(AesBlock128*);
+void print_aes_block192_le(AesBlock192*);
+void print_aes_block256_le(AesBlock256*);
 
-void print_aes_block128_fips_matrix_style(AesBlock128*);
-void print_aes_block192_fips_matrix_style(AesBlock192*);
-void print_aes_block256_fips_matrix_style(AesBlock256*);
+void print_aes_block128_be(AesBlock128*);
+void print_aes_block192_be(AesBlock192*);
+void print_aes_block256_be(AesBlock256*);
+
+void print_aes_block128_as_matrix(AesBlock128*);
+void print_aes_block192_as_matrix(AesBlock192*);
+void print_aes_block256_as_matrix(AesBlock256*);
+
+void print_aes_block128_be_as_matrix(AesBlock128*);
+void print_aes_block192_be_as_matrix(AesBlock192*);
+void print_aes_block256_be_as_matrix(AesBlock256*);
 
 int parse_aes_block128(AesBlock128*, const char*);
 int parse_aes_block192(AesBlock192*, const char*);
 int parse_aes_block256(AesBlock256*, const char*);
 
-int parse_aes_block128_fips_style(AesBlock128*, const char*);
-int parse_aes_block192_fips_style(AesBlock192*, const char*);
-int parse_aes_block256_fips_style(AesBlock256*, const char*);
+int parse_aes_block128_le(AesBlock128*, const char*);
+int parse_aes_block192_le(AesBlock192*, const char*);
+int parse_aes_block256_le(AesBlock256*, const char*);
+
+int parse_aes_block128_be(AesBlock128*, const char*);
+int parse_aes_block192_be(AesBlock192*, const char*);
+int parse_aes_block256_be(AesBlock256*, const char*);
