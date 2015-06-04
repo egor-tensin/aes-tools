@@ -8,7 +8,7 @@
 
 .code
 
-@raw_aes128ecb_encrypt@20 proc
+@raw_aes128_encrypt@20 proc
     pxor xmm0, [ecx]
     aesenc xmm0, [ecx + 10h]
     aesenc xmm0, [ecx + 20h]
@@ -21,9 +21,9 @@
     aesenc xmm0, [ecx + 90h]
     aesenclast xmm0, [ecx + 0A0h]
     ret
-@raw_aes128ecb_encrypt@20 endp
+@raw_aes128_encrypt@20 endp
 
-@raw_aes128ecb_decrypt@20 proc
+@raw_aes128_decrypt@20 proc
     pxor xmm0, [ecx]
     aesdec xmm0, [ecx + 10h]
     aesdec xmm0, [ecx + 20h]
@@ -36,7 +36,7 @@
     aesdec xmm0, [ecx + 90h]
     aesdeclast xmm0, [ecx + 0A0h]
     ret
-@raw_aes128ecb_decrypt@20 endp
+@raw_aes128_decrypt@20 endp
 
 @raw_aes128_expand_key_schedule@20 proc
     ; A "word" (in terms of the FIPS 187 standard) is a 32-bit block.
@@ -89,29 +89,29 @@
     add ecx, 10h          ; ecx = &w[4]
 
     aeskeygenassist xmm7, xmm0, 01h    ; xmm7[127:96] = RotWord(SubWord(w[3]))^Rcon
-    call gen_round_key                 ; sets w[4], w[5], w[6], w[7]
+    call aes128_keygen_assist          ; sets w[4], w[5], w[6], w[7]
     aeskeygenassist xmm7, xmm0, 02h    ; xmm7[127:96] = RotWord(SubWord(w[7]))^Rcon
-    call gen_round_key                 ; sets w[8], w[9], w[10], w[11]
+    call aes128_keygen_assist          ; sets w[8], w[9], w[10], w[11]
     aeskeygenassist xmm7, xmm0, 04h    ; xmm7[127:96] = RotWord(SubWord(w[11]))^Rcon
-    call gen_round_key                 ; sets w[12], w[13], w[14], w[15]
+    call aes128_keygen_assist          ; sets w[12], w[13], w[14], w[15]
     aeskeygenassist xmm7, xmm0, 08h    ; xmm7[127:96] = RotWord(SubWord(w[15]))^Rcon
-    call gen_round_key                 ; sets w[16], w[17], w[18], w[19]
+    call aes128_keygen_assist          ; sets w[16], w[17], w[18], w[19]
     aeskeygenassist xmm7, xmm0, 10h    ; xmm7[127:96] = RotWord(SubWord(w[19]))^Rcon
-    call gen_round_key                 ; sets w[20], w[21], w[22], w[23]
+    call aes128_keygen_assist          ; sets w[20], w[21], w[22], w[23]
     aeskeygenassist xmm7, xmm0, 20h    ; xmm7[127:96] = RotWord(SubWord(w[23]))^Rcon
-    call gen_round_key                 ; sets w[24], w[25], w[26], w[27]
+    call aes128_keygen_assist          ; sets w[24], w[25], w[26], w[27]
     aeskeygenassist xmm7, xmm0, 40h    ; xmm7[127:96] = RotWord(SubWord(w[27]))^Rcon
-    call gen_round_key                 ; sets w[28], w[29], w[30], w[31]
+    call aes128_keygen_assist          ; sets w[28], w[29], w[30], w[31]
     aeskeygenassist xmm7, xmm0, 80h    ; xmm7[127:96] = RotWord(SubWord(w[31]))^Rcon
-    call gen_round_key                 ; sets w[32], w[33], w[34], w[35]
+    call aes128_keygen_assist          ; sets w[32], w[33], w[34], w[35]
     aeskeygenassist xmm7, xmm0, 1Bh    ; xmm7[127:96] = RotWord(SubWord(w[35]))^Rcon
-    call gen_round_key                 ; sets w[36], w[37], w[38], w[39]
+    call aes128_keygen_assist          ; sets w[36], w[37], w[38], w[39]
     aeskeygenassist xmm7, xmm0, 36h    ; xmm7[127:96] = RotWord(SubWord(w[39]))^Rcon
-    call gen_round_key                 ; sets w[40], w[41], w[42], w[43]
+    call aes128_keygen_assist          ; sets w[40], w[41], w[42], w[43]
 
     ret
 
-gen_round_key:
+aes128_keygen_assist:
     ; Preconditions:
     ; * xmm0[127:96] == w[i+3],
     ; * xmm0[95:64]  == w[i+2],

@@ -11,7 +11,7 @@
 #include <emmintrin.h>
 #include <wmmintrin.h>
 
-AesBlock128 __fastcall raw_aes128ecb_encrypt(
+AesBlock128 __fastcall raw_aes128_encrypt(
     AesBlock128 plain,
     Aes128KeySchedule* key_schedule)
 {
@@ -28,7 +28,7 @@ AesBlock128 __fastcall raw_aes128ecb_encrypt(
     return _mm_aesenclast_si128(plain, key_schedule->keys[10]);
 }
 
-AesBlock128 __fastcall raw_aes128ecb_decrypt(
+AesBlock128 __fastcall raw_aes128_decrypt(
     AesBlock128 cipher,
     Aes128KeySchedule* inverted_schedule)
 {

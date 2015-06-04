@@ -17,10 +17,10 @@ void __fastcall raw_aes128_invert_key_schedule(
     Aes128KeySchedule* key_schedule,
     Aes128KeySchedule* inverted_schedule);
 
-AesBlock128 __fastcall raw_aes128ecb_encrypt(
+AesBlock128 __fastcall raw_aes128_encrypt(
     AesBlock128 plain,
     Aes128KeySchedule* key_schedule);
-AesBlock128 __fastcall raw_aes128ecb_decrypt(
+AesBlock128 __fastcall raw_aes128_decrypt(
     AesBlock128 cipher,
     Aes128KeySchedule* inverted_schedule);
 
@@ -32,10 +32,10 @@ void __fastcall raw_aes192_invert_key_schedule(
     Aes192KeySchedule* key_schedule,
     Aes192KeySchedule* inverted_schedule);
 
-AesBlock128 __fastcall raw_aes192ecb_encrypt(
+AesBlock128 __fastcall raw_aes192_encrypt(
     AesBlock128 plain,
     Aes192KeySchedule* key_schedule);
-AesBlock128 __fastcall raw_aes192ecb_decrypt(
+AesBlock128 __fastcall raw_aes192_decrypt(
     AesBlock128 cipher,
     Aes192KeySchedule* inverted_schedule);
 
@@ -47,9 +47,9 @@ void __fastcall raw_aes256_invert_key_schedule(
     Aes256KeySchedule* key_schedule,
     Aes256KeySchedule* inverted_schedule);
 
-AesBlock128 __fastcall raw_aes256ecb_encrypt(
+AesBlock128 __fastcall raw_aes256_encrypt(
     AesBlock128 plain,
     Aes256KeySchedule* key_schedule);
-AesBlock128 __fastcall raw_aes256ecb_decrypt(
+AesBlock128 __fastcall raw_aes256_decrypt(
     AesBlock128 cipher,
     Aes256KeySchedule* inverted_schedule);
