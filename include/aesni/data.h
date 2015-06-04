@@ -57,7 +57,6 @@ Aes128KeySchedule;
 typedef struct
 {
     AesBlock128 keys[13];
-    char fillers[8];
 }
 Aes192KeySchedule;
 
