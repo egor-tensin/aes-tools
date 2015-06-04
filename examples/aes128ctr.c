@@ -39,7 +39,7 @@ int main()
 
     cipher = aes128ctr_encrypt(plain, &key_schedule, iv, 0);
     printf("\n");
-    printf("Cypher: %s\n", format_aes_block128(&cipher).str);
+    printf("Cipher: %s\n", format_aes_block128(&cipher).str);
     print_aes_block128_fips_matrix_style(&cipher);
 
     decrypted = aes128ctr_decrypt(cipher, &key_schedule, iv, 0);

@@ -35,7 +35,7 @@ int main()
 
     cipher = aes192ecb_encrypt(plain, &key_schedule);
     printf("\n");
-    printf("Cypher: %s\n", format_aes_block128(&cipher).str);
+    printf("Cipher: %s\n", format_aes_block128(&cipher).str);
     print_aes_block128_fips_matrix_style(&cipher);
 
     aes192_invert_key_schedule(&key_schedule, &inverted_schedule);
