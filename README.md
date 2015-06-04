@@ -8,6 +8,12 @@ I've used the compiler and the assembler shipped with Visual Studio Express 2013
 
 You can generate the solution using CMake and build it using Visual Studio.
 
+To make AES block I/O functions use big-endian by default (also used in the original FIPS standard; required for the tests),
+pass the `LIBAESNI_BE_IO_BY_DEFAULT=1` preprocessor definition.
+Using CMake, you can pass the definition like this:
+
+    cmake -D CMAKE_C_FLAGS=/DLIBAESNI_BE_IO_BY_DEFAULT=1 ...
+
 ## Running on older CPUs
 
 To run programs that are using the AES-NI instruction set on a CPU w/o the support for these instructions, one can use
