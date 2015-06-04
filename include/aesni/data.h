@@ -9,6 +9,7 @@
 #pragma once
 
 #include <emmintrin.h>
+#include <tmmintrin.h>
 
 typedef __m128i AesBlock128;
 
@@ -60,16 +61,19 @@ typedef struct
 }
 Aes256KeySchedule;
 
+static __inline AesBlock128 __fastcall aes128_reverse_byte_order(AesBlock128 block)
+{
+    return _mm_shuffle_epi8(block, make_aes_block128(0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f));
+}
+
 static __inline AesBlock128 __fastcall aes128_le2be(AesBlock128 block)
 {
-    __declspec(align(16)) char xs[16];
-    _mm_store_si128((__m128i*) xs, block);
-    return _mm_set_epi8(xs[0], xs[1], xs[2], xs[3], xs[4], xs[5], xs[6], xs[7], xs[8], xs[9], xs[10], xs[11], xs[12], xs[13], xs[14], xs[15]);
+    return aes128_reverse_byte_order(block);
 }
 
 static __inline AesBlock128 __fastcall aes128_be2le(AesBlock128 block)
 {
-    return aes128_le2be(block);
+    return aes128_reverse_byte_order(block);
 }
 
 typedef struct { char str[33]; } AesBlockString128;
