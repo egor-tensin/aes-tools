@@ -1,6 +1,10 @@
 project(libaesni C ASM_MASM)
 file(GLOB_RECURSE ${PROJECT_NAME}_headers "include/*.h")
-file(GLOB ${PROJECT_NAME}_sources "src/*.c")
+if(AESNI_USE_ASM)
+    file(GLOB ${PROJECT_NAME}_sources src/aes128.asm src/aes192.asm src/aes256.asm src/common.c)
+else()
+    file(GLOB ${PROJECT_NAME}_sources src/aes128.c src/aes192.c src/aes256.c src/common.c)
+endif()
 add_library(${PROJECT_NAME} ${${PROJECT_NAME}_headers}
                             ${${PROJECT_NAME}_sources})
 target_include_directories(${PROJECT_NAME} PUBLIC include/)
