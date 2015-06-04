@@ -13,27 +13,6 @@
 #include <stdio.h>
 #include <string.h>
 
-AesBlock128 make_aes_block128(int hi3, int hi2, int lo1, int lo0)
-{
-    return _mm_set_epi32(hi3, hi2, lo1, lo0);
-}
-
-AesBlock192 make_aes_block192(int hi5, int hi4, int lo3, int lo2, int lo1, int lo0)
-{
-    AesBlock192 result;
-    result.hi = make_aes_block128(  0,   0, hi5, hi4);
-    result.lo = make_aes_block128(lo3, lo2, lo1, lo0);
-    return result;
-}
-
-AesBlock256 make_aes_block256(int hi7, int hi6, int hi5, int hi4, int lo3, int lo2, int lo1, int lo0)
-{
-    AesBlock256 result;
-    result.hi = make_aes_block128(hi7, hi6, hi5, hi4);
-    result.lo = make_aes_block128(lo3, lo2, lo1, lo0);
-    return result;
-}
-
 AesBlockString128 format_aes_block128(AesBlock128* block)
 {
 #ifdef AESNI_FIPS_STYLE_IO_BY_DEFAULT

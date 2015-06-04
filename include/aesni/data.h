@@ -12,6 +12,11 @@
 
 typedef __m128i AesBlock128;
 
+static __inline AesBlock128 __fastcall make_aes_block128(int hi3, int hi2, int lo1, int lo0)
+{
+    return _mm_set_epi32(hi3, hi2, lo1, lo0);
+}
+
 typedef struct
 {
     AesBlock128 hi;
@@ -19,12 +24,22 @@ typedef struct
 }
 AesBlock192;
 
+static __inline AesBlock192 __fastcall make_aes_block192(int hi5, int hi4, int lo3, int lo2, int lo1, int lo0)
+{
+    return (AesBlock192) { .hi = make_aes_block128(0, 0, hi5, hi4), .lo = make_aes_block128(lo3, lo2, lo1, lo0) };
+}
+
 typedef struct
 {
     AesBlock128 hi;
     AesBlock128 lo;
 }
 AesBlock256;
+
+static __inline AesBlock256 __fastcall make_aes_block256(int hi7, int hi6, int hi5, int hi4, int lo3, int lo2, int lo1, int lo0)
+{
+    return (AesBlock256) { .hi = make_aes_block128(hi7, hi6, hi5, hi4), .lo = make_aes_block128(lo3, lo2, lo1, lo0) };
+}
 
 typedef struct
 {
@@ -56,10 +71,6 @@ static __inline AesBlock128 __fastcall aes128_be2le(AesBlock128 block)
 {
     return aes128_le2be(block);
 }
-
-AesBlock128 make_aes_block128(int hi3, int hi2, int lo1, int lo0);
-AesBlock192 make_aes_block192(int hi5, int hi4, int lo3, int lo2, int lo1, int lo0);
-AesBlock256 make_aes_block256(int hi7, int hi6, int hi5, int hi4, int lo3, int lo2, int lo1, int lo0);
 
 typedef struct { char str[33]; } AesBlockString128;
 typedef struct { char str[49]; } AesBlockString192;
