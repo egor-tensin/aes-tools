@@ -46,7 +46,7 @@ static __inline AesBlock128 __fastcall aes128cbc_encrypt(
     AesBlock128* next_init_vector)
 {
     AesBlock128 cipher = raw_aes128_encrypt(_mm_xor_si128(plain, init_vector), key_schedule);
-    _mm_storeu_si128(next_init_vector, cipher);
+    *next_init_vector = cipher;
     return cipher;
 }
 
@@ -57,7 +57,7 @@ static __inline AesBlock128 __fastcall aes128cbc_decrypt(
     AesBlock128* next_init_vector)
 {
     AesBlock128 plain = _mm_xor_si128(raw_aes128_decrypt(cipher, inverted_schedule), init_vector);
-    _mm_storeu_si128(next_init_vector, cipher);
+    *next_init_vector = cipher;
     return plain;
 }
 
@@ -68,7 +68,7 @@ static __inline AesBlock128 __fastcall aes128cfb_encrypt(
     AesBlock128* next_init_vector)
 {
     AesBlock128 cipher = _mm_xor_si128(raw_aes128_encrypt(init_vector, key_schedule), plain);
-    _mm_storeu_si128(next_init_vector, cipher);
+    *next_init_vector = cipher;
     return cipher;
 }
 
@@ -79,7 +79,7 @@ static __inline AesBlock128 __fastcall aes128cfb_decrypt(
     AesBlock128* next_init_vector)
 {
     AesBlock128 plain = _mm_xor_si128(raw_aes128_encrypt(init_vector, key_schedule), cipher);
-    _mm_storeu_si128(next_init_vector, cipher);
+    *next_init_vector = cipher;
     return plain;
 }
 
@@ -90,7 +90,7 @@ static __inline AesBlock128 __fastcall aes128ofb_encrypt(
     AesBlock128* next_init_vector)
 {
     AesBlock128 tmp = raw_aes128_encrypt(init_vector, key_schedule);
-    _mm_storeu_si128(next_init_vector, tmp);
+    *next_init_vector = tmp;
     return _mm_xor_si128(tmp, plain);
 }
 
@@ -101,7 +101,7 @@ static __inline AesBlock128 __fastcall aes128ofb_decrypt(
     AesBlock128* next_init_vector)
 {
     AesBlock128 tmp = raw_aes128_encrypt(init_vector, key_schedule);
-    _mm_storeu_si128(next_init_vector, tmp);
+    *next_init_vector = tmp;
     return _mm_xor_si128(tmp, cipher);
 }
 
@@ -164,7 +164,7 @@ static __inline AesBlock128 __fastcall aes192cbc_encrypt(
     AesBlock128* next_init_vector)
 {
     AesBlock128 cipher = raw_aes192_encrypt(_mm_xor_si128(plain, init_vector), key_schedule);
-    _mm_storeu_si128(next_init_vector, cipher);
+    *next_init_vector = cipher;
     return cipher;
 }
 
@@ -175,7 +175,7 @@ static __inline AesBlock128 __fastcall aes192cbc_decrypt(
     AesBlock128* next_init_vector)
 {
     AesBlock128 plain = _mm_xor_si128(raw_aes192_decrypt(cipher, inverted_schedule), init_vector);
-    _mm_storeu_si128(next_init_vector, cipher);
+    *next_init_vector = cipher;
     return plain;
 }
 
@@ -186,7 +186,7 @@ static __inline AesBlock128 __fastcall aes192cfb_encrypt(
     AesBlock128* next_init_vector)
 {
     AesBlock128 cipher = _mm_xor_si128(raw_aes192_encrypt(init_vector, key_schedule), plain);
-    _mm_storeu_si128(next_init_vector, cipher);
+    *next_init_vector = cipher;
     return cipher;
 }
 
@@ -197,7 +197,7 @@ static __inline AesBlock128 __fastcall aes192cfb_decrypt(
     AesBlock128* next_init_vector)
 {
     AesBlock128 plain = _mm_xor_si128(raw_aes192_encrypt(init_vector, key_schedule), cipher);
-    _mm_storeu_si128(next_init_vector, cipher);
+    *next_init_vector = cipher;
     return plain;
 }
 
@@ -208,7 +208,7 @@ static __inline AesBlock128 __fastcall aes192ofb_encrypt(
     AesBlock128* next_init_vector)
 {
     AesBlock128 tmp = raw_aes192_encrypt(init_vector, key_schedule);
-    _mm_storeu_si128(next_init_vector, tmp);
+    *next_init_vector = tmp;
     return _mm_xor_si128(tmp, plain);
 }
 
@@ -219,7 +219,7 @@ static __inline AesBlock128 __fastcall aes192ofb_decrypt(
     AesBlock128* next_init_vector)
 {
     AesBlock128 tmp = raw_aes192_encrypt(init_vector, key_schedule);
-    _mm_storeu_si128(next_init_vector, tmp);
+    *next_init_vector = tmp;
     return _mm_xor_si128(tmp, cipher);
 }
 
@@ -282,7 +282,7 @@ static __inline AesBlock128 __fastcall aes256cbc_encrypt(
     AesBlock128* next_init_vector)
 {
     AesBlock128 cipher = raw_aes256_encrypt(_mm_xor_si128(plain, init_vector), key_schedule);
-    _mm_storeu_si128(next_init_vector, cipher);
+    *next_init_vector = cipher;
     return cipher;
 }
 
@@ -293,7 +293,7 @@ static __inline AesBlock128 __fastcall aes256cbc_decrypt(
     AesBlock128* next_init_vector)
 {
     AesBlock128 plain = _mm_xor_si128(raw_aes256_decrypt(cipher, inverted_schedule), init_vector);
-    _mm_storeu_si128(next_init_vector, cipher);
+    *next_init_vector = cipher;
     return plain;
 }
 
@@ -304,7 +304,7 @@ static __inline AesBlock128 __fastcall aes256cfb_encrypt(
     AesBlock128* next_init_vector)
 {
     AesBlock128 cipher = _mm_xor_si128(raw_aes256_encrypt(init_vector, key_schedule), plain);
-    _mm_storeu_si128(next_init_vector, cipher);
+    *next_init_vector = cipher;
     return cipher;
 }
 
@@ -315,7 +315,7 @@ static __inline AesBlock128 __fastcall aes256cfb_decrypt(
     AesBlock128* next_init_vector)
 {
     AesBlock128 plain = _mm_xor_si128(raw_aes256_encrypt(init_vector, key_schedule), cipher);
-    _mm_storeu_si128(next_init_vector, cipher);
+    *next_init_vector = cipher;
     return plain;
 }
 
@@ -326,7 +326,7 @@ static __inline AesBlock128 __fastcall aes256ofb_encrypt(
     AesBlock128* next_init_vector)
 {
     AesBlock128 tmp = raw_aes256_encrypt(init_vector, key_schedule);
-    _mm_storeu_si128(next_init_vector, tmp);
+    *next_init_vector = tmp;
     return _mm_xor_si128(tmp, plain);
 }
 
@@ -337,7 +337,7 @@ static __inline AesBlock128 __fastcall aes256ofb_decrypt(
     AesBlock128* next_init_vector)
 {
     AesBlock128 tmp = raw_aes256_encrypt(init_vector, key_schedule);
-    _mm_storeu_si128(next_init_vector, tmp);
+    *next_init_vector = tmp;
     return _mm_xor_si128(tmp, cipher);
 }
 
