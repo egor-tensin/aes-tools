@@ -24,8 +24,8 @@ if __name__ == '__main__':
         key = vectors[prefix]['key']
         plaintexts = vectors[prefix]['plaintexts']
         ciphers = vectors[prefix]['ciphers']
-        success = success and tools.detect_mismatches(plaintexts, encrypt(key, plaintexts), ciphers)
-        success = success and tools.detect_mismatches(ciphers, decrypt(key, ciphers), plaintexts)
+        success = tools.detect_mismatches(plaintexts, encrypt(key, plaintexts), ciphers) and success
+        success = tools.detect_mismatches(ciphers, decrypt(key, ciphers), plaintexts) and success
     if success:
         print('No mismatches detected!')
     else:
