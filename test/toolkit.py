@@ -52,11 +52,12 @@ class Tools:
             print('\tExpected length:', len(expected_output), file=sys.stderr)
             print('\tActual length:', len(actual_output), file=sys.stderr)
             return False
+        no_mismatches = True
         for i in range(len(input)):
             if actual_output[i] != expected_output[i]:
                 print('A mismatch detected!', file=sys.stderr)
                 print('\tInput:', input[i], file=sys.stderr)
                 print('\tExpected:', expected_output[i], file=sys.stderr)
                 print('\tActual:', actual_output[i], file=sys.stderr)
-                return False
-        return True
+                no_mismatches = False
+        return no_mismatches
