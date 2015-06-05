@@ -10,45 +10,54 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-static void exit_with_usage(const char* argv0)
+static void exit_with_usage()
 {
-    printf("Usage: %s KEY INIT_VECTOR [PLAIN...]\n", argv0);
+    puts("Usage: aes256ctr_encrypt.exe KEY0 IV0 [PLAIN0...] [-- KEY1 IV1 [PLAIN1...]...]");
     exit(EXIT_FAILURE);
 }
 
 int main(int argc, char** argv)
 {
-    AesBlock128 plain, cipher, iv;
-    AesBlock256 key;
-    Aes256KeySchedule key_schedule;
-
-    if (argc < 3)
-        exit_with_usage(argv[0]);
-
-    if (parse_aes_block256(&key, argv[1]) != 0)
+    for (--argc, ++argv; argc > -1; --argc, ++argv)
     {
-        fprintf(stderr, "Invalid 256-bit AES block '%s'\n", argv[1]);
-        exit_with_usage(argv[0]);
-    }
+        AesBlock128 plain, cipher, iv;
+        AesBlock256 key;
+        Aes256KeySchedule key_schedule;
 
-    if (parse_aes_block128(&iv, argv[2]) != 0)
-    {
-        fprintf(stderr, "Invalid 128-bit AES block '%s'\n", argv[2]);
-        exit_with_usage(argv[0]);
-    }
+        if (argc < 2)
+            exit_with_usage();
 
-    aes256_expand_key_schedule(&key, &key_schedule);
-
-    for (int i = 3; i < argc; ++i)
-    {
-        if (parse_aes_block128(&plain, argv[i]) != 0)
+        if (parse_aes_block256(&key, *argv) != 0)
         {
-            fprintf(stderr, "Invalid 128-bit AES block '%s'\n", argv[i]);
-            continue;
+            fprintf(stderr, "Invalid 256-bit AES block '%s'\n", *argv);
+            exit_with_usage();
         }
-        cipher = aes256ctr_encrypt(plain, &key_schedule, iv, i - 3);
-        print_aes_block128(&cipher);
+
+        if (parse_aes_block128(&iv, argv[1]) != 0)
+        {
+            fprintf(stderr, "Invalid 128-bit AES block '%s'\n", argv[1]);
+            exit_with_usage();
+        }
+
+        aes256_expand_key_schedule(&key, &key_schedule);
+
+        int ctr = 0;
+
+        for (argc -= 2, argv += 2; argc > 0; --argc, ++argv)
+        {
+            if (strcmp("--", *argv) == 0)
+                break;
+
+            if (parse_aes_block128(&plain, *argv) != 0)
+            {
+                fprintf(stderr, "Invalid 128-bit AES block '%s'\n", *argv);
+                continue;
+            }
+            cipher = aes256ctr_encrypt(plain, &key_schedule, iv, ctr++);
+            print_aes_block128(&cipher);
+        }
     }
 
     return 0;

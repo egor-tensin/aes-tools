@@ -10,39 +10,46 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-static void exit_with_usage(const char* argv0)
+static void exit_with_usage()
 {
-    printf("Usage: %s KEY [PLAIN...]\n", argv0);
+    puts("Usage: aes192ecb_encrypt.exe KEY0 [PLAIN0...] [-- KEY1 [PLAIN1...]...]");
     exit(EXIT_FAILURE);
 }
 
 int main(int argc, char** argv)
 {
-    AesBlock128 plain, cipher;
-    AesBlock192 key;
-    Aes192KeySchedule key_schedule;
-
-    if (argc < 2)
-        exit_with_usage(argv[0]);
-
-    if (parse_aes_block192(&key, argv[1]) != 0)
+    for (--argc, ++argv; argc > -1; --argc, ++argv)
     {
-        fprintf(stderr, "Invalid 192-bit AES block '%s'\n", argv[1]);
-        exit_with_usage(argv[0]);
-    }
+        AesBlock128 plain, cipher;
+        AesBlock192 key;
+        Aes192KeySchedule key_schedule;
 
-    aes192_expand_key_schedule(&key, &key_schedule);
+        if (argc < 1)
+            exit_with_usage();
 
-    for (int i = 2; i < argc; ++i)
-    {
-        if (parse_aes_block128(&plain, argv[i]) != 0)
+        if (parse_aes_block192(&key, *argv) != 0)
         {
-            fprintf(stderr, "Invalid 128-bit AES block '%s'\n", argv[i]);
-            continue;
+            fprintf(stderr, "Invalid 192-bit AES block '%s'\n", *argv);
+            exit_with_usage();
         }
-        cipher = aes192ecb_encrypt(plain, &key_schedule);
-        print_aes_block128(&cipher);
+
+        aes192_expand_key_schedule(&key, &key_schedule);
+
+        for (--argc, ++argv; argc > 0; --argc, ++argv)
+        {
+            if (strcmp("--", *argv) == 0)
+                break;
+
+            if (parse_aes_block128(&plain, *argv) != 0)
+            {
+                fprintf(stderr, "Invalid 128-bit AES block '%s'\n", *argv);
+                continue;
+            }
+            cipher = aes192ecb_encrypt(plain, &key_schedule);
+            print_aes_block128(&cipher);
+        }
     }
 
     return 0;
