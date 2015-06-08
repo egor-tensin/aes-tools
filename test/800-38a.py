@@ -100,6 +100,10 @@ class TestAlgorithm(unittest.TestCase):
         self._mode = mode
 
     def test_encrypt(self):
+        logging.info('Testing encryption...')
+        logging.info('\tAlgorithm: ' + self._algo)
+        logging.info('\tMode: ' + self._mode)
+
         key = _keys[self._algo]
         iv = None
         if self._algo in _init_vectors and self._mode in _init_vectors[self._algo]:
@@ -109,6 +113,10 @@ class TestAlgorithm(unittest.TestCase):
         self.assertEqual(ciphertexts, self._tools.run_encrypt_tool(self._algo, self._mode, input))
 
     def test_decrypt(self):
+        logging.info('Testing decryption...')
+        logging.info('\tAlgorithm: ' + self._algo)
+        logging.info('\tMode: ' + self._mode)
+
         key = _keys[self._algo]
         iv = None
         if self._algo in _init_vectors and self._mode in _init_vectors[self._algo]:
@@ -133,7 +141,7 @@ if __name__ == '__main__':
     if args.log is None:
         logging.getLogger().addHandler(logging.NullHandler())
     else:
-        logging.basicConfig(filename=args.log, format='%(asctime)s | %(module)s | %(message)s', level=logging.INFO)
+        logging.basicConfig(filename=args.log, format='%(asctime)s | %(module)s | %(message)s', level=logging.DEBUG)
 
     suite = unittest.TestSuite()
     for algo in _ciphertexts:
