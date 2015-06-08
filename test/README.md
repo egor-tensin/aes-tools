@@ -55,5 +55,6 @@ using
 
     python 800-32a.py -r C:\build\test\Debug -e
 
-I've tried to make the script output self-explanatory.
-The ultimate goal is to get `No mismatches detected!` in the final line.
+You can investigate what went wrong (if it did) by logging calls to the `*_encrypt.exe` and `*_decrypt.exe` utilities by passing the `--log/-l FILENAME` option to the script.
+
+The tests are really Python's `unittest` `TestCase`s, so the output of the script should be self-explanatory and familiary to users with prior Python testing experience.
