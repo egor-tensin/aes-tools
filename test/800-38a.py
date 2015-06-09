@@ -87,56 +87,69 @@ _ciphertexts = {toolkit.AES128: {toolkit.ECB: ['3ad77bb40d7a3660a89ecaf32466ef97
                                                '2b0930daa23de94ce87017ba2d84988d',
                                                'dfc9c58db67aada613c2dd08457941a6']}}
 
-def _parametrize(cls, tools, algo, mode):
-    testloader = unittest.TestLoader()
-    testnames = testloader.getTestCaseNames(cls)
-    suite = unittest.TestSuite()
-    for name in testnames:
-        suite.addTest(cls(name, tools, algo, mode))
-    return suite
+def _assert_output(actual, expected):
+    if len(actual) != len(expected):
+        logging.error('Unexpected output length {0} (expected {1})'.format(len(actual), len(expected)))
+        return False
+    if actual != expected:
+        logging.error('Expected output:\n' + '\n'.join(expected))
+        return False
+    return True
 
-class TestAlgorithm(unittest.TestCase):
-    def __init__(self, methodName='runTest', tools=None, algo=None, mode=None):
-        super(TestAlgorithm, self).__init__(methodName)
-        self._tools = tools
-        self._algo = algo
-        self._mode = mode
+class _TestExitCode:
+    SUCCESS, FAILURE, ERROR = range(3)
 
-    def test_encrypt(self):
-        logging.info('Testing encryption...')
-        logging.info('\tAlgorithm: ' + self._algo)
-        logging.info('\tMode: ' + self._mode)
+def run_encryption_tests(tools, algo, mode):
+    logging.info('Running encryption tests...')
+    logging.info('\tAlgorithm: ' + algo)
+    logging.info('\tMode: ' + mode)
 
-        key = _keys[self._algo]
-        iv = None
-        if self._algo in _init_vectors and self._mode in _init_vectors[self._algo]:
-            iv = _init_vectors[self._algo][self._mode]
-        ciphertexts = _ciphertexts[self._algo][self._mode]
-        input = toolkit.EncryptionInput(key, _plaintexts, iv=iv)
-        self.assertEqual(ciphertexts, self._tools.run_encrypt_tool(self._algo, self._mode, input))
+    key = _keys[algo]
+    iv = None
+    if algo in _init_vectors and mode in _init_vectors[algo]:
+        iv = _init_vectors[algo][mode]
+    ciphertexts = _ciphertexts[algo][mode]
+    _input = toolkit.EncryptionInput(key, _plaintexts, iv=iv)
+    try:
+        actual_output = tools.run_encrypt_tool(algo, mode, _input)
+        if not _assert_output(actual_output, ciphertexts):
+            return _TestExitCode.FAILURE
+        return _TestExitCode.SUCCESS
+    except toolkit.ToolkitError as e:
+        logging.error('Encountered an exception!')
+        logging.exception(e)
+        return _TestExitCode.ERROR
 
-    def test_decrypt(self):
-        logging.info('Testing decryption...')
-        logging.info('\tAlgorithm: ' + self._algo)
-        logging.info('\tMode: ' + self._mode)
+def run_decryption_tests(tools, algo, mode):
+    logging.info('Running decryption tests...')
+    logging.info('\tAlgorithm: ' + algo)
+    logging.info('\tMode: ' + mode)
 
-        key = _keys[self._algo]
-        iv = None
-        if self._algo in _init_vectors and self._mode in _init_vectors[self._algo]:
-            iv = _init_vectors[self._algo][self._mode]
-        ciphertexts = _ciphertexts[self._algo][self._mode]
-        input = toolkit.DecryptionInput(key, ciphertexts, iv=iv)
-        self.assertEqual(_plaintexts, self._tools.run_decrypt_tool(self._algo, self._mode, input))
+    key = _keys[algo]
+    iv = None
+    if algo in _init_vectors and mode in _init_vectors[algo]:
+        iv = _init_vectors[algo][mode]
+    ciphertexts = _ciphertexts[algo][mode]
+    _input = toolkit.DecryptionInput(key, ciphertexts, iv=iv)
+    try:
+        actual_output = tools.run_decrypt_tool(algo, mode, _input)
+        if not _assert_output(actual_output, _plaintexts):
+            return _TestExitCode.FAILURE
+        return _TestExitCode.SUCCESS
+    except toolkit.ToolkitError as e:
+        logging.error('Encountered an exception!')
+        logging.exception(e)
+        return _TestExitCode.ERROR
 
 if __name__ == '__main__':
     import argparse
-    parser = argparse.ArgumentParser(add_help=False)
+    parser = argparse.ArgumentParser()
     parser.add_argument('--root', '-r', required=True,
                         help='set path to *.exe files')
     parser.add_argument('--sde', '-e', action='store_true',
                         help='use Intel SDE to run *.exe files')
     parser.add_argument('--log', '-l', help='set log file path')
-    args, _ = parser.parse_known_args()
+    args = parser.parse_args()
 
     tools = toolkit.Tools(args.root, args.sde)
 
@@ -148,8 +161,12 @@ if __name__ == '__main__':
         logging_options['filename'] = args.log
     logging.basicConfig(**logging_options)
 
-    suite = unittest.TestSuite()
+    exit_codes = []
     for algo in _ciphertexts:
         for mode in _ciphertexts[algo]:
-            suite.addTest(_parametrize(TestAlgorithm, tools, algo, mode))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+            exit_codes.append(run_encryption_tests(tools, algo, mode))
+            exit_codes.append(run_decryption_tests(tools, algo, mode))
+    logging.info('Test exit codes:')
+    logging.info('\tError(s):  {0}'.format(exit_codes.count(_TestExitCode.ERROR)))
+    logging.info('\tSucceeded: {0}'.format(exit_codes.count(_TestExitCode.SUCCESS)))
+    logging.info('\tFailed:    {0}'.format(exit_codes.count(_TestExitCode.FAILURE)))

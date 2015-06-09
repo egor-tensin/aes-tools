@@ -55,6 +55,4 @@ using
 
     python 800-32a.py -r C:\build\test\Debug -e
 
-You can investigate what went wrong (if it did) by logging calls to the `*_encrypt.exe` and `*_decrypt.exe` utilities by passing the `--log/-l FILENAME` option to the script.
-
-The tests are really Python's `unittest` `TestCase`s, so the output of the script should be self-explanatory and familiary to users with prior Python testing experience.
+The script writes a log file, with a short summary at the end.
