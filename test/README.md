@@ -56,3 +56,22 @@ using
     python 800-32a.py -r C:\build\test\Debug -e
 
 The script writes a log file, with a short summary at the end.
+
+### From Cryptographic Algorithm Validation Program
+
+You can test the implementation against the vectors from
+[CAVP](http://csrc.nist.gov/groups/STM/cavp/) using `cavp.py`.
+The AES Known Answer Test (KAT) Vectors are used and included in `KAT_AES.zip`.
+
+The script is written in Python 3, so you need to be able to run Python 3 scripts prior to testing.
+Then you can run the script, passing the path to the directory with the required `*_encrypt.exe` and `*_decrypt.exe` files like this:
+
+    python cavp.py -r C:\build\test\Debug
+
+On older CPUs, you can make the script run the executables
+[using Intel SDE](https://github.com/egor-tensin/aesni#running-on-older-cpus)
+using
+
+    python cavp.py -r C:\build\test\Debug -e
+
+The script writes a log file, with a short summary at the end.
