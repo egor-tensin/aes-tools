@@ -2,7 +2,10 @@
 # This file is licensed under the terms of the MIT License.
 # See LICENSE.txt for details.
 
-import toolkit, unittest
+from datetime import datetime
+import logging
+import toolkit
+import unittest
 
 _plaintexts = ['6bc1bee22e409f96e93d7e117393172a',
                'ae2d8a571e03ac9c9eb76fac45af8e51',
@@ -137,11 +140,13 @@ if __name__ == '__main__':
 
     tools = toolkit.Tools(args.root, args.sde)
 
-    import logging, logging.handlers
+    logging_options = {'format': '%(asctime)s | %(module)s | %(levelname)s | %(message)s',
+                       'level': logging.DEBUG}
     if args.log is None:
-        logging.getLogger().addHandler(logging.NullHandler())
+        logging_options['filename'] = datetime.now().strftime('800-38a_%Y-%m-%d_%H-%M-%S.log')
     else:
-        logging.basicConfig(filename=args.log, format='%(asctime)s | %(module)s | %(message)s', level=logging.DEBUG)
+        logging_options['filename'] = args.log
+    logging.basicConfig(**logging_options)
 
     suite = unittest.TestSuite()
     for algo in _ciphertexts:
