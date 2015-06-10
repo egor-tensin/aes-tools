@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "api.h"
+#include "block.h"
+#include "buffer.h"
 #include "data.h"
-#include "file.h"
 #include "raw.h"
