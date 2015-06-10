@@ -10,4 +10,5 @@
 
 #include "api.h"
 #include "data.h"
+#include "file.h"
 #include "raw.h"

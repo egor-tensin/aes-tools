@@ -13,6 +13,17 @@
 
 typedef __m128i AesBlock128;
 
+static __inline AesBlock128 load_aes_block128(const unsigned char* src)
+{
+    return _mm_loadu_si128((AesBlock128*) src);
+}
+
+static __inline void __fastcall store_aes_block128(AesBlock128 block,
+                                                   unsigned char* dest)
+{
+    _mm_storeu_si128((AesBlock128*) dest, block);
+}
+
 static __inline AesBlock128 __fastcall make_aes_block128(int hi3, int hi2, int lo1, int lo0)
 {
     return _mm_set_epi32(hi3, hi2, lo1, lo0);

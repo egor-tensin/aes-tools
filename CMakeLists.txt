@@ -1,9 +1,9 @@
-project(libaesni C ASM_MASM)
+project(libaesni C CXX ASM_MASM)
 file(GLOB_RECURSE ${PROJECT_NAME}_headers "include/*.h")
 if(AESNI_USE_ASM)
-    file(GLOB ${PROJECT_NAME}_sources src/aes128.asm src/aes192.asm src/aes256.asm src/common.c)
+    file(GLOB ${PROJECT_NAME}_sources src/aes128.asm src/aes192.asm src/aes256.asm src/common.c src/file.c)
 else()
-    file(GLOB ${PROJECT_NAME}_sources src/aes128.c src/aes192.c src/aes256.c src/common.c)
+    file(GLOB ${PROJECT_NAME}_sources src/aes128.c src/aes192.c src/aes256.c src/common.c src/file.c)
 endif()
 add_library(${PROJECT_NAME} ${${PROJECT_NAME}_headers}
                             ${${PROJECT_NAME}_sources})
@@ -12,3 +12,4 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _CRT_SECURE_NO_WARNINGS)
 
 add_subdirectory(examples)
 add_subdirectory(test)
+add_subdirectory(utils)
