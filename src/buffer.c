@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+static unsigned char FULL_BLOCK_PADDING[16] = { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 };
+
 size_t aes128ecb_encrypt_buffer(
     const unsigned char* src,
     size_t src_size,
@@ -33,9 +35,13 @@ size_t aes128ecb_encrypt_buffer(
         store_aes_block128(ciphertext, dest);
     }
 
-    unsigned char padding[16] = { 0x10 };
+    unsigned char padding[16];
 
-    if (rem_size != 0)
+    if (rem_size == 0)
+    {
+        memcpy(padding, FULL_BLOCK_PADDING, 16);
+    }
+    else
     {
         memcpy(padding, src, rem_size);
         memset(padding + rem_size, padding_size, padding_size);
@@ -46,6 +52,18 @@ size_t aes128ecb_encrypt_buffer(
     store_aes_block128(ciphertext, dest);
 
     return dest_size;
+}
+
+static unsigned char get_padding_size(const unsigned char* padding)
+{
+    if (padding[15] < 0x01 || padding[15] > 0x10)
+        return 0;
+
+    for (int i = 16 - padding[15]; i < 15; ++i)
+        if (padding[i] != padding[15])
+            return 0;
+
+    return padding[15];
 }
 
 size_t aes128ecb_decrypt_buffer(
@@ -73,9 +91,15 @@ size_t aes128ecb_decrypt_buffer(
     unsigned char padding[16];
     store_aes_block128(plaintext, padding);
 
-    if (padding[0] == 0x10)
-        return dest_size - 16;
+    unsigned char padding_size = get_padding_size(padding);
 
-    memcpy(dest, padding, 16 - padding[15]);
-    return dest_size - padding[15];
+    if (padding_size == 0)
+    {
+        return dest_size - 16;
+    }
+    else
+    {
+        memcpy(dest, padding, 16 - padding_size);
+        return dest_size - padding_size;
+    }
 }
