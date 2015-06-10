@@ -12,48 +12,48 @@
 
 int main()
 {
-    AesBlock128 plain, key, cipher, decrypted, iv, next_iv;
-    Aes128KeySchedule key_schedule;
+    AesNI_Block128 plain, key, cipher, decrypted, iv, next_iv;
+    AesNI_KeySchedule128 key_schedule;
 
-    plain = make_aes_block128(0xffeeddcc, 0xbbaa9988, 0x77665544, 0x33221100);
-    key = make_aes_block128(0x0f0e0d0c, 0x0b0a0908, 0x07060504, 0x03020100);
-    iv = make_aes_block128(0xfedcba98, 0x76543210, 0xfedcba98, 0x76543210);
+    plain = aesni_make_block128(0xffeeddcc, 0xbbaa9988, 0x77665544, 0x33221100);
+    key = aesni_make_block128(0x0f0e0d0c, 0x0b0a0908, 0x07060504, 0x03020100);
+    iv = aesni_make_block128(0xfedcba98, 0x76543210, 0xfedcba98, 0x76543210);
 
-    printf("Plain: %s\n", format_aes_block128(&plain).str);
-    print_aes_block128_as_matrix(&plain);
-
-    printf("\n");
-    printf("Key: %s\n", format_aes_block128(&key).str);
-    print_aes_block128_as_matrix(&key);
+    printf("Plain: %s\n", aesni_format_block128(&plain).str);
+    aesni_print_block128_as_matrix(&plain);
 
     printf("\n");
-    printf("Initialization vector: %s\n", format_aes_block128(&iv).str);
-    print_aes_block128_as_matrix(&iv);
+    printf("Key: %s\n", aesni_format_block128(&key).str);
+    aesni_print_block128_as_matrix(&key);
 
-    aes128_expand_key_schedule(key, &key_schedule);
+    printf("\n");
+    printf("Initialization vector: %s\n", aesni_format_block128(&iv).str);
+    aesni_print_block128_as_matrix(&iv);
+
+    aesni_expand_key_schedule128(key, &key_schedule);
 
     printf("\n");
     printf("Key schedule:\n");
     for (int i = 0; i < 11; ++i)
-        printf("\t[%d]: %s\n", i, format_aes_block128(&key_schedule.keys[i]).str);
+        printf("\t[%d]: %s\n", i, aesni_format_block128(&key_schedule.keys[i]).str);
 
-    cipher = aes128cfb_encrypt_block(plain, &key_schedule, iv, &next_iv);
+    cipher = aesni_encrypt_block_cfb128(plain, &key_schedule, iv, &next_iv);
     printf("\n");
-    printf("Cipher: %s\n", format_aes_block128(&cipher).str);
-    print_aes_block128_as_matrix(&cipher);
-
-    printf("\n");
-    printf("Next initialization vector: %s\n", format_aes_block128(&next_iv).str);
-    print_aes_block128_as_matrix(&next_iv);
-
-    decrypted = aes128cfb_decrypt_block(cipher, &key_schedule, iv, &next_iv);
-    printf("\n");
-    printf("Decrypted: %s\n", format_aes_block128(&decrypted).str);
-    print_aes_block128_as_matrix(&decrypted);
+    printf("Cipher: %s\n", aesni_format_block128(&cipher).str);
+    aesni_print_block128_as_matrix(&cipher);
 
     printf("\n");
-    printf("Next initialization vector: %s\n", format_aes_block128(&next_iv).str);
-    print_aes_block128_as_matrix(&next_iv);
+    printf("Next initialization vector: %s\n", aesni_format_block128(&next_iv).str);
+    aesni_print_block128_as_matrix(&next_iv);
+
+    decrypted = aesni_decrypt_block_cfb128(cipher, &key_schedule, iv, &next_iv);
+    printf("\n");
+    printf("Decrypted: %s\n", aesni_format_block128(&decrypted).str);
+    aesni_print_block128_as_matrix(&decrypted);
+
+    printf("\n");
+    printf("Next initialization vector: %s\n", aesni_format_block128(&next_iv).str);
+    aesni_print_block128_as_matrix(&next_iv);
 
     return 0;
 }

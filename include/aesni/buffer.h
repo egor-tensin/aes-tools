@@ -8,23 +8,23 @@
 
 #pragma once
 
-#include <stdio.h>
+#include <stdlib.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-size_t aes128ecb_encrypt_buffer(
-    const unsigned char* src,
+size_t aesni_encrypt_buffer_ecb128(
+    const void* src,
     size_t src_size,
-    unsigned char* dest,
-    Aes128KeySchedule* key_schedule);
-size_t aes128ecb_decrypt_buffer(
-    const unsigned char* src,
+    void* dest,
+    AesNI_KeySchedule128* key_schedule);
+size_t aesni_decrypt_buffer_ecb128(
+    const void* src,
     size_t src_size,
-    unsigned char* dest,
-    Aes128KeySchedule* inverted_schedule);
+    void* dest,
+    AesNI_KeySchedule128* inverted_schedule);
 
 #ifdef __cplusplus
 }

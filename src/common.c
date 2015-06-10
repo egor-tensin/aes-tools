@@ -13,36 +13,36 @@
 #include <stdio.h>
 #include <string.h>
 
-AesBlockString128 format_aes_block128(AesBlock128* block)
+AesNI_BlockString128 aesni_format_block128(AesNI_Block128* block)
 {
 #if defined AESNI_LE_BLOCK_IO && AESNI_LE_BLOCK_IO
-    return format_aes_block128_le(block);
+    return aesni_format_block128_le(block);
 #else
-    return format_aes_block128_be(block);
+    return aesni_format_block128_be(block);
 #endif
 }
 
-AesBlockString192 format_aes_block192(AesBlock192* block)
+AesNI_BlockString192 aesni_format_block192(AesNI_Block192* block)
 {
 #if defined AESNI_LE_BLOCK_IO && AESNI_LE_BLOCK_IO
-    return format_aes_block192_le(block);
+    return aesni_format_block192_le(block);
 #else
-    return format_aes_block192_be(block);
+    return aesni_format_block192_be(block);
 #endif
 }
 
-AesBlockString256 format_aes_block256(AesBlock256* block)
+AesNI_BlockString256 aesni_format_block256(AesNI_Block256* block)
 {
 #if defined AESNI_LE_BLOCK_IO && AESNI_LE_BLOCK_IO
-    return format_aes_block256_le(block);
+    return aesni_format_block256_le(block);
 #else
-    return format_aes_block256_be(block);
+    return aesni_format_block256_be(block);
 #endif
 }
 
-AesBlockString128 format_aes_block128_le(AesBlock128* block)
+AesNI_BlockString128 aesni_format_block128_le(AesNI_Block128* block)
 {
-    AesBlockString128 result;
+    AesNI_BlockString128 result;
     char *cursor = result.str;
 
     for (int i = 0; i < 16; ++i, cursor += 2)
@@ -52,9 +52,9 @@ AesBlockString128 format_aes_block128_le(AesBlock128* block)
     return result;
 }
 
-AesBlockString192 format_aes_block192_le(AesBlock192* block)
+AesNI_BlockString192 aesni_format_block192_le(AesNI_Block192* block)
 {
-    AesBlockString192 result;
+    AesNI_BlockString192 result;
     char *cursor = result.str;
 
     for (int i = 0; i < 8; ++i, cursor += 2)
@@ -66,9 +66,9 @@ AesBlockString192 format_aes_block192_le(AesBlock192* block)
     return result;
 }
 
-AesBlockString256 format_aes_block256_le(AesBlock256* block)
+AesNI_BlockString256 aesni_format_block256_le(AesNI_Block256* block)
 {
-    AesBlockString256 result;
+    AesNI_BlockString256 result;
     char *cursor = result.str;
 
     for (int i = 0; i < 16; ++i, cursor += 2)
@@ -80,9 +80,9 @@ AesBlockString256 format_aes_block256_le(AesBlock256* block)
     return result;
 }
 
-AesBlockString128 format_aes_block128_be(AesBlock128* block)
+AesNI_BlockString128 aesni_format_block128_be(AesNI_Block128* block)
 {
-    AesBlockString128 result;
+    AesNI_BlockString128 result;
     char *cursor = result.str;
 
     for (int i = 0; i < 16; ++i, cursor += 2)
@@ -92,9 +92,9 @@ AesBlockString128 format_aes_block128_be(AesBlock128* block)
     return result;
 }
 
-AesBlockString192 format_aes_block192_be(AesBlock192* block)
+AesNI_BlockString192 aesni_format_block192_be(AesNI_Block192* block)
 {
-    AesBlockString192 result;
+    AesNI_BlockString192 result;
     char *cursor = result.str;
 
     for (int i = 0; i < 16; ++i, cursor += 2)
@@ -106,9 +106,9 @@ AesBlockString192 format_aes_block192_be(AesBlock192* block)
     return result;
 }
 
-AesBlockString256 format_aes_block256_be(AesBlock256* block)
+AesNI_BlockString256 aesni_format_block256_be(AesNI_Block256* block)
 {
-    AesBlockString256 result;
+    AesNI_BlockString256 result;
     char *cursor = result.str;
 
     for (int i = 0; i < 16; ++i, cursor += 2)
@@ -120,28 +120,28 @@ AesBlockString256 format_aes_block256_be(AesBlock256* block)
     return result;
 }
 
-AesBlockMatrixString128 format_aes_block128_as_matrix(AesBlock128* block)
+AesNI_BlockMatrixString128 aesni_format_block128_as_matrix(AesNI_Block128* block)
 {
-    return format_aes_block128_be_as_matrix(block);
+    return aesni_format_block128_be_as_matrix(block);
 }
 
-AesBlockMatrixString192 format_aes_block192_as_matrix(AesBlock192* block)
+AesNI_BlockMatrixString192 aesni_format_block192_as_matrix(AesNI_Block192* block)
 {
-    return format_aes_block192_be_as_matrix(block);
+    return aesni_format_block192_be_as_matrix(block);
 }
 
-AesBlockMatrixString256 format_aes_block256_as_matrix(AesBlock256* block)
+AesNI_BlockMatrixString256 aesni_format_block256_as_matrix(AesNI_Block256* block)
 {
-    return format_aes_block256_be_as_matrix(block);
+    return aesni_format_block256_be_as_matrix(block);
 }
 
-AesBlockMatrixString128 format_aes_block128_be_as_matrix(AesBlock128* block)
+AesNI_BlockMatrixString128 aesni_format_block128_be_as_matrix(AesNI_Block128* block)
 {
     __declspec(align(16)) unsigned char bytes[4][4];
-    AesBlockMatrixString128 result;
+    AesNI_BlockMatrixString128 result;
     char* cursor = result.str;
 
-    _mm_store_si128((AesBlock128*) bytes, *block);
+    _mm_store_si128((AesNI_Block128*) bytes, *block);
 
     for (int i = 0; i < 4; ++i, cursor += 3)
     {
@@ -154,14 +154,14 @@ AesBlockMatrixString128 format_aes_block128_be_as_matrix(AesBlock128* block)
     return result;
 }
 
-AesBlockMatrixString192 format_aes_block192_be_as_matrix(AesBlock192* block)
+AesNI_BlockMatrixString192 aesni_format_block192_be_as_matrix(AesNI_Block192* block)
 {
     __declspec(align(16)) unsigned char bytes[8][4];
-    AesBlockMatrixString192 result;
+    AesNI_BlockMatrixString192 result;
     char* cursor = result.str;
 
-    _mm_store_si128((AesBlock128*) bytes, block->lo);
-    _mm_store_si128((AesBlock128*) bytes + 1, block->hi);
+    _mm_store_si128((AesNI_Block128*) bytes, block->lo);
+    _mm_store_si128((AesNI_Block128*) bytes + 1, block->hi);
 
     for (int i = 0; i < 4; ++i, cursor += 3)
     {
@@ -174,14 +174,14 @@ AesBlockMatrixString192 format_aes_block192_be_as_matrix(AesBlock192* block)
     return result;
 }
 
-AesBlockMatrixString256 format_aes_block256_be_as_matrix(AesBlock256* block)
+AesNI_BlockMatrixString256 aesni_format_block256_be_as_matrix(AesNI_Block256* block)
 {
     __declspec(align(16)) unsigned char bytes[8][4];
-    AesBlockMatrixString256 result;
+    AesNI_BlockMatrixString256 result;
     char* cursor = result.str;
 
-    _mm_store_si128((AesBlock128*) bytes, block->lo);
-    _mm_store_si128((AesBlock128*) bytes + 1, block->hi);
+    _mm_store_si128((AesNI_Block128*) bytes, block->lo);
+    _mm_store_si128((AesNI_Block128*) bytes + 1, block->hi);
 
     for (int i = 0; i < 4; ++i, cursor += 3)
     {
@@ -194,139 +194,139 @@ AesBlockMatrixString256 format_aes_block256_be_as_matrix(AesBlock256* block)
     return result;
 }
 
-void print_aes_block128(AesBlock128* block)
+void aesni_print_block128(AesNI_Block128* block)
 {
-    printf("%s\n", format_aes_block128(block).str);
+    printf("%s\n", aesni_format_block128(block).str);
 }
 
-void print_aes_block192(AesBlock192* block)
+void aesni_print_block192(AesNI_Block192* block)
 {
-    printf("%s\n", format_aes_block192(block).str);
+    printf("%s\n", aesni_format_block192(block).str);
 }
 
-void print_aes_block256(AesBlock256* block)
+void aesni_print_block256(AesNI_Block256* block)
 {
-    printf("%s\n", format_aes_block256(block).str);
+    printf("%s\n", aesni_format_block256(block).str);
 }
 
-void print_aes_block128_le(AesBlock128* block)
+void aesni_print_block128_le(AesNI_Block128* block)
 {
-    printf("%s\n", format_aes_block128_le(block).str);
+    printf("%s\n", aesni_format_block128_le(block).str);
 }
 
-void print_aes_block192_le(AesBlock192* block)
+void aesni_print_block192_le(AesNI_Block192* block)
 {
-    printf("%s\n", format_aes_block192_le(block).str);
+    printf("%s\n", aesni_format_block192_le(block).str);
 }
 
-void print_aes_block256_le(AesBlock256* block)
+void aesni_print_block256_le(AesNI_Block256* block)
 {
-    printf("%s\n", format_aes_block256_le(block).str);
+    printf("%s\n", aesni_format_block256_le(block).str);
 }
 
-void print_aes_block128_be(AesBlock128* block)
+void aesni_print_block128_be(AesNI_Block128* block)
 {
-    printf("%s\n", format_aes_block128_be(block).str);
+    printf("%s\n", aesni_format_block128_be(block).str);
 }
 
-void print_aes_block192_be(AesBlock192* block)
+void aesni_print_block192_be(AesNI_Block192* block)
 {
-    printf("%s\n", format_aes_block192_be(block).str);
+    printf("%s\n", aesni_format_block192_be(block).str);
 }
 
-void print_aes_block256_be(AesBlock256* block)
+void aesni_print_block256_be(AesNI_Block256* block)
 {
-    printf("%s\n", format_aes_block256_be(block).str);
+    printf("%s\n", aesni_format_block256_be(block).str);
 }
 
-void print_aes_block128_as_matrix(AesBlock128* block)
+void aesni_print_block128_as_matrix(AesNI_Block128* block)
 {
-    printf("%s", format_aes_block128_as_matrix(block).str);
+    printf("%s", aesni_format_block128_as_matrix(block).str);
 }
 
-void print_aes_block192_as_matrix(AesBlock192* block)
+void aesni_print_block192_as_matrix(AesNI_Block192* block)
 {
-    printf("%s", format_aes_block192_as_matrix(block).str);
+    printf("%s", aesni_format_block192_as_matrix(block).str);
 }
 
-void print_aes_block256_as_matrix(AesBlock256* block)
+void aesni_print_block256_as_matrix(AesNI_Block256* block)
 {
-    printf("%s", format_aes_block256_as_matrix(block).str);
+    printf("%s", aesni_format_block256_as_matrix(block).str);
 }
 
-void print_aes_block128_be_as_matrix(AesBlock128* block)
+void aesni_print_block128_be_as_matrix(AesNI_Block128* block)
 {
-    printf("%s", format_aes_block128_be_as_matrix(block).str);
+    printf("%s", aesni_format_block128_be_as_matrix(block).str);
 }
 
-void print_aes_block192_be_as_matrix(AesBlock192* block)
+void aesni_print_block192_be_as_matrix(AesNI_Block192* block)
 {
-    printf("%s", format_aes_block192_be_as_matrix(block).str);
+    printf("%s", aesni_format_block192_be_as_matrix(block).str);
 }
 
-void print_aes_block256_be_as_matrix(AesBlock256* block)
+void aesni_print_block256_be_as_matrix(AesNI_Block256* block)
 {
-    printf("%s", format_aes_block256_be_as_matrix(block).str);
+    printf("%s", aesni_format_block256_be_as_matrix(block).str);
 }
 
-int parse_aes_block128(AesBlock128* block, const char* src)
+int aesni_parse_block128(AesNI_Block128* block, const char* src)
 {
 #if defined AESNI_LE_BLOCK_IO && AESNI_LE_BLOCK_IO
-    return parse_aes_block128_le(block, src);
+    return aesni_parse_block128_le(block, src);
 #else
-    return parse_aes_block128_be(block, src);
+    return aesni_parse_block128_be(block, src);
 #endif
 }
 
-int parse_aes_block192(AesBlock192* block, const char* src)
+int aesni_parse_block192(AesNI_Block192* block, const char* src)
 {
 #if defined AESNI_LE_BLOCK_IO && AESNI_LE_BLOCK_IO
-    return parse_aes_block192_le(block, src);
+    return aesni_parse_block192_le(block, src);
 #else
-    return parse_aes_block192_be(block, src);
+    return aesni_parse_block192_be(block, src);
 #endif
 }
 
-int parse_aes_block256(AesBlock256* block, const char* src)
+int aesni_parse_block256(AesNI_Block256* block, const char* src)
 {
 #if defined AESNI_LE_BLOCK_IO && AESNI_LE_BLOCK_IO
-    return parse_aes_block256_le(block, src);
+    return aesni_parse_block256_le(block, src);
 #else
-    return parse_aes_block256_be(block, src);
+    return aesni_parse_block256_be(block, src);
 #endif
 }
 
-int parse_aes_block128_le(AesBlock128* block, const char* src)
+int aesni_parse_block128_le(AesNI_Block128* block, const char* src)
 {
     int n, xs[4];
     if (sscanf(src, "%8x%8x%8x%8x%n", &xs[0], &xs[1], &xs[2], &xs[3], &n) != 4
         || n != strlen(src))
         return 1;
-    *block = make_aes_block128(xs[0], xs[1], xs[2], xs[3]);
+    *block = aesni_make_block128(xs[0], xs[1], xs[2], xs[3]);
     return 0;
 }
 
-int parse_aes_block192_le(AesBlock192* block, const char* src)
+int aesni_parse_block192_le(AesNI_Block192* block, const char* src)
 {
     int n, xs[6];
     if (sscanf(src, "%8x%8x%8x%8x%8x%8x%n", &xs[0], &xs[1], &xs[2], &xs[3], &xs[4], &xs[5], &n) != 6
         || n != strlen(src))
         return 1;
-    *block = make_aes_block192(xs[0], xs[1], xs[2], xs[3], xs[4], xs[5]);
+    *block = aesni_make_block192(xs[0], xs[1], xs[2], xs[3], xs[4], xs[5]);
     return 0;
 }
 
-int parse_aes_block256_le(AesBlock256* block, const char* src)
+int aesni_parse_block256_le(AesNI_Block256* block, const char* src)
 {
     int n, xs[8];
     if (sscanf(src, "%8x%8x%8x%8x%8x%8x%8x%8x%n", &xs[0], &xs[1], &xs[2], &xs[3], &xs[4], &xs[5], &xs[6], &xs[7], &n) != 8
         || n != strlen(src))
         return 1;
-    *block = make_aes_block256(xs[0], xs[1], xs[2], xs[3], xs[4], xs[5], xs[6], xs[7]);
+    *block = aesni_make_block256(xs[0], xs[1], xs[2], xs[3], xs[4], xs[5], xs[6], xs[7]);
     return 0;
 }
 
-int parse_aes_block128_be(AesBlock128* block, const char* src)
+int aesni_parse_block128_be(AesNI_Block128* block, const char* src)
 {
     unsigned char bytes[16];
 
@@ -340,13 +340,13 @@ int parse_aes_block128_be(AesBlock128* block, const char* src)
         src += n;
     }
 
-    *block = _mm_loadu_si128((AesBlock128*) bytes);
+    *block = _mm_loadu_si128((AesNI_Block128*) bytes);
     return 0;
 }
 
-int parse_aes_block192_be(AesBlock192* block, const char* src)
+int aesni_parse_block192_be(AesNI_Block192* block, const char* src)
 {
-    AesBlock128 lo, hi;
+    AesNI_Block128 lo, hi;
     unsigned char lo_bytes[16], hi_bytes[16] = { 0 };
 
     for (int i = 0; i < 16; ++i)
@@ -359,7 +359,7 @@ int parse_aes_block192_be(AesBlock192* block, const char* src)
         src += n;
     }
 
-    lo = _mm_loadu_si128((AesBlock128*) lo_bytes);
+    lo = _mm_loadu_si128((AesNI_Block128*) lo_bytes);
 
     for (int i = 0; i < 8; ++i)
     {
@@ -371,16 +371,16 @@ int parse_aes_block192_be(AesBlock192* block, const char* src)
         src += n;
     }
 
-    hi = _mm_loadu_si128((AesBlock128*) hi_bytes);
+    hi = _mm_loadu_si128((AesNI_Block128*) hi_bytes);
 
     block->hi = hi;
     block->lo = lo;
     return 0;
 }
 
-int parse_aes_block256_be(AesBlock256* block, const char* src)
+int aesni_parse_block256_be(AesNI_Block256* block, const char* src)
 {
-    AesBlock128 lo, hi;
+    AesNI_Block128 lo, hi;
     unsigned char lo_bytes[16], hi_bytes[16];
 
     for (int i = 0; i < 16; ++i)
@@ -393,7 +393,7 @@ int parse_aes_block256_be(AesBlock256* block, const char* src)
         src += n;
     }
 
-    lo = _mm_loadu_si128((AesBlock128*) lo_bytes);
+    lo = _mm_loadu_si128((AesNI_Block128*) lo_bytes);
 
     for (int i = 0; i < 16; ++i)
     {
@@ -405,7 +405,7 @@ int parse_aes_block256_be(AesBlock256* block, const char* src)
         src += n;
     }
 
-    hi = _mm_loadu_si128((AesBlock128*) hi_bytes);
+    hi = _mm_loadu_si128((AesNI_Block128*) hi_bytes);
 
     block->hi = hi;
     block->lo = lo;

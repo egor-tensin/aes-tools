@@ -11,9 +11,9 @@
 #include <emmintrin.h>
 #include <wmmintrin.h>
 
-AesBlock128 __fastcall raw_aes192_encrypt_block(
-    AesBlock128 plain,
-    Aes192KeySchedule* key_schedule)
+AesNI_Block128 __fastcall aesni_raw_encrypt_block192(
+    AesNI_Block128 plain,
+    AesNI_KeySchedule192* key_schedule)
 {
     plain = _mm_xor_si128(plain, key_schedule->keys[0]);
     plain = _mm_aesenc_si128(plain, key_schedule->keys[1]);
@@ -30,9 +30,9 @@ AesBlock128 __fastcall raw_aes192_encrypt_block(
     return _mm_aesenclast_si128(plain, key_schedule->keys[12]);
 }
 
-AesBlock128 __fastcall raw_aes192_decrypt_block(
-    AesBlock128 cipher,
-    Aes192KeySchedule* inverted_schedule)
+AesNI_Block128 __fastcall aesni_raw_decrypt_block192(
+    AesNI_Block128 cipher,
+    AesNI_KeySchedule192* inverted_schedule)
 {
     cipher = _mm_xor_si128(cipher, inverted_schedule->keys[0]);
     cipher = _mm_aesdec_si128(cipher, inverted_schedule->keys[1]);
@@ -50,11 +50,11 @@ AesBlock128 __fastcall raw_aes192_decrypt_block(
 }
 
 static void __fastcall aes192_keygen_assist(
-    AesBlock128* prev_lo,
-    AesBlock128* prev_hi,
-    AesBlock128 hwgen)
+    AesNI_Block128* prev_lo,
+    AesNI_Block128* prev_hi,
+    AesNI_Block128 hwgen)
 {
-    AesBlock128 tmp = *prev_lo;
+    AesNI_Block128 tmp = *prev_lo;
 
     tmp = _mm_slli_si128(tmp, 4);
     *prev_lo = _mm_xor_si128(*prev_lo, tmp);
@@ -74,10 +74,10 @@ static void __fastcall aes192_keygen_assist(
     *prev_hi = _mm_xor_si128(*prev_hi, tmp);
 }
 
-void __fastcall raw_aes192_expand_key_schedule(
-    AesBlock128 key_lo,
-    AesBlock128 key_hi,
-    Aes192KeySchedule* key_schedule)
+void __fastcall aesni_raw_expand_key_schedule192(
+    AesNI_Block128 key_lo,
+    AesNI_Block128 key_hi,
+    AesNI_KeySchedule192* key_schedule)
 {
     key_schedule->keys[0] = key_lo;
     key_schedule->keys[1] = key_hi;
@@ -114,9 +114,9 @@ void __fastcall raw_aes192_expand_key_schedule(
     key_schedule->keys[12] = key_lo;
 }
 
-void __fastcall raw_aes192_invert_key_schedule(
-    Aes192KeySchedule* key_schedule,
-    Aes192KeySchedule* inverted_schedule)
+void __fastcall aesni_raw_invert_key_schedule192(
+    AesNI_KeySchedule192* key_schedule,
+    AesNI_KeySchedule192* inverted_schedule)
 {
     inverted_schedule->keys[0] = key_schedule->keys[12];
     inverted_schedule->keys[1] = _mm_aesimc_si128(key_schedule->keys[11]);

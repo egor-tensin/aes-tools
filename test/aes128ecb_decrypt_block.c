@@ -14,7 +14,7 @@
 
 static void exit_with_usage()
 {
-    puts("Usage: aes128ecb_decrypt_block.exe KEY0 [CIPHER0...] [-- KEY1 [CIPHER1...]...]");
+    puts("Usage: aesni_decrypt_block_ecb128.exe KEY0 [CIPHER0...] [-- KEY1 [CIPHER1...]...]");
     exit(EXIT_FAILURE);
 }
 
@@ -22,33 +22,33 @@ int main(int argc, char** argv)
 {
     for (--argc, ++argv; argc > -1; --argc, ++argv)
     {
-        AesBlock128 plain, key, cipher;
-        Aes128KeySchedule key_schedule, inverted_schedule;
+        AesNI_Block128 plain, key, cipher;
+        AesNI_KeySchedule128 key_schedule, inverted_schedule;
 
         if (argc < 1)
             exit_with_usage();
 
-        if (parse_aes_block128(&key, *argv) != 0)
+        if (aesni_parse_block128(&key, *argv) != 0)
         {
             fprintf(stderr, "Invalid 128-bit AES block '%s'\n", *argv);
             exit_with_usage();
         }
 
-        aes128_expand_key_schedule(key, &key_schedule);
-        aes128_invert_key_schedule(&key_schedule, &inverted_schedule);
+        aesni_expand_key_schedule128(key, &key_schedule);
+        aesni_invert_key_schedule128(&key_schedule, &inverted_schedule);
 
         for (--argc, ++argv; argc > 0; --argc, ++argv)
         {
             if (strcmp("--", *argv) == 0)
                 break;
 
-            if (parse_aes_block128(&cipher, *argv) != 0)
+            if (aesni_parse_block128(&cipher, *argv) != 0)
             {
                 fprintf(stderr, "Invalid 128-bit AES block '%s'\n", *argv);
                 continue;
             }
-            plain = aes128ecb_decrypt_block(cipher, &inverted_schedule);
-            print_aes_block128(&plain);
+            plain = aesni_decrypt_block_ecb128(cipher, &inverted_schedule);
+            aesni_print_block128(&plain);
         }
     }
 

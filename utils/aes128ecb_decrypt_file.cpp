@@ -34,13 +34,13 @@ namespace
 
 int main(int argc, char** argv)
 {
-    AesBlock128 key;
-    Aes128KeySchedule key_schedule, inverted_schedule;
+    AesNI_Block128 key;
+    AesNI_KeySchedule128 key_schedule, inverted_schedule;
 
     if (argc != 4)
         exit_with_usage();
 
-    if (parse_aes_block128(&key, argv[1]) != 0)
+    if (aesni_parse_block128(&key, argv[1]) != 0)
     {
         std::cerr << "Invalid 128-bit AES block '" << argv[1] << "'\n";
         exit_with_usage();
@@ -62,15 +62,15 @@ int main(int argc, char** argv)
         src_buf.assign(std::istreambuf_iterator<char>(src_ifs),
                        std::istreambuf_iterator<char>());
 
-        aes128_expand_key_schedule(key, &key_schedule);
-        aes128_invert_key_schedule(&key_schedule, &inverted_schedule);
+        aesni_expand_key_schedule128(key, &key_schedule);
+        aesni_invert_key_schedule128(&key_schedule, &inverted_schedule);
 
-        auto dest_size = aes128ecb_decrypt_buffer(
+        auto dest_size = aesni_decrypt_buffer_ecb128(
             src_buf.data(), static_cast<std::size_t>(src_size), NULL, &inverted_schedule);
 
         std::vector<unsigned char> dest_buf(static_cast<std::vector<char>::size_type>(dest_size));
 
-        dest_size = aes128ecb_decrypt_buffer(
+        dest_size = aesni_decrypt_buffer_ecb128(
             src_buf.data(), static_cast<std::size_t>(src_size), dest_buf.data(), &inverted_schedule);
 
         std::ofstream dest_ofs;

@@ -8,7 +8,7 @@
 
 .code
 
-@raw_aes256_encrypt_block@20 proc
+@aesni_raw_encrypt_block256@20 proc
     pxor xmm0, [ecx]
     aesenc xmm0, [ecx + 10h]
     aesenc xmm0, [ecx + 20h]
@@ -25,9 +25,9 @@
     aesenc xmm0, [ecx + 0D0h]
     aesenclast xmm0, [ecx + 0E0h]
     ret
-@raw_aes256_encrypt_block@20 endp
+@aesni_raw_encrypt_block256@20 endp
 
-@raw_aes256_decrypt_block@20 proc
+@aesni_raw_decrypt_block256@20 proc
     pxor xmm0, [ecx]
     aesdec xmm0, [ecx + 10h]
     aesdec xmm0, [ecx + 20h]
@@ -44,9 +44,9 @@
     aesdec xmm0, [ecx + 0D0h]
     aesdeclast xmm0, [ecx + 0E0h]
     ret
-@raw_aes256_decrypt_block@20 endp
+@aesni_raw_decrypt_block256@20 endp
 
-@raw_aes256_expand_key_schedule@36 proc
+@aesni_raw_expand_key_schedule256@36 proc
     ; A "word" (in terms of the FIPS 187 standard) is a 32-bit block.
     ; Words are denoted by `w[N]`.
     ;
@@ -239,9 +239,9 @@ aes256_keygen_assist:
     pxor xmm0, xmm1
 
     ret
-@raw_aes256_expand_key_schedule@36 endp
+@aesni_raw_expand_key_schedule256@36 endp
 
-@raw_aes256_invert_key_schedule@8 proc
+@aesni_raw_invert_key_schedule256@8 proc
     movdqa xmm5, [ecx]
     movdqa xmm4, [ecx + 0E0h]
     movdqa [edx], xmm4
@@ -281,6 +281,6 @@ aes256_keygen_assist:
     movdqa [edx + 70h], xmm5
 
     ret
-@raw_aes256_invert_key_schedule@8 endp
+@aesni_raw_invert_key_schedule256@8 endp
 
 end

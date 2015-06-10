@@ -8,7 +8,7 @@
 
 .code
 
-@raw_aes192_encrypt_block@20 proc
+@aesni_raw_encrypt_block192@20 proc
     pxor xmm0, [ecx]
     aesenc xmm0, [ecx + 10h]
     aesenc xmm0, [ecx + 20h]
@@ -23,9 +23,9 @@
     aesenc xmm0, [ecx + 0B0h]
     aesenclast xmm0, [ecx + 0C0h]
     ret
-@raw_aes192_encrypt_block@20 endp
+@aesni_raw_encrypt_block192@20 endp
 
-@raw_aes192_decrypt_block@20 proc
+@aesni_raw_decrypt_block192@20 proc
     pxor xmm0, [ecx]
     aesdec xmm0, [ecx + 10h]
     aesdec xmm0, [ecx + 20h]
@@ -40,9 +40,9 @@
     aesdec xmm0, [ecx + 0B0h]
     aesdeclast xmm0, [ecx + 0C0h]
     ret
-@raw_aes192_decrypt_block@20 endp
+@aesni_raw_decrypt_block192@20 endp
 
-@raw_aes192_expand_key_schedule@36 proc
+@aesni_raw_expand_key_schedule192@36 proc
     ; A "word" (in terms of the FIPS 187 standard) is a 32-bit block.
     ; Words are denoted by `w[N]`.
     ;
@@ -206,9 +206,9 @@ aes192_keygen_assist:
                                ; xmm1[31:0]  == w[i+10] == RotWord(SubWord(w[i+5]))^Rcon^w[i+4]^w[i+3]^w[i+2]^w[i+1]^w[i]
 
     ret
-@raw_aes192_expand_key_schedule@36 endp
+@aesni_raw_expand_key_schedule192@36 endp
 
-@raw_aes192_invert_key_schedule@8 proc
+@aesni_raw_invert_key_schedule192@8 proc
     movdqa xmm5, [ecx]
     movdqa xmm4, [ecx + 0C0h]
     movdqa [edx], xmm4
@@ -243,6 +243,6 @@ aes192_keygen_assist:
     movdqa [edx + 60h], xmm5
 
     ret
-@raw_aes192_invert_key_schedule@8 endp
+@aesni_raw_invert_key_schedule192@8 endp
 
 end
