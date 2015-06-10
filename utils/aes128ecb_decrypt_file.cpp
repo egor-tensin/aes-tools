@@ -22,7 +22,7 @@ namespace
 {
     void exit_with_usage()
     {
-        std::cout << "Usage: aes128ecb_encrypt_file.exe KEY SRC DEST\n";
+        std::cout << "Usage: aes128ecb_decrypt_file.exe KEY SRC DEST\n";
         std::exit(EXIT_FAILURE);
     }
 
