@@ -14,7 +14,7 @@
 
 static void exit_with_usage()
 {
-    puts("Usage: aes256ctr_decrypt.exe KEY0 IV0 [CIPHER0...] [-- KEY1 IV1 [CIPHER1...]...]");
+    puts("Usage: aes192ecb_decrypt_block.exe KEY0 [CIPHER0...] [-- KEY1 [CIPHER1...]...]");
     exit(EXIT_FAILURE);
 }
 
@@ -22,30 +22,23 @@ int main(int argc, char** argv)
 {
     for (--argc, ++argv; argc > -1; --argc, ++argv)
     {
-        AesBlock128 plain, cipher, iv;
-        AesBlock256 key;
-        Aes256KeySchedule key_schedule;
+        AesBlock128 plain, cipher;
+        AesBlock192 key;
+        Aes192KeySchedule key_schedule, inverted_schedule;
 
-        if (argc < 2)
+        if (argc < 1)
             exit_with_usage();
 
-        if (parse_aes_block256(&key, *argv) != 0)
+        if (parse_aes_block192(&key, *argv) != 0)
         {
-            fprintf(stderr, "Invalid 256-bit AES block '%s'\n", *argv);
+            fprintf(stderr, "Invalid 128-bit AES block '%s'\n", *argv);
             exit_with_usage();
         }
 
-        if (parse_aes_block128(&iv, argv[1]) != 0)
-        {
-            fprintf(stderr, "Invalid 128-bit AES block '%s'\n", argv[1]);
-            exit_with_usage();
-        }
+        aes192_expand_key_schedule(&key, &key_schedule);
+        aes192_invert_key_schedule(&key_schedule, &inverted_schedule);
 
-        aes256_expand_key_schedule(&key, &key_schedule);
-
-        int ctr = 0;
-
-        for (argc -= 2, argv += 2; argc > 0; --argc, ++argv)
+        for (--argc, ++argv; argc > 0; --argc, ++argv)
         {
             if (strcmp("--", *argv) == 0)
                 break;
@@ -55,7 +48,7 @@ int main(int argc, char** argv)
                 fprintf(stderr, "Invalid 128-bit AES block '%s'\n", *argv);
                 continue;
             }
-            plain = aes256ctr_decrypt_block(cipher, &key_schedule, iv, ctr++);
+            plain = aes192ecb_decrypt_block(cipher, &inverted_schedule);
             print_aes_block128(&plain);
         }
     }

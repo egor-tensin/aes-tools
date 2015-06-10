@@ -14,7 +14,7 @@
 
 static void exit_with_usage()
 {
-    puts("Usage: aes192cfb_encrypt.exe KEY0 IV0 [PLAIN0...] [-- KEY1 IV1 [PLAIN1...]...]");
+    puts("Usage: aes192ctr_encrypt_block.exe KEY0 IV0 [PLAIN0...] [-- KEY1 IV1 [PLAIN1...]...]");
     exit(EXIT_FAILURE);
 }
 
@@ -43,6 +43,8 @@ int main(int argc, char** argv)
 
         aes192_expand_key_schedule(&key, &key_schedule);
 
+        int ctr = 0;
+
         for (argc -= 2, argv += 2; argc > 0; --argc, ++argv)
         {
             if (strcmp("--", *argv) == 0)
@@ -53,7 +55,7 @@ int main(int argc, char** argv)
                 fprintf(stderr, "Invalid 128-bit AES block '%s'\n", *argv);
                 continue;
             }
-            cipher = aes192cfb_encrypt_block(plain, &key_schedule, iv, &iv);
+            cipher = aes192ctr_encrypt_block(plain, &key_schedule, iv, ctr++);
             print_aes_block128(&cipher);
         }
     }

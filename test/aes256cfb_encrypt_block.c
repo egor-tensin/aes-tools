@@ -14,7 +14,7 @@
 
 static void exit_with_usage()
 {
-    puts("Usage: aes256ofb_encrypt.exe KEY0 IV0 [PLAIN0...] [-- KEY1 IV1 [PLAIN1...]...]");
+    puts("Usage: aes256cfb_encrypt_block.exe KEY0 IV0 [PLAIN0...] [-- KEY1 IV1 [PLAIN1...]...]");
     exit(EXIT_FAILURE);
 }
 
@@ -53,7 +53,7 @@ int main(int argc, char** argv)
                 fprintf(stderr, "Invalid 128-bit AES block '%s'\n", *argv);
                 continue;
             }
-            cipher = aes256ofb_encrypt_block(plain, &key_schedule, iv, &iv);
+            cipher = aes256cfb_encrypt_block(plain, &key_schedule, iv, &iv);
             print_aes_block128(&cipher);
         }
     }

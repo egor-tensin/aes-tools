@@ -1,13 +1,13 @@
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SAFESEH:NO")
 
 macro(test prefix)
-    add_executable(test_${prefix}_encrypt ${prefix}_encrypt.c)
-    target_link_libraries(test_${prefix}_encrypt libaesni)
-    set_target_properties(test_${prefix}_encrypt PROPERTIES OUTPUT_NAME ${prefix}_encrypt)
+    add_executable(test_${prefix}_encrypt_block ${prefix}_encrypt_block.c)
+    target_link_libraries(test_${prefix}_encrypt_block libaesni)
+    set_target_properties(test_${prefix}_encrypt_block PROPERTIES OUTPUT_NAME ${prefix}_encrypt_block)
 
-    add_executable(test_${prefix}_decrypt ${prefix}_decrypt.c)
-    target_link_libraries(test_${prefix}_decrypt libaesni)
-    set_target_properties(test_${prefix}_decrypt PROPERTIES OUTPUT_NAME ${prefix}_decrypt)
+    add_executable(test_${prefix}_decrypt_block ${prefix}_decrypt_block.c)
+    target_link_libraries(test_${prefix}_decrypt_block libaesni)
+    set_target_properties(test_${prefix}_decrypt_block PROPERTIES OUTPUT_NAME ${prefix}_decrypt_block)
 endmacro()
 
 test(aes128ecb)

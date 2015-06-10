@@ -76,10 +76,10 @@ class Tools:
         return os.path.join(self._root_dir_path, fn)
 
     def get_encrypt_tool_path(self, algo, mode):
-        return self._get_tool_path('{0}{1}_encrypt.exe'.format(algo, mode))
+        return self._get_tool_path('{0}{1}_encrypt_block.exe'.format(algo, mode))
 
     def get_decrypt_tool_path(self, algo, mode):
-        return self._get_tool_path('{0}{1}_decrypt.exe'.format(algo, mode))
+        return self._get_tool_path('{0}{1}_decrypt_block.exe'.format(algo, mode))
 
     def run_tool(self, tool_path, args):
         cmd_list = ['sde', '--', tool_path] if self._use_sde else [tool_path]
