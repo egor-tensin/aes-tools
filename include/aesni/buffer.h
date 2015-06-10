@@ -10,6 +10,11 @@
 
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 size_t aes128ecb_encrypt_buffer(
     const unsigned char* src,
     size_t src_size,
@@ -20,3 +25,7 @@ size_t aes128ecb_decrypt_buffer(
     size_t src_size,
     unsigned char* dest,
     Aes128KeySchedule* inverted_schedule);
+
+#ifdef __cplusplus
+}
+#endif

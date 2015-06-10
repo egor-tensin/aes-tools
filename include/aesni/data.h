@@ -11,6 +11,11 @@
 #include <emmintrin.h>
 #include <tmmintrin.h>
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 typedef __m128i AesBlock128;
 
 static __inline AesBlock128 load_aes_block128(const unsigned char* src)
@@ -151,3 +156,7 @@ int parse_aes_block256_le(AesBlock256*, const char*);
 int parse_aes_block128_be(AesBlock128*, const char*);
 int parse_aes_block192_be(AesBlock192*, const char*);
 int parse_aes_block256_be(AesBlock256*, const char*);
+
+#ifdef __cplusplus
+}
+#endif

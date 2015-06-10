@@ -10,6 +10,11 @@
 
 #include "data.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 void __fastcall raw_aes128_expand_key_schedule(
     AesBlock128 key,
     Aes128KeySchedule* key_schedule);
@@ -53,3 +58,7 @@ AesBlock128 __fastcall raw_aes256_encrypt_block(
 AesBlock128 __fastcall raw_aes256_decrypt_block(
     AesBlock128 cipher,
     Aes256KeySchedule* inverted_schedule);
+
+#ifdef __cplusplus
+}
+#endif

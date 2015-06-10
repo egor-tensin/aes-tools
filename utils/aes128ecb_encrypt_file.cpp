@@ -6,10 +6,7 @@
  *            See LICENSE.txt for details.
  */
 
-extern "C"
-{
 #include <aesni/all.h>
-}
 
 #include <cstdio>
 

@@ -11,6 +11,11 @@
 #include "data.h"
 #include "raw.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 static __inline void __fastcall aes128_expand_key_schedule(
     AesBlock128 key,
     Aes128KeySchedule* key_schedule)
@@ -364,3 +369,7 @@ static __inline AesBlock128 __fastcall aes256ctr_decrypt_block(
     init_vector = aes128_be2le(init_vector);
     return _mm_xor_si128(cipher, raw_aes256_encrypt_block(init_vector, key_schedule));
 }
+
+#ifdef __cplusplus
+}
+#endif
