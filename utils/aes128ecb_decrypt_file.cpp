@@ -25,7 +25,9 @@ namespace
 
     std::ifstream::pos_type get_file_size(const std::string& path)
     {
-        std::ifstream ifs(path, std::ifstream::binary | std::ifstream::ate);
+        std::ifstream ifs;
+        ifs.exceptions(std::ifstream::badbit | std::ifstream::failbit);
+        ifs.open(path, std::ifstream::binary | std::ifstream::ate);
         return ifs.tellg();
     }
 }
