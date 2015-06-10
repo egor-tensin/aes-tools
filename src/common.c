@@ -15,28 +15,28 @@
 
 AesBlockString128 format_aes_block128(AesBlock128* block)
 {
-#if defined LIBAESNI_BE_IO_BY_DEFAULT && LIBAESNI_BE_IO_BY_DEFAULT
-    return format_aes_block128_be(block);
-#else
+#if defined AESNI_LE_BLOCK_IO && AESNI_LE_BLOCK_IO
     return format_aes_block128_le(block);
+#else
+    return format_aes_block128_be(block);
 #endif
 }
 
 AesBlockString192 format_aes_block192(AesBlock192* block)
 {
-#if defined LIBAESNI_BE_IO_BY_DEFAULT && LIBAESNI_BE_IO_BY_DEFAULT
-    return format_aes_block192_be(block);
-#else
+#if defined AESNI_LE_BLOCK_IO && AESNI_LE_BLOCK_IO
     return format_aes_block192_le(block);
+#else
+    return format_aes_block192_be(block);
 #endif
 }
 
 AesBlockString256 format_aes_block256(AesBlock256* block)
 {
-#if defined LIBAESNI_BE_IO_BY_DEFAULT && LIBAESNI_BE_IO_BY_DEFAULT
-    return format_aes_block256_be(block);
-#else
+#if defined AESNI_LE_BLOCK_IO && AESNI_LE_BLOCK_IO
     return format_aes_block256_le(block);
+#else
+    return format_aes_block256_be(block);
 #endif
 }
 
@@ -271,28 +271,28 @@ void print_aes_block256_be_as_matrix(AesBlock256* block)
 
 int parse_aes_block128(AesBlock128* block, const char* src)
 {
-#if defined LIBAESNI_BE_IO_BY_DEFAULT && LIBAESNI_BE_IO_BY_DEFAULT
-    return parse_aes_block128_be(block, src);
-#else
+#if defined AESNI_LE_BLOCK_IO && AESNI_LE_BLOCK_IO
     return parse_aes_block128_le(block, src);
+#else
+    return parse_aes_block128_be(block, src);
 #endif
 }
 
 int parse_aes_block192(AesBlock192* block, const char* src)
 {
-#if defined LIBAESNI_BE_IO_BY_DEFAULT && LIBAESNI_BE_IO_BY_DEFAULT
-    return parse_aes_block192_be(block, src);
-#else
+#if defined AESNI_LE_BLOCK_IO && AESNI_LE_BLOCK_IO
     return parse_aes_block192_le(block, src);
+#else
+    return parse_aes_block192_be(block, src);
 #endif
 }
 
 int parse_aes_block256(AesBlock256* block, const char* src)
 {
-#if defined LIBAESNI_BE_IO_BY_DEFAULT && LIBAESNI_BE_IO_BY_DEFAULT
-    return parse_aes_block256_be(block, src);
-#else
+#if defined AESNI_LE_BLOCK_IO && AESNI_LE_BLOCK_IO
     return parse_aes_block256_le(block, src);
+#else
+    return parse_aes_block256_be(block, src);
 #endif
 }
 
