@@ -54,7 +54,7 @@ int main(int argc, char** argv)
                 fprintf(stderr, "Invalid 128-bit AES block '%s'\n", *argv);
                 continue;
             }
-            cipher = aes128ctr_encrypt(plain, &key_schedule, iv, ctr++);
+            cipher = aes128ctr_encrypt_block(plain, &key_schedule, iv, ctr++);
             print_aes_block128(&cipher);
         }
     }

@@ -66,12 +66,12 @@ int main(int argc, char** argv)
         aes128_expand_key_schedule(key, &key_schedule);
         aes128_invert_key_schedule(&key_schedule, &inverted_schedule);
 
-        auto dest_size = aes128ecb_decrypt_file(
+        auto dest_size = aes128ecb_decrypt_buffer(
             src_buf.data(), static_cast<std::size_t>(src_size), NULL, &inverted_schedule);
 
         std::vector<unsigned char> dest_buf(static_cast<std::vector<char>::size_type>(dest_size));
 
-        dest_size = aes128ecb_decrypt_file(
+        dest_size = aes128ecb_decrypt_buffer(
             src_buf.data(), static_cast<std::size_t>(src_size), dest_buf.data(), &inverted_schedule);
 
         std::ofstream dest_ofs;

@@ -54,7 +54,7 @@ int main(int argc, char** argv)
                 fprintf(stderr, "Invalid 128-bit AES block '%s'\n", *argv);
                 continue;
             }
-            plain = aes256cbc_decrypt(cipher, &inverted_schedule, iv, &iv);
+            plain = aes256cbc_decrypt_block(cipher, &inverted_schedule, iv, &iv);
             print_aes_block128(&plain);
         }
     }

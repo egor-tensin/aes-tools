@@ -53,7 +53,7 @@ int main(int argc, char** argv)
                 fprintf(stderr, "Invalid 128-bit AES block '%s'\n", *argv);
                 continue;
             }
-            plain = aes256ofb_decrypt(cipher, &key_schedule, iv, &iv);
+            plain = aes256ofb_decrypt_block(cipher, &key_schedule, iv, &iv);
             print_aes_block128(&plain);
         }
     }

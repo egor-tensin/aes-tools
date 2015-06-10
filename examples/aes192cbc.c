@@ -38,7 +38,7 @@ int main()
     for (int i = 0; i < 13; ++i)
         printf("\t[%d]: %s\n", i, format_aes_block128(&key_schedule.keys[i]).str);
 
-    cipher = aes192cbc_encrypt(plain, &key_schedule, iv, &next_iv);
+    cipher = aes192cbc_encrypt_block(plain, &key_schedule, iv, &next_iv);
     printf("\n");
     printf("Cipher: %s\n", format_aes_block128(&cipher).str);
     print_aes_block128_as_matrix(&cipher);
@@ -54,7 +54,7 @@ int main()
     for (int i = 0; i < 13; ++i)
         printf("\t[%d]: %s\n", i, format_aes_block128(&inverted_schedule.keys[i]).str);
 
-    decrypted = aes192cbc_decrypt(cipher, &inverted_schedule, iv, &next_iv);
+    decrypted = aes192cbc_decrypt_block(cipher, &inverted_schedule, iv, &next_iv);
     printf("\n");
     printf("Decrypted: %s\n", format_aes_block128(&decrypted).str);
     print_aes_block128_as_matrix(&decrypted);

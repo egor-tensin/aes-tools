@@ -8,7 +8,7 @@
 
 .code
 
-@raw_aes256_encrypt@20 proc
+@raw_aes256_encrypt_block@20 proc
     pxor xmm0, [ecx]
     aesenc xmm0, [ecx + 10h]
     aesenc xmm0, [ecx + 20h]
@@ -25,9 +25,9 @@
     aesenc xmm0, [ecx + 0D0h]
     aesenclast xmm0, [ecx + 0E0h]
     ret
-@raw_aes256_encrypt@20 endp
+@raw_aes256_encrypt_block@20 endp
 
-@raw_aes256_decrypt@20 proc
+@raw_aes256_decrypt_block@20 proc
     pxor xmm0, [ecx]
     aesdec xmm0, [ecx + 10h]
     aesdec xmm0, [ecx + 20h]
@@ -44,7 +44,7 @@
     aesdec xmm0, [ecx + 0D0h]
     aesdeclast xmm0, [ecx + 0E0h]
     ret
-@raw_aes256_decrypt@20 endp
+@raw_aes256_decrypt_block@20 endp
 
 @raw_aes256_expand_key_schedule@36 proc
     ; A "word" (in terms of the FIPS 187 standard) is a 32-bit block.

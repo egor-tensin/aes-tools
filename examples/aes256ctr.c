@@ -38,12 +38,12 @@ int main()
     for (int i = 0; i < 15; ++i)
         printf("\t[%d]: %s\n", i, format_aes_block128(&key_schedule.keys[i]).str);
 
-    cipher = aes256ctr_encrypt(plain, &key_schedule, iv, 0);
+    cipher = aes256ctr_encrypt_block(plain, &key_schedule, iv, 0);
     printf("\n");
     printf("Cipher: %s\n", format_aes_block128(&cipher).str);
     print_aes_block128_as_matrix(&cipher);
 
-    decrypted = aes256ctr_decrypt(cipher, &key_schedule, iv, 0);
+    decrypted = aes256ctr_decrypt_block(cipher, &key_schedule, iv, 0);
     printf("\n");
     printf("Decrypted: %s\n", format_aes_block128(&decrypted).str);
     print_aes_block128_as_matrix(&decrypted);

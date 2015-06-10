@@ -65,15 +65,19 @@ int main(int argc, char** argv)
 
         aes128_expand_key_schedule(key, &key_schedule);
 
-        const auto dest_size = aes128ecb_encrypt_file(
-            src_buf.data(), static_cast<std::size_t>(src_size), NULL, &key_schedule);
+        const auto dest_size = aes128ecb_encrypt_buffer(
+            src_buf.data(),
+            static_cast<std::size_t>(src_size),
+            NULL,
+            &key_schedule);
 
         std::vector<unsigned char> dest_buf(static_cast<std::vector<char>::size_type>(dest_size));
 
-        aes128ecb_encrypt_file(src_buf.data(),
-                               static_cast<std::size_t>(src_size),
-                               dest_buf.data(),
-                               &key_schedule);
+        aes128ecb_encrypt_buffer(
+            src_buf.data(),
+            static_cast<std::size_t>(src_size),
+            dest_buf.data(),
+            &key_schedule);
 
         std::ofstream dest_ofs;
         dest_ofs.exceptions(std::ofstream::badbit | std::ofstream::failbit);

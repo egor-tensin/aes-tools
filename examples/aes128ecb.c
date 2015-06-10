@@ -32,7 +32,7 @@ int main()
     for (int i = 0; i < 11; ++i)
         printf("\t[%d]: %s\n", i, format_aes_block128(&key_schedule.keys[i]).str);
 
-    cipher = aes128ecb_encrypt(plain, &key_schedule);
+    cipher = aes128ecb_encrypt_block(plain, &key_schedule);
     printf("\n");
     printf("Cipher: %s\n", format_aes_block128(&cipher).str);
     print_aes_block128_as_matrix(&cipher);
@@ -44,7 +44,7 @@ int main()
     for (int i = 0; i < 11; ++i)
         printf("\t[%d]: %s\n", i, format_aes_block128(&inverted_schedule.keys[i]).str);
 
-    decrypted = aes128ecb_decrypt(cipher, &inverted_schedule);
+    decrypted = aes128ecb_decrypt_block(cipher, &inverted_schedule);
     printf("\n");
     printf("Decrypted: %s\n", format_aes_block128(&decrypted).str);
     print_aes_block128_as_matrix(&decrypted);
