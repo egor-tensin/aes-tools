@@ -1,5 +1,3 @@
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SAFESEH:NO")
-
 macro(test prefix)
     add_executable(test_${prefix}_encrypt_block ${prefix}_encrypt_block.c)
     target_link_libraries(test_${prefix}_encrypt_block libaesni)

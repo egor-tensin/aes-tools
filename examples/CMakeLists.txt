@@ -1,5 +1,3 @@
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SAFESEH:NO")
-
 macro(example prefix)
     add_executable(example_${prefix} ${prefix}.c)
     target_link_libraries(example_${prefix} libaesni)
