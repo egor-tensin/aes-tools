@@ -57,7 +57,7 @@ int main(int argc, char** argv)
         src_ifs.exceptions(std::ifstream::badbit | std::ifstream::failbit);
         src_ifs.open(src_path, std::ifstream::binary);
 
-        std::vector<unsigned char> src_buf;
+        std::vector<char> src_buf;
         src_buf.reserve(static_cast<std::vector<char>::size_type>(src_size));
         src_buf.assign(std::istreambuf_iterator<char>(src_ifs),
                        std::istreambuf_iterator<char>());
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
             NULL,
             &key_schedule);
 
-        std::vector<unsigned char> dest_buf(static_cast<std::vector<char>::size_type>(dest_size));
+        std::vector<char> dest_buf(static_cast<std::vector<char>::size_type>(dest_size));
 
         aesni_encrypt_buffer_ecb128(
             src_buf.data(),
@@ -81,7 +81,7 @@ int main(int argc, char** argv)
         std::ofstream dest_ofs;
         dest_ofs.exceptions(std::ofstream::badbit | std::ofstream::failbit);
         dest_ofs.open(dest_path, std::ofstream::binary);
-        dest_ofs.write(reinterpret_cast<const char*>(dest_buf.data()), dest_buf.size());
+        dest_ofs.write(dest_buf.data(), dest_buf.size());
     }
     catch (const std::exception& e)
     {
