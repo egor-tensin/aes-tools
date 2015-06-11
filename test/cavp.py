@@ -7,6 +7,7 @@ import configparser
 from datetime import datetime
 import logging
 import os.path
+import sys
 import toolkit
 import zipfile
 
@@ -164,6 +165,11 @@ def _parse_test_vectors_archive(tools, archive_path='KAT_AES.zip'):
     logging.info('\tError(s):  {0}'.format(exit_codes.count(_TestExitCode.ERROR)))
     logging.info('\tSucceeded: {0}'.format(exit_codes.count(_TestExitCode.SUCCESS)))
     logging.info('\tFailed:    {0}'.format(exit_codes.count(_TestExitCode.FAILURE)))
+    if (exit_codes.count(_TestExitCode.ERROR) == 0 and
+            exit_codes.count(_TestExitCode.FAILURE) == 0):
+        sys.exit()
+    else:
+        sys.exit(1)
 
 if __name__ == '__main__':
     import argparse

@@ -5,6 +5,7 @@
 from datetime import datetime
 import logging
 import toolkit
+import sys
 
 _plaintexts = ['6bc1bee22e409f96e93d7e117393172a',
                'ae2d8a571e03ac9c9eb76fac45af8e51',
@@ -170,3 +171,8 @@ if __name__ == '__main__':
     logging.info('\tError(s):  {0}'.format(exit_codes.count(_TestExitCode.ERROR)))
     logging.info('\tSucceeded: {0}'.format(exit_codes.count(_TestExitCode.SUCCESS)))
     logging.info('\tFailed:    {0}'.format(exit_codes.count(_TestExitCode.FAILURE)))
+    if (exit_codes.count(_TestExitCode.ERROR) == 0 and
+            exit_codes.count(_TestExitCode.FAILURE) == 0):
+        sys.exit()
+    else:
+        sys.exit(1)
