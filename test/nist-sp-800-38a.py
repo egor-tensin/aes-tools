@@ -5,7 +5,6 @@
 from datetime import datetime
 import logging
 import toolkit
-import unittest
 
 _plaintexts = ['6bc1bee22e409f96e93d7e117393172a',
                'ae2d8a571e03ac9c9eb76fac45af8e51',
@@ -97,9 +96,9 @@ def _assert_output(actual, expected):
     return True
 
 class _TestExitCode:
-    SUCCESS, FAILURE, ERROR = range(3)
+    SUCCESS, FAILURE, ERROR, SKIPPED = range(4)
 
-def run_encryption_tests(tools, algo, mode):
+def _run_encryption_tests(tools, algo, mode):
     logging.info('Running encryption tests...')
     logging.info('\tAlgorithm: ' + algo)
     logging.info('\tMode: ' + mode)
@@ -120,7 +119,7 @@ def run_encryption_tests(tools, algo, mode):
         logging.exception(e)
         return _TestExitCode.ERROR
 
-def run_decryption_tests(tools, algo, mode):
+def _run_decryption_tests(tools, algo, mode):
     logging.info('Running decryption tests...')
     logging.info('\tAlgorithm: ' + algo)
     logging.info('\tMode: ' + mode)
@@ -156,7 +155,7 @@ if __name__ == '__main__':
     logging_options = {'format': '%(asctime)s | %(module)s | %(levelname)s | %(message)s',
                        'level': logging.DEBUG}
     if args.log is None:
-        logging_options['filename'] = datetime.now().strftime('800-38a_%Y-%m-%d_%H-%M-%S.log')
+        logging_options['filename'] = datetime.now().strftime('nist-sp-800-38a_%Y-%m-%d_%H-%M-%S.log')
     else:
         logging_options['filename'] = args.log
     logging.basicConfig(**logging_options)
@@ -164,9 +163,10 @@ if __name__ == '__main__':
     exit_codes = []
     for algo in _ciphertexts:
         for mode in _ciphertexts[algo]:
-            exit_codes.append(run_encryption_tests(tools, algo, mode))
-            exit_codes.append(run_decryption_tests(tools, algo, mode))
+            exit_codes.append(_run_encryption_tests(tools, algo, mode))
+            exit_codes.append(_run_decryption_tests(tools, algo, mode))
     logging.info('Test exit codes:')
+    logging.info('\tSkipped:   {0}'.format(exit_codes.count(_TestExitCode.SKIPPED)))
     logging.info('\tError(s):  {0}'.format(exit_codes.count(_TestExitCode.ERROR)))
     logging.info('\tSucceeded: {0}'.format(exit_codes.count(_TestExitCode.SUCCESS)))
     logging.info('\tFailed:    {0}'.format(exit_codes.count(_TestExitCode.FAILURE)))
