@@ -11,4 +11,5 @@
 #include "block.h"
 #include "buffer.h"
 #include "data.h"
+#include "error.h"
 #include "raw.h"

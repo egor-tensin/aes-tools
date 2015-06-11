@@ -1,5 +1,5 @@
 macro(util prefix)
-    add_executable(util_${prefix} ${prefix}.cpp)
+    add_executable(util_${prefix} ${prefix}.cpp common.hpp)
     target_link_libraries(util_${prefix} libaesni)
     set_target_properties(util_${prefix} PROPERTIES OUTPUT_NAME ${prefix})
 endmacro()

@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "error.h"
+
 #include <stdlib.h>
 
 #ifdef __cplusplus
@@ -15,16 +17,20 @@ extern "C"
 {
 #endif
 
-size_t aesni_encrypt_buffer_ecb128(
+int aesni_encrypt_buffer_ecb128(
     const void* src,
     size_t src_size,
     void* dest,
-    AesNI_KeySchedule128* key_schedule);
-size_t aesni_decrypt_buffer_ecb128(
+    size_t* dest_size,
+    AesNI_KeySchedule128* key_schedule,
+    AesNI_ErrorDetails*);
+int aesni_decrypt_buffer_ecb128(
     const void* src,
     size_t src_size,
     void* dest,
-    AesNI_KeySchedule128* inverted_schedule);
+    size_t* dest_size,
+    AesNI_KeySchedule128* inverted_schedule,
+    AesNI_ErrorDetails*);
 
 #ifdef __cplusplus
 }

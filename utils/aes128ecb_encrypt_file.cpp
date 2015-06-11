@@ -6,10 +6,13 @@
  *            See LICENSE.txt for details.
  */
 
+#include "common.hpp"
+
 #include <aesni/all.h>
 
-#include <cstdio>
+#include <cstdlib>
 
+#include <exception>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -51,37 +54,44 @@ int main(int argc, char** argv)
         const std::string src_path(argv[2]);
         const std::string dest_path(argv[3]);
 
-        const auto src_size = get_file_size(src_path);
+        const auto src_size = static_cast<std::size_t>(get_file_size(src_path));
 
         std::ifstream src_ifs;
         src_ifs.exceptions(std::ifstream::badbit | std::ifstream::failbit);
         src_ifs.open(src_path, std::ifstream::binary);
 
         std::vector<char> src_buf;
-        src_buf.reserve(static_cast<std::vector<char>::size_type>(src_size));
+        src_buf.reserve(src_size);
         src_buf.assign(std::istreambuf_iterator<char>(src_ifs),
                        std::istreambuf_iterator<char>());
 
         aesni_expand_key_schedule128(key, &key_schedule);
 
-        const auto dest_size = aesni_encrypt_buffer_ecb128(
-            src_buf.data(),
-            static_cast<std::size_t>(src_size),
-            NULL,
-            &key_schedule);
-
-        std::vector<char> dest_buf(static_cast<std::vector<char>::size_type>(dest_size));
+        std::size_t dest_size;
 
         aesni_encrypt_buffer_ecb128(
             src_buf.data(),
-            static_cast<std::size_t>(src_size),
+            src_size,
+            NULL,
+            &dest_size,
+            &key_schedule,
+            aesni::ErrorDetailsThrowsInDestructor());
+
+        std::vector<char> dest_buf;
+        dest_buf.reserve(dest_size);
+
+        aesni_encrypt_buffer_ecb128(
+            src_buf.data(),
+            src_size,
             dest_buf.data(),
-            &key_schedule);
+            &dest_size,
+            &key_schedule,
+            aesni::ErrorDetailsThrowsInDestructor());
 
         std::ofstream dest_ofs;
         dest_ofs.exceptions(std::ofstream::badbit | std::ofstream::failbit);
         dest_ofs.open(dest_path, std::ofstream::binary);
-        dest_ofs.write(dest_buf.data(), dest_buf.size());
+        dest_ofs.write(dest_buf.data(), dest_size);
     }
     catch (const std::exception& e)
     {
