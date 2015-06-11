@@ -14,7 +14,7 @@
 
 static void exit_with_usage()
 {
-    puts("Usage: aesni_decrypt_block_ctr128.exe KEY0 IV0 [CIPHER0...] [-- KEY1 IV1 [CIPHER1...]...]");
+    puts("Usage: aes128ctr_decrypt_block.exe KEY0 IV0 [CIPHER0...] [-- KEY1 IV1 [CIPHER1...]...]");
     exit(EXIT_FAILURE);
 }
 

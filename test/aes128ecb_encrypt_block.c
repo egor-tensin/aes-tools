@@ -14,7 +14,7 @@
 
 static void exit_with_usage()
 {
-    puts("Usage: aesni_encrypt_block_ecb128.exe KEY0 [PLAIN0...] [-- KEY1 [PLAIN1...]...]");
+    puts("Usage: aes128ecb_encrypt_block.exe KEY0 [PLAIN0...] [-- KEY1 [PLAIN1...]...]");
     exit(EXIT_FAILURE);
 }
 
