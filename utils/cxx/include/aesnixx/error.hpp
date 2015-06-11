@@ -10,7 +10,11 @@
 
 #include <aesni/all.h>
 
+#include <cstdlib>
+
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 namespace aesni
 {
@@ -24,8 +28,13 @@ namespace aesni
 
         ~ErrorDetailsThrowsInDestructor()
         {
-            if (m_impl.ec != AESNI_ERROR_SUCCESS)
-                throw std::runtime_error(aesni_strerror(m_impl.ec));
+            if (aesni_get_error_code(get()) != AESNI_ERROR_SUCCESS)
+            {
+                std::vector<char> msg;
+                msg.resize(aesni_format_error(get(), NULL, 0));
+                aesni_format_error(get(), msg.data(), msg.size());
+                throw std::runtime_error(std::string(msg.begin(), msg.end()));
+            }
         }
 
         AesNI_ErrorDetails* get() { return &m_impl; }

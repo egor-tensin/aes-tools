@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <stdlib.h>
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -40,6 +42,13 @@ typedef struct
     params;
 }
 AesNI_ErrorDetails;
+
+static __inline AesNI_ErrorCode aesni_get_error_code(const AesNI_ErrorDetails* err_details)
+{
+    return err_details->ec;
+}
+
+size_t aesni_format_error(const AesNI_ErrorDetails*, char*, size_t);
 
 void aesni_make_error_success(AesNI_ErrorDetails*);
 void aesni_make_error_null_argument(AesNI_ErrorDetails*, const char* arg_name);
