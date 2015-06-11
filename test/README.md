@@ -54,9 +54,9 @@ Use `--help` to see the script's usage details.
 
 ### NIST Special Publication 800-38A
 
-To test the implementation against the vectors from [NIST SP 800-38A](http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf) using `800-32a.py`.
+To test the implementation against the vectors from [NIST SP 800-38A](http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf) using `nist-sp-800-32a.py`.
 
-    python 800-38a.py -r C:\build\test\Debug
+    python nist-sp-800-38a.py -r C:\build\test\Debug
 
 ### Cryptographic Algorithm Validation Program
 
