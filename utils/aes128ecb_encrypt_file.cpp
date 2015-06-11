@@ -6,9 +6,8 @@
  *            See LICENSE.txt for details.
  */
 
-#include "common.hpp"
-
 #include <aesni/all.h>
+#include <aesnixx/all.hpp>
 
 #include <cstdlib>
 
