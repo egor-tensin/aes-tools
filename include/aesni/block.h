@@ -53,7 +53,12 @@ extern "C"
 #endif
 
 /**
- * Expands a key schedule for AES-128 encryption.
+ * \defgroup aesni_block_api_aes128 AES-128
+ * \{
+ */
+
+/**
+ * \brief Expands a key schedule for AES-128 encryption.
  *
  * \param[in] key The AES-128 key.
  * \param[out] key_schedule The AES-128 encryption key schedule. Must not be `NULL`.
@@ -68,7 +73,7 @@ static __inline void __fastcall aesni_expand_key_schedule128(
 }
 
 /**
- * "Reverses" a key schedule for AES-128 "equivalent inverse cipher" decryption.
+ * \brief "Reverses" a key schedule for AES-128 "equivalent inverse cipher" decryption.
  *
  * \param[in] key_schedule The AES-128 encryption key schedule. Must not be `NULL`.
  * \param[out] inverted_schedule The AES-128 decryption key schedule. Must not be `NULL`.
@@ -84,7 +89,7 @@ static __inline void __fastcall aesni_invert_key_schedule128(
 }
 
 /**
- * Encrypts a 128-bit block using AES-128 in ECB mode of operation.
+ * \brief Encrypts a 128-bit block using AES-128 in ECB mode of operation.
  *
  * \param[in] plain The plaintext to be encrypted.
  * \param[in] key_schedule The AES-128 encryption schedule. Must not be `NULL`.
@@ -100,7 +105,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ecb128(
 }
 
 /**
- * Decrypts a 128-bit block using AES-128 in ECB mode of operation.
+ * \brief Decrypts a 128-bit block using AES-128 in ECB mode of operation.
  *
  * \param[in] cipher The ciphertext to be decrypted.
  * \param[in] inverted_schedule The AES-128 decryption ("reversed") key schedule. Must not be `NULL`.
@@ -116,7 +121,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ecb128(
 }
 
 /**
- * Encrypts a 128-bit block using AES-128 in CBC mode of operation.
+ * \brief Encrypts a 128-bit block using AES-128 in CBC mode of operation.
  *
  * \param[in] plain The plaintext to be encrypted.
  * \param[in] key_schedule The AES-128 encryption key schedule. Must not be `NULL`.
@@ -139,7 +144,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cbc128(
 }
 
 /**
- * Decrypts a 128-bit block using AES-128 in CBC mode of operation.
+ * \brief Decrypts a 128-bit block using AES-128 in CBC mode of operation.
  *
  * \param[in] cipher The ciphertext to be decrypted.
  * \param[in] inverted_schedule The AES-128 decryption (reversed) key schedule. Must not be `NULL`.
@@ -162,7 +167,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cbc128(
 }
 
 /**
- * Encrypts a 128-bit block using AES-128 in CFB mode of operation.
+ * \brief Encrypts a 128-bit block using AES-128 in CFB mode of operation.
  *
  * \param[in] plain The plaintext to be encrypted.
  * \param[in] key_schedule The AES-128 encryption schedule. Must not be `NULL`.
@@ -185,7 +190,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cfb128(
 }
 
 /**
- * Decrypts a 128-bit block using AES-128 in CFB mode of operation.
+ * \brief Decrypts a 128-bit block using AES-128 in CFB mode of operation.
  *
  * \param[in] cipher The ciphertext to be decrypted.
  * \param[in] key_schedule The AES-128 **encryption** key schedule. Must not be `NULL`.
@@ -208,7 +213,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cfb128(
 }
 
 /**
- * Encrypts a 128-bit block using AES-128 in OFB mode of operation.
+ * \brief Encrypts a 128-bit block using AES-128 in OFB mode of operation.
  *
  * \param[in] plain The plaintext to be encrypted.
  * \param[in] key_schedule The AES-128 encryption schedule. Must not be `NULL`.
@@ -231,7 +236,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ofb128(
 }
 
 /**
- * Decrypts a 128-bit block using AES-128 in OFB mode of operation.
+ * \brief Decrypts a 128-bit block using AES-128 in OFB mode of operation.
  *
  * \param[in] cipher The ciphertext to be decrypted.
  * \param[in] key_schedule The AES-128 **encryption** key schedule. Must not be `NULL`.
@@ -254,7 +259,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ofb128(
 }
 
 /**
- * Encrypts a 128-bit block using AES-128 in CTR mode of operation.
+ * \brief Encrypts a 128-bit block using AES-128 in CTR mode of operation.
  *
  * \param[in] plain The plaintext to be encrypted.
  * \param[in] key_schedule The AES-128 encryption key schedule. Must not be `NULL`.
@@ -277,7 +282,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ctr128(
 }
 
 /**
- * Decrypts a 128-bit block using AES-128 in CTR mode of operation.
+ * \brief Decrypts a 128-bit block using AES-128 in CTR mode of operation.
  *
  * \param[in] cipher The ciphertext to be decrypted.
  * \param[in] key_schedule The AES-128 **encryption** key schedule. Must not be `NULL`.
@@ -300,7 +305,14 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ctr128(
 }
 
 /**
- * Expands a key schedule for AES-192 encryption.
+ * \}
+ *
+ * \defgroup aesni_block_api_aes192 AES-192
+ * \{
+ */
+
+/**
+ * \brief Expands a key schedule for AES-192 encryption.
  *
  * \param[in] key The AES-192 key. Must not be `NULL`.
  * \param[out] key_schedule The AES-192 encryption key schedule. Must not be `NULL`.
@@ -316,7 +328,7 @@ static __inline void __fastcall aesni_expand_key_schedule192(
 }
 
 /**
- * "Reverses" a key schedule for AES-192 "equivalent inverse cipher" decryption.
+ * \brief "Reverses" a key schedule for AES-192 "equivalent inverse cipher" decryption.
  *
  * \param[in] key_schedule The AES-192 encryption key schedule. Must not be `NULL`.
  * \param[out] inverted_schedule The AES-192 decryption key schedule. Must not be `NULL`.
@@ -332,7 +344,7 @@ static __inline void __fastcall aesni_invert_key_schedule192(
 }
 
 /**
- * Encrypts a 128-bit block using AES-192 in ECB mode of operation.
+ * \brief Encrypts a 128-bit block using AES-192 in ECB mode of operation.
  *
  * \param[in] plain The plaintext to be encrypted.
  * \param[in] key_schedule The AES-192 encryption schedule. Must not be `NULL`.
@@ -348,7 +360,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ecb192(
 }
 
 /**
- * Decrypts a 128-bit block using AES-192 in ECB mode of operation.
+ * \brief Decrypts a 128-bit block using AES-192 in ECB mode of operation.
  *
  * \param[in] cipher The ciphertext to be decrypted.
  * \param[in] inverted_schedule The AES-192 decryption (reversed) key schedule. Must not be `NULL`.
@@ -364,7 +376,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ecb192(
 }
 
 /**
- * Encrypts a 128-bit block using AES-192 in CBC mode of operation.
+ * \brief Encrypts a 128-bit block using AES-192 in CBC mode of operation.
  *
  * \param[in] plain The plaintext to be encrypted.
  * \param[in] key_schedule The AES-192 encryption schedule. Must not be `NULL`.
@@ -387,7 +399,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cbc192(
 }
 
 /**
- * Decrypts a 128-bit block using AES-192 in CBC mode of operation.
+ * \brief Decrypts a 128-bit block using AES-192 in CBC mode of operation.
  *
  * \param[in] cipher The ciphertext to be decrypted.
  * \param[in] inverted_schedule The AES-192 decryption (reversed) key schedule. Must not be `NULL`.
@@ -410,7 +422,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cbc192(
 }
 
 /**
- * Encrypts a 128-bit block using AES-192 in CFB mode of operation.
+ * \brief Encrypts a 128-bit block using AES-192 in CFB mode of operation.
  *
  * \param[in] plain The plaintext to be encrypted.
  * \param[in] key_schedule The AES-192 encryption schedule. Must not be `NULL`.
@@ -433,7 +445,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cfb192(
 }
 
 /**
- * Decrypts a 128-bit block using AES-192 in CFB mode of operation.
+ * \brief Decrypts a 128-bit block using AES-192 in CFB mode of operation.
  *
  * \param[in] cipher The ciphertext to be decrypted.
  * \param[in] key_schedule The AES-192 **encryption** key schedule. Must not be `NULL`.
@@ -456,7 +468,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cfb192(
 }
 
 /**
- * Encrypts a 128-bit block using AES-192 in OFB mode of operation.
+ * \brief Encrypts a 128-bit block using AES-192 in OFB mode of operation.
  *
  * \param[in] plain The plaintext to be encrypted.
  * \param[in] key_schedule The AES-192 encryption schedule. Must not be `NULL`.
@@ -479,7 +491,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ofb192(
 }
 
 /**
- * Decrypts a 128-bit block using AES-192 in OFB mode of operation.
+ * \brief Decrypts a 128-bit block using AES-192 in OFB mode of operation.
  *
  * \param[in] cipher The ciphertext to be decrypted.
  * \param[in] key_schedule The AES-192 **encryption** key schedule. Must not be `NULL`.
@@ -502,7 +514,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ofb192(
 }
 
 /**
- * Encrypts a 128-bit block using AES-192 in CTR mode of operation.
+ * \brief Encrypts a 128-bit block using AES-192 in CTR mode of operation.
  *
  * \param[in] plain The plaintext to be encrypted.
  * \param[in] key_schedule The AES-192 encryption key schedule. Must not be `NULL`.
@@ -525,7 +537,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ctr192(
 }
 
 /**
- * Decrypts a 128-bit block using AES-192 in CTR mode of operation.
+ * \brief Decrypts a 128-bit block using AES-192 in CTR mode of operation.
  *
  * \param[in] cipher The ciphertext to be decrypted.
  * \param[in] key_schedule The AES-192 **encryption** key schedule. Must not be `NULL`.
@@ -548,7 +560,14 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ctr192(
 }
 
 /**
- * Expands a key schedule for AES-256 encryption.
+ * \}
+ *
+ * \defgroup aesni_block_api_aes256 AES-256
+ * \{
+ */
+
+/**
+ * \brief Expands a key schedule for AES-256 encryption.
  *
  * \param[in] key The AES-256 key. Must not be `NULL`.
  * \param[out] key_schedule The AES-256 encryption key schedule. Must not be `NULL`.
@@ -564,7 +583,7 @@ static __inline void __fastcall aesni_expand_key_schedule256(
 }
 
 /**
- * "Reverses" a key schedule for AES-256 "equivalent inverse cipher" decryption.
+ * \brief "Reverses" a key schedule for AES-256 "equivalent inverse cipher" decryption.
  *
  * \param[in] key_schedule The AES-256 encryption key schedule. Must not be `NULL`.
  * \param[out] inverted_schedule The AES-256 decryption key schedule. Must not be `NULL`.
@@ -580,7 +599,7 @@ static __inline void __fastcall aesni_invert_key_schedule256(
 }
 
 /**
- * Encrypts a 128-bit block using AES-256 in ECB mode of operation.
+ * \brief Encrypts a 128-bit block using AES-256 in ECB mode of operation.
  *
  * \param[in] plain The plaintext to be encrypted.
  * \param[in] key_schedule The AES-256 encryption schedule. Must not be `NULL`.
@@ -596,7 +615,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ecb256(
 }
 
 /**
- * Decrypts a 128-bit block using AES-256 in ECB mode of operation.
+ * \brief Decrypts a 128-bit block using AES-256 in ECB mode of operation.
  *
  * \param[in] cipher The ciphertext to be decrypted.
  * \param[in] inverted_schedule The AES-256 decryption (reversed) key schedule. Must not be `NULL`.
@@ -612,7 +631,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ecb256(
 }
 
 /**
- * Encrypts a 128-bit block using AES-256 in CBC mode of operation.
+ * \brief Encrypts a 128-bit block using AES-256 in CBC mode of operation.
  *
  * \param[in] plain The plaintext to be encrypted.
  * \param[in] key_schedule The AES-256 encryption schedule. Must not be `NULL`.
@@ -635,7 +654,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cbc256(
 }
 
 /**
- * Decrypts a 128-bit block using AES-256 in CBC mode of operation.
+ * \brief Decrypts a 128-bit block using AES-256 in CBC mode of operation.
  *
  * \param[in] cipher The ciphertext to be decrypted.
  * \param[in] inverted_schedule The AES-256 decryption (reversed) key schedule. Must not be `NULL`.
@@ -658,7 +677,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cbc256(
 }
 
 /**
- * Encrypts a 128-bit block using AES-256 in CFB mode of operation.
+ * \brief Encrypts a 128-bit block using AES-256 in CFB mode of operation.
  *
  * \param[in] plain The plaintext to be encrypted.
  * \param[in] key_schedule The AES-256 encryption schedule. Must not be `NULL`.
@@ -681,7 +700,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cfb256(
 }
 
 /**
- * Decrypts a 128-bit block using AES-256 in CFB mode of operation.
+ * \brief Decrypts a 128-bit block using AES-256 in CFB mode of operation.
  *
  * \param[in] cipher The ciphertext to be decrypted.
  * \param[in] key_schedule The AES-256 **encryption** key schedule. Must not be `NULL`.
@@ -704,7 +723,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cfb256(
 }
 
 /**
- * Encrypts a 128-bit block using AES-256 in OFB mode of operation.
+ * \brief Encrypts a 128-bit block using AES-256 in OFB mode of operation.
  *
  * \param[in] plain The plaintext to be encrypted.
  * \param[in] key_schedule The AES-256 encryption schedule. Must not be `NULL`.
@@ -727,7 +746,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ofb256(
 }
 
 /**
- * Decrypts a 128-bit block using AES-256 in OFB mode of operation.
+ * \brief Decrypts a 128-bit block using AES-256 in OFB mode of operation.
  *
  * \param[in] cipher The ciphertext to be decrypted.
  * \param[in] key_schedule The AES-256 **encryption** key schedule. Must not be `NULL`.
@@ -750,7 +769,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ofb256(
 }
 
 /**
- * Encrypts a 128-bit block using AES-256 in CTR mode of operation.
+ * \brief Encrypts a 128-bit block using AES-256 in CTR mode of operation.
  *
  * \param[in] plain The plaintext to be encrypted.
  * \param[in] key_schedule The AES-256 encryption key schedule. Must not be `NULL`.
@@ -773,7 +792,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ctr256(
 }
 
 /**
- * Decrypts a 128-bit block using AES-256 in CTR mode of operation.
+ * \brief Decrypts a 128-bit block using AES-256 in CTR mode of operation.
  *
  * \param[in] cipher The ciphertext to be decrypted.
  * \param[in] key_schedule The AES-256 **encryption** key schedule. Must not be `NULL`.
@@ -794,6 +813,10 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ctr256(
     init_vector = aesni_be2le128(init_vector);
     return _mm_xor_si128(cipher, aesni_raw_encrypt_block256(init_vector, key_schedule));
 }
+
+/**
+ * \}
+ */
 
 #ifdef __cplusplus
 }

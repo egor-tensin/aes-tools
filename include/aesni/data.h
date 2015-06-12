@@ -5,10 +5,17 @@
  * \copyright This file is licensed under the terms of the MIT License.
  *            See LICENSE.txt for details.
  * \brief Declares necessary data structures (for blocks, keys, etc.)
- *        and auxiliary IO functions.
+ *        and auxiliary I/O functions.
  */
 
 #pragma once
+
+/**
+ * \defgroup aesni_data Data
+ * \brief Data structures and I/O functions
+ * \ingroup aesni
+ * \{
+ */
 
 #include <emmintrin.h>
 #include <tmmintrin.h>
@@ -18,31 +25,108 @@ extern "C"
 {
 #endif
 
+/**
+ * \brief Represents a 128-bit block.
+ */
 typedef __m128i AesNI_Block128;
 
+/**
+ * \brief Loads a 128-bit block from a memory location.
+ *
+ * \param[in] src The pointer to a memory location. Must not be `NULL`.
+ * \return The loaded 128-bit block.
+ */
 static __inline AesNI_Block128 aesni_load_block128(const void* src)
 {
     return _mm_loadu_si128((AesNI_Block128*) src);
 }
 
+/**
+ * \brief Loads a 128-bit block from a 16-byte aligned memory location.
+ *
+ * \param[in] src The pointer to a 16-byte aligned memory location. Must not be `NULL`.
+ * \return The loaded 128-bit block.
+ */
+static __inline AesNI_Block128 aseni_load_block128_aligned(const void* src)
+{
+    return _mm_load_si128((AesNI_Block128*) src);
+}
+
+/**
+ * \brief Stores a 128-bit block in a memory location.
+ *
+ * \param[out] dest The pointer to a memory location. Must not be `NULL`.
+ * \param[in] block The block to be stored.
+ */
 static __inline void __fastcall aesni_store_block128(
     void* dest, AesNI_Block128 block)
 {
     _mm_storeu_si128((AesNI_Block128*) dest, block);
 }
 
+/**
+ * \brief Stores a 128-bit block in a 16-byte aligned memory location.
+ *
+ * \param[out] dest The pointer to a 16-byte aligned memory location. Must not be `NULL`.
+ * \param[in] block The block to be stored.
+ */
+static __inline void __fastcall aesni_store_block128_aligned(
+    void* dest, AesNI_Block128 block)
+{
+    _mm_store_si128((AesNI_Block128*) dest, block);
+}
+
+/**
+ * \brief Builds a 128-bit block from four 4-byte values.
+ *
+ * Builds a 128-bit block like this:
+ *
+ * * dest[127:96] = hi3
+ * * dest[95:64] = hi2
+ * * dest[63:32] = lo1
+ * * dest[31:0] = lo0
+ *
+ * \param[in] hi3 The most significant 4-byte value.
+ * \param[in] hi2 The more significant 4-byte value.
+ * \param[in] lo1 The less significant 4-byte value.
+ * \param[in] lo0 The least significant 4-byte value.
+ * \return The built 128-bit block.
+ */
 static __inline AesNI_Block128 __fastcall aesni_make_block128(int hi3, int hi2, int lo1, int lo0)
 {
     return _mm_set_epi32(hi3, hi2, lo1, lo0);
 }
 
+/**
+ * \brief Represents a 192-bit block.
+ */
 typedef struct
 {
-    AesNI_Block128 hi;
-    AesNI_Block128 lo;
+    AesNI_Block128 hi; ///< The most significant 64 bits. The higher 64 bits are ignored.
+    AesNI_Block128 lo; ///< The least significant 128 bits.
 }
 AesNI_Block192;
 
+/**
+ * \brief Builds a 192-bit block from six 4-byte values.
+ *
+ * Builds a 192-bit block like this:
+ *
+ * * dest[191:160] = hi5
+ * * dest[159:128] = hi4
+ * * dest[127:96] = lo3
+ * * dest[95:64] = lo2
+ * * dest[63:32] = lo1
+ * * dest[31:0] = lo0
+ *
+ * \param[in] hi5 The most significant 4-byte value (bits 160--191).
+ * \param[in] hi4 The more significant 4-byte value (bits 128--159).
+ * \param[in] lo3 The 4-byte value to be stored in bits 96--127.
+ * \param[in] lo2 The 4-byte value to be stored in bits 64--95.
+ * \param[in] lo1 The less significant 4-byte value (bits 32--63).
+ * \param[in] lo0 The least significant 4-byte value (bits 0--31).
+ * \return The built 192-bit block.
+ */
 static __inline AesNI_Block192 __fastcall aesni_make_block192(int hi5, int hi4, int lo3, int lo2, int lo1, int lo0)
 {
     AesNI_Block192 result;
@@ -51,13 +135,40 @@ static __inline AesNI_Block192 __fastcall aesni_make_block192(int hi5, int hi4, 
     return result;
 }
 
+/**
+ * \brief Represents a 256-bit block.
+ */
 typedef struct
 {
-    AesNI_Block128 hi;
-    AesNI_Block128 lo;
+    AesNI_Block128 hi; ///< The most significant 128 bits.
+    AesNI_Block128 lo; ///< The least significant 128 bits.
 }
 AesNI_Block256;
 
+/**
+ * \brief Builds a 256-bit block from eight 4-byte values.
+ *
+ * Builds a 256-bit block like this:
+ *
+ * * dest[255:224] = hi7
+ * * dest[223:192] = hi6
+ * * dest[191:160] = hi5
+ * * dest[159:128] = hi4
+ * * dest[127:96] = lo3
+ * * dest[95:64] = lo2
+ * * dest[63:32] = lo1
+ * * dest[31:0] = lo0
+ *
+ * \param[in] hi7 The 4-byte value to be stored in bits 224--255.
+ * \param[in] hi6 The 4-byte value to be stored in bits 192--223.
+ * \param[in] hi5 The 4-byte value to be stored in bits 160--191.
+ * \param[in] hi4 The 4-byte value to be stored in bits 128--159.
+ * \param[in] lo3 The 4-byte value to be stored in bits 96--127.
+ * \param[in] lo2 The 4-byte value to be stored in bits 64--95.
+ * \param[in] lo1 The 4-byte value to be stored in bits 32--63.
+ * \param[in] lo0 The 4-byte value to be stored in bits 0--31.
+ * \return The built 256-bit block.
+ */
 static __inline AesNI_Block256 __fastcall aesni_make_block256(int hi7, int hi6, int hi5, int hi4, int lo3, int lo2, int lo1, int lo0)
 {
     AesNI_Block256 result;
@@ -162,3 +273,7 @@ int aesni_parse_block256_be(AesNI_Block256*, const char*);
 #ifdef __cplusplus
 }
 #endif
+
+/**
+ * \}
+ */
