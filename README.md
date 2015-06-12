@@ -17,6 +17,11 @@ You can then run a program like this:
     > sde -- aes128ecb_encrypt_block.exe 000102030405060708090a0b0c0d0e0f 00112233445566778899aabbccddeeff
     69c4e0d86a7b0430d8cdb78070b4c55a
 
+## Documentation
+
+You can generate the docs using [Doxygen](http://www.stack.nl/~dimitri/doxygen/).
+The docs will be put into the `doc` directory in the repository's root.
+
 ## Testing
 
 See [Testing](https://github.com/egor-tensin/aesni/tree/master/test#testing).

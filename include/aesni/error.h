@@ -4,6 +4,7 @@
  * \date 2015
  * \copyright This file is licensed under the terms of the MIT License.
  *            See LICENSE.txt for details.
+ * \brief Declares error codes, error formatting functions, etc.
  */
 
 #pragma once
