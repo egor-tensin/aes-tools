@@ -4,8 +4,9 @@
  * \date 2015
  * \copyright This file is licensed under the terms of the MIT License.
  *            See LICENSE.txt for details.
- * \brief Declares necessary data structures (for blocks, keys, etc.)
- *        and auxiliary I/O functions.
+ *
+ * \brief Declares necessary data structures (for blocks, keys, etc.) and
+ * auxiliary I/O functions.
  */
 
 #pragma once
@@ -44,7 +45,8 @@ static __inline AesNI_Block128 aesni_load_block128(const void* src)
 /**
  * \brief Loads a 128-bit block from a 16-byte aligned memory location.
  *
- * \param[in] src The pointer to a 16-byte aligned memory location. Must not be `NULL`.
+ * \param[in] src The pointer to a 16-byte aligned memory location. Must not be
+ * `NULL`.
  * \return The loaded 128-bit block.
  */
 static __inline AesNI_Block128 aseni_load_block128_aligned(const void* src)
@@ -67,7 +69,8 @@ static __inline void __fastcall aesni_store_block128(
 /**
  * \brief Stores a 128-bit block in a 16-byte aligned memory location.
  *
- * \param[out] dest The pointer to a 16-byte aligned memory location. Must not be `NULL`.
+ * \param[out] dest The pointer to a 16-byte aligned memory location. Must not
+ * be `NULL`.
  * \param[in] block The block to be stored.
  */
 static __inline void __fastcall aesni_store_block128_aligned(
@@ -92,7 +95,8 @@ static __inline void __fastcall aesni_store_block128_aligned(
  * \param[in] lo0 The least significant 4-byte value.
  * \return The built 128-bit block.
  */
-static __inline AesNI_Block128 __fastcall aesni_make_block128(int hi3, int hi2, int lo1, int lo0)
+static __inline AesNI_Block128 __fastcall aesni_make_block128(
+    int hi3, int hi2, int lo1, int lo0)
 {
     return _mm_set_epi32(hi3, hi2, lo1, lo0);
 }
@@ -102,7 +106,7 @@ static __inline AesNI_Block128 __fastcall aesni_make_block128(int hi3, int hi2, 
  */
 typedef struct
 {
-    AesNI_Block128 hi; ///< The most significant 64 bits. The higher 64 bits are ignored.
+    AesNI_Block128 hi; ///< The most significant 64 bits.
     AesNI_Block128 lo; ///< The least significant 128 bits.
 }
 AesNI_Block192;
@@ -127,10 +131,11 @@ AesNI_Block192;
  * \param[in] lo0 The least significant 4-byte value (bits 0--31).
  * \return The built 192-bit block.
  */
-static __inline AesNI_Block192 __fastcall aesni_make_block192(int hi5, int hi4, int lo3, int lo2, int lo1, int lo0)
+static __inline AesNI_Block192 __fastcall aesni_make_block192(
+    int hi5, int hi4, int lo3, int lo2, int lo1, int lo0)
 {
     AesNI_Block192 result;
-    result.hi = aesni_make_block128(  0,   0, hi5, hi4);
+    result.hi = aesni_make_block128(0, 0, hi5, hi4);
     result.lo = aesni_make_block128(lo3, lo2, lo1, lo0);
     return result;
 }
@@ -169,7 +174,8 @@ AesNI_Block256;
  * \param[in] lo0 The 4-byte value to be stored in bits 0--31.
  * \return The built 256-bit block.
  */
-static __inline AesNI_Block256 __fastcall aesni_make_block256(int hi7, int hi6, int hi5, int hi4, int lo3, int lo2, int lo1, int lo0)
+static __inline AesNI_Block256 __fastcall aesni_make_block256(
+    int hi7, int hi6, int hi5, int hi4, int lo3, int lo2, int lo1, int lo0)
 {
     AesNI_Block256 result;
     result.hi = aesni_make_block128(hi7, hi6, hi5, hi4);
@@ -195,9 +201,11 @@ typedef struct
 }
 AesNI_KeySchedule256;
 
-static __inline AesNI_Block128 __fastcall aesni_reverse_byte_order128(AesNI_Block128 block)
+static __inline AesNI_Block128 __fastcall aesni_reverse_byte_order128(
+    AesNI_Block128 block)
 {
-    return _mm_shuffle_epi8(block, aesni_make_block128(0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f));
+    return _mm_shuffle_epi8(block, aesni_make_block128(
+        0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f));
 }
 
 static __inline AesNI_Block128 __fastcall aesni_le2be128(AesNI_Block128 block)

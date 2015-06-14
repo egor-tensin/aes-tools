@@ -4,6 +4,7 @@
  * \date 2015
  * \copyright This file is licensed under the terms of the MIT License.
  *            See LICENSE.txt for details.
+ *
  * \brief Declares error codes, error formatting functions, etc.
  */
 
@@ -111,8 +112,8 @@ static __inline AesNI_StatusCode aesni_get_error_code(
  * \param[out] dest The pointer to the destination string buffer.
  * \param[in] dest_size The size of the destination buffer, in bytes.
  * \return If `dest` is NULL, the number of bytes required to store the full
- *         error message, and the number of characters written (excluding the
- *         terminating '\0' character) otherwise.
+ * error message, and the number of characters written (excluding the
+ * terminating '\0' character) otherwise.
  */
 size_t aesni_format_error(
     const AesNI_ErrorDetails* err_details,

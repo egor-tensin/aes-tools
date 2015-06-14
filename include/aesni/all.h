@@ -4,8 +4,9 @@
  * \date 2015
  * \copyright This file is licensed under the terms of the MIT License.
  *            See LICENSE.txt for details.
- * \brief Include this file to use libaesni.
- *        Includes all of the other libaesni's header files.
+ *
+ * \brief Include this file to use the library. Includes all the other header
+ * files.
  */
 
 #pragma once
