@@ -28,7 +28,7 @@ namespace aesni
 
         ~ErrorDetailsThrowsInDestructor()
         {
-            if (aesni_get_error_code(get()) != AESNI_ERROR_SUCCESS)
+            if (aesni_is_error(aesni_get_error_code(get())))
             {
                 std::vector<char> msg;
                 msg.resize(aesni_format_error(get(), NULL, 0));

@@ -18,20 +18,20 @@ extern "C"
 {
 #endif
 
-int aesni_encrypt_buffer_ecb128(
+AesNI_StatusCode aesni_encrypt_buffer_ecb128(
     const void* src,
     size_t src_size,
     void* dest,
     size_t* dest_size,
     AesNI_KeySchedule128* key_schedule,
-    AesNI_ErrorDetails*);
-int aesni_decrypt_buffer_ecb128(
+    AesNI_ErrorDetails* err_details);
+AesNI_StatusCode aesni_decrypt_buffer_ecb128(
     const void* src,
     size_t src_size,
     void* dest,
     size_t* dest_size,
     AesNI_KeySchedule128* inverted_schedule,
-    AesNI_ErrorDetails*);
+    AesNI_ErrorDetails* err_details);
 
 #ifdef __cplusplus
 }
