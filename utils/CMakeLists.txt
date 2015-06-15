@@ -1,5 +1,3 @@
-add_subdirectory(cxx)
-
 macro(util prefix)
     add_executable(util_${prefix} ${prefix}.cpp)
     target_link_libraries(util_${prefix} libaesnixx libaesni)
