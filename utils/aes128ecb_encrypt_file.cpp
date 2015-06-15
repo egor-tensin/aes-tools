@@ -42,14 +42,10 @@ int main(int argc, char** argv)
     if (argc != 4)
         exit_with_usage();
 
-    if (aesni_parse_block128(&key, argv[1]) != 0)
-    {
-        std::cerr << "Invalid 128-bit AES block '" << argv[1] << "'\n";
-        exit_with_usage();
-    }
-
     try
     {
+        aesni_parse_block128(&key, argv[1], aesni::ErrorDetailsThrowsInDestructor());
+
         const std::string src_path(argv[2]);
         const std::string dest_path(argv[3]);
 

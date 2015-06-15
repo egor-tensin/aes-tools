@@ -28,13 +28,13 @@ int main(int argc, char** argv)
         if (argc < 2)
             exit_with_usage();
 
-        if (aesni_parse_block128(&key, *argv) != 0)
+        if (aesni_is_error(aesni_parse_block128(&key, *argv, NULL)))
         {
             fprintf(stderr, "Invalid 128-bit AES block '%s'\n", *argv);
             exit_with_usage();
         }
 
-        if (aesni_parse_block128(&iv, argv[1]) != 0)
+        if (aesni_is_error(aesni_parse_block128(&iv, argv[1], NULL)))
         {
             fprintf(stderr, "Invalid 128-bit AES block '%s'\n", argv[1]);
             exit_with_usage();
@@ -47,7 +47,7 @@ int main(int argc, char** argv)
             if (strcmp("--", *argv) == 0)
                 break;
 
-            if (aesni_parse_block128(&cipher, *argv) != 0)
+            if (aesni_is_error(aesni_parse_block128(&cipher, *argv, NULL)))
             {
                 fprintf(stderr, "Invalid 128-bit AES block '%s'\n", *argv);
                 continue;

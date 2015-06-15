@@ -22,7 +22,7 @@ AesNI_StatusCode aesni_encrypt_buffer_ecb128(
     AesNI_ErrorDetails* err_details)
 {
     if (dest_size == NULL)
-        return aesni_make_error_null_argument(err_details, "dest_size");
+        return aesni_make_null_argument_error(err_details, "dest_size");
 
     const size_t rem_size = src_size % 16;
     const size_t padding_size = 16 - rem_size;
@@ -31,9 +31,9 @@ AesNI_StatusCode aesni_encrypt_buffer_ecb128(
     if (dest == NULL)
         return AESNI_SUCCESS;
     if (src == NULL)
-        return aesni_make_error_null_argument(err_details, "src");
+        return aesni_make_null_argument_error(err_details, "src");
     if (key_schedule == NULL)
-        return aesni_make_error_null_argument(err_details, "key_schedule");
+        return aesni_make_null_argument_error(err_details, "key_schedule");
 
     const size_t src_len = src_size / 16;
 
@@ -84,16 +84,16 @@ AesNI_StatusCode aesni_decrypt_buffer_ecb128(
     AesNI_ErrorDetails* err_details)
 {
     if (dest_size == NULL)
-        return aesni_make_error_null_argument(err_details, "dest_size");
+        return aesni_make_null_argument_error(err_details, "dest_size");
 
     *dest_size = src_size;
 
     if (dest == NULL)
         return 0;
     if (src == NULL)
-        return aesni_make_error_null_argument(err_details, "src");
+        return aesni_make_null_argument_error(err_details, "src");
     if (inverted_schedule == NULL)
-        return aesni_make_error_null_argument(err_details, "inverted_schedule");
+        return aesni_make_null_argument_error(err_details, "inverted_schedule");
 
     const size_t src_len = src_size / 16;
 
@@ -112,7 +112,7 @@ AesNI_StatusCode aesni_decrypt_buffer_ecb128(
     unsigned char padding_size = get_pkcs7_padding_size(padding);
 
     if (padding_size == 0)
-        return aesni_make_error_invalid_pkcs7_padding(err_details);
+        return aesni_make_invalid_pkcs7_padding_error(err_details);
 
     memcpy(dest, padding, 16 - padding_size);
     *dest_size -= padding_size;

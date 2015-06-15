@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include "error.h"
+
 /**
  * \defgroup aesni_data Data
  * \brief Data structures and I/O functions
@@ -49,7 +51,7 @@ static __inline AesNI_Block128 aesni_load_block128(const void* src)
  * `NULL`.
  * \return The loaded 128-bit block.
  */
-static __inline AesNI_Block128 aseni_load_block128_aligned(const void* src)
+static __inline AesNI_Block128 aesni_load_block128_aligned(const void* src)
 {
     return _mm_load_si128((AesNI_Block128*) src);
 }
@@ -201,11 +203,9 @@ typedef struct
 }
 AesNI_KeySchedule256;
 
-static __inline AesNI_Block128 __fastcall aesni_reverse_byte_order128(
-    AesNI_Block128 block)
+static __inline AesNI_Block128 __fastcall aesni_reverse_byte_order128(AesNI_Block128 block)
 {
-    return _mm_shuffle_epi8(block, aesni_make_block128(
-        0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f));
+    return _mm_shuffle_epi8(block, aesni_make_block128(0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f));
 }
 
 static __inline AesNI_Block128 __fastcall aesni_le2be128(AesNI_Block128 block)
@@ -226,14 +226,6 @@ AesNI_BlockString128 aesni_format_block128(AesNI_Block128*);
 AesNI_BlockString192 aesni_format_block192(AesNI_Block192*);
 AesNI_BlockString256 aesni_format_block256(AesNI_Block256*);
 
-AesNI_BlockString128 aesni_format_block128_le(AesNI_Block128*);
-AesNI_BlockString192 aesni_format_block192_le(AesNI_Block192*);
-AesNI_BlockString256 aesni_format_block256_le(AesNI_Block256*);
-
-AesNI_BlockString128 aesni_format_block128_be(AesNI_Block128*);
-AesNI_BlockString192 aesni_format_block192_be(AesNI_Block192*);
-AesNI_BlockString256 aesni_format_block256_be(AesNI_Block256*);
-
 typedef struct { char str[49]; } AesNI_BlockMatrixString128;
 typedef struct { char str[73]; } AesNI_BlockMatrixString192;
 typedef struct { char str[97]; } AesNI_BlockMatrixString256;
@@ -242,41 +234,44 @@ AesNI_BlockMatrixString128 aesni_format_block128_as_matrix(AesNI_Block128*);
 AesNI_BlockMatrixString192 aesni_format_block192_as_matrix(AesNI_Block192*);
 AesNI_BlockMatrixString256 aesni_format_block256_as_matrix(AesNI_Block256*);
 
-AesNI_BlockMatrixString128 aesni_format_block128_be_as_matrix(AesNI_Block128*);
-AesNI_BlockMatrixString192 aesni_format_block192_be_as_matrix(AesNI_Block192*);
-AesNI_BlockMatrixString256 aesni_format_block256_be_as_matrix(AesNI_Block256*);
-
 void aesni_print_block128(AesNI_Block128*);
 void aesni_print_block192(AesNI_Block192*);
 void aesni_print_block256(AesNI_Block256*);
-
-void aesni_print_block128_le(AesNI_Block128*);
-void aesni_print_block192_le(AesNI_Block192*);
-void aesni_print_block256_le(AesNI_Block256*);
-
-void aesni_print_block128_be(AesNI_Block128*);
-void aesni_print_block192_be(AesNI_Block192*);
-void aesni_print_block256_be(AesNI_Block256*);
 
 void aesni_print_block128_as_matrix(AesNI_Block128*);
 void aesni_print_block192_as_matrix(AesNI_Block192*);
 void aesni_print_block256_as_matrix(AesNI_Block256*);
 
-void aesni_print_block128_be_as_matrix(AesNI_Block128*);
-void aesni_print_block192_be_as_matrix(AesNI_Block192*);
-void aesni_print_block256_be_as_matrix(AesNI_Block256*);
+AesNI_StatusCode aesni_parse_block128(
+    AesNI_Block128* dest,
+    const char* src,
+    AesNI_ErrorDetails* err_details);
 
-int aesni_parse_block128(AesNI_Block128*, const char*);
-int aesni_parse_block192(AesNI_Block192*, const char*);
-int aesni_parse_block256(AesNI_Block256*, const char*);
+AesNI_StatusCode aesni_parse_block192(
+    AesNI_Block192* dest,
+    const char* src,
+    AesNI_ErrorDetails* err_details);
 
-int aesni_parse_block128_le(AesNI_Block128*, const char*);
-int aesni_parse_block192_le(AesNI_Block192*, const char*);
-int aesni_parse_block256_le(AesNI_Block256*, const char*);
-
-int aesni_parse_block128_be(AesNI_Block128*, const char*);
-int aesni_parse_block192_be(AesNI_Block192*, const char*);
-int aesni_parse_block256_be(AesNI_Block256*, const char*);
+/**
+ * \brief Parses a 256-bit block, from the least significant to the most significant byte.
+ *
+ * The block is parsed from a hexadecimal number represented using the big endian notation.
+ *
+ * The source string may optionally start with "0x" or "0X".
+ * Then 64 characters in the range [0-9a-fA-F] must follow.
+ *
+ * \param[out] dest The pointer to the parsed block. Must not be `NULL`.
+ * \param[in] src The pointer to the source C string. Must not be `NULL`.
+ * \param[out] err_details The error details structure.
+ * \retval AESNI_SUCCESS If parsed successfully.
+ * \retval AESNI_NULL_ARGUMENT_ERROR If either `dest` or `src` is `NULL`.
+ * \retval AESNI_PARSE_ERROR If `src` couldn't be parsed as a valid 256-bit block.
+ * \sa aesni_error_handling.
+ */
+AesNI_StatusCode aesni_parse_block256(
+    AesNI_Block256* dest,
+    const char* src,
+    AesNI_ErrorDetails* err_details);
 
 #ifdef __cplusplus
 }

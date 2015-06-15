@@ -23,7 +23,7 @@ namespace aesni
     public:
         ErrorDetailsThrowsInDestructor()
         {
-            aesni_make_error_success(get());
+            aesni_initialize_error_details(get());
         }
 
         ~ErrorDetailsThrowsInDestructor()

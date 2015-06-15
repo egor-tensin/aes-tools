@@ -15,8 +15,9 @@
 
 static const char* err_msgs[] =
 {
-    "Success",
+    "OK",
     "Invalid argument value NULL",
+    "Couldn't parse",
     "Invalid PKCS7 padding (wrong key?)",
 };
 
@@ -41,18 +42,33 @@ static size_t aesni_format_error_strerror(
     return strlen(dest);
 }
 
-static size_t aesni_format_error_null_argument(
+static size_t aesni_format_null_argument_error(
     const AesNI_ErrorDetails* err_details,
     char* dest,
     size_t dest_size)
 {
     static const char* const fmt = "Invalid argument value NULL (argument name: '%s')";
-    const char* const arg_name = err_details->params.null_arg.arg_name;
+    const char* const param_name = err_details->params.null_arg_error.param_name;
 
     if (dest == NULL && dest_size == 0)
-        return _snprintf(NULL, 0, fmt, arg_name) + 1;
+        return _snprintf(NULL, 0, fmt, param_name) + 1;
 
-    _snprintf(dest, dest_size, fmt, arg_name);
+    _snprintf(dest, dest_size, fmt, param_name);
+    return strlen(dest);
+}
+
+static size_t aesni_format_parse_error(
+    const AesNI_ErrorDetails* err_details,
+    char* dest,
+    size_t dest_size)
+{
+    static const char* const fmt = "Couldn't parse '%s'";
+    const char* const src = err_details->params.parse_error.src;
+
+    if (dest == NULL)
+        return _snprintf(NULL, 0, fmt, src) + 1;
+
+    _snprintf(dest, dest_size, fmt, src);
     return strlen(dest);
 }
 
@@ -61,7 +77,8 @@ typedef size_t (*AesNI_ErrorFormatter)(const AesNI_ErrorDetails*, char*, size_t)
 static AesNI_ErrorFormatter err_formatters[] =
 {
     &aesni_format_error_strerror,
-    &aesni_format_error_null_argument,
+    &aesni_format_null_argument_error,
+    &aesni_format_error_strerror,
     &aesni_format_error_strerror,
 };
 
@@ -85,27 +102,41 @@ static AesNI_StatusCode aesni_make_error(
     return err_details->ec = ec;
 }
 
-AesNI_StatusCode aesni_make_error_success(
+AesNI_StatusCode aesni_initialize_error_details(
     AesNI_ErrorDetails* err_details)
 {
     return aesni_make_error(err_details, AESNI_SUCCESS);
 }
 
-AesNI_StatusCode aesni_make_error_null_argument(
+AesNI_StatusCode aesni_make_null_argument_error(
     AesNI_ErrorDetails* err_details,
-    const char* arg_name)
+    const char* param_name)
 {
-    AesNI_StatusCode status = aesni_make_error(err_details, AESNI_ERROR_NULL_ARGUMENT);
+    AesNI_StatusCode status = aesni_make_error(
+        err_details, AESNI_NULL_ARGUMENT_ERROR);
 
-    const size_t arg_name_size = sizeof(err_details->params.null_arg.arg_name);
-    strncpy(err_details->params.null_arg.arg_name, arg_name, arg_name_size);
-    err_details->params.null_arg.arg_name[arg_name_size - 1] = '\0';
+    const size_t param_name_size = sizeof(err_details->params.null_arg_error.param_name);
+    strncpy(err_details->params.null_arg_error.param_name, param_name, param_name_size);
+    err_details->params.null_arg_error.param_name[param_name_size - 1] = '\0';
 
     return status;
 }
 
-AesNI_StatusCode aesni_make_error_invalid_pkcs7_padding(
+AesNI_StatusCode aesni_make_parse_error(
+    AesNI_ErrorDetails* err_details,
+    const char* src)
+{
+    AesNI_StatusCode status = aesni_make_error(err_details, AESNI_PARSE_ERROR);
+
+    const size_t src_size = sizeof(err_details->params.parse_error.src);
+    strncpy(err_details->params.parse_error.src, src, src_size);
+    err_details->params.parse_error.src[src_size - 1] = '\0';
+
+    return status;
+}
+
+AesNI_StatusCode aesni_make_invalid_pkcs7_padding_error(
     AesNI_ErrorDetails* err_details)
 {
-    return aesni_make_error(err_details, AESNI_ERROR_INVALID_PKCS7_PADDING);
+    return aesni_make_error(err_details, AESNI_INVALID_PKCS7_PADDING_ERROR);
 }

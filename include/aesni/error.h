@@ -44,11 +44,10 @@ extern "C"
  */
 typedef enum
 {
-    AESNI_SUCCESS, ///< Indicates an operation
-
-    AESNI_ERROR_NULL_ARGUMENT, ///< Invalid argument value NULL
-
-    AESNI_ERROR_INVALID_PKCS7_PADDING, ///< Invalid PKCS7 padding
+    AESNI_SUCCESS,             ///< Everything went fine
+    AESNI_NULL_ARGUMENT_ERROR, ///< Invalid argument value NULL
+    AESNI_PARSE_ERROR,         ///< Couldn't parse
+    AESNI_INVALID_PKCS7_PADDING_ERROR, ///< Invalid PKCS7 padding
 }
 AesNI_StatusCode;
 
@@ -62,7 +61,7 @@ static __inline int aesni_is_error(AesNI_StatusCode ec)
  *
  * For example,
  * \code{.c}
- * printf("%s\n", aesni_strerror(AESNI_ERROR_NULL_ARGUMENT));
+ * printf("%s\n", aesni_strerror(AESNI_NULL_ARGUMENT_ERROR));
  * \endcode
  * would print
  * \code
@@ -85,9 +84,17 @@ typedef struct
     {
         struct
         {
-            char arg_name[32]; ///< Name of the NULL argument
+            char param_name[32]; ///< Name of the NULL argument
         }
-        null_arg; ///< `NULL` argument error parameters
+        null_arg_error;
+        ///< `NULL` argument error (AESNI_NULL_ARGUMENT_ERROR) parameters
+
+        struct
+        {
+            char src[128]; ///< The string that failed to be parsed
+        }
+        parse_error;
+        ///< Parse error (AESNI_PARSE_ERROR) parameters
     }
     params;
 }
@@ -121,29 +128,39 @@ size_t aesni_format_error(
     size_t dest_size);
 
 /**
- * \brief Initializes error details structure.
+ * \brief Initializes an error details structure.
  *
  * \param[out] err_details The error details structure to fill.
  */
-AesNI_StatusCode aesni_make_error_success(
+AesNI_StatusCode aesni_initialize_error_details(
     AesNI_ErrorDetails* err_details);
 
 /**
  * \brief Builds error details from a `NULL` argument error.
  *
  * \param[out] err_details The error details structure to fill.
- * \param[in] arg_name The `NULL` argument name. Must not be `NULL`.
+ * \param[in] param_name The parameter name. Must not be `NULL`.
  */
-AesNI_StatusCode aesni_make_error_null_argument(
+AesNI_StatusCode aesni_make_null_argument_error(
     AesNI_ErrorDetails* err_details,
-    const char* arg_name);
+    const char* param_name);
+
+/**
+ * \brief Builds error details from a parse error.
+ *
+ * \param[out] err_details The error details structure to fill.
+ * \param[in] src The string that failed to be parsed.
+ */
+AesNI_StatusCode aesni_make_parse_error(
+    AesNI_ErrorDetails* err_details,
+    const char* src);
 
 /**
  * \brief Builds error details from an invalid PKCS7 padding error.
  *
  * \param[out] err_details The error details structure to fill.
  */
-AesNI_StatusCode aesni_make_error_invalid_pkcs7_padding(
+AesNI_StatusCode aesni_make_invalid_pkcs7_padding_error(
     AesNI_ErrorDetails* err_details);
 
 #ifdef __cplusplus
