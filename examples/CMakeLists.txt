@@ -1,6 +1,6 @@
 macro(example prefix)
-    add_executable(example_${prefix} ${prefix}.c)
-    target_link_libraries(example_${prefix} libaesni)
+    add_executable(example_${prefix} ${prefix}.cpp)
+    target_link_libraries(example_${prefix} libaesni libaesnixx)
     set_target_properties(example_${prefix} PROPERTIES OUTPUT_NAME ${prefix})
 endmacro()
 
