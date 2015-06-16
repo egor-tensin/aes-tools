@@ -14,12 +14,17 @@
 #include <stdio.h>
 #include <string.h>
 
-AesNI_BlockString128 aesni_format_block128(AesNI_Block128* block)
+AesNI_StatusCode aesni_format_block128(AesNI_BlockString128* str, const AesNI_Block128* block, AesNI_ErrorDetails* err_details)
 {
+    assert(str);
     assert(block);
 
-    AesNI_BlockString128 result;
-    char *cursor = result.str;
+    if (str == NULL)
+        return aesni_make_null_argument_error(err_details, "str");
+    if (block == NULL)
+        return aesni_make_null_argument_error(err_details, "block");
+
+    char* cursor = str->str;
 
     __declspec(align(16)) unsigned char bytes[16];
     aesni_store_block128_aligned(bytes, *block);
@@ -28,15 +33,20 @@ AesNI_BlockString128 aesni_format_block128(AesNI_Block128* block)
         sprintf(cursor, "%02x", bytes[i]);
 
     *cursor = '\0';
-    return result;
+    return aesni_initialize_error_details(err_details);
 }
 
-AesNI_BlockString192 aesni_format_block192(AesNI_Block192* block)
+AesNI_StatusCode aesni_format_block192(AesNI_BlockString192* str, const AesNI_Block192* block, AesNI_ErrorDetails* err_details)
 {
+    assert(str);
     assert(block);
 
-    AesNI_BlockString192 result;
-    char *cursor = result.str;
+    if (str == NULL)
+        return aesni_make_null_argument_error(err_details, "str");
+    if (block == NULL)
+        return aesni_make_null_argument_error(err_details, "block");
+
+    char* cursor = str->str;
 
     {
         __declspec(align(16)) unsigned char bytes[16];
@@ -55,15 +65,20 @@ AesNI_BlockString192 aesni_format_block192(AesNI_Block192* block)
     }
 
     *cursor = '\0';
-    return result;
+    return aesni_initialize_error_details(err_details);
 }
 
-AesNI_BlockString256 aesni_format_block256(AesNI_Block256* block)
+AesNI_StatusCode aesni_format_block256(AesNI_BlockString256* str, const AesNI_Block256* block, AesNI_ErrorDetails* err_details)
 {
+    assert(str);
     assert(block);
 
-    AesNI_BlockString256 result;
-    char *cursor = result.str;
+    if (str == NULL)
+        return aesni_make_null_argument_error(err_details, "str");
+    if (block == NULL)
+        return aesni_make_null_argument_error(err_details, "block");
+
+    char* cursor = str->str;
 
     {
         __declspec(align(16)) unsigned char bytes[16];
@@ -82,15 +97,20 @@ AesNI_BlockString256 aesni_format_block256(AesNI_Block256* block)
     }
 
     *cursor = '\0';
-    return result;
+    return aesni_initialize_error_details(err_details);
 }
 
-AesNI_BlockMatrixString128 aesni_format_block128_as_matrix(AesNI_Block128* block)
+AesNI_StatusCode aesni_format_block128_as_matrix(AesNI_BlockMatrixString128* str, const AesNI_Block128* block, AesNI_ErrorDetails* err_details)
 {
+    assert(str);
     assert(block);
 
-    AesNI_BlockMatrixString128 result;
-    char* cursor = result.str;
+    if (str == NULL)
+        return aesni_make_null_argument_error(err_details, "str");
+    if (block == NULL)
+        return aesni_make_null_argument_error(err_details, "block");
+
+    char* cursor = str->str;
 
     __declspec(align(16)) unsigned char bytes[4][4];
     aesni_store_block128_aligned(bytes, *block);
@@ -103,19 +123,24 @@ AesNI_BlockMatrixString128 aesni_format_block128_as_matrix(AesNI_Block128* block
     }
 
     *cursor = '\0';
-    return result;
+    return aesni_initialize_error_details(err_details);
 }
 
-AesNI_BlockMatrixString192 aesni_format_block192_as_matrix(AesNI_Block192* block)
+AesNI_StatusCode aesni_format_block192_as_matrix(AesNI_BlockMatrixString192* str, const AesNI_Block192* block, AesNI_ErrorDetails* err_details)
 {
+    assert(str);
     assert(block);
 
-    AesNI_BlockMatrixString192 result;
-    char* cursor = result.str;
+    if (str == NULL)
+        return aesni_make_null_argument_error(err_details, "str");
+    if (block == NULL)
+        return aesni_make_null_argument_error(err_details, "block");
+
+    char* cursor = str->str;
 
     __declspec(align(16)) unsigned char bytes[8][4];
     aesni_store_block128_aligned(bytes, block->lo);
-    aesni_store_block128_aligned(bytes + 16, block->hi);
+    aesni_store_block128_aligned(bytes + 4, block->hi);
 
     for (int i = 0; i < 4; ++i, cursor += 3)
     {
@@ -125,19 +150,24 @@ AesNI_BlockMatrixString192 aesni_format_block192_as_matrix(AesNI_Block192* block
     }
 
     *cursor = '\0';
-    return result;
+    return aesni_initialize_error_details(err_details);
 }
 
-AesNI_BlockMatrixString256 aesni_format_block256_as_matrix(AesNI_Block256* block)
+AesNI_StatusCode aesni_format_block256_as_matrix(AesNI_BlockMatrixString256* str, const AesNI_Block256* block, AesNI_ErrorDetails* err_details)
 {
+    assert(str);
     assert(block);
 
-    AesNI_BlockMatrixString256 result;
-    char* cursor = result.str;
+    if (str == NULL)
+        return aesni_make_null_argument_error(err_details, "str");
+    if (block == NULL)
+        return aesni_make_null_argument_error(err_details, "block");
+
+    char* cursor = str->str;
 
     __declspec(align(16)) unsigned char bytes[8][4];
     aesni_store_block128_aligned(bytes, block->lo);
-    aesni_store_block128_aligned(bytes + 16, block->hi);
+    aesni_store_block128_aligned(bytes + 4, block->hi);
 
     for (int i = 0; i < 4; ++i, cursor += 3)
     {
@@ -147,49 +177,109 @@ AesNI_BlockMatrixString256 aesni_format_block256_as_matrix(AesNI_Block256* block
     }
 
     *cursor = '\0';
-    return result;
+    return aesni_initialize_error_details(err_details);
 }
 
-void aesni_print_block128(AesNI_Block128* block)
+AesNI_StatusCode aesni_print_block128(const AesNI_Block128* block, AesNI_ErrorDetails* err_details)
 {
     assert(block);
 
-    printf("%s\n", aesni_format_block128(block).str);
+    if (block == NULL)
+        return aesni_make_null_argument_error(err_details, "block");
+
+    AesNI_StatusCode ec = aesni_initialize_error_details(err_details);
+    AesNI_BlockString128 str;
+
+    if (aesni_is_error(ec = aesni_format_block128(&str, block, err_details)))
+        return ec;
+
+    printf("%s\n", str.str);
+    return ec;
 }
 
-void aesni_print_block192(AesNI_Block192* block)
+AesNI_StatusCode aesni_print_block192(const AesNI_Block192* block, AesNI_ErrorDetails* err_details)
 {
     assert(block);
 
-    printf("%s\n", aesni_format_block192(block).str);
+    if (block == NULL)
+        return aesni_make_null_argument_error(err_details, "block");
+
+    AesNI_StatusCode ec = aesni_initialize_error_details(err_details);
+    AesNI_BlockString192 str;
+
+    if (aesni_is_error(ec = aesni_format_block192(&str, block, err_details)))
+        return ec;
+
+    printf("%s\n", str.str);
+    return ec;
 }
 
-void aesni_print_block256(AesNI_Block256* block)
+AesNI_StatusCode aesni_print_block256(const AesNI_Block256* block, AesNI_ErrorDetails* err_details)
 {
     assert(block);
 
-    printf("%s\n", aesni_format_block256(block).str);
+    if (block == NULL)
+        return aesni_make_null_argument_error(err_details, "block");
+
+    AesNI_StatusCode ec = aesni_initialize_error_details(err_details);
+    AesNI_BlockString256 str;
+
+    if (aesni_is_error(ec = aesni_format_block256(&str, block, err_details)))
+        return ec;
+
+    printf("%s\n", str.str);
+    return ec;
 }
 
-void aesni_print_block128_as_matrix(AesNI_Block128* block)
+AesNI_StatusCode aesni_print_block128_as_matrix(const AesNI_Block128* block, AesNI_ErrorDetails* err_details)
 {
     assert(block);
 
-    printf("%s", aesni_format_block128_as_matrix(block).str);
+    if (block == NULL)
+        return aesni_make_null_argument_error(err_details, "block");
+
+    AesNI_StatusCode ec = aesni_initialize_error_details(err_details);
+    AesNI_BlockMatrixString128 str;
+
+    if (aesni_is_error(ec = aesni_format_block128_as_matrix(&str, block, err_details)))
+        return ec;
+
+    printf("%s", str.str);
+    return ec;
 }
 
-void aesni_print_block192_as_matrix(AesNI_Block192* block)
+AesNI_StatusCode aesni_print_block192_as_matrix(const AesNI_Block192* block, AesNI_ErrorDetails* err_details)
 {
     assert(block);
 
-    printf("%s", aesni_format_block192_as_matrix(block).str);
+    if (block == NULL)
+        return aesni_make_null_argument_error(err_details, "block");
+
+    AesNI_StatusCode ec = aesni_initialize_error_details(err_details);
+    AesNI_BlockMatrixString192 str;
+
+    if (aesni_is_error(ec = aesni_format_block192_as_matrix(&str, block, err_details)))
+        return ec;
+
+    printf("%s", str.str);
+    return ec;
 }
 
-void aesni_print_block256_as_matrix(AesNI_Block256* block)
+AesNI_StatusCode aesni_print_block256_as_matrix(const AesNI_Block256* block, AesNI_ErrorDetails* err_details)
 {
     assert(block);
 
-    printf("%s", aesni_format_block256_as_matrix(block).str);
+    if (block == NULL)
+        return aesni_make_null_argument_error(err_details, "block");
+
+    AesNI_StatusCode ec = aesni_initialize_error_details(err_details);
+    AesNI_BlockMatrixString256 str;
+
+    if (aesni_is_error(ec = aesni_format_block256_as_matrix(&str, block, err_details)))
+        return ec;
+
+    printf("%s", str.str);
+    return ec;
 }
 
 AesNI_StatusCode aesni_parse_block128(

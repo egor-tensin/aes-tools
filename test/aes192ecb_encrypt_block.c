@@ -48,7 +48,7 @@ int main(int argc, char** argv)
                 continue;
             }
             cipher = aesni_encrypt_block_ecb192(plain, &key_schedule);
-            aesni_print_block128(&cipher);
+            aesni_print_block128(&cipher, NULL);
         }
     }
 

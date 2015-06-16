@@ -54,7 +54,7 @@ int main(int argc, char** argv)
                 continue;
             }
             plain = aesni_decrypt_block_ofb192(cipher, &key_schedule, iv, &iv);
-            aesni_print_block128(&plain);
+            aesni_print_block128(&plain, NULL);
         }
     }
 

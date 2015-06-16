@@ -222,25 +222,25 @@ typedef struct { char str[33]; } AesNI_BlockString128;
 typedef struct { char str[49]; } AesNI_BlockString192;
 typedef struct { char str[65]; } AesNI_BlockString256;
 
-AesNI_BlockString128 aesni_format_block128(AesNI_Block128*);
-AesNI_BlockString192 aesni_format_block192(AesNI_Block192*);
-AesNI_BlockString256 aesni_format_block256(AesNI_Block256*);
+AesNI_StatusCode aesni_format_block128(AesNI_BlockString128*, const AesNI_Block128*, AesNI_ErrorDetails*);
+AesNI_StatusCode aesni_format_block192(AesNI_BlockString192*, const AesNI_Block192*, AesNI_ErrorDetails*);
+AesNI_StatusCode aesni_format_block256(AesNI_BlockString256*, const AesNI_Block256*, AesNI_ErrorDetails*);
 
 typedef struct { char str[49]; } AesNI_BlockMatrixString128;
 typedef struct { char str[73]; } AesNI_BlockMatrixString192;
 typedef struct { char str[97]; } AesNI_BlockMatrixString256;
 
-AesNI_BlockMatrixString128 aesni_format_block128_as_matrix(AesNI_Block128*);
-AesNI_BlockMatrixString192 aesni_format_block192_as_matrix(AesNI_Block192*);
-AesNI_BlockMatrixString256 aesni_format_block256_as_matrix(AesNI_Block256*);
+AesNI_StatusCode aesni_format_block128_as_matrix(AesNI_BlockMatrixString128*, const AesNI_Block128*, AesNI_ErrorDetails*);
+AesNI_StatusCode aesni_format_block192_as_matrix(AesNI_BlockMatrixString192*, const AesNI_Block192*, AesNI_ErrorDetails*);
+AesNI_StatusCode aesni_format_block256_as_matrix(AesNI_BlockMatrixString256*, const AesNI_Block256*, AesNI_ErrorDetails*);
 
-void aesni_print_block128(AesNI_Block128*);
-void aesni_print_block192(AesNI_Block192*);
-void aesni_print_block256(AesNI_Block256*);
+AesNI_StatusCode aesni_print_block128(const AesNI_Block128*, AesNI_ErrorDetails*);
+AesNI_StatusCode aesni_print_block192(const AesNI_Block192*, AesNI_ErrorDetails*);
+AesNI_StatusCode aesni_print_block256(const AesNI_Block256*, AesNI_ErrorDetails*);
 
-void aesni_print_block128_as_matrix(AesNI_Block128*);
-void aesni_print_block192_as_matrix(AesNI_Block192*);
-void aesni_print_block256_as_matrix(AesNI_Block256*);
+AesNI_StatusCode aesni_print_block128_as_matrix(const AesNI_Block128*, AesNI_ErrorDetails*);
+AesNI_StatusCode aesni_print_block192_as_matrix(const AesNI_Block192*, AesNI_ErrorDetails*);
+AesNI_StatusCode aesni_print_block256_as_matrix(const AesNI_Block256*, AesNI_ErrorDetails*);
 
 AesNI_StatusCode aesni_parse_block128(
     AesNI_Block128* dest,

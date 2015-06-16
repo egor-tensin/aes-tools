@@ -56,7 +56,7 @@ int main(int argc, char** argv)
                 continue;
             }
             cipher = aesni_encrypt_block_ctr192(plain, &key_schedule, iv, ctr++);
-            aesni_print_block128(&cipher);
+            aesni_print_block128(&cipher, NULL);
         }
     }
 

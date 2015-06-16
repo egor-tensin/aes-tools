@@ -49,7 +49,7 @@ int main(int argc, char** argv)
                 continue;
             }
             plain = aesni_decrypt_block_ecb192(cipher, &inverted_schedule);
-            aesni_print_block128(&plain);
+            aesni_print_block128(&plain, NULL);
         }
     }
 

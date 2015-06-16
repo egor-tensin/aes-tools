@@ -53,7 +53,7 @@ int main(int argc, char** argv)
                 continue;
             }
             cipher = aesni_encrypt_block_cfb128(plain, &key_schedule, iv, &iv);
-            aesni_print_block128(&cipher);
+            aesni_print_block128(&cipher, NULL);
         }
     }
 

@@ -19,36 +19,65 @@ int main()
     plain = aesni_make_block128(0xffeeddcc, 0xbbaa9988, 0x77665544, 0x33221100);
     key = aesni_make_block192(0x17161514, 0x13121110, 0x0f0e0d0c, 0x0b0a0908, 0x07060504, 0x03020100);
 
-    printf("Plain: %s\n", aesni_format_block128(&plain).str);
-    aesni_print_block128_as_matrix(&plain);
+    {
+        AesNI_BlockString128 str;
+        aesni_format_block128(&str, &plain, NULL);
+        printf("Plain: %s\n", str.str);
+        aesni_print_block128_as_matrix(&plain, NULL);
+    }
 
     printf("\n");
-    printf("Key: %s\n", aesni_format_block192(&key).str);
-    aesni_print_block192_as_matrix(&key);
+
+    {
+        AesNI_BlockString192 str;
+        aesni_format_block192(&str, &key, NULL);
+        printf("Key: %s\n", str.str);
+        aesni_print_block192_as_matrix(&key, NULL);
+    }
 
     aesni_expand_key_schedule192(&key, &key_schedule);
 
     printf("\n");
     printf("Key schedule:\n");
     for (int i = 0; i < 13; ++i)
-        printf("\t[%d]: %s\n", i, aesni_format_block128(&key_schedule.keys[i]).str);
+    {
+        AesNI_BlockString128 str;
+        aesni_format_block128(&str, &key_schedule.keys[i], NULL);
+        printf("\t[%d]: %s\n", i, str.str);
+    }
 
     cipher = aesni_encrypt_block_ecb192(plain, &key_schedule);
+
     printf("\n");
-    printf("Cipher: %s\n", aesni_format_block128(&cipher).str);
-    aesni_print_block128_as_matrix(&cipher);
+
+    {
+        AesNI_BlockString128 str;
+        aesni_format_block128(&str, &cipher, NULL);
+        printf("Cipher: %s\n", str.str);
+        aesni_print_block128_as_matrix(&cipher, NULL);
+    }
 
     aesni_invert_key_schedule192(&key_schedule, &inverted_schedule);
 
     printf("\n");
     printf("Inverted key schedule:\n");
     for (int i = 0; i < 13; ++i)
-        printf("\t[%d]: %s\n", i, aesni_format_block128(&inverted_schedule.keys[i]).str);
+    {
+        AesNI_BlockString128 str;
+        aesni_format_block128(&str, &inverted_schedule.keys[i], NULL);
+        printf("\t[%d]: %s\n", i, str.str);
+    }
 
     decrypted = aesni_decrypt_block_ecb192(cipher, &inverted_schedule);
+
     printf("\n");
-    printf("Decrypted: %s\n", aesni_format_block128(&decrypted).str);
-    aesni_print_block128_as_matrix(&decrypted);
+
+    {
+        AesNI_BlockString128 str;
+        aesni_format_block128(&str, &decrypted, NULL);
+        printf("Decrypted: %s\n", str.str);
+        aesni_print_block128_as_matrix(&decrypted, NULL);
+    }
 
     return 0;
 }
