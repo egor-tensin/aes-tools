@@ -66,7 +66,7 @@ void __fastcall aesni_raw_expand_key_schedule128(
  * be `NULL`.
  */
 void __fastcall aesni_raw_invert_key_schedule128(
-    AesNI_KeySchedule128* key_schedule,
+    const AesNI_KeySchedule128* key_schedule,
     AesNI_KeySchedule128* inverted_schedule);
 
 /**
@@ -79,7 +79,7 @@ void __fastcall aesni_raw_invert_key_schedule128(
  */
 AesNI_Block128 __fastcall aesni_raw_encrypt_block128(
     AesNI_Block128 plain,
-    AesNI_KeySchedule128* key_schedule);
+    const AesNI_KeySchedule128* key_schedule);
 
 /**
  * \brief Decrypts a 128-bit block using AES-128.
@@ -91,7 +91,7 @@ AesNI_Block128 __fastcall aesni_raw_encrypt_block128(
  */
 AesNI_Block128 __fastcall aesni_raw_decrypt_block128(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule128* inverted_schedule);
+    const AesNI_KeySchedule128* inverted_schedule);
 
 /**
  * \}
@@ -122,7 +122,7 @@ void __fastcall aesni_raw_expand_key_schedule192(
  * be `NULL`.
  */
 void __fastcall aesni_raw_invert_key_schedule192(
-    AesNI_KeySchedule192* key_schedule,
+    const AesNI_KeySchedule192* key_schedule,
     AesNI_KeySchedule192* inverted_schedule);
 
 /**
@@ -135,7 +135,7 @@ void __fastcall aesni_raw_invert_key_schedule192(
  */
 AesNI_Block128 __fastcall aesni_raw_encrypt_block192(
     AesNI_Block128 plain,
-    AesNI_KeySchedule192* key_schedule);
+    const AesNI_KeySchedule192* key_schedule);
 
 /**
  * \brief Decrypts a 128-bit block using AES-192.
@@ -147,7 +147,7 @@ AesNI_Block128 __fastcall aesni_raw_encrypt_block192(
  */
 AesNI_Block128 __fastcall aesni_raw_decrypt_block192(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule192* inverted_schedule);
+    const AesNI_KeySchedule192* inverted_schedule);
 
 /**
  * \}
@@ -178,7 +178,7 @@ void __fastcall aesni_raw_expand_key_schedule256(
  * be `NULL`.
  */
 void __fastcall aesni_raw_invert_key_schedule256(
-    AesNI_KeySchedule256* key_schedule,
+    const AesNI_KeySchedule256* key_schedule,
     AesNI_KeySchedule256* inverted_schedule);
 
 /**
@@ -191,7 +191,7 @@ void __fastcall aesni_raw_invert_key_schedule256(
  */
 AesNI_Block128 __fastcall aesni_raw_encrypt_block256(
     AesNI_Block128 plain,
-    AesNI_KeySchedule256* key_schedule);
+    const AesNI_KeySchedule256* key_schedule);
 
 /**
  * \brief Decrypts a 128-bit block using AES-256.
@@ -203,7 +203,7 @@ AesNI_Block128 __fastcall aesni_raw_encrypt_block256(
  */
 AesNI_Block128 __fastcall aesni_raw_decrypt_block256(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule256* inverted_schedule);
+    const AesNI_KeySchedule256* inverted_schedule);
 
 /**
  * \}

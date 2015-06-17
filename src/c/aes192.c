@@ -13,7 +13,7 @@
 
 AesNI_Block128 __fastcall aesni_raw_encrypt_block192(
     AesNI_Block128 plain,
-    AesNI_KeySchedule192* key_schedule)
+    const AesNI_KeySchedule192* key_schedule)
 {
     plain = _mm_xor_si128(plain, key_schedule->keys[0]);
     plain = _mm_aesenc_si128(plain, key_schedule->keys[1]);
@@ -32,7 +32,7 @@ AesNI_Block128 __fastcall aesni_raw_encrypt_block192(
 
 AesNI_Block128 __fastcall aesni_raw_decrypt_block192(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule192* inverted_schedule)
+    const AesNI_KeySchedule192* inverted_schedule)
 {
     cipher = _mm_xor_si128(cipher, inverted_schedule->keys[0]);
     cipher = _mm_aesdec_si128(cipher, inverted_schedule->keys[1]);
@@ -115,7 +115,7 @@ void __fastcall aesni_raw_expand_key_schedule192(
 }
 
 void __fastcall aesni_raw_invert_key_schedule192(
-    AesNI_KeySchedule192* key_schedule,
+    const AesNI_KeySchedule192* key_schedule,
     AesNI_KeySchedule192* inverted_schedule)
 {
     inverted_schedule->keys[0] = key_schedule->keys[12];
