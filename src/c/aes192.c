@@ -11,8 +11,8 @@
 #include <emmintrin.h>
 #include <wmmintrin.h>
 
-AesNI_Block128 __fastcall aesni_aes192_encrypt_block_(
-    AesNI_Block128 plaintext,
+AesNI_Aes_Block __fastcall aesni_aes192_encrypt_block_(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes192_RoundKeys* encryption_keys)
 {
     plaintext = _mm_xor_si128(plaintext, encryption_keys->keys[0]);
@@ -30,8 +30,8 @@ AesNI_Block128 __fastcall aesni_aes192_encrypt_block_(
     return _mm_aesenclast_si128(plaintext, encryption_keys->keys[12]);
 }
 
-AesNI_Block128 __fastcall aesni_aes192_decrypt_block_(
-    AesNI_Block128 ciphertext,
+AesNI_Aes_Block __fastcall aesni_aes192_decrypt_block_(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes192_RoundKeys* decryption_keys)
 {
     ciphertext = _mm_xor_si128(ciphertext, decryption_keys->keys[0]);
@@ -50,11 +50,11 @@ AesNI_Block128 __fastcall aesni_aes192_decrypt_block_(
 }
 
 static void __fastcall aesni_aes192_expand_key_assist(
-    AesNI_Block128* prev_lo,
-    AesNI_Block128* prev_hi,
-    AesNI_Block128 hwgen)
+    AesNI_Aes_Block* prev_lo,
+    AesNI_Aes_Block* prev_hi,
+    AesNI_Aes_Block hwgen)
 {
-    AesNI_Block128 tmp = *prev_lo;
+    AesNI_Aes_Block tmp = *prev_lo;
 
     tmp = _mm_slli_si128(tmp, 4);
     *prev_lo = _mm_xor_si128(*prev_lo, tmp);
@@ -75,8 +75,8 @@ static void __fastcall aesni_aes192_expand_key_assist(
 }
 
 void __fastcall aesni_aes192_expand_key_(
-    AesNI_Block128 key_lo,
-    AesNI_Block128 key_hi,
+    AesNI_Aes_Block key_lo,
+    AesNI_Aes_Block key_hi,
     AesNI_Aes192_RoundKeys* encryption_keys)
 {
     encryption_keys->keys[0] = key_lo;

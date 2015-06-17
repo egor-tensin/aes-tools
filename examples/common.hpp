@@ -16,68 +16,67 @@
 
 namespace
 {
-    template <typename BlockT>
-    void dump_block(const char* name, const BlockT& block)
+    void dump_block(const char* name, const aesni::aes::Block& block)
     {
-        std::cout << name << ": " << block << "\n" << aesni::to_matrix_string(block) << "\n";
+        std::cout << name << ": " << aesni::aes::to_string(block) << "\n" << aesni::aes::to_matrix_string(block) << "\n";
     }
 
-    void dump_plaintext(const aesni::Block128& block)
+    void dump_plaintext(const aesni::aes::Block& block)
     {
         dump_block("Plaintext", block);
     }
 
-    template <typename BlockT>
-    void dump_key(const BlockT& key)
+    template <typename KeyT>
+    void dump_key(const KeyT& key)
     {
-        dump_block("Key", key);
+        std::cout << "Key: " << aesni::aes::to_string(key) << "\n";
     }
 
-    void dump_ciphertext(const aesni::Block128& ciphertext)
+    void dump_ciphertext(const aesni::aes::Block& ciphertext)
     {
         dump_block("Ciphertext", ciphertext);
     }
 
-    void dump_iv(const aesni::Block128& iv)
+    void dump_iv(const aesni::aes::Block& iv)
     {
         dump_block("Initialization vector", iv);
     }
 
-    void dump_next_iv(const aesni::Block128& next_iv)
+    void dump_next_iv(const aesni::aes::Block& next_iv)
     {
         dump_block("Next initialization vector", next_iv);
     }
 
-    void dump_decrypted(const aesni::Block128& decrypted)
+    void dump_decrypted(const aesni::aes::Block& decrypted)
     {
         dump_block("Decrypted", decrypted);
     }
 
-    void make_default_plaintext(aesni::Block128& plaintext)
+    void make_default_plaintext(aesni::aes::Block& plaintext)
     {
         aesni::make_block(plaintext, 0xffeeddcc, 0xbbaa9988, 0x77665544, 0x33221100);
         dump_plaintext(plaintext);
     }
 
-    void make_default_key(aesni::Block128& key)
+    void make_default_key(aesni::aes::Key128& key)
     {
-        aesni::make_block(key, 0x0f0e0d0c, 0x0b0a0908, 0x07060504, 0x03020100);
+        aesni::aes::make_key(key, 0x0f0e0d0c, 0x0b0a0908, 0x07060504, 0x03020100);
         dump_key(key);
     }
 
-    void make_default_key(aesni::Block192& key)
+    void make_default_key(aesni::aes::Key192& key)
     {
-        aesni::make_block(key, 0x17161514, 0x13121110, 0x0f0e0d0c, 0x0b0a0908, 0x07060504, 0x03020100);
+        aesni::aes::make_key(key, 0x17161514, 0x13121110, 0x0f0e0d0c, 0x0b0a0908, 0x07060504, 0x03020100);
         dump_key(key);
     }
 
-    void make_default_key(aesni::Block256& key)
+    void make_default_key(aesni::aes::Key256& key)
     {
-        aesni::make_block(key, 0x1f1e1d1c, 0x1b1a1918, 0x17161514, 0x13121110, 0x0f0e0d0c, 0x0b0a0908, 0x07060504, 0x03020100);
+        aesni::aes::make_key(key, 0x1f1e1d1c, 0x1b1a1918, 0x17161514, 0x13121110, 0x0f0e0d0c, 0x0b0a0908, 0x07060504, 0x03020100);
         dump_key(key);
     }
 
-    void make_default_iv(aesni::Block128& iv)
+    void make_default_iv(aesni::aes::Block& iv)
     {
         aesni::make_block(iv, 0xfedcba98, 0x76543210, 0xfedcba98, 0x76543210);
         dump_iv(iv);
@@ -87,8 +86,8 @@ namespace
     void dump_schedule(const char* name, const KeyScheduleT& schedule)
     {
         std::cout << name << ":\n";
-        for (std::size_t i = 0; i < aesni::get_number_of_keys(schedule); ++i)
-            std::cout << "\t[" << i << "]: " << schedule.keys[i] << "\n";
+        for (std::size_t i = 0; i < aesni::aes::get_number_of_keys(schedule); ++i)
+            std::cout << "\t[" << i << "]: " << aesni::aes::to_string(schedule.keys[i]) << "\n";
         std::cout << "\n";
     }
 

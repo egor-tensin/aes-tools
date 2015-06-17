@@ -36,15 +36,15 @@ namespace
 
 int main(int argc, char** argv)
 {
-    AesNI_Block128 key;
-    AesNI_Aes128_RoundKeys encryption_keys;
-
     if (argc != 4)
         exit_with_usage();
 
     try
     {
-        aesni_parse_block128(&key, argv[1], aesni::ErrorDetailsThrowsInDestructor());
+        aesni::aes::Key128 key;
+        aesni::aes::from_string(key, argv[1]);
+
+        AesNI_Aes128_RoundKeys encryption_keys;
 
         const std::string src_path(argv[2]);
         const std::string dest_path(argv[3]);
@@ -60,7 +60,7 @@ int main(int argc, char** argv)
         src_buf.assign(std::istreambuf_iterator<char>(src_ifs),
                        std::istreambuf_iterator<char>());
 
-        aesni_aes128_expand_key(key, &encryption_keys);
+        aesni_aes128_expand_key(&key, &encryption_keys);
 
         std::size_t dest_size;
 

@@ -35,10 +35,10 @@ int main(int argc, char** argv)
                 exit_with_usage();
 
             AesNI_BoxAlgorithmParams algorithm_params;
-            aesni::from_string(algorithm_params.aes128_key, argv[0]);
+            aesni::aes::from_string(algorithm_params.aes128_key, argv[0]);
 
             AesNI_BoxBlock iv;
-            aesni::from_string(iv.aes_block, argv[1]);
+            aesni::aes::from_string(iv.aes_block, argv[1]);
 
             AesNI_Box box;
             aesni_box_init(
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
                     break;
 
                 AesNI_BoxBlock plaintext;
-                aesni::from_string(plaintext.aes_block, argv[0]);
+                aesni::aes::from_string(plaintext.aes_block, argv[0]);
 
                 AesNI_BoxBlock ciphertext;
                 aesni_box_encrypt(
@@ -64,7 +64,7 @@ int main(int argc, char** argv)
                     &ciphertext,
                     aesni::ErrorDetailsThrowsInDestructor());
 
-                std::cout << ciphertext.aes_block << "\n";
+                std::cout << aesni::aes::to_string(ciphertext.aes_block) << "\n";
             }
         }
 

@@ -8,5 +8,6 @@
 
 #pragma once
 
+#include "aes.hpp"
 #include "data.hpp"
 #include "error.hpp"

@@ -17,6 +17,122 @@ extern "C"
 {
 #endif
 
+typedef AesNI_Block128 AesNI_Aes_Block;
+
+typedef struct
+{
+    AesNI_Aes_Block key;
+}
+AesNI_Aes128_Key;
+
+typedef struct
+{
+    AesNI_Aes_Block hi;
+    AesNI_Aes_Block lo;
+}
+AesNI_Aes192_Key;
+
+typedef struct
+{
+    AesNI_Aes_Block hi;
+    AesNI_Aes_Block lo;
+}
+AesNI_Aes256_Key;
+
+static __inline void aesni_aes_make_block(AesNI_Aes_Block* dest, int hi3, int hi2, int lo1, int lo0)
+{
+    *dest = aesni_make_block128(hi3, hi2, lo1, lo0);
+}
+
+static __inline void aesni_aes128_make_key(AesNI_Aes128_Key* dest, int hi3, int hi2, int lo1, int lo0)
+{
+    dest->key = aesni_make_block128(hi3, hi2, lo1, lo0);
+}
+
+static __inline void aesni_aes192_make_key(AesNI_Aes192_Key* dest, int hi5, int hi4, int lo3, int lo2, int lo1, int lo0)
+{
+    dest->hi = aesni_make_block128(0, 0, hi5, hi4);
+    dest->lo = aesni_make_block128(lo3, lo2, lo1, lo0);
+}
+
+static __inline void aesni_aes256_make_key(AesNI_Aes256_Key* dest, int hi7, int hi6, int hi5, int hi4, int lo3, int lo2, int lo1, int lo0)
+{
+    dest->hi = aesni_make_block128(hi7, hi6, hi5, hi4);
+    dest->lo = aesni_make_block128(lo3, lo2, lo1, lo0);
+}
+
+typedef struct { char str[33]; } AesNI_Aes_BlockString;
+typedef struct { char str[49]; } AesNI_Aes_BlockMatrixString;
+
+AesNI_StatusCode aesni_aes_format_block(
+    AesNI_Aes_BlockString*,
+    const AesNI_Aes_Block*,
+    AesNI_ErrorDetails*);
+
+AesNI_StatusCode aesni_aes_format_block_as_matrix(
+    AesNI_Aes_BlockMatrixString*,
+    const AesNI_Aes_Block*,
+    AesNI_ErrorDetails*);
+
+AesNI_StatusCode aesni_aes_print_block(
+    const AesNI_Aes_Block*,
+    AesNI_ErrorDetails*);
+
+AesNI_StatusCode aesni_aes_print_block_as_matrix(
+    const AesNI_Aes_Block*,
+    AesNI_ErrorDetails*);
+
+AesNI_StatusCode aesni_aes_parse_block(
+    AesNI_Aes_Block* dest,
+    const char* src,
+    AesNI_ErrorDetails* err_details);
+
+typedef AesNI_Aes_BlockString AesNI_Aes128_KeyString;
+typedef struct { char str[49]; } AesNI_Aes192_KeyString;
+typedef struct { char str[65]; } AesNI_Aes256_KeyString;
+
+AesNI_StatusCode aesni_aes128_format_key(
+    AesNI_Aes128_KeyString*,
+    const AesNI_Aes128_Key*,
+    AesNI_ErrorDetails*);
+
+AesNI_StatusCode aesni_aes192_format_key(
+    AesNI_Aes192_KeyString*,
+    const AesNI_Aes192_Key*,
+    AesNI_ErrorDetails*);
+
+AesNI_StatusCode aesni_aes256_format_key(
+    AesNI_Aes256_KeyString*,
+    const AesNI_Aes256_Key*,
+    AesNI_ErrorDetails*);
+
+AesNI_StatusCode aesni_aes128_print_key(
+    const AesNI_Aes128_Key*,
+    AesNI_ErrorDetails*);
+
+AesNI_StatusCode aesni_aes192_print_key(
+    const AesNI_Aes192_Key*,
+    AesNI_ErrorDetails*);
+
+AesNI_StatusCode aesni_aes256_print_key(
+    const AesNI_Aes256_Key*,
+    AesNI_ErrorDetails*);
+
+AesNI_StatusCode aesni_aes128_parse_key(
+    AesNI_Aes128_Key* dest,
+    const char* src,
+    AesNI_ErrorDetails* err_details);
+
+AesNI_StatusCode aesni_aes192_parse_key(
+    AesNI_Aes192_Key* dest,
+    const char* src,
+    AesNI_ErrorDetails* err_details);
+
+AesNI_StatusCode aesni_aes256_parse_key(
+    AesNI_Aes256_Key* dest,
+    const char* src,
+    AesNI_ErrorDetails* err_details);
+
 typedef struct
 {
     AesNI_Block128 keys[11];
@@ -36,17 +152,17 @@ typedef struct
 AesNI_Aes256_RoundKeys;
 
 void __fastcall aesni_aes128_expand_key_(
-    AesNI_Block128 key,
+    AesNI_Aes_Block key,
     AesNI_Aes128_RoundKeys* encryption_keys);
 
 void __fastcall aesni_aes192_expand_key_(
-    AesNI_Block128 key_lo,
-    AesNI_Block128 key_hi,
+    AesNI_Aes_Block key_lo,
+    AesNI_Aes_Block key_hi,
     AesNI_Aes192_RoundKeys* encryption_keys);
 
 void __fastcall aesni_aes256_expand_key_(
-    AesNI_Block128 key_lo,
-    AesNI_Block128 key_hi,
+    AesNI_Aes_Block key_lo,
+    AesNI_Aes_Block key_hi,
     AesNI_Aes256_RoundKeys* encryption_keys);
 
 void __fastcall aesni_aes128_derive_decryption_keys_(
@@ -61,28 +177,28 @@ void __fastcall aesni_aes256_derive_decryption_keys_(
     const AesNI_Aes256_RoundKeys* encryption_keys,
     AesNI_Aes256_RoundKeys* decryption_keys);
 
-AesNI_Block128 __fastcall aesni_aes128_encrypt_block_(
-    AesNI_Block128 plaintext,
+AesNI_Aes_Block __fastcall aesni_aes128_encrypt_block_(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes128_RoundKeys*);
 
-AesNI_Block128 __fastcall aesni_aes192_encrypt_block_(
-    AesNI_Block128 plaintext,
+AesNI_Aes_Block __fastcall aesni_aes192_encrypt_block_(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes192_RoundKeys*);
 
-AesNI_Block128 __fastcall aesni_aes256_encrypt_block_(
-    AesNI_Block128 plaintext,
+AesNI_Aes_Block __fastcall aesni_aes256_encrypt_block_(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes256_RoundKeys*);
 
-AesNI_Block128 __fastcall aesni_aes128_decrypt_block_(
-    AesNI_Block128 ciphertext,
+AesNI_Aes_Block __fastcall aesni_aes128_decrypt_block_(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes128_RoundKeys*);
 
-AesNI_Block128 __fastcall aesni_aes192_decrypt_block_(
-    AesNI_Block128 ciphertext,
+AesNI_Aes_Block __fastcall aesni_aes192_decrypt_block_(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes192_RoundKeys*);
 
-AesNI_Block128 __fastcall aesni_aes256_decrypt_block_(
-    AesNI_Block128 ciphertext,
+AesNI_Aes_Block __fastcall aesni_aes256_decrypt_block_(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes256_RoundKeys*);
 
 /**
@@ -92,12 +208,12 @@ AesNI_Block128 __fastcall aesni_aes256_decrypt_block_(
  * \param[out] encryption_keys The AES-128 encryption round keys. Must not be `NULL`.
  */
 static __inline void __fastcall aesni_aes128_expand_key(
-    AesNI_Block128 key,
+    const AesNI_Aes128_Key* key,
     AesNI_Aes128_RoundKeys* encryption_keys)
 {
     assert(encryption_keys);
 
-    aesni_aes128_expand_key_(key, encryption_keys);
+    aesni_aes128_expand_key_(key->key, encryption_keys);
 }
 
 /**
@@ -124,8 +240,8 @@ static __inline void __fastcall aesni_aes128_derive_decryption_keys(
  *
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes128_encrypt_block_ecb(
-    AesNI_Block128 plaintext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes128_encrypt_block_ecb(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes128_RoundKeys* encryption_keys)
 {
     assert(encryption_keys);
@@ -141,8 +257,8 @@ static __inline AesNI_Block128 __fastcall aesni_aes128_encrypt_block_ecb(
  *
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes128_decrypt_block_ecb(
-    AesNI_Block128 ciphertext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes128_decrypt_block_ecb(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes128_RoundKeys* decryption_keys)
 {
     assert(decryption_keys);
@@ -160,16 +276,16 @@ static __inline AesNI_Block128 __fastcall aesni_aes128_decrypt_block_ecb(
  *
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes128_encrypt_block_cbc(
-    AesNI_Block128 plaintext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes128_encrypt_block_cbc(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes128_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
-    AesNI_Block128* next_init_vector)
+    AesNI_Aes_Block init_vector,
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
     assert(next_init_vector);
 
-    AesNI_Block128 ciphertext = aesni_aes128_encrypt_block_(aesni_xor_block128(plaintext, init_vector), encryption_keys);
+    AesNI_Aes_Block ciphertext = aesni_aes128_encrypt_block_(aesni_xor_block128(plaintext, init_vector), encryption_keys);
     *next_init_vector = ciphertext;
     return ciphertext;
 }
@@ -184,16 +300,16 @@ static __inline AesNI_Block128 __fastcall aesni_aes128_encrypt_block_cbc(
  *
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes128_decrypt_block_cbc(
-    AesNI_Block128 ciphertext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes128_decrypt_block_cbc(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes128_RoundKeys* decryption_keys,
-    AesNI_Block128 init_vector,
-    AesNI_Block128* next_init_vector)
+    AesNI_Aes_Block init_vector,
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(decryption_keys);
     assert(next_init_vector);
 
-    AesNI_Block128 plaintext = aesni_xor_block128(aesni_aes128_decrypt_block_(ciphertext, decryption_keys), init_vector);
+    AesNI_Aes_Block plaintext = aesni_xor_block128(aesni_aes128_decrypt_block_(ciphertext, decryption_keys), init_vector);
     *next_init_vector = ciphertext;
     return plaintext;
 }
@@ -208,16 +324,16 @@ static __inline AesNI_Block128 __fastcall aesni_aes128_decrypt_block_cbc(
  *
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes128_encrypt_block_cfb(
-    AesNI_Block128 plaintext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes128_encrypt_block_cfb(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes128_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
-    AesNI_Block128* next_init_vector)
+    AesNI_Aes_Block init_vector,
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
     assert(next_init_vector);
 
-    AesNI_Block128 ciphertext = aesni_xor_block128(aesni_aes128_encrypt_block_(init_vector, encryption_keys), plaintext);
+    AesNI_Aes_Block ciphertext = aesni_xor_block128(aesni_aes128_encrypt_block_(init_vector, encryption_keys), plaintext);
     *next_init_vector = ciphertext;
     return ciphertext;
 }
@@ -232,16 +348,16 @@ static __inline AesNI_Block128 __fastcall aesni_aes128_encrypt_block_cfb(
  *
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes128_decrypt_block_cfb(
-    AesNI_Block128 ciphertext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes128_decrypt_block_cfb(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes128_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
-    AesNI_Block128* next_init_vector)
+    AesNI_Aes_Block init_vector,
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
     assert(next_init_vector);
 
-    AesNI_Block128 plaintext = aesni_xor_block128(aesni_aes128_encrypt_block_(init_vector, encryption_keys), ciphertext);
+    AesNI_Aes_Block plaintext = aesni_xor_block128(aesni_aes128_encrypt_block_(init_vector, encryption_keys), ciphertext);
     *next_init_vector = ciphertext;
     return plaintext;
 }
@@ -256,16 +372,16 @@ static __inline AesNI_Block128 __fastcall aesni_aes128_decrypt_block_cfb(
  *
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes128_encrypt_block_ofb(
-    AesNI_Block128 plaintext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes128_encrypt_block_ofb(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes128_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
-    AesNI_Block128* next_init_vector)
+    AesNI_Aes_Block init_vector,
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
     assert(next_init_vector);
 
-    AesNI_Block128 tmp = aesni_aes128_encrypt_block_(init_vector, encryption_keys);
+    AesNI_Aes_Block tmp = aesni_aes128_encrypt_block_(init_vector, encryption_keys);
     *next_init_vector = tmp;
     return aesni_xor_block128(tmp, plaintext);
 }
@@ -280,16 +396,16 @@ static __inline AesNI_Block128 __fastcall aesni_aes128_encrypt_block_ofb(
  *
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes128_decrypt_block_ofb(
-    AesNI_Block128 ciphertext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes128_decrypt_block_ofb(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes128_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
-    AesNI_Block128* next_init_vector)
+    AesNI_Aes_Block init_vector,
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
     assert(next_init_vector);
 
-    AesNI_Block128 tmp = aesni_aes128_encrypt_block_(init_vector, encryption_keys);
+    AesNI_Aes_Block tmp = aesni_aes128_encrypt_block_(init_vector, encryption_keys);
     *next_init_vector = tmp;
     return aesni_xor_block128(tmp, ciphertext);
 }
@@ -304,17 +420,17 @@ static __inline AesNI_Block128 __fastcall aesni_aes128_decrypt_block_ofb(
  *
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes128_encrypt_block_ctr(
-    AesNI_Block128 plaintext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes128_encrypt_block_ctr(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes128_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
+    AesNI_Aes_Block init_vector,
     int counter)
 {
     assert(encryption_keys);
 
-    init_vector = aesni_le2be128(init_vector);
+    init_vector = aesni_reverse_bytes_block128(init_vector);
     init_vector = _mm_add_epi32(init_vector, aesni_make_block128(0, 0, 0, counter));
-    init_vector = aesni_be2le128(init_vector);
+    init_vector = aesni_reverse_bytes_block128(init_vector);
 
     return aesni_xor_block128(plaintext, aesni_aes128_encrypt_block_(init_vector, encryption_keys));
 }
@@ -329,17 +445,17 @@ static __inline AesNI_Block128 __fastcall aesni_aes128_encrypt_block_ctr(
  *
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes128_decrypt_block_ctr(
-    AesNI_Block128 ciphertext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes128_decrypt_block_ctr(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes128_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
+    AesNI_Aes_Block init_vector,
     int counter)
 {
     assert(encryption_keys);
 
-    init_vector = aesni_le2be128(init_vector);
+    init_vector = aesni_reverse_bytes_block128(init_vector);
     init_vector = _mm_add_epi32(init_vector, aesni_make_block128(0, 0, 0, counter));
-    init_vector = aesni_be2le128(init_vector);
+    init_vector = aesni_reverse_bytes_block128(init_vector);
 
     return aesni_xor_block128(ciphertext, aesni_aes128_encrypt_block_(init_vector, encryption_keys));
 }
@@ -351,7 +467,7 @@ static __inline AesNI_Block128 __fastcall aesni_aes128_decrypt_block_ctr(
  * \param[out] encryption_keys The AES-192 encryption round keys. Must not be `NULL`.
  */
 static __inline void __fastcall aesni_aes192_expand_key(
-    AesNI_Block192* key,
+    const AesNI_Aes192_Key* key,
     AesNI_Aes192_RoundKeys* encryption_keys)
 {
     assert(key);
@@ -384,8 +500,8 @@ static __inline void __fastcall aesni_aes192_derive_decryption_keys(
  *
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes192_encrypt_block_ecb(
-    AesNI_Block128 plaintext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes192_encrypt_block_ecb(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes192_RoundKeys* encryption_keys)
 {
     assert(encryption_keys);
@@ -401,8 +517,8 @@ static __inline AesNI_Block128 __fastcall aesni_aes192_encrypt_block_ecb(
  *
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes192_decrypt_block_ecb(
-    AesNI_Block128 ciphertext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes192_decrypt_block_ecb(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes192_RoundKeys* decryption_keys)
 {
     assert(decryption_keys);
@@ -420,16 +536,16 @@ static __inline AesNI_Block128 __fastcall aesni_aes192_decrypt_block_ecb(
  *
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes192_encrypt_block_cbc(
-    AesNI_Block128 plaintext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes192_encrypt_block_cbc(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes192_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
-    AesNI_Block128* next_init_vector)
+    AesNI_Aes_Block init_vector,
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
     assert(next_init_vector);
 
-    AesNI_Block128 ciphertext = aesni_aes192_encrypt_block_(aesni_xor_block128(plaintext, init_vector), encryption_keys);
+    AesNI_Aes_Block ciphertext = aesni_aes192_encrypt_block_(aesni_xor_block128(plaintext, init_vector), encryption_keys);
     *next_init_vector = ciphertext;
     return ciphertext;
 }
@@ -444,16 +560,16 @@ static __inline AesNI_Block128 __fastcall aesni_aes192_encrypt_block_cbc(
  *
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes192_decrypt_block_cbc(
-    AesNI_Block128 ciphertext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes192_decrypt_block_cbc(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes192_RoundKeys* decryption_keys,
-    AesNI_Block128 init_vector,
-    AesNI_Block128* next_init_vector)
+    AesNI_Aes_Block init_vector,
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(decryption_keys);
     assert(next_init_vector);
 
-    AesNI_Block128 plaintext = aesni_xor_block128(aesni_aes192_decrypt_block_(ciphertext, decryption_keys), init_vector);
+    AesNI_Aes_Block plaintext = aesni_xor_block128(aesni_aes192_decrypt_block_(ciphertext, decryption_keys), init_vector);
     *next_init_vector = ciphertext;
     return plaintext;
 }
@@ -468,16 +584,16 @@ static __inline AesNI_Block128 __fastcall aesni_aes192_decrypt_block_cbc(
  *
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes192_encrypt_block_cfb(
-    AesNI_Block128 plaintext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes192_encrypt_block_cfb(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes192_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
-    AesNI_Block128* next_init_vector)
+    AesNI_Aes_Block init_vector,
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
     assert(next_init_vector);
 
-    AesNI_Block128 ciphertext = aesni_xor_block128(aesni_aes192_encrypt_block_(init_vector, encryption_keys), plaintext);
+    AesNI_Aes_Block ciphertext = aesni_xor_block128(aesni_aes192_encrypt_block_(init_vector, encryption_keys), plaintext);
     *next_init_vector = ciphertext;
     return ciphertext;
 }
@@ -492,16 +608,16 @@ static __inline AesNI_Block128 __fastcall aesni_aes192_encrypt_block_cfb(
  *
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes192_decrypt_block_cfb(
-    AesNI_Block128 ciphertext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes192_decrypt_block_cfb(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes192_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
-    AesNI_Block128* next_init_vector)
+    AesNI_Aes_Block init_vector,
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
     assert(next_init_vector);
 
-    AesNI_Block128 plaintext = aesni_xor_block128(aesni_aes192_encrypt_block_(init_vector, encryption_keys), ciphertext);
+    AesNI_Aes_Block plaintext = aesni_xor_block128(aesni_aes192_encrypt_block_(init_vector, encryption_keys), ciphertext);
     *next_init_vector = ciphertext;
     return plaintext;
 }
@@ -516,16 +632,16 @@ static __inline AesNI_Block128 __fastcall aesni_aes192_decrypt_block_cfb(
  *
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes192_encrypt_block_ofb(
-    AesNI_Block128 plaintext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes192_encrypt_block_ofb(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes192_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
-    AesNI_Block128* next_init_vector)
+    AesNI_Aes_Block init_vector,
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
     assert(next_init_vector);
 
-    AesNI_Block128 tmp = aesni_aes192_encrypt_block_(init_vector, encryption_keys);
+    AesNI_Aes_Block tmp = aesni_aes192_encrypt_block_(init_vector, encryption_keys);
     *next_init_vector = tmp;
     return aesni_xor_block128(tmp, plaintext);
 }
@@ -540,16 +656,16 @@ static __inline AesNI_Block128 __fastcall aesni_aes192_encrypt_block_ofb(
  *
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes192_decrypt_block_ofb(
-    AesNI_Block128 ciphertext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes192_decrypt_block_ofb(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes192_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
-    AesNI_Block128* next_init_vector)
+    AesNI_Aes_Block init_vector,
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
     assert(next_init_vector);
 
-    AesNI_Block128 tmp = aesni_aes192_encrypt_block_(init_vector, encryption_keys);
+    AesNI_Aes_Block tmp = aesni_aes192_encrypt_block_(init_vector, encryption_keys);
     *next_init_vector = tmp;
     return aesni_xor_block128(tmp, ciphertext);
 }
@@ -564,17 +680,17 @@ static __inline AesNI_Block128 __fastcall aesni_aes192_decrypt_block_ofb(
  *
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes192_encrypt_block_ctr(
-    AesNI_Block128 plaintext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes192_encrypt_block_ctr(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes192_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
+    AesNI_Aes_Block init_vector,
     int counter)
 {
     assert(encryption_keys);
 
-    init_vector = aesni_le2be128(init_vector);
+    init_vector = aesni_reverse_bytes_block128(init_vector);
     init_vector = _mm_add_epi32(init_vector, aesni_make_block128(0, 0, 0, counter));
-    init_vector = aesni_be2le128(init_vector);
+    init_vector = aesni_reverse_bytes_block128(init_vector);
 
     return aesni_xor_block128(plaintext, aesni_aes192_encrypt_block_(init_vector, encryption_keys));
 }
@@ -589,17 +705,17 @@ static __inline AesNI_Block128 __fastcall aesni_aes192_encrypt_block_ctr(
  *
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes192_decrypt_block_ctr(
-    AesNI_Block128 ciphertext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes192_decrypt_block_ctr(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes192_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
+    AesNI_Aes_Block init_vector,
     int counter)
 {
     assert(encryption_keys);
 
-    init_vector = aesni_le2be128(init_vector);
+    init_vector = aesni_reverse_bytes_block128(init_vector);
     init_vector = _mm_add_epi32(init_vector, aesni_make_block128(0, 0, 0, counter));
-    init_vector = aesni_be2le128(init_vector);
+    init_vector = aesni_reverse_bytes_block128(init_vector);
 
     return aesni_xor_block128(ciphertext, aesni_aes192_encrypt_block_(init_vector, encryption_keys));
 }
@@ -611,7 +727,7 @@ static __inline AesNI_Block128 __fastcall aesni_aes192_decrypt_block_ctr(
  * \param[out] encryption_keys The AES-256 encryption round keys. Must not be `NULL`.
  */
 static __inline void __fastcall aesni_aes256_expand_key(
-    const AesNI_Block256* key,
+    const AesNI_Aes256_Key* key,
     AesNI_Aes256_RoundKeys* encryption_keys)
 {
     assert(key);
@@ -644,8 +760,8 @@ static __inline void __fastcall aesni_aes256_derive_decryption_keys(
  *
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes256_encrypt_block_ecb(
-    AesNI_Block128 plaintext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes256_encrypt_block_ecb(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes256_RoundKeys* encryption_keys)
 {
     assert(encryption_keys);
@@ -661,8 +777,8 @@ static __inline AesNI_Block128 __fastcall aesni_aes256_encrypt_block_ecb(
  *
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes256_decrypt_block_ecb(
-    AesNI_Block128 ciphertext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes256_decrypt_block_ecb(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes256_RoundKeys* decryption_keys)
 {
     assert(decryption_keys);
@@ -680,16 +796,16 @@ static __inline AesNI_Block128 __fastcall aesni_aes256_decrypt_block_ecb(
  *
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes256_encrypt_block_cbc(
-    AesNI_Block128 plaintext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes256_encrypt_block_cbc(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes256_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
-    AesNI_Block128* next_init_vector)
+    AesNI_Aes_Block init_vector,
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
     assert(next_init_vector);
 
-    AesNI_Block128 ciphertext = aesni_aes256_encrypt_block_(aesni_xor_block128(plaintext, init_vector), encryption_keys);
+    AesNI_Aes_Block ciphertext = aesni_aes256_encrypt_block_(aesni_xor_block128(plaintext, init_vector), encryption_keys);
     *next_init_vector = ciphertext;
     return ciphertext;
 }
@@ -704,16 +820,16 @@ static __inline AesNI_Block128 __fastcall aesni_aes256_encrypt_block_cbc(
  *
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes256_decrypt_block_cbc(
-    AesNI_Block128 ciphertext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes256_decrypt_block_cbc(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes256_RoundKeys* decryption_keys,
-    AesNI_Block128 init_vector,
-    AesNI_Block128* next_init_vector)
+    AesNI_Aes_Block init_vector,
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(decryption_keys);
     assert(next_init_vector);
 
-    AesNI_Block128 plaintext = aesni_xor_block128(aesni_aes256_decrypt_block_(ciphertext, decryption_keys), init_vector);
+    AesNI_Aes_Block plaintext = aesni_xor_block128(aesni_aes256_decrypt_block_(ciphertext, decryption_keys), init_vector);
     *next_init_vector = ciphertext;
     return plaintext;
 }
@@ -728,16 +844,16 @@ static __inline AesNI_Block128 __fastcall aesni_aes256_decrypt_block_cbc(
  *
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes256_encrypt_block_cfb(
-    AesNI_Block128 plaintext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes256_encrypt_block_cfb(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes256_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
-    AesNI_Block128* next_init_vector)
+    AesNI_Aes_Block init_vector,
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
     assert(next_init_vector);
 
-    AesNI_Block128 ciphertext = aesni_xor_block128(aesni_aes256_encrypt_block_(init_vector, encryption_keys), plaintext);
+    AesNI_Aes_Block ciphertext = aesni_xor_block128(aesni_aes256_encrypt_block_(init_vector, encryption_keys), plaintext);
     *next_init_vector = ciphertext;
     return ciphertext;
 }
@@ -752,16 +868,16 @@ static __inline AesNI_Block128 __fastcall aesni_aes256_encrypt_block_cfb(
  *
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes256_decrypt_block_cfb(
-    AesNI_Block128 ciphertext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes256_decrypt_block_cfb(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes256_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
-    AesNI_Block128* next_init_vector)
+    AesNI_Aes_Block init_vector,
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
     assert(next_init_vector);
 
-    AesNI_Block128 plaintext = aesni_xor_block128(aesni_aes256_encrypt_block_(init_vector, encryption_keys), ciphertext);
+    AesNI_Aes_Block plaintext = aesni_xor_block128(aesni_aes256_encrypt_block_(init_vector, encryption_keys), ciphertext);
     *next_init_vector = ciphertext;
     return plaintext;
 }
@@ -776,16 +892,16 @@ static __inline AesNI_Block128 __fastcall aesni_aes256_decrypt_block_cfb(
  *
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes256_encrypt_block_ofb(
-    AesNI_Block128 plaintext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes256_encrypt_block_ofb(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes256_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
-    AesNI_Block128* next_init_vector)
+    AesNI_Aes_Block init_vector,
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
     assert(next_init_vector);
 
-    AesNI_Block128 tmp = aesni_aes256_encrypt_block_(init_vector, encryption_keys);
+    AesNI_Aes_Block tmp = aesni_aes256_encrypt_block_(init_vector, encryption_keys);
     *next_init_vector = tmp;
     return aesni_xor_block128(tmp, plaintext);
 }
@@ -800,16 +916,16 @@ static __inline AesNI_Block128 __fastcall aesni_aes256_encrypt_block_ofb(
  *
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes256_decrypt_block_ofb(
-    AesNI_Block128 ciphertext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes256_decrypt_block_ofb(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes256_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
-    AesNI_Block128* next_init_vector)
+    AesNI_Aes_Block init_vector,
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
     assert(next_init_vector);
 
-    AesNI_Block128 tmp = aesni_aes256_encrypt_block_(init_vector, encryption_keys);
+    AesNI_Aes_Block tmp = aesni_aes256_encrypt_block_(init_vector, encryption_keys);
     *next_init_vector = tmp;
     return aesni_xor_block128(tmp, ciphertext);
 }
@@ -824,17 +940,17 @@ static __inline AesNI_Block128 __fastcall aesni_aes256_decrypt_block_ofb(
  *
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes256_encrypt_block_ctr(
-    AesNI_Block128 plaintext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes256_encrypt_block_ctr(
+    AesNI_Aes_Block plaintext,
     const AesNI_Aes256_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
+    AesNI_Aes_Block init_vector,
     int counter)
 {
     assert(encryption_keys);
 
-    init_vector = aesni_le2be128(init_vector);
+    init_vector = aesni_reverse_bytes_block128(init_vector);
     init_vector = _mm_add_epi32(init_vector, aesni_make_block128(0, 0, 0, counter));
-    init_vector = aesni_be2le128(init_vector);
+    init_vector = aesni_reverse_bytes_block128(init_vector);
 
     return aesni_xor_block128(plaintext, aesni_aes256_encrypt_block_(init_vector, encryption_keys));
 }
@@ -849,17 +965,17 @@ static __inline AesNI_Block128 __fastcall aesni_aes256_encrypt_block_ctr(
  *
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_aes256_decrypt_block_ctr(
-    AesNI_Block128 ciphertext,
+static __inline AesNI_Aes_Block __fastcall aesni_aes256_decrypt_block_ctr(
+    AesNI_Aes_Block ciphertext,
     const AesNI_Aes256_RoundKeys* encryption_keys,
-    AesNI_Block128 init_vector,
+    AesNI_Aes_Block init_vector,
     int counter)
 {
     assert(encryption_keys);
 
-    init_vector = aesni_le2be128(init_vector);
+    init_vector = aesni_reverse_bytes_block128(init_vector);
     init_vector = _mm_add_epi32(init_vector, aesni_make_block128(0, 0, 0, counter));
-    init_vector = aesni_be2le128(init_vector);
+    init_vector = aesni_reverse_bytes_block128(init_vector);
 
     return aesni_xor_block128(ciphertext, aesni_aes256_encrypt_block_(init_vector, encryption_keys));
 }

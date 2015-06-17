@@ -17,9 +17,9 @@ extern "C"
 
 typedef union
 {
-    AesNI_Block128 aes128_key;
-    AesNI_Block192 aes192_key;
-    AesNI_Block256 aes256_key;
+    AesNI_Aes128_Key aes128_key;
+    AesNI_Aes192_Key aes192_key;
+    AesNI_Aes256_Key aes256_key;
 }
 AesNI_BoxAlgorithmParams;
 
@@ -59,7 +59,7 @@ AesNI_BoxDecryptionParams;
 
 typedef union
 {
-    AesNI_Block128 aes_block;
+    AesNI_Aes_Block aes_block;
 }
 AesNI_BoxBlock;
 

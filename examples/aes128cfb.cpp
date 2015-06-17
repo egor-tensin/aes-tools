@@ -19,20 +19,20 @@ int main()
 {
     try
     {
-        aesni::Block128 plaintext;
+        aesni::aes::Block plaintext;
         make_default_plaintext(plaintext);
 
-        aesni::Block128 key;
+        aesni::aes::Key128 key;
         make_default_key(key);
 
-        aesni::Block128 iv;
+        aesni::aes::Block iv;
         make_default_iv(iv);
 
-        aesni::KeySchedule128 encryption_schedule;
-        aesni_aes128_expand_key(key, &encryption_schedule);
+        aesni::aes::RoundKeys128 encryption_schedule;
+        aesni_aes128_expand_key(&key, &encryption_schedule);
         dump_encryption_schedule(encryption_schedule);
 
-        aesni::Block128 next_iv;
+        aesni::aes::Block next_iv;
         const auto ciphertext = aesni_aes128_encrypt_block_cfb(plaintext, &encryption_schedule, iv, &next_iv);
         dump_ciphertext(ciphertext);
         dump_next_iv(next_iv);

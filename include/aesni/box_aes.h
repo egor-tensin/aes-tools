@@ -25,7 +25,7 @@ static __inline AesNI_StatusCode aesni_box_derive_params_aes128(
     AesNI_ErrorDetails* err_details)
 {
     aesni_aes128_expand_key_(
-        algorithm_params->aes128_key,
+        algorithm_params->aes128_key.key,
         &encrypt_params->aes128_encryption_keys);
     aesni_aes128_derive_decryption_keys_(
         &encrypt_params->aes128_encryption_keys,

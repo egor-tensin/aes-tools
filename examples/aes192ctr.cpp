@@ -19,16 +19,16 @@ int main()
 {
     try
     {
-        aesni::Block128 plaintext;
+        aesni::aes::Block plaintext;
         make_default_plaintext(plaintext);
 
-        aesni::Block192 key;
+        aesni::aes::Key192 key;
         make_default_key(key);
 
-        aesni::Block128 iv;
+        aesni::aes::Block iv;
         make_default_iv(iv);
 
-        aesni::KeySchedule192 encryption_schedule;
+        aesni::aes::RoundKeys192 encryption_schedule;
         aesni_aes192_expand_key(&key, &encryption_schedule);
         dump_encryption_schedule(encryption_schedule);
 
