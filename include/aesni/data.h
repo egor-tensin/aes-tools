@@ -37,6 +37,7 @@ typedef __m128i AesNI_Block128;
  * \brief Loads a 128-bit block from a memory location.
  *
  * \param[in] src The pointer to a memory location. Must not be `NULL`.
+ *
  * \return The loaded 128-bit block.
  */
 static __inline AesNI_Block128 aesni_load_block128(const void* src)
@@ -47,8 +48,8 @@ static __inline AesNI_Block128 aesni_load_block128(const void* src)
 /**
  * \brief Loads a 128-bit block from a 16-byte aligned memory location.
  *
- * \param[in] src The pointer to a 16-byte aligned memory location. Must not be
- * `NULL`.
+ * \param[in] src The pointer to a 16-byte aligned memory location. Must not be `NULL`.
+ *
  * \return The loaded 128-bit block.
  */
 static __inline AesNI_Block128 aesni_load_block128_aligned(const void* src)
@@ -60,10 +61,12 @@ static __inline AesNI_Block128 aesni_load_block128_aligned(const void* src)
  * \brief Stores a 128-bit block in a memory location.
  *
  * \param[out] dest The pointer to a memory location. Must not be `NULL`.
+ *
  * \param[in] block The block to be stored.
  */
 static __inline void __fastcall aesni_store_block128(
-    void* dest, AesNI_Block128 block)
+    void* dest,
+    AesNI_Block128 block)
 {
     _mm_storeu_si128((AesNI_Block128*) dest, block);
 }
@@ -71,14 +74,30 @@ static __inline void __fastcall aesni_store_block128(
 /**
  * \brief Stores a 128-bit block in a 16-byte aligned memory location.
  *
- * \param[out] dest The pointer to a 16-byte aligned memory location. Must not
- * be `NULL`.
+ * \param[out] dest The pointer to a 16-byte aligned memory location. Must not be `NULL`.
+ *
  * \param[in] block The block to be stored.
  */
 static __inline void __fastcall aesni_store_block128_aligned(
-    void* dest, AesNI_Block128 block)
+    void* dest,
+    AesNI_Block128 block)
 {
     _mm_store_si128((AesNI_Block128*) dest, block);
+}
+
+/**
+ * \brief XORs two 128-bit blocks.
+ *
+ * \param[in] a The first XOR operand.
+ * \param[in] b The second XOR operand.
+ *
+ * \return `a^b`.
+ */
+static __inline AesNI_Block128 __fastcall aesni_xor_block128(
+    AesNI_Block128 a,
+    AesNI_Block128 b)
+{
+    return _mm_xor_si128(a, b);
 }
 
 /**

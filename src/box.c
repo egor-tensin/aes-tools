@@ -13,7 +13,7 @@ static AesNI_StatusCode aesni_box_xor_state_aes(
     const AesNI_State* src,
     AesNI_ErrorDetails* err_details)
 {
-    dest->aes_block = _mm_xor_si128(dest->aes_block, src->aes_block);
+    dest->aes_block = aesni_xor_block128(dest->aes_block, src->aes_block);
     return AESNI_SUCCESS;
 }
 

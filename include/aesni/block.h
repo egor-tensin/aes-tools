@@ -147,7 +147,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cbc128(
     assert(next_init_vector);
 
     AesNI_Block128 cipher = aesni_raw_encrypt_block128(
-        _mm_xor_si128(plain, init_vector),
+        aesni_xor_block128(plain, init_vector),
         key_schedule);
     *next_init_vector = cipher;
     return cipher;
@@ -173,7 +173,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cbc128(
     assert(inverted_schedule);
     assert(next_init_vector);
 
-    AesNI_Block128 plain = _mm_xor_si128(
+    AesNI_Block128 plain = aesni_xor_block128(
         aesni_raw_decrypt_block128(cipher, inverted_schedule),
         init_vector);
     *next_init_vector = cipher;
@@ -200,7 +200,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cfb128(
     assert(key_schedule);
     assert(next_init_vector);
 
-    AesNI_Block128 cipher = _mm_xor_si128(
+    AesNI_Block128 cipher = aesni_xor_block128(
         aesni_raw_encrypt_block128(init_vector, key_schedule),
         plain);
     *next_init_vector = cipher;
@@ -227,7 +227,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cfb128(
     assert(key_schedule);
     assert(next_init_vector);
 
-    AesNI_Block128 plain = _mm_xor_si128(
+    AesNI_Block128 plain = aesni_xor_block128(
         aesni_raw_encrypt_block128(init_vector, key_schedule),
         cipher);
     *next_init_vector = cipher;
@@ -256,7 +256,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ofb128(
 
     AesNI_Block128 tmp = aesni_raw_encrypt_block128(init_vector, key_schedule);
     *next_init_vector = tmp;
-    return _mm_xor_si128(tmp, plain);
+    return aesni_xor_block128(tmp, plain);
 }
 
 /**
@@ -281,7 +281,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ofb128(
 
     AesNI_Block128 tmp = aesni_raw_encrypt_block128(init_vector, key_schedule);
     *next_init_vector = tmp;
-    return _mm_xor_si128(tmp, cipher);
+    return aesni_xor_block128(tmp, cipher);
 }
 
 /**
@@ -307,7 +307,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ctr128(
         aesni_le2be128(init_vector),
         aesni_make_block128(0, 0, 0, counter)));
 
-    return _mm_xor_si128(
+    return aesni_xor_block128(
         plain,
         aesni_raw_encrypt_block128(init_vector, key_schedule));
 }
@@ -335,7 +335,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ctr128(
         aesni_le2be128(init_vector),
         aesni_make_block128(0, 0, 0, counter)));
 
-    return _mm_xor_si128(
+    return aesni_xor_block128(
         cipher,
         aesni_raw_encrypt_block128(init_vector, key_schedule));
 }
@@ -437,7 +437,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cbc192(
     assert(next_init_vector);
 
     AesNI_Block128 cipher = aesni_raw_encrypt_block192(
-        _mm_xor_si128(plain, init_vector),
+        aesni_xor_block128(plain, init_vector),
         key_schedule);
     *next_init_vector = cipher;
     return cipher;
@@ -463,7 +463,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cbc192(
     assert(inverted_schedule);
     assert(next_init_vector);
 
-    AesNI_Block128 plain = _mm_xor_si128(
+    AesNI_Block128 plain = aesni_xor_block128(
         aesni_raw_decrypt_block192(cipher, inverted_schedule),
         init_vector);
     *next_init_vector = cipher;
@@ -490,7 +490,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cfb192(
     assert(key_schedule);
     assert(next_init_vector);
 
-    AesNI_Block128 cipher = _mm_xor_si128(
+    AesNI_Block128 cipher = aesni_xor_block128(
         aesni_raw_encrypt_block192(init_vector, key_schedule),
         plain);
     *next_init_vector = cipher;
@@ -517,7 +517,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cfb192(
     assert(key_schedule);
     assert(next_init_vector);
 
-    AesNI_Block128 plain = _mm_xor_si128(
+    AesNI_Block128 plain = aesni_xor_block128(
         aesni_raw_encrypt_block192(init_vector, key_schedule),
         cipher);
     *next_init_vector = cipher;
@@ -546,7 +546,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ofb192(
 
     AesNI_Block128 tmp = aesni_raw_encrypt_block192(init_vector, key_schedule);
     *next_init_vector = tmp;
-    return _mm_xor_si128(tmp, plain);
+    return aesni_xor_block128(tmp, plain);
 }
 
 /**
@@ -571,7 +571,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ofb192(
 
     AesNI_Block128 tmp = aesni_raw_encrypt_block192(init_vector, key_schedule);
     *next_init_vector = tmp;
-    return _mm_xor_si128(tmp, cipher);
+    return aesni_xor_block128(tmp, cipher);
 }
 
 /**
@@ -597,7 +597,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ctr192(
         aesni_le2be128(init_vector),
         aesni_make_block128(0, 0, 0, counter)));
 
-    return _mm_xor_si128(
+    return aesni_xor_block128(
         plain,
         aesni_raw_encrypt_block192(init_vector, key_schedule));
 }
@@ -625,7 +625,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ctr192(
         aesni_le2be128(init_vector),
         aesni_make_block128(0, 0, 0, counter)));
 
-    return _mm_xor_si128(
+    return aesni_xor_block128(
         cipher,
         aesni_raw_encrypt_block192(init_vector, key_schedule));
 }
@@ -727,7 +727,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cbc256(
     assert(next_init_vector);
 
     AesNI_Block128 cipher = aesni_raw_encrypt_block256(
-        _mm_xor_si128(plain, init_vector),
+        aesni_xor_block128(plain, init_vector),
         key_schedule);
     *next_init_vector = cipher;
     return cipher;
@@ -753,7 +753,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cbc256(
     assert(inverted_schedule);
     assert(next_init_vector);
 
-    AesNI_Block128 plain = _mm_xor_si128(
+    AesNI_Block128 plain = aesni_xor_block128(
         aesni_raw_decrypt_block256(cipher, inverted_schedule),
         init_vector);
     *next_init_vector = cipher;
@@ -780,7 +780,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cfb256(
     assert(key_schedule);
     assert(next_init_vector);
 
-    AesNI_Block128 cipher = _mm_xor_si128(
+    AesNI_Block128 cipher = aesni_xor_block128(
         aesni_raw_encrypt_block256(init_vector, key_schedule),
         plain);
     *next_init_vector = cipher;
@@ -807,7 +807,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cfb256(
     assert(key_schedule);
     assert(next_init_vector);
 
-    AesNI_Block128 plain = _mm_xor_si128(
+    AesNI_Block128 plain = aesni_xor_block128(
         aesni_raw_encrypt_block256(init_vector, key_schedule),
         cipher);
     *next_init_vector = cipher;
@@ -836,7 +836,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ofb256(
 
     AesNI_Block128 tmp = aesni_raw_encrypt_block256(init_vector, key_schedule);
     *next_init_vector = tmp;
-    return _mm_xor_si128(tmp, plain);
+    return aesni_xor_block128(tmp, plain);
 }
 
 /**
@@ -861,7 +861,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ofb256(
 
     AesNI_Block128 tmp = aesni_raw_encrypt_block256(init_vector, key_schedule);
     *next_init_vector = tmp;
-    return _mm_xor_si128(tmp, cipher);
+    return aesni_xor_block128(tmp, cipher);
 }
 
 /**
@@ -887,7 +887,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ctr256(
         aesni_le2be128(init_vector),
         aesni_make_block128(0, 0, 0, counter)));
 
-    return _mm_xor_si128(
+    return aesni_xor_block128(
         plain,
         aesni_raw_encrypt_block256(init_vector, key_schedule));
 }
@@ -915,7 +915,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ctr256(
         aesni_le2be128(init_vector),
         aesni_make_block128(0, 0, 0, counter)));
 
-    return _mm_xor_si128(
+    return aesni_xor_block128(
         cipher,
         aesni_raw_encrypt_block256(init_vector, key_schedule));
 }
