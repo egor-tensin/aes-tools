@@ -69,6 +69,36 @@ namespace aesni
         return std::string(str.str);
     }
 
+    void from_string(Block128& dest, const char* src)
+    {
+        aesni_parse_block128(&dest, src, ErrorDetailsThrowsInDestructor());
+    }
+
+    void from_string(Block192& dest, const char* src)
+    {
+        aesni_parse_block192(&dest, src, ErrorDetailsThrowsInDestructor());
+    }
+
+    void from_string(Block256& dest, const char* src)
+    {
+        aesni_parse_block256(&dest, src, ErrorDetailsThrowsInDestructor());
+    }
+
+    void from_string(Block128& dest, const std::string& src)
+    {
+        return from_string(dest, src.c_str());
+    }
+
+    void from_string(Block192& dest, const std::string& src)
+    {
+        return from_string(dest, src.c_str());
+    }
+
+    void from_string(Block256& dest, const std::string& src)
+    {
+        return from_string(dest, src.c_str());
+    }
+
     std::string to_matrix_string(const Block128& block)
     {
         AesNI_BlockMatrixString128 str;
