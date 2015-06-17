@@ -8,193 +8,29 @@
 
 #include <aesni/all.h>
 
-static AesNI_StatusCode aesni_box_xor_state_aes(
-    AesNI_State* dest,
-    const AesNI_State* src,
-    AesNI_ErrorDetails* err_details)
+static const AesNI_BoxAlgorithmInterface* aesni_box_algorithm_ifaces[] =
 {
-    dest->aes_block = aesni_xor_block128(dest->aes_block, src->aes_block);
-    return AESNI_SUCCESS;
-}
-
-static AesNI_StatusCode aesni_box_encrypt_aes128(
-    const AesNI_State* input,
-    const AesNI_EncryptionParams* params,
-    AesNI_State* output,
-    AesNI_ErrorDetails* err_details)
-{
-    output->aes_block = aesni_aes128_encrypt_block_(
-        input->aes_block,
-        &params->aes128_key_schedule);
-    return AESNI_SUCCESS;
-}
-
-static AesNI_StatusCode aesni_box_decrypt_aes128(
-    const AesNI_State* input,
-    const AesNI_DecryptionParams* params,
-    AesNI_State* output,
-    AesNI_ErrorDetails* err_details)
-{
-    output->aes_block = aesni_aes128_decrypt_block_(
-        input->aes_block,
-        &params->aes128_key_schedule);
-    return AESNI_SUCCESS;
-}
-
-static AesNI_StatusCode aesni_box_encrypt_aes192(
-    const AesNI_State* input,
-    const AesNI_EncryptionParams* params,
-    AesNI_State* output,
-    AesNI_ErrorDetails* err_details)
-{
-    output->aes_block = aesni_aes192_encrypt_block_(
-        input->aes_block,
-        &params->aes192_key_schedule);
-    return AESNI_SUCCESS;
-}
-
-static AesNI_StatusCode aesni_box_decrypt_aes192(
-    const AesNI_State* input,
-    const AesNI_DecryptionParams* params,
-    AesNI_State* output,
-    AesNI_ErrorDetails* err_details)
-{
-    output->aes_block = aesni_aes192_decrypt_block_(
-        input->aes_block,
-        &params->aes192_key_schedule);
-    return AESNI_SUCCESS;
-}
-
-static AesNI_StatusCode aesni_box_encrypt_aes256(
-    const AesNI_State* input,
-    const AesNI_EncryptionParams* params,
-    AesNI_State* output,
-    AesNI_ErrorDetails* err_details)
-{
-    output->aes_block = aesni_aes256_encrypt_block_(
-        input->aes_block,
-        &params->aes256_key_schedule);
-    return AESNI_SUCCESS;
-}
-
-static AesNI_StatusCode aesni_box_decrypt_aes256(
-    const AesNI_State* input,
-    const AesNI_DecryptionParams* params,
-    AesNI_State* output,
-    AesNI_ErrorDetails* err_details)
-{
-    output->aes_block = aesni_aes256_decrypt_block_(
-        input->aes_block,
-        &params->aes256_key_schedule);
-    return AESNI_SUCCESS;
-}
-
-typedef AesNI_StatusCode (*AesNI_BoxEncrypt)(
-    const AesNI_State*,
-    const AesNI_EncryptionParams* params,
-    AesNI_State* output,
-    AesNI_ErrorDetails* err_details);
-
-static AesNI_BoxEncrypt aesni_box_encrypt_algorithm[] =
-{
-    &aesni_box_encrypt_aes128,
-    &aesni_box_encrypt_aes192,
-    &aesni_box_encrypt_aes256,
-};
-
-typedef AesNI_StatusCode (*AesNI_BoxDecrypt)(
-    const AesNI_State*,
-    const AesNI_DecryptionParams* params,
-    AesNI_State* output,
-    AesNI_ErrorDetails* err_details);
-
-static AesNI_BoxDecrypt aesni_box_decrypt_algorithm[] =
-{
-    &aesni_box_decrypt_aes128,
-    &aesni_box_decrypt_aes192,
-    &aesni_box_decrypt_aes256,
-};
-
-typedef AesNI_StatusCode (*AesNI_BoxXorState)(
-    AesNI_State*,
-    const AesNI_State*,
-    AesNI_ErrorDetails*);
-
-static AesNI_BoxXorState aesni_box_xor_state[] =
-{
-    &aesni_box_xor_state_aes,
-    &aesni_box_xor_state_aes,
-    &aesni_box_xor_state_aes,
-};
-
-static AesNI_StatusCode aesni_box_init_aes128(
-    AesNI_Box* box,
-    const AesNI_AlgorithmParams* algorithm_params,
-    AesNI_ErrorDetails* err_details)
-{
-    aesni_aes128_expand_key_(
-        algorithm_params->aes128_key,
-        &box->encrypt_params.aes128_key_schedule);
-    aesni_aes128_derive_decryption_keys_(
-        &box->encrypt_params.aes128_key_schedule,
-        &box->decrypt_params.aes128_key_schedule);
-    return AESNI_SUCCESS;
-}
-
-static AesNI_StatusCode aesni_box_init_aes192(
-    AesNI_Box* box,
-    const AesNI_AlgorithmParams* algorithm_params,
-    AesNI_ErrorDetails* err_details)
-{
-    aesni_aes192_expand_key_(
-        algorithm_params->aes192_key.lo,
-        algorithm_params->aes192_key.hi,
-        &box->encrypt_params.aes192_key_schedule);
-    aesni_aes192_derive_decryption_keys_(
-        &box->encrypt_params.aes192_key_schedule,
-        &box->decrypt_params.aes192_key_schedule);
-    return AESNI_SUCCESS;
-}
-
-static AesNI_StatusCode aesni_box_init_aes256(
-    AesNI_Box* box,
-    const AesNI_AlgorithmParams* algorithm_params,
-    AesNI_ErrorDetails* err_details)
-{
-    aesni_aes256_expand_key_(
-        algorithm_params->aes256_key.lo,
-        algorithm_params->aes256_key.hi,
-        &box->encrypt_params.aes256_key_schedule);
-    aesni_aes256_derive_decryption_keys_(
-        &box->encrypt_params.aes256_key_schedule,
-        &box->decrypt_params.aes256_key_schedule);
-    return AESNI_SUCCESS;
-}
-
-typedef AesNI_StatusCode (*AesNI_BoxInitializeAlgorithm)(
-    AesNI_Box*,
-    const AesNI_AlgorithmParams*,
-    AesNI_ErrorDetails*);
-
-static AesNI_BoxInitializeAlgorithm aesni_box_init_algorithm[] =
-{
-    &aesni_box_init_aes128,
-    &aesni_box_init_aes192,
-    &aesni_box_init_aes256,
+    &aesni_box_aes128_iface,
+    &aesni_box_aes192_iface,
+    &aesni_box_aes256_iface,
 };
 
 AesNI_StatusCode aesni_box_init(
     AesNI_Box* box,
-    AesNI_Algorithm algorithm,
-    const AesNI_AlgorithmParams* algorithm_params,
-    AesNI_Mode mode,
-    const AesNI_State* iv,
+    AesNI_BoxAlgorithm algorithm,
+    const AesNI_BoxAlgorithmParams* algorithm_params,
+    AesNI_BoxMode mode,
+    const AesNI_BoxBlock* iv,
     AesNI_ErrorDetails* err_details)
 {
     AesNI_StatusCode status = AESNI_SUCCESS;
 
-    box->algorithm = algorithm;
-    if (aesni_is_error(status = aesni_box_init_algorithm[algorithm](box, algorithm_params, err_details)))
+    box->algorithm_iface = aesni_box_algorithm_ifaces[algorithm];
+    if (aesni_is_error(status = box->algorithm_iface->derive_params(
+            algorithm_params,
+            &box->encrypt_params,
+            &box->decrypt_params,
+            err_details)))
         return status;
     box->mode = mode;
     if (iv != NULL)
@@ -205,11 +41,11 @@ AesNI_StatusCode aesni_box_init(
 
 static AesNI_StatusCode aesni_box_encrypt_ecb(
     AesNI_Box* box,
-    const AesNI_State* input,
-    AesNI_State* output,
+    const AesNI_BoxBlock* input,
+    AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
-    return aesni_box_encrypt_algorithm[box->algorithm](
+    return box->algorithm_iface->encrypt(
         input,
         &box->encrypt_params,
         output,
@@ -218,21 +54,21 @@ static AesNI_StatusCode aesni_box_encrypt_ecb(
 
 static AesNI_StatusCode aesni_box_encrypt_cbc(
     AesNI_Box* box,
-    const AesNI_State* input,
-    AesNI_State* output,
+    const AesNI_BoxBlock* input,
+    AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
     AesNI_StatusCode status = AESNI_SUCCESS;
 
-    AesNI_State xored_input = *input;
-    status = aesni_box_xor_state[box->algorithm](
+    AesNI_BoxBlock xored_input = *input;
+    status = box->algorithm_iface->xor_block(
         &xored_input,
         &box->iv,
         err_details);
     if (aesni_is_error(status))
         return status;
 
-    status = aesni_box_encrypt_algorithm[box->algorithm](
+    status = box->algorithm_iface->encrypt(
         &xored_input,
         &box->encrypt_params,
         output,
@@ -246,11 +82,11 @@ static AesNI_StatusCode aesni_box_encrypt_cbc(
 
 static AesNI_StatusCode aesni_box_encrypt_cfb(
     AesNI_Box* box,
-    const AesNI_State* input,
-    AesNI_State* output,
+    const AesNI_BoxBlock* input,
+    AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
-    AesNI_StatusCode status = aesni_box_encrypt_algorithm[box->algorithm](
+    AesNI_StatusCode status = box->algorithm_iface->encrypt(
         &box->iv,
         &box->encrypt_params,
         output,
@@ -258,7 +94,7 @@ static AesNI_StatusCode aesni_box_encrypt_cfb(
     if (aesni_is_error(status))
         return status;
 
-    status = aesni_box_xor_state[box->algorithm](output, input, err_details);
+    status = box->algorithm_iface->xor_block(output, input, err_details);
     if (aesni_is_error(status))
         return status;
 
@@ -268,11 +104,11 @@ static AesNI_StatusCode aesni_box_encrypt_cfb(
 
 static AesNI_StatusCode aesni_box_encrypt_ofb(
     AesNI_Box* box,
-    const AesNI_State* input,
-    AesNI_State* output,
+    const AesNI_BoxBlock* input,
+    AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
-    AesNI_StatusCode status = aesni_box_encrypt_algorithm[box->algorithm](
+    AesNI_StatusCode status = box->algorithm_iface->encrypt(
         &box->iv,
         &box->encrypt_params,
         &box->iv,
@@ -282,7 +118,7 @@ static AesNI_StatusCode aesni_box_encrypt_ofb(
 
     *output = box->iv;
 
-    status = aesni_box_xor_state[box->algorithm](output, input, err_details);
+    status = box->algorithm_iface->xor_block(output, input, err_details);
     if (aesni_is_error(status))
         return status;
 
@@ -291,8 +127,8 @@ static AesNI_StatusCode aesni_box_encrypt_ofb(
 
 static AesNI_StatusCode aesni_box_encrypt_ctr(
     AesNI_Box* box,
-    const AesNI_State* input,
-    AesNI_State* output,
+    const AesNI_BoxBlock* input,
+    AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
     return aesni_error_not_implemented(err_details);
@@ -300,8 +136,8 @@ static AesNI_StatusCode aesni_box_encrypt_ctr(
 
 typedef AesNI_StatusCode (*AesNI_BoxEncryptMode)(
     AesNI_Box*,
-    const AesNI_State*,
-    AesNI_State*,
+    const AesNI_BoxBlock*,
+    AesNI_BoxBlock*,
     AesNI_ErrorDetails*);
 
 static AesNI_BoxEncryptMode aesni_box_encrypt_mode[] =
@@ -315,8 +151,8 @@ static AesNI_BoxEncryptMode aesni_box_encrypt_mode[] =
 
 AesNI_StatusCode aesni_box_encrypt(
     AesNI_Box* box,
-    const AesNI_State* input,
-    AesNI_State* output,
+    const AesNI_BoxBlock* input,
+    AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
     return aesni_box_encrypt_mode[box->mode](box, input, output, err_details);
@@ -324,11 +160,11 @@ AesNI_StatusCode aesni_box_encrypt(
 
 static AesNI_StatusCode aesni_box_decrypt_ecb(
     AesNI_Box* box,
-    const AesNI_State* input,
-    AesNI_State* output,
+    const AesNI_BoxBlock* input,
+    AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
-    return aesni_box_decrypt_algorithm[box->algorithm](
+    return box->algorithm_iface->decrypt(
         input,
         &box->decrypt_params,
         output,
@@ -337,11 +173,11 @@ static AesNI_StatusCode aesni_box_decrypt_ecb(
 
 static AesNI_StatusCode aesni_box_decrypt_cbc(
     AesNI_Box* box,
-    const AesNI_State* input,
-    AesNI_State* output,
+    const AesNI_BoxBlock* input,
+    AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
-    AesNI_StatusCode status = aesni_box_decrypt_algorithm[box->algorithm](
+    AesNI_StatusCode status = box->algorithm_iface->decrypt(
         input,
         &box->decrypt_params,
         output,
@@ -349,7 +185,7 @@ static AesNI_StatusCode aesni_box_decrypt_cbc(
     if (aesni_is_error(status))
         return status;
 
-    status = aesni_box_xor_state[box->algorithm](
+    status = box->algorithm_iface->xor_block(
         output,
         &box->iv,
         err_details);
@@ -362,11 +198,11 @@ static AesNI_StatusCode aesni_box_decrypt_cbc(
 
 static AesNI_StatusCode aesni_box_decrypt_cfb(
     AesNI_Box* box,
-    const AesNI_State* input,
-    AesNI_State* output,
+    const AesNI_BoxBlock* input,
+    AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
-    AesNI_StatusCode status = aesni_box_encrypt_algorithm[box->algorithm](
+    AesNI_StatusCode status = box->algorithm_iface->encrypt(
         &box->iv,
         &box->encrypt_params,
         output,
@@ -374,7 +210,7 @@ static AesNI_StatusCode aesni_box_decrypt_cfb(
     if (aesni_is_error(status))
         return status;
 
-    status = aesni_box_xor_state[box->algorithm](
+    status = box->algorithm_iface->xor_block(
         output,
         input,
         err_details);
@@ -388,11 +224,11 @@ static AesNI_StatusCode aesni_box_decrypt_cfb(
 
 static AesNI_StatusCode aesni_box_decrypt_ofb(
     AesNI_Box* box,
-    const AesNI_State* input,
-    AesNI_State* output,
+    const AesNI_BoxBlock* input,
+    AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
-    AesNI_StatusCode status = aesni_box_encrypt_algorithm[box->algorithm](
+    AesNI_StatusCode status = box->algorithm_iface->encrypt(
         &box->iv,
         &box->encrypt_params,
         output,
@@ -402,7 +238,7 @@ static AesNI_StatusCode aesni_box_decrypt_ofb(
 
     box->iv = *output;
 
-    status = aesni_box_xor_state[box->algorithm](
+    status = box->algorithm_iface->xor_block(
         output,
         input,
         err_details);
@@ -414,8 +250,8 @@ static AesNI_StatusCode aesni_box_decrypt_ofb(
 
 static AesNI_StatusCode aesni_box_decrypt_ctr(
     AesNI_Box* box,
-    const AesNI_State* input,
-    AesNI_State* output,
+    const AesNI_BoxBlock* input,
+    AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
     return aesni_error_not_implemented(err_details);
@@ -434,8 +270,8 @@ static AesNI_BoxDecryptMode aesni_box_decrypt_mode[] =
 
 AesNI_StatusCode aesni_box_decrypt(
     AesNI_Box* box,
-    const AesNI_State* input,
-    AesNI_State* output,
+    const AesNI_BoxBlock* input,
+    AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
     return aesni_box_decrypt_mode[box->mode](box, input, output, err_details);

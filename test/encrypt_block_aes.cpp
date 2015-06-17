@@ -34,10 +34,10 @@ int main(int argc, char** argv)
             if (argc < 2)
                 exit_with_usage();
 
-            AesNI_AlgorithmParams algorithm_params;
+            AesNI_BoxAlgorithmParams algorithm_params;
             aesni::from_string(algorithm_params.aes128_key, argv[0]);
 
-            AesNI_State iv;
+            AesNI_BoxBlock iv;
             aesni::from_string(iv.aes_block, argv[1]);
 
             AesNI_Box box;
@@ -54,10 +54,10 @@ int main(int argc, char** argv)
                 if (std::strcmp("--", argv[0]) == 0)
                     break;
 
-                AesNI_State plaintext;
+                AesNI_BoxBlock plaintext;
                 aesni::from_string(plaintext.aes_block, argv[0]);
 
-                AesNI_State ciphertext;
+                AesNI_BoxBlock ciphertext;
                 aesni_box_encrypt(
                     &box,
                     &plaintext,

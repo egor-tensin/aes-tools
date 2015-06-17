@@ -16,9 +16,9 @@
  */
 
 #include "aes.h"
-#include "algorithm.h"
 #include "box.h"
+#include "box_aes.h"
+#include "box_data.h"
 #include "buffer.h"
 #include "data.h"
 #include "error.h"
-#include "mode.h"
