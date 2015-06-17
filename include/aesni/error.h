@@ -48,6 +48,7 @@ typedef enum
     AESNI_NULL_ARGUMENT_ERROR, ///< Invalid argument value NULL
     AESNI_PARSE_ERROR,         ///< Couldn't parse
     AESNI_INVALID_PKCS7_PADDING_ERROR, ///< Invalid PKCS7 padding
+    AESNI_NOT_IMPLEMENTED,
 }
 AesNI_StatusCode;
 
@@ -161,6 +162,9 @@ AesNI_StatusCode aesni_make_parse_error(
  * \param[out] err_details The error details structure to fill.
  */
 AesNI_StatusCode aesni_make_invalid_pkcs7_padding_error(
+    AesNI_ErrorDetails* err_details);
+
+AesNI_StatusCode aesni_error_not_implemented(
     AesNI_ErrorDetails* err_details);
 
 #ifdef __cplusplus

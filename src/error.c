@@ -19,6 +19,7 @@ static const char* err_msgs[] =
     "Invalid argument value NULL",
     "Couldn't parse",
     "Invalid PKCS7 padding (wrong key?)",
+    "Not implemented",
 };
 
 const char* aesni_strerror(AesNI_StatusCode ec)
@@ -80,6 +81,7 @@ static AesNI_ErrorFormatter err_formatters[] =
     &aesni_format_null_argument_error,
     &aesni_format_error_strerror,
     &aesni_format_error_strerror,
+    &aesni_format_error_strerror,
 };
 
 size_t aesni_format_error(
@@ -139,4 +141,10 @@ AesNI_StatusCode aesni_make_invalid_pkcs7_padding_error(
     AesNI_ErrorDetails* err_details)
 {
     return aesni_make_error(err_details, AESNI_INVALID_PKCS7_PADDING_ERROR);
+}
+
+AesNI_StatusCode aesni_error_not_implemented(
+    AesNI_ErrorDetails* err_details)
+{
+    return aesni_make_error(err_details, AESNI_NOT_IMPLEMENTED);
 }
