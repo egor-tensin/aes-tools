@@ -167,7 +167,7 @@ aes128_keygen_assist:
     ret
 @aesni_aes128_expand_key_@20 endp
 
-@aesni_aes128_derive_decryption_keys_raw@8 proc
+@aesni_aes128_derive_decryption_keys_@8 proc
     movdqa xmm5, [ecx]
     movdqa xmm4, [ecx + 0A0h]
     movdqa [edx], xmm4
@@ -197,6 +197,6 @@ aes128_keygen_assist:
     movdqa [edx + 50h], xmm5
 
     ret
-@aesni_aes128_derive_decryption_keys_raw@8 endp
+@aesni_aes128_derive_decryption_keys_@8 endp
 
 end

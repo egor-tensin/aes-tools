@@ -28,9 +28,9 @@ namespace aesni
     typedef AesNI_Aes256_RoundKeys KeySchedule256;
 
     template <typename KeyScheduleT>
-    inline std::size_t get_number_of_keys(const KeyScheduleT& key_schedule)
+    inline std::size_t get_number_of_keys(const KeyScheduleT& round_keys)
     {
-        return sizeof(key_schedule) / sizeof(Block128);
+        return sizeof(round_keys) / sizeof(Block128);
     }
 
     inline void make_block(Block128& dest, int hi3, int hi2, int lo1, int lo0)

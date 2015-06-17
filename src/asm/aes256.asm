@@ -241,7 +241,7 @@ aes256_keygen_assist:
     ret
 @aesni_aes256_expand_key_@36 endp
 
-@aesni_aes256_derive_decryption_keys_raw@8 proc
+@aesni_aes256_derive_decryption_keys_@8 proc
     movdqa xmm5, [ecx]
     movdqa xmm4, [ecx + 0E0h]
     movdqa [edx], xmm4
@@ -281,6 +281,6 @@ aes256_keygen_assist:
     movdqa [edx + 70h], xmm5
 
     ret
-@aesni_aes256_derive_decryption_keys_raw@8 endp
+@aesni_aes256_derive_decryption_keys_@8 endp
 
 end
