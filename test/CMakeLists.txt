@@ -23,3 +23,12 @@ test(aes256cbc)
 test(aes256cfb)
 test(aes256ofb)
 test(aes256ctr)
+
+add_executable(test_encrypt_block_aes encrypt_block_aes.cpp)
+target_link_libraries(test_encrypt_block_aes libaesni libaesnixx)
+set_target_properties(test_encrypt_block_aes PROPERTIES OUTPUT_NAME encrypt_block_aes)
+
+add_executable(test_decrypt_block_aes decrypt_block_aes.cpp)
+target_link_libraries(test_decrypt_block_aes libaesni libaesnixx)
+set_target_properties(test_decrypt_block_aes PROPERTIES OUTPUT_NAME decrypt_block_aes)
+
