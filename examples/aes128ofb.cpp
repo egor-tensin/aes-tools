@@ -29,15 +29,15 @@ int main()
         make_default_iv(iv);
 
         aesni::KeySchedule128 encryption_schedule;
-        aesni_expand_key_schedule128(key, &encryption_schedule);
+        aesni_aes128_expand_key(key, &encryption_schedule);
         dump_encryption_schedule(encryption_schedule);
 
         aesni::Block128 next_iv;
-        const auto ciphertext = aesni_encrypt_block_ofb128(plaintext, &encryption_schedule, iv, &next_iv);
+        const auto ciphertext = aesni_aes128_encrypt_block_ofb(plaintext, &encryption_schedule, iv, &next_iv);
         dump_ciphertext(ciphertext);
         dump_next_iv(next_iv);
 
-        const auto decrypted = aesni_decrypt_block_ofb128(ciphertext, &encryption_schedule, iv, &next_iv);
+        const auto decrypted = aesni_aes128_decrypt_block_ofb(ciphertext, &encryption_schedule, iv, &next_iv);
         dump_decrypted(decrypted);
         dump_next_iv(next_iv);
 

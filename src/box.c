@@ -23,7 +23,7 @@ static AesNI_StatusCode aesni_box_encrypt_aes128(
     AesNI_State* output,
     AesNI_ErrorDetails* err_details)
 {
-    output->aes_block = aesni_raw_encrypt_block128(
+    output->aes_block = aesni_aes128_encrypt_block_(
         input->aes_block,
         &params->aes128_key_schedule);
     return AESNI_SUCCESS;
@@ -35,7 +35,7 @@ static AesNI_StatusCode aesni_box_decrypt_aes128(
     AesNI_State* output,
     AesNI_ErrorDetails* err_details)
 {
-    output->aes_block = aesni_raw_decrypt_block128(
+    output->aes_block = aesni_aes128_decrypt_block_(
         input->aes_block,
         &params->aes128_key_schedule);
     return AESNI_SUCCESS;
@@ -47,7 +47,7 @@ static AesNI_StatusCode aesni_box_encrypt_aes192(
     AesNI_State* output,
     AesNI_ErrorDetails* err_details)
 {
-    output->aes_block = aesni_raw_encrypt_block192(
+    output->aes_block = aesni_aes192_encrypt_block_(
         input->aes_block,
         &params->aes192_key_schedule);
     return AESNI_SUCCESS;
@@ -59,7 +59,7 @@ static AesNI_StatusCode aesni_box_decrypt_aes192(
     AesNI_State* output,
     AesNI_ErrorDetails* err_details)
 {
-    output->aes_block = aesni_raw_decrypt_block192(
+    output->aes_block = aesni_aes192_decrypt_block_(
         input->aes_block,
         &params->aes192_key_schedule);
     return AESNI_SUCCESS;
@@ -71,7 +71,7 @@ static AesNI_StatusCode aesni_box_encrypt_aes256(
     AesNI_State* output,
     AesNI_ErrorDetails* err_details)
 {
-    output->aes_block = aesni_raw_encrypt_block256(
+    output->aes_block = aesni_aes256_encrypt_block_(
         input->aes_block,
         &params->aes256_key_schedule);
     return AESNI_SUCCESS;
@@ -83,7 +83,7 @@ static AesNI_StatusCode aesni_box_decrypt_aes256(
     AesNI_State* output,
     AesNI_ErrorDetails* err_details)
 {
-    output->aes_block = aesni_raw_decrypt_block256(
+    output->aes_block = aesni_aes256_decrypt_block_(
         input->aes_block,
         &params->aes256_key_schedule);
     return AESNI_SUCCESS;
@@ -132,10 +132,10 @@ static AesNI_StatusCode aesni_box_init_aes128(
     const AesNI_AlgorithmParams* algorithm_params,
     AesNI_ErrorDetails* err_details)
 {
-    aesni_raw_expand_key_schedule128(
+    aesni_aes128_expand_key_(
         algorithm_params->aes128_key,
         &box->encrypt_params.aes128_key_schedule);
-    aesni_raw_invert_key_schedule128(
+    aesni_aes128_derive_decryption_keys_(
         &box->encrypt_params.aes128_key_schedule,
         &box->decrypt_params.aes128_key_schedule);
     return AESNI_SUCCESS;
@@ -146,11 +146,11 @@ static AesNI_StatusCode aesni_box_init_aes192(
     const AesNI_AlgorithmParams* algorithm_params,
     AesNI_ErrorDetails* err_details)
 {
-    aesni_raw_expand_key_schedule192(
+    aesni_aes192_expand_key_(
         algorithm_params->aes192_key.lo,
         algorithm_params->aes192_key.hi,
         &box->encrypt_params.aes192_key_schedule);
-    aesni_raw_invert_key_schedule192(
+    aesni_aes192_derive_decryption_keys_(
         &box->encrypt_params.aes192_key_schedule,
         &box->decrypt_params.aes192_key_schedule);
     return AESNI_SUCCESS;
@@ -161,11 +161,11 @@ static AesNI_StatusCode aesni_box_init_aes256(
     const AesNI_AlgorithmParams* algorithm_params,
     AesNI_ErrorDetails* err_details)
 {
-    aesni_raw_expand_key_schedule256(
+    aesni_aes256_expand_key_(
         algorithm_params->aes256_key.lo,
         algorithm_params->aes256_key.hi,
         &box->encrypt_params.aes256_key_schedule);
-    aesni_raw_invert_key_schedule256(
+    aesni_aes256_derive_decryption_keys_(
         &box->encrypt_params.aes256_key_schedule,
         &box->decrypt_params.aes256_key_schedule);
     return AESNI_SUCCESS;

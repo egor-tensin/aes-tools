@@ -4,47 +4,11 @@
  * \date 2015
  * \copyright This file is licensed under the terms of the MIT License.
  *            See LICENSE.txt for details.
- *
- * \brief Declares 128-bit block encryption/decryption functions.
  */
 
 #pragma once
 
-/**
- * \defgroup aesni_block_api Block API
- * \brief 128-bit block encryption/decryption functions.
- * \ingroup aesni
- * \{
- *
- * For each of AES-128/192/256, two functions are defined:
- *
- * * a key schedule "expansion" function to prepare for encryption,
- * * a key schedule "reversion" function to prepare for decryption.
- *
- * The functions, respectively, are:
- *
- * * `aesni_expand_key_scheduleNNN`,
- * * `aesni_reverse_key_scheduleNNN`,
- *
- * where `NNN` is either `128`, `192` or `256`.
- *
- * For each of AES-128/192/256 and modes of operation ECB, CBC, CFB, OFB, and
- * CTR, two functions are defined:
- *
- * * a 128-bit block encryption function,
- * * a 128-bit block decryption function.
- *
- * The functions, respectively, are:
- *
- * * `aesni_encrypt_block_XXXNNN`,
- * * `aesni_decrypt_block_XXXNNN`,
- *
- * where `XXX` is either `ecb`, `cbc`, `cfb`, `ofb` or `ctr`, and `NNN` is
- * either `128`, `192` or `256`.
- */
-
 #include "data.h"
-#include "raw.h"
 
 #include <assert.h>
 
@@ -53,10 +17,76 @@ extern "C"
 {
 #endif
 
-/**
- * \defgroup aesni_block_api_aes128 AES-128
- * \{
- */
+typedef struct
+{
+    AesNI_Block128 keys[11];
+}
+AesNI_Aes128_RoundKeys;
+
+typedef struct
+{
+    AesNI_Block128 keys[13];
+}
+AesNI_Aes192_RoundKeys;
+
+typedef struct
+{
+    AesNI_Block128 keys[15];
+}
+AesNI_Aes256_RoundKeys;
+
+void __fastcall aesni_aes128_expand_key_(
+    AesNI_Block128 key,
+    AesNI_Aes128_RoundKeys* encryption_keys);
+
+void __fastcall aesni_aes192_expand_key_(
+    AesNI_Block128 key_lo,
+    AesNI_Block128 key_hi,
+    AesNI_Aes192_RoundKeys* encryption_keys);
+
+void __fastcall aesni_aes256_expand_key_(
+    AesNI_Block128 key_lo,
+    AesNI_Block128 key_hi,
+    AesNI_Aes256_RoundKeys* encryption_keys);
+
+void __fastcall aesni_aes128_derive_decryption_keys_(
+    const AesNI_Aes128_RoundKeys* encryption_keys,
+    AesNI_Aes128_RoundKeys* decryption_keys);
+
+void __fastcall aesni_aes192_derive_decryption_keys_(
+    const AesNI_Aes192_RoundKeys* encryption_keys,
+    AesNI_Aes192_RoundKeys* decryption_keys);
+
+void __fastcall aesni_aes256_derive_decryption_keys_(
+    const AesNI_Aes256_RoundKeys* encryption_keys,
+    AesNI_Aes256_RoundKeys* decryption_keys);
+
+AesNI_Block128 __fastcall aesni_aes128_encrypt_block_(
+    AesNI_Block128 plaintext,
+    const AesNI_Aes128_RoundKeys*);
+
+AesNI_Block128 __fastcall aesni_aes192_encrypt_block_(
+    AesNI_Block128 plaintext,
+    const AesNI_Aes192_RoundKeys*);
+
+AesNI_Block128 __fastcall aesni_aes256_encrypt_block_(
+    AesNI_Block128 plaintext,
+    const AesNI_Aes256_RoundKeys*);
+
+AesNI_Block128 __fastcall aesni_aes128_decrypt_block_(
+    AesNI_Block128 ciphertext,
+    const AesNI_Aes128_RoundKeys*);
+
+AesNI_Block128 __fastcall aesni_aes192_decrypt_block_(
+    AesNI_Block128 ciphertext,
+    const AesNI_Aes192_RoundKeys*);
+
+AesNI_Block128 __fastcall aesni_aes256_decrypt_block_(
+    AesNI_Block128 ciphertext,
+    const AesNI_Aes256_RoundKeys*);
+
+
+
 
 /**
  * \brief Expands a key schedule for AES-128 encryption.
@@ -65,13 +95,13 @@ extern "C"
  * \param[out] key_schedule The AES-128 encryption key schedule. Must not be
  * `NULL`.
  */
-static __inline void __fastcall aesni_expand_key_schedule128(
+static __inline void __fastcall aesni_aes128_expand_key(
     AesNI_Block128 key,
-    AesNI_KeySchedule128* key_schedule)
+    AesNI_Aes128_RoundKeys* key_schedule)
 {
     assert(key_schedule);
 
-    aesni_raw_expand_key_schedule128(key, key_schedule);
+    aesni_aes128_expand_key_(key, key_schedule);
 }
 
 /**
@@ -82,14 +112,14 @@ static __inline void __fastcall aesni_expand_key_schedule128(
  * \param[out] inverted_schedule The AES-128 decryption key schedule. Must not
  * be `NULL`.
  */
-static __inline void __fastcall aesni_invert_key_schedule128(
-    AesNI_KeySchedule128* key_schedule,
-    AesNI_KeySchedule128* inverted_schedule)
+static __inline void __fastcall aesni_aes128_derive_decryption_keys(
+    const AesNI_Aes128_RoundKeys* key_schedule,
+    AesNI_Aes128_RoundKeys* inverted_schedule)
 {
     assert(key_schedule);
     assert(inverted_schedule);
 
-    aesni_raw_invert_key_schedule128(key_schedule, inverted_schedule);
+    aesni_aes128_derive_decryption_keys_(key_schedule, inverted_schedule);
 }
 
 /**
@@ -100,13 +130,13 @@ static __inline void __fastcall aesni_invert_key_schedule128(
  * `NULL`.
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ecb128(
+static __inline AesNI_Block128 __fastcall aesni_aes128_encrypt_block_ecb(
     AesNI_Block128 plain,
-    AesNI_KeySchedule128* key_schedule)
+    const AesNI_Aes128_RoundKeys* key_schedule)
 {
     assert(key_schedule);
 
-    return aesni_raw_encrypt_block128(plain, key_schedule);
+    return aesni_aes128_encrypt_block_(plain, key_schedule);
 }
 
 /**
@@ -117,13 +147,13 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ecb128(
  * be `NULL`.
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ecb128(
+static __inline AesNI_Block128 __fastcall aesni_aes128_decrypt_block_ecb(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule128* inverted_schedule)
+    const AesNI_Aes128_RoundKeys* inverted_schedule)
 {
     assert(inverted_schedule);
 
-    return aesni_raw_decrypt_block128(cipher, inverted_schedule);
+    return aesni_aes128_decrypt_block_(cipher, inverted_schedule);
 }
 
 /**
@@ -137,16 +167,16 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ecb128(
  * as the initialization vector for the next call. Must not be `NULL`.
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cbc128(
+static __inline AesNI_Block128 __fastcall aesni_aes128_encrypt_block_cbc(
     AesNI_Block128 plain,
-    AesNI_KeySchedule128* key_schedule,
+    const AesNI_Aes128_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     AesNI_Block128* next_init_vector)
 {
     assert(key_schedule);
     assert(next_init_vector);
 
-    AesNI_Block128 cipher = aesni_raw_encrypt_block128(
+    AesNI_Block128 cipher = aesni_aes128_encrypt_block_(
         aesni_xor_block128(plain, init_vector),
         key_schedule);
     *next_init_vector = cipher;
@@ -164,9 +194,9 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cbc128(
  * as the initialization vector for the next call. Must not be `NULL`.
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cbc128(
+static __inline AesNI_Block128 __fastcall aesni_aes128_decrypt_block_cbc(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule128* inverted_schedule,
+    const AesNI_Aes128_RoundKeys* inverted_schedule,
     AesNI_Block128 init_vector,
     AesNI_Block128* next_init_vector)
 {
@@ -174,7 +204,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cbc128(
     assert(next_init_vector);
 
     AesNI_Block128 plain = aesni_xor_block128(
-        aesni_raw_decrypt_block128(cipher, inverted_schedule),
+        aesni_aes128_decrypt_block_(cipher, inverted_schedule),
         init_vector);
     *next_init_vector = cipher;
     return plain;
@@ -191,9 +221,9 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cbc128(
  * as the initialization vector for the next call. Must not be `NULL`.
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cfb128(
+static __inline AesNI_Block128 __fastcall aesni_aes128_encrypt_block_cfb(
     AesNI_Block128 plain,
-    AesNI_KeySchedule128* key_schedule,
+    const AesNI_Aes128_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     AesNI_Block128* next_init_vector)
 {
@@ -201,7 +231,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cfb128(
     assert(next_init_vector);
 
     AesNI_Block128 cipher = aesni_xor_block128(
-        aesni_raw_encrypt_block128(init_vector, key_schedule),
+        aesni_aes128_encrypt_block_(init_vector, key_schedule),
         plain);
     *next_init_vector = cipher;
     return cipher;
@@ -218,9 +248,9 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cfb128(
  * as the initialization vector for the next call. Must not be `NULL`.
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cfb128(
+static __inline AesNI_Block128 __fastcall aesni_aes128_decrypt_block_cfb(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule128* key_schedule,
+    const AesNI_Aes128_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     AesNI_Block128* next_init_vector)
 {
@@ -228,7 +258,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cfb128(
     assert(next_init_vector);
 
     AesNI_Block128 plain = aesni_xor_block128(
-        aesni_raw_encrypt_block128(init_vector, key_schedule),
+        aesni_aes128_encrypt_block_(init_vector, key_schedule),
         cipher);
     *next_init_vector = cipher;
     return plain;
@@ -245,16 +275,16 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cfb128(
  * as the initialization vector for the next call. Must not be `NULL`.
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ofb128(
+static __inline AesNI_Block128 __fastcall aesni_aes128_encrypt_block_ofb(
     AesNI_Block128 plain,
-    AesNI_KeySchedule128* key_schedule,
+    const AesNI_Aes128_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     AesNI_Block128* next_init_vector)
 {
     assert(key_schedule);
     assert(next_init_vector);
 
-    AesNI_Block128 tmp = aesni_raw_encrypt_block128(init_vector, key_schedule);
+    AesNI_Block128 tmp = aesni_aes128_encrypt_block_(init_vector, key_schedule);
     *next_init_vector = tmp;
     return aesni_xor_block128(tmp, plain);
 }
@@ -270,16 +300,16 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ofb128(
  * as the initialization vector for the next call. Must not be `NULL`.
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ofb128(
+static __inline AesNI_Block128 __fastcall aesni_aes128_decrypt_block_ofb(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule128* key_schedule,
+    const AesNI_Aes128_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     AesNI_Block128* next_init_vector)
 {
     assert(key_schedule);
     assert(next_init_vector);
 
-    AesNI_Block128 tmp = aesni_raw_encrypt_block128(init_vector, key_schedule);
+    AesNI_Block128 tmp = aesni_aes128_encrypt_block_(init_vector, key_schedule);
     *next_init_vector = tmp;
     return aesni_xor_block128(tmp, cipher);
 }
@@ -295,9 +325,9 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ofb128(
  * calls.
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ctr128(
+static __inline AesNI_Block128 __fastcall aesni_aes128_encrypt_block_ctr(
     AesNI_Block128 plain,
-    AesNI_KeySchedule128* key_schedule,
+    const AesNI_Aes128_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     int counter)
 {
@@ -309,7 +339,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ctr128(
 
     return aesni_xor_block128(
         plain,
-        aesni_raw_encrypt_block128(init_vector, key_schedule));
+        aesni_aes128_encrypt_block_(init_vector, key_schedule));
 }
 
 /**
@@ -323,9 +353,9 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ctr128(
  * calls.
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ctr128(
+static __inline AesNI_Block128 __fastcall aesni_aes128_decrypt_block_ctr(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule128* key_schedule,
+    const AesNI_Aes128_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     int counter)
 {
@@ -337,7 +367,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ctr128(
 
     return aesni_xor_block128(
         cipher,
-        aesni_raw_encrypt_block128(init_vector, key_schedule));
+        aesni_aes128_encrypt_block_(init_vector, key_schedule));
 }
 
 /**
@@ -354,14 +384,14 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ctr128(
  * \param[out] key_schedule The AES-192 encryption key schedule. Must not be
  * `NULL`.
  */
-static __inline void __fastcall aesni_expand_key_schedule192(
+static __inline void __fastcall aesni_aes192_expand_key(
     AesNI_Block192* key,
-    AesNI_KeySchedule192* key_schedule)
+    AesNI_Aes192_RoundKeys* key_schedule)
 {
     assert(key);
     assert(key_schedule);
 
-    aesni_raw_expand_key_schedule192(key->lo, key->hi, key_schedule);
+    aesni_aes192_expand_key_(key->lo, key->hi, key_schedule);
 }
 
 /**
@@ -372,14 +402,14 @@ static __inline void __fastcall aesni_expand_key_schedule192(
  * \param[out] inverted_schedule The AES-192 decryption key schedule. Must not
  * be `NULL`.
  */
-static __inline void __fastcall aesni_invert_key_schedule192(
-    AesNI_KeySchedule192* key_schedule,
-    AesNI_KeySchedule192* inverted_schedule)
+static __inline void __fastcall aesni_aes192_derive_decryption_keys(
+    const AesNI_Aes192_RoundKeys* key_schedule,
+    AesNI_Aes192_RoundKeys* inverted_schedule)
 {
     assert(key_schedule);
     assert(inverted_schedule);
 
-    aesni_raw_invert_key_schedule192(key_schedule, inverted_schedule);
+    aesni_aes192_derive_decryption_keys_(key_schedule, inverted_schedule);
 }
 
 /**
@@ -390,13 +420,13 @@ static __inline void __fastcall aesni_invert_key_schedule192(
  * `NULL`.
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ecb192(
+static __inline AesNI_Block128 __fastcall aesni_aes192_encrypt_block_ecb(
     AesNI_Block128 plain,
-    AesNI_KeySchedule192* key_schedule)
+    const AesNI_Aes192_RoundKeys* key_schedule)
 {
     assert(key_schedule);
 
-    return aesni_raw_encrypt_block192(plain, key_schedule);
+    return aesni_aes192_encrypt_block_(plain, key_schedule);
 }
 
 /**
@@ -407,13 +437,13 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ecb192(
  * be `NULL`.
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ecb192(
+static __inline AesNI_Block128 __fastcall aesni_aes192_decrypt_block_ecb(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule192* inverted_schedule)
+    const AesNI_Aes192_RoundKeys* inverted_schedule)
 {
     assert(inverted_schedule);
 
-    return aesni_raw_decrypt_block192(cipher, inverted_schedule);
+    return aesni_aes192_decrypt_block_(cipher, inverted_schedule);
 }
 
 /**
@@ -427,16 +457,16 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ecb192(
  * as the initialization vector for the next call. Must not be `NULL`.
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cbc192(
+static __inline AesNI_Block128 __fastcall aesni_aes192_encrypt_block_cbc(
     AesNI_Block128 plain,
-    AesNI_KeySchedule192* key_schedule,
+    const AesNI_Aes192_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     AesNI_Block128* next_init_vector)
 {
     assert(key_schedule);
     assert(next_init_vector);
 
-    AesNI_Block128 cipher = aesni_raw_encrypt_block192(
+    AesNI_Block128 cipher = aesni_aes192_encrypt_block_(
         aesni_xor_block128(plain, init_vector),
         key_schedule);
     *next_init_vector = cipher;
@@ -454,9 +484,9 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cbc192(
  * as the initialization vector for the next call. Must not be `NULL`.
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cbc192(
+static __inline AesNI_Block128 __fastcall aesni_aes192_decrypt_block_cbc(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule192* inverted_schedule,
+    const AesNI_Aes192_RoundKeys* inverted_schedule,
     AesNI_Block128 init_vector,
     AesNI_Block128* next_init_vector)
 {
@@ -464,7 +494,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cbc192(
     assert(next_init_vector);
 
     AesNI_Block128 plain = aesni_xor_block128(
-        aesni_raw_decrypt_block192(cipher, inverted_schedule),
+        aesni_aes192_decrypt_block_(cipher, inverted_schedule),
         init_vector);
     *next_init_vector = cipher;
     return plain;
@@ -481,9 +511,9 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cbc192(
  * as the initialization vector for the next call. Must not be `NULL`.
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cfb192(
+static __inline AesNI_Block128 __fastcall aesni_aes192_encrypt_block_cfb(
     AesNI_Block128 plain,
-    AesNI_KeySchedule192* key_schedule,
+    const AesNI_Aes192_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     AesNI_Block128* next_init_vector)
 {
@@ -491,7 +521,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cfb192(
     assert(next_init_vector);
 
     AesNI_Block128 cipher = aesni_xor_block128(
-        aesni_raw_encrypt_block192(init_vector, key_schedule),
+        aesni_aes192_encrypt_block_(init_vector, key_schedule),
         plain);
     *next_init_vector = cipher;
     return cipher;
@@ -508,9 +538,9 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cfb192(
  * as the initialization vector for the next call. Must not be `NULL`.
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cfb192(
+static __inline AesNI_Block128 __fastcall aesni_aes192_decrypt_block_cfb(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule192* key_schedule,
+    const AesNI_Aes192_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     AesNI_Block128* next_init_vector)
 {
@@ -518,7 +548,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cfb192(
     assert(next_init_vector);
 
     AesNI_Block128 plain = aesni_xor_block128(
-        aesni_raw_encrypt_block192(init_vector, key_schedule),
+        aesni_aes192_encrypt_block_(init_vector, key_schedule),
         cipher);
     *next_init_vector = cipher;
     return plain;
@@ -535,16 +565,16 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cfb192(
  * as the initialization vector for the next call. Must not be `NULL`.
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ofb192(
+static __inline AesNI_Block128 __fastcall aesni_aes192_encrypt_block_ofb(
     AesNI_Block128 plain,
-    AesNI_KeySchedule192* key_schedule,
+    const AesNI_Aes192_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     AesNI_Block128* next_init_vector)
 {
     assert(key_schedule);
     assert(next_init_vector);
 
-    AesNI_Block128 tmp = aesni_raw_encrypt_block192(init_vector, key_schedule);
+    AesNI_Block128 tmp = aesni_aes192_encrypt_block_(init_vector, key_schedule);
     *next_init_vector = tmp;
     return aesni_xor_block128(tmp, plain);
 }
@@ -560,16 +590,16 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ofb192(
  * as the initialization vector for the next call. Must not be `NULL`.
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ofb192(
+static __inline AesNI_Block128 __fastcall aesni_aes192_decrypt_block_ofb(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule192* key_schedule,
+    const AesNI_Aes192_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     AesNI_Block128* next_init_vector)
 {
     assert(key_schedule);
     assert(next_init_vector);
 
-    AesNI_Block128 tmp = aesni_raw_encrypt_block192(init_vector, key_schedule);
+    AesNI_Block128 tmp = aesni_aes192_encrypt_block_(init_vector, key_schedule);
     *next_init_vector = tmp;
     return aesni_xor_block128(tmp, cipher);
 }
@@ -585,9 +615,9 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ofb192(
  * calls.
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ctr192(
+static __inline AesNI_Block128 __fastcall aesni_aes192_encrypt_block_ctr(
     AesNI_Block128 plain,
-    AesNI_KeySchedule192* key_schedule,
+    const AesNI_Aes192_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     int counter)
 {
@@ -599,7 +629,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ctr192(
 
     return aesni_xor_block128(
         plain,
-        aesni_raw_encrypt_block192(init_vector, key_schedule));
+        aesni_aes192_encrypt_block_(init_vector, key_schedule));
 }
 
 /**
@@ -613,9 +643,9 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ctr192(
  * calls.
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ctr192(
+static __inline AesNI_Block128 __fastcall aesni_aes192_decrypt_block_ctr(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule192* key_schedule,
+    const AesNI_Aes192_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     int counter)
 {
@@ -627,7 +657,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ctr192(
 
     return aesni_xor_block128(
         cipher,
-        aesni_raw_encrypt_block192(init_vector, key_schedule));
+        aesni_aes192_encrypt_block_(init_vector, key_schedule));
 }
 
 /**
@@ -644,14 +674,14 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ctr192(
  * \param[out] key_schedule The AES-256 encryption key schedule. Must not be
  * `NULL`.
  */
-static __inline void __fastcall aesni_expand_key_schedule256(
-    AesNI_Block256* key,
-    AesNI_KeySchedule256* key_schedule)
+static __inline void __fastcall aesni_aes256_expand_key(
+    const AesNI_Block256* key,
+    AesNI_Aes256_RoundKeys* key_schedule)
 {
     assert(key);
     assert(key_schedule);
 
-    aesni_raw_expand_key_schedule256(key->lo, key->hi, key_schedule);
+    aesni_aes256_expand_key_(key->lo, key->hi, key_schedule);
 }
 
 /**
@@ -662,14 +692,14 @@ static __inline void __fastcall aesni_expand_key_schedule256(
  * \param[out] inverted_schedule The AES-256 decryption key schedule. Must not
  * be `NULL`.
  */
-static __inline void __fastcall aesni_invert_key_schedule256(
-    AesNI_KeySchedule256* key_schedule,
-    AesNI_KeySchedule256* inverted_schedule)
+static __inline void __fastcall aesni_aes256_derive_decryption_keys(
+    const AesNI_Aes256_RoundKeys* key_schedule,
+    AesNI_Aes256_RoundKeys* inverted_schedule)
 {
     assert(key_schedule);
     assert(inverted_schedule);
 
-    aesni_raw_invert_key_schedule256(key_schedule, inverted_schedule);
+    aesni_aes256_derive_decryption_keys_(key_schedule, inverted_schedule);
 }
 
 /**
@@ -680,13 +710,13 @@ static __inline void __fastcall aesni_invert_key_schedule256(
  * `NULL`.
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ecb256(
+static __inline AesNI_Block128 __fastcall aesni_aes256_encrypt_block_ecb(
     AesNI_Block128 plain,
-    AesNI_KeySchedule256* key_schedule)
+    const AesNI_Aes256_RoundKeys* key_schedule)
 {
     assert(key_schedule);
 
-    return aesni_raw_encrypt_block256(plain, key_schedule);
+    return aesni_aes256_encrypt_block_(plain, key_schedule);
 }
 
 /**
@@ -697,13 +727,13 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ecb256(
  * be `NULL`.
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ecb256(
+static __inline AesNI_Block128 __fastcall aesni_aes256_decrypt_block_ecb(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule256* inverted_schedule)
+    const AesNI_Aes256_RoundKeys* inverted_schedule)
 {
     assert(inverted_schedule);
 
-    return aesni_raw_decrypt_block256(cipher, inverted_schedule);
+    return aesni_aes256_decrypt_block_(cipher, inverted_schedule);
 }
 
 /**
@@ -717,16 +747,16 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ecb256(
  * as the initialization vector for the next call. Must not be `NULL`.
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cbc256(
+static __inline AesNI_Block128 __fastcall aesni_aes256_encrypt_block_cbc(
     AesNI_Block128 plain,
-    AesNI_KeySchedule256* key_schedule,
+    const AesNI_Aes256_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     AesNI_Block128* next_init_vector)
 {
     assert(key_schedule);
     assert(next_init_vector);
 
-    AesNI_Block128 cipher = aesni_raw_encrypt_block256(
+    AesNI_Block128 cipher = aesni_aes256_encrypt_block_(
         aesni_xor_block128(plain, init_vector),
         key_schedule);
     *next_init_vector = cipher;
@@ -744,9 +774,9 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cbc256(
  * as the initialization vector for the next call. Must not be `NULL`.
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cbc256(
+static __inline AesNI_Block128 __fastcall aesni_aes256_decrypt_block_cbc(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule256* inverted_schedule,
+    const AesNI_Aes256_RoundKeys* inverted_schedule,
     AesNI_Block128 init_vector,
     AesNI_Block128* next_init_vector)
 {
@@ -754,7 +784,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cbc256(
     assert(next_init_vector);
 
     AesNI_Block128 plain = aesni_xor_block128(
-        aesni_raw_decrypt_block256(cipher, inverted_schedule),
+        aesni_aes256_decrypt_block_(cipher, inverted_schedule),
         init_vector);
     *next_init_vector = cipher;
     return plain;
@@ -771,9 +801,9 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cbc256(
  * as the initialization vector for the next call. Must not be `NULL`.
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cfb256(
+static __inline AesNI_Block128 __fastcall aesni_aes256_encrypt_block_cfb(
     AesNI_Block128 plain,
-    AesNI_KeySchedule256* key_schedule,
+    const AesNI_Aes256_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     AesNI_Block128* next_init_vector)
 {
@@ -781,7 +811,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cfb256(
     assert(next_init_vector);
 
     AesNI_Block128 cipher = aesni_xor_block128(
-        aesni_raw_encrypt_block256(init_vector, key_schedule),
+        aesni_aes256_encrypt_block_(init_vector, key_schedule),
         plain);
     *next_init_vector = cipher;
     return cipher;
@@ -798,9 +828,9 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_cfb256(
  * as the initialization vector for the next call. Must not be `NULL`.
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cfb256(
+static __inline AesNI_Block128 __fastcall aesni_aes256_decrypt_block_cfb(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule256* key_schedule,
+    const AesNI_Aes256_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     AesNI_Block128* next_init_vector)
 {
@@ -808,7 +838,7 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cfb256(
     assert(next_init_vector);
 
     AesNI_Block128 plain = aesni_xor_block128(
-        aesni_raw_encrypt_block256(init_vector, key_schedule),
+        aesni_aes256_encrypt_block_(init_vector, key_schedule),
         cipher);
     *next_init_vector = cipher;
     return plain;
@@ -825,16 +855,16 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_cfb256(
  * as the initialization vector for the next call. Must not be `NULL`.
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ofb256(
+static __inline AesNI_Block128 __fastcall aesni_aes256_encrypt_block_ofb(
     AesNI_Block128 plain,
-    AesNI_KeySchedule256* key_schedule,
+    const AesNI_Aes256_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     AesNI_Block128* next_init_vector)
 {
     assert(key_schedule);
     assert(next_init_vector);
 
-    AesNI_Block128 tmp = aesni_raw_encrypt_block256(init_vector, key_schedule);
+    AesNI_Block128 tmp = aesni_aes256_encrypt_block_(init_vector, key_schedule);
     *next_init_vector = tmp;
     return aesni_xor_block128(tmp, plain);
 }
@@ -850,16 +880,16 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ofb256(
  * as the initialization vector for the next call. Must not be `NULL`.
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ofb256(
+static __inline AesNI_Block128 __fastcall aesni_aes256_decrypt_block_ofb(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule256* key_schedule,
+    const AesNI_Aes256_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     AesNI_Block128* next_init_vector)
 {
     assert(key_schedule);
     assert(next_init_vector);
 
-    AesNI_Block128 tmp = aesni_raw_encrypt_block256(init_vector, key_schedule);
+    AesNI_Block128 tmp = aesni_aes256_encrypt_block_(init_vector, key_schedule);
     *next_init_vector = tmp;
     return aesni_xor_block128(tmp, cipher);
 }
@@ -875,9 +905,9 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ofb256(
  * calls.
  * \return The encrypted 128-bit ciphertext.
  */
-static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ctr256(
+static __inline AesNI_Block128 __fastcall aesni_aes256_encrypt_block_ctr(
     AesNI_Block128 plain,
-    AesNI_KeySchedule256* key_schedule,
+    const AesNI_Aes256_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     int counter)
 {
@@ -889,7 +919,7 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ctr256(
 
     return aesni_xor_block128(
         plain,
-        aesni_raw_encrypt_block256(init_vector, key_schedule));
+        aesni_aes256_encrypt_block_(init_vector, key_schedule));
 }
 
 /**
@@ -903,9 +933,9 @@ static __inline AesNI_Block128 __fastcall aesni_encrypt_block_ctr256(
  * calls.
  * \return The decrypted 128-bit plaintext.
  */
-static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ctr256(
+static __inline AesNI_Block128 __fastcall aesni_aes256_decrypt_block_ctr(
     AesNI_Block128 cipher,
-    AesNI_KeySchedule256* key_schedule,
+    const AesNI_Aes256_RoundKeys* key_schedule,
     AesNI_Block128 init_vector,
     int counter)
 {
@@ -917,17 +947,9 @@ static __inline AesNI_Block128 __fastcall aesni_decrypt_block_ctr256(
 
     return aesni_xor_block128(
         cipher,
-        aesni_raw_encrypt_block256(init_vector, key_schedule));
+        aesni_aes256_encrypt_block_(init_vector, key_schedule));
 }
-
-/**
- * \}
- */
 
 #ifdef __cplusplus
 }
 #endif
-
-/**
- * \}
- */

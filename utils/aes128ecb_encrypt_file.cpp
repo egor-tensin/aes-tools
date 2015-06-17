@@ -37,7 +37,7 @@ namespace
 int main(int argc, char** argv)
 {
     AesNI_Block128 key;
-    AesNI_KeySchedule128 key_schedule;
+    AesNI_Aes128_RoundKeys key_schedule;
 
     if (argc != 4)
         exit_with_usage();
@@ -60,7 +60,7 @@ int main(int argc, char** argv)
         src_buf.assign(std::istreambuf_iterator<char>(src_ifs),
                        std::istreambuf_iterator<char>());
 
-        aesni_expand_key_schedule128(key, &key_schedule);
+        aesni_aes128_expand_key(key, &key_schedule);
 
         std::size_t dest_size;
 

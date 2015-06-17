@@ -29,19 +29,19 @@ int main()
         make_default_iv(iv);
 
         aesni::KeySchedule128 encryption_schedule;
-        aesni_expand_key_schedule128(key, &encryption_schedule);
+        aesni_aes128_expand_key(key, &encryption_schedule);
         dump_encryption_schedule(encryption_schedule);
 
         aesni::Block128 next_iv;
-        const auto ciphertext = aesni_encrypt_block_cbc128(plaintext, &encryption_schedule, iv, &next_iv);
+        const auto ciphertext = aesni_aes128_encrypt_block_cbc(plaintext, &encryption_schedule, iv, &next_iv);
         dump_ciphertext(ciphertext);
         dump_next_iv(next_iv);
 
         aesni::KeySchedule128 decryption_schedule;
-        aesni_invert_key_schedule128(&encryption_schedule, &decryption_schedule);
+        aesni_aes128_derive_decryption_keys(&encryption_schedule, &decryption_schedule);
         dump_decryption_schedule(decryption_schedule);
 
-        aesni::Block128 decrypted = aesni_decrypt_block_cbc128(ciphertext, &decryption_schedule, iv, &next_iv);
+        aesni::Block128 decrypted = aesni_aes128_decrypt_block_cbc(ciphertext, &decryption_schedule, iv, &next_iv);
         dump_decrypted(decrypted);
         dump_next_iv(next_iv);
 

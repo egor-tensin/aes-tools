@@ -11,9 +11,9 @@
 #include <emmintrin.h>
 #include <wmmintrin.h>
 
-AesNI_Block128 __fastcall aesni_raw_encrypt_block256(
+AesNI_Block128 __fastcall aesni_aes256_encrypt_block_(
     AesNI_Block128 plain,
-    const AesNI_KeySchedule256* key_schedule)
+    const AesNI_Aes256_RoundKeys* key_schedule)
 {
     plain = _mm_xor_si128(plain, key_schedule->keys[0]);
     plain = _mm_aesenc_si128(plain, key_schedule->keys[1]);
@@ -32,9 +32,9 @@ AesNI_Block128 __fastcall aesni_raw_encrypt_block256(
     return _mm_aesenclast_si128(plain, key_schedule->keys[14]);
 }
 
-AesNI_Block128 __fastcall aesni_raw_decrypt_block256(
+AesNI_Block128 __fastcall aesni_aes256_decrypt_block_(
     AesNI_Block128 cipher,
-    const AesNI_KeySchedule256* inverted_schedule)
+    const AesNI_Aes256_RoundKeys* inverted_schedule)
 {
     cipher = _mm_xor_si128(cipher, inverted_schedule->keys[0]);
     cipher = _mm_aesdec_si128(cipher, inverted_schedule->keys[1]);
@@ -53,7 +53,7 @@ AesNI_Block128 __fastcall aesni_raw_decrypt_block256(
     return _mm_aesdeclast_si128(cipher, inverted_schedule->keys[14]);
 }
 
-static AesNI_Block128 __fastcall aes256_keygen_assist(
+static AesNI_Block128 __fastcall aesni_aes256_expand_key_assist(
     AesNI_Block128* prev_lo,
     AesNI_Block128* prev_hi,
     AesNI_Block128 hwgen)
@@ -76,10 +76,10 @@ static AesNI_Block128 __fastcall aes256_keygen_assist(
     return *prev_hi;
 }
 
-void __fastcall aesni_raw_expand_key_schedule256(
+void __fastcall aesni_aes256_expand_key_(
     AesNI_Block128 key_lo,
     AesNI_Block128 key_hi,
-    AesNI_KeySchedule256* key_schedule)
+    AesNI_Aes256_RoundKeys* key_schedule)
 {
     AesNI_Block128 prev_lo, prev_hi;
     AesNI_Block128 hwgen;
@@ -89,60 +89,60 @@ void __fastcall aesni_raw_expand_key_schedule256(
 
     hwgen = _mm_aeskeygenassist_si128(prev_hi, 0x01);
     hwgen = _mm_shuffle_epi32(hwgen, 0xff);
-    key_schedule->keys[2] = aes256_keygen_assist(&prev_lo, &prev_hi, hwgen);
+    key_schedule->keys[2] = aesni_aes256_expand_key_assist(&prev_lo, &prev_hi, hwgen);
 
     hwgen = _mm_aeskeygenassist_si128(prev_hi, 0);
     hwgen = _mm_shuffle_epi32(hwgen, 0xaa);
-    key_schedule->keys[3] = aes256_keygen_assist(&prev_lo, &prev_hi, hwgen);
+    key_schedule->keys[3] = aesni_aes256_expand_key_assist(&prev_lo, &prev_hi, hwgen);
 
     hwgen = _mm_aeskeygenassist_si128(prev_hi, 0x02);
     hwgen = _mm_shuffle_epi32(hwgen, 0xff);
-    key_schedule->keys[4] = aes256_keygen_assist(&prev_lo, &prev_hi, hwgen);
+    key_schedule->keys[4] = aesni_aes256_expand_key_assist(&prev_lo, &prev_hi, hwgen);
 
     hwgen = _mm_aeskeygenassist_si128(prev_hi, 0);
     hwgen = _mm_shuffle_epi32(hwgen, 0xaa);
-    key_schedule->keys[5] = aes256_keygen_assist(&prev_lo, &prev_hi, hwgen);
+    key_schedule->keys[5] = aesni_aes256_expand_key_assist(&prev_lo, &prev_hi, hwgen);
 
     hwgen = _mm_aeskeygenassist_si128(prev_hi, 0x04);
     hwgen = _mm_shuffle_epi32(hwgen, 0xff);
-    key_schedule->keys[6] = aes256_keygen_assist(&prev_lo, &prev_hi, hwgen);
+    key_schedule->keys[6] = aesni_aes256_expand_key_assist(&prev_lo, &prev_hi, hwgen);
 
     hwgen = _mm_aeskeygenassist_si128(prev_hi, 0);
     hwgen = _mm_shuffle_epi32(hwgen, 0xaa);
-    key_schedule->keys[7] = aes256_keygen_assist(&prev_lo, &prev_hi, hwgen);
+    key_schedule->keys[7] = aesni_aes256_expand_key_assist(&prev_lo, &prev_hi, hwgen);
 
     hwgen = _mm_aeskeygenassist_si128(prev_hi, 0x08);
     hwgen = _mm_shuffle_epi32(hwgen, 0xff);
-    key_schedule->keys[8] = aes256_keygen_assist(&prev_lo, &prev_hi, hwgen);
+    key_schedule->keys[8] = aesni_aes256_expand_key_assist(&prev_lo, &prev_hi, hwgen);
 
     hwgen = _mm_aeskeygenassist_si128(prev_hi, 0);
     hwgen = _mm_shuffle_epi32(hwgen, 0xaa);
-    key_schedule->keys[9] = aes256_keygen_assist(&prev_lo, &prev_hi, hwgen);
+    key_schedule->keys[9] = aesni_aes256_expand_key_assist(&prev_lo, &prev_hi, hwgen);
 
     hwgen = _mm_aeskeygenassist_si128(prev_hi, 0x10);
     hwgen = _mm_shuffle_epi32(hwgen, 0xff);
-    key_schedule->keys[10] = aes256_keygen_assist(&prev_lo, &prev_hi, hwgen);
+    key_schedule->keys[10] = aesni_aes256_expand_key_assist(&prev_lo, &prev_hi, hwgen);
 
     hwgen = _mm_aeskeygenassist_si128(prev_hi, 0);
     hwgen = _mm_shuffle_epi32(hwgen, 0xaa);
-    key_schedule->keys[11] = aes256_keygen_assist(&prev_lo, &prev_hi, hwgen);
+    key_schedule->keys[11] = aesni_aes256_expand_key_assist(&prev_lo, &prev_hi, hwgen);
 
     hwgen = _mm_aeskeygenassist_si128(prev_hi, 0x20);
     hwgen = _mm_shuffle_epi32(hwgen, 0xff);
-    key_schedule->keys[12] = aes256_keygen_assist(&prev_lo, &prev_hi, hwgen);
+    key_schedule->keys[12] = aesni_aes256_expand_key_assist(&prev_lo, &prev_hi, hwgen);
 
     hwgen = _mm_aeskeygenassist_si128(prev_hi, 0);
     hwgen = _mm_shuffle_epi32(hwgen, 0xaa);
-    key_schedule->keys[13] = aes256_keygen_assist(&prev_lo, &prev_hi, hwgen);
+    key_schedule->keys[13] = aesni_aes256_expand_key_assist(&prev_lo, &prev_hi, hwgen);
 
     hwgen = _mm_aeskeygenassist_si128(prev_hi, 0x40);
     hwgen = _mm_shuffle_epi32(hwgen, 0xff);
-    key_schedule->keys[14] = aes256_keygen_assist(&prev_lo, &prev_hi, hwgen);
+    key_schedule->keys[14] = aesni_aes256_expand_key_assist(&prev_lo, &prev_hi, hwgen);
 }
 
-void __fastcall aesni_raw_invert_key_schedule256(
-    const AesNI_KeySchedule256* key_schedule,
-    AesNI_KeySchedule256* inverted_schedule)
+void __fastcall aesni_aes256_derive_decryption_keys_(
+    const AesNI_Aes256_RoundKeys* key_schedule,
+    AesNI_Aes256_RoundKeys* inverted_schedule)
 {
     inverted_schedule->keys[0] = key_schedule->keys[14];
     inverted_schedule->keys[1] = _mm_aesimc_si128(key_schedule->keys[13]);

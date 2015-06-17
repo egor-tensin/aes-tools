@@ -18,7 +18,7 @@ AesNI_StatusCode aesni_encrypt_buffer_ecb128(
     size_t src_size,
     void* dest,
     size_t* dest_size,
-    AesNI_KeySchedule128* key_schedule,
+    AesNI_Aes128_RoundKeys* key_schedule,
     AesNI_ErrorDetails* err_details)
 {
     if (dest_size == NULL)
@@ -40,7 +40,7 @@ AesNI_StatusCode aesni_encrypt_buffer_ecb128(
     for (size_t i = 0; i < src_len; ++i, (char*) src += 16, (char*) dest += 16)
     {
         AesNI_Block128 plaintext = aesni_load_block128(src);
-        AesNI_Block128 ciphertext = aesni_encrypt_block_ecb128(plaintext, key_schedule);
+        AesNI_Block128 ciphertext = aesni_aes128_encrypt_block_ecb(plaintext, key_schedule);
         aesni_store_block128(dest, ciphertext);
     }
 
@@ -57,7 +57,7 @@ AesNI_StatusCode aesni_encrypt_buffer_ecb128(
     }
 
     AesNI_Block128 plaintext = aesni_load_block128(padding);
-    AesNI_Block128 ciphertext = aesni_encrypt_block_ecb128(plaintext, key_schedule);
+    AesNI_Block128 ciphertext = aesni_aes128_encrypt_block_ecb(plaintext, key_schedule);
     aesni_store_block128(dest, ciphertext);
 
     return AESNI_SUCCESS;
@@ -80,7 +80,7 @@ AesNI_StatusCode aesni_decrypt_buffer_ecb128(
     size_t src_size,
     void* dest,
     size_t* dest_size,
-    AesNI_KeySchedule128* inverted_schedule,
+    AesNI_Aes128_RoundKeys* inverted_schedule,
     AesNI_ErrorDetails* err_details)
 {
     if (dest_size == NULL)
@@ -100,12 +100,12 @@ AesNI_StatusCode aesni_decrypt_buffer_ecb128(
     for (size_t i = 0; i < src_len - 1; ++i, (char*) src += 16, (char*) dest += 16)
     {
         AesNI_Block128 ciphertext = aesni_load_block128(src);
-        AesNI_Block128 plaintext = aesni_decrypt_block_ecb128(ciphertext, inverted_schedule);
+        AesNI_Block128 plaintext = aesni_aes128_decrypt_block_ecb(ciphertext, inverted_schedule);
         aesni_store_block128(dest, plaintext);
     }
 
     AesNI_Block128 ciphertext = aesni_load_block128(src);
-    AesNI_Block128 plaintext = aesni_decrypt_block_ecb128(ciphertext, inverted_schedule);
+    AesNI_Block128 plaintext = aesni_aes128_decrypt_block_ecb(ciphertext, inverted_schedule);
     unsigned char padding[16];
     aesni_store_block128(padding, plaintext);
 

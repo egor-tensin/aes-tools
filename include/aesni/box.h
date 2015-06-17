@@ -20,17 +20,17 @@ extern "C"
 
 typedef union
 {
-    AesNI_KeySchedule128 aes128_key_schedule;
-    AesNI_KeySchedule192 aes192_key_schedule;
-    AesNI_KeySchedule256 aes256_key_schedule;
+    AesNI_Aes128_RoundKeys aes128_key_schedule;
+    AesNI_Aes192_RoundKeys aes192_key_schedule;
+    AesNI_Aes256_RoundKeys aes256_key_schedule;
 }
 AesNI_EncryptionParams;
 
 typedef union
 {
-    AesNI_KeySchedule128 aes128_key_schedule;
-    AesNI_KeySchedule192 aes192_key_schedule;
-    AesNI_KeySchedule256 aes256_key_schedule;
+    AesNI_Aes128_RoundKeys aes128_key_schedule;
+    AesNI_Aes192_RoundKeys aes192_key_schedule;
+    AesNI_Aes256_RoundKeys aes256_key_schedule;
 }
 AesNI_DecryptionParams;
 

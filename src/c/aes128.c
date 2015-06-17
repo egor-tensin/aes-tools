@@ -11,9 +11,9 @@
 #include <emmintrin.h>
 #include <wmmintrin.h>
 
-AesNI_Block128 __fastcall aesni_raw_encrypt_block128(
+AesNI_Block128 __fastcall aesni_aes128_encrypt_block_(
     AesNI_Block128 plain,
-    const AesNI_KeySchedule128* key_schedule)
+    const AesNI_Aes128_RoundKeys* key_schedule)
 {
     plain = _mm_xor_si128(plain, key_schedule->keys[0]);
     plain = _mm_aesenc_si128(plain, key_schedule->keys[1]);
@@ -28,9 +28,9 @@ AesNI_Block128 __fastcall aesni_raw_encrypt_block128(
     return _mm_aesenclast_si128(plain, key_schedule->keys[10]);
 }
 
-AesNI_Block128 __fastcall aesni_raw_decrypt_block128(
+AesNI_Block128 __fastcall aesni_aes128_decrypt_block_(
     AesNI_Block128 cipher,
-    const AesNI_KeySchedule128* inverted_schedule)
+    const AesNI_Aes128_RoundKeys* inverted_schedule)
 {
     cipher = _mm_xor_si128(cipher, inverted_schedule->keys[0]);
     cipher = _mm_aesdec_si128(cipher, inverted_schedule->keys[1]);
@@ -45,7 +45,7 @@ AesNI_Block128 __fastcall aesni_raw_decrypt_block128(
     return _mm_aesdeclast_si128(cipher, inverted_schedule->keys[10]);
 }
 
-static AesNI_Block128 __fastcall aes128_keygen_assist(
+static AesNI_Block128 __fastcall aesni_aes128_expand_key_assist(
     AesNI_Block128 prev,
     AesNI_Block128 hwgen)
 {
@@ -64,26 +64,26 @@ static AesNI_Block128 __fastcall aes128_keygen_assist(
     return prev;
 }
 
-void __fastcall aesni_raw_expand_key_schedule128(
+void __fastcall aesni_aes128_expand_key_(
     AesNI_Block128 key,
-    AesNI_KeySchedule128* key_schedule)
+    AesNI_Aes128_RoundKeys* key_schedule)
 {
     AesNI_Block128 prev = key_schedule->keys[0] = key;
-    prev = key_schedule->keys[1] = aes128_keygen_assist(prev, _mm_aeskeygenassist_si128(prev, 0x01));
-    prev = key_schedule->keys[2] = aes128_keygen_assist(prev, _mm_aeskeygenassist_si128(prev, 0x02));
-    prev = key_schedule->keys[3] = aes128_keygen_assist(prev, _mm_aeskeygenassist_si128(prev, 0x04));
-    prev = key_schedule->keys[4] = aes128_keygen_assist(prev, _mm_aeskeygenassist_si128(prev, 0x08));
-    prev = key_schedule->keys[5] = aes128_keygen_assist(prev, _mm_aeskeygenassist_si128(prev, 0x10));
-    prev = key_schedule->keys[6] = aes128_keygen_assist(prev, _mm_aeskeygenassist_si128(prev, 0x20));
-    prev = key_schedule->keys[7] = aes128_keygen_assist(prev, _mm_aeskeygenassist_si128(prev, 0x40));
-    prev = key_schedule->keys[8] = aes128_keygen_assist(prev, _mm_aeskeygenassist_si128(prev, 0x80));
-    prev = key_schedule->keys[9] = aes128_keygen_assist(prev, _mm_aeskeygenassist_si128(prev, 0x1b));
-    prev = key_schedule->keys[10] = aes128_keygen_assist(prev, _mm_aeskeygenassist_si128(prev, 0x36));
+    prev = key_schedule->keys[1] = aesni_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x01));
+    prev = key_schedule->keys[2] = aesni_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x02));
+    prev = key_schedule->keys[3] = aesni_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x04));
+    prev = key_schedule->keys[4] = aesni_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x08));
+    prev = key_schedule->keys[5] = aesni_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x10));
+    prev = key_schedule->keys[6] = aesni_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x20));
+    prev = key_schedule->keys[7] = aesni_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x40));
+    prev = key_schedule->keys[8] = aesni_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x80));
+    prev = key_schedule->keys[9] = aesni_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x1b));
+    prev = key_schedule->keys[10] = aesni_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x36));
 }
 
-void __fastcall aesni_raw_invert_key_schedule128(
-    const AesNI_KeySchedule128* key_schedule,
-    AesNI_KeySchedule128* inverted_schedule)
+void __fastcall aesni_aes128_derive_decryption_keys_(
+    const AesNI_Aes128_RoundKeys* key_schedule,
+    AesNI_Aes128_RoundKeys* inverted_schedule)
 {
     inverted_schedule->keys[0] = key_schedule->keys[10];
     inverted_schedule->keys[1] = _mm_aesimc_si128(key_schedule->keys[9]);

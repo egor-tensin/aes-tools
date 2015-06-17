@@ -29,13 +29,13 @@ int main()
         make_default_iv(iv);
 
         aesni::KeySchedule256 encryption_schedule;
-        aesni_expand_key_schedule256(&key, &encryption_schedule);
+        aesni_aes256_expand_key(&key, &encryption_schedule);
         dump_encryption_schedule(encryption_schedule);
 
-        const auto ciphertext = aesni_encrypt_block_ctr256(plaintext, &encryption_schedule, iv, 0);
+        const auto ciphertext = aesni_aes256_encrypt_block_ctr(plaintext, &encryption_schedule, iv, 0);
         dump_ciphertext(ciphertext);
 
-        const auto decrypted = aesni_decrypt_block_ctr256(ciphertext, &encryption_schedule, iv, 0);
+        const auto decrypted = aesni_aes256_decrypt_block_ctr(ciphertext, &encryption_schedule, iv, 0);
         dump_decrypted(decrypted);
     }
     catch (const std::exception& e)

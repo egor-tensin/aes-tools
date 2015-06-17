@@ -24,7 +24,7 @@ int main(int argc, char** argv)
     {
         AesNI_Block128 plain, cipher, iv;
         AesNI_Block256 key;
-        AesNI_KeySchedule256 key_schedule;
+        AesNI_Aes256_RoundKeys key_schedule;
 
         if (argc < 2)
             exit_with_usage();
@@ -41,7 +41,7 @@ int main(int argc, char** argv)
             exit_with_usage();
         }
 
-        aesni_expand_key_schedule256(&key, &key_schedule);
+        aesni_aes256_expand_key(&key, &key_schedule);
 
         for (argc -= 2, argv += 2; argc > 0; --argc, ++argv)
         {
@@ -53,7 +53,7 @@ int main(int argc, char** argv)
                 fprintf(stderr, "Invalid 128-bit AES block '%s'\n", *argv);
                 continue;
             }
-            plain = aesni_decrypt_block_ofb256(cipher, &key_schedule, iv, &iv);
+            plain = aesni_aes256_decrypt_block_ofb(cipher, &key_schedule, iv, &iv);
             aesni_print_block128(&plain, NULL);
         }
     }

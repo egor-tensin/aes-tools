@@ -24,7 +24,7 @@ int main(int argc, char** argv)
     {
         AesNI_Block128 plain, cipher;
         AesNI_Block192 key;
-        AesNI_KeySchedule192 key_schedule, inverted_schedule;
+        AesNI_Aes192_RoundKeys key_schedule, inverted_schedule;
 
         if (argc < 1)
             exit_with_usage();
@@ -35,8 +35,8 @@ int main(int argc, char** argv)
             exit_with_usage();
         }
 
-        aesni_expand_key_schedule192(&key, &key_schedule);
-        aesni_invert_key_schedule192(&key_schedule, &inverted_schedule);
+        aesni_aes192_expand_key(&key, &key_schedule);
+        aesni_aes192_derive_decryption_keys(&key_schedule, &inverted_schedule);
 
         for (--argc, ++argv; argc > 0; --argc, ++argv)
         {
@@ -48,7 +48,7 @@ int main(int argc, char** argv)
                 fprintf(stderr, "Invalid 128-bit AES block '%s'\n", *argv);
                 continue;
             }
-            plain = aesni_decrypt_block_ecb192(cipher, &inverted_schedule);
+            plain = aesni_aes192_decrypt_block_ecb(cipher, &inverted_schedule);
             aesni_print_block128(&plain, NULL);
         }
     }

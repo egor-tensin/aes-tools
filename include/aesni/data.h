@@ -204,24 +204,6 @@ static __inline AesNI_Block256 __fastcall aesni_make_block256(
     return result;
 }
 
-typedef struct
-{
-    AesNI_Block128 keys[11];
-}
-AesNI_KeySchedule128;
-
-typedef struct
-{
-    AesNI_Block128 keys[13];
-}
-AesNI_KeySchedule192;
-
-typedef struct
-{
-    AesNI_Block128 keys[15];
-}
-AesNI_KeySchedule256;
-
 static __inline AesNI_Block128 __fastcall aesni_reverse_byte_order128(AesNI_Block128 block)
 {
     return _mm_shuffle_epi8(block, aesni_make_block128(0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f));

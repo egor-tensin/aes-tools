@@ -24,14 +24,14 @@ AesNI_StatusCode aesni_encrypt_buffer_ecb128(
     size_t src_size,
     void* dest,
     size_t* dest_size,
-    AesNI_KeySchedule128* key_schedule,
+    AesNI_Aes128_RoundKeys* key_schedule,
     AesNI_ErrorDetails* err_details);
 AesNI_StatusCode aesni_decrypt_buffer_ecb128(
     const void* src,
     size_t src_size,
     void* dest,
     size_t* dest_size,
-    AesNI_KeySchedule128* inverted_schedule,
+    AesNI_Aes128_RoundKeys* inverted_schedule,
     AesNI_ErrorDetails* err_details);
 
 #ifdef __cplusplus

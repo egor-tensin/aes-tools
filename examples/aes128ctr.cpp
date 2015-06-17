@@ -29,13 +29,13 @@ int main()
         make_default_iv(iv);
 
         aesni::KeySchedule128 encryption_schedule;
-        aesni_expand_key_schedule128(key, &encryption_schedule);
+        aesni_aes128_expand_key(key, &encryption_schedule);
         dump_encryption_schedule(encryption_schedule);
 
-        const auto ciphertext = aesni_encrypt_block_ctr128(plaintext, &encryption_schedule, iv, 0);
+        const auto ciphertext = aesni_aes128_encrypt_block_ctr(plaintext, &encryption_schedule, iv, 0);
         dump_ciphertext(ciphertext);
 
-        const auto decrypted = aesni_decrypt_block_ctr128(ciphertext, &encryption_schedule, iv, 0);
+        const auto decrypted = aesni_aes128_decrypt_block_ctr(ciphertext, &encryption_schedule, iv, 0);
         dump_decrypted(decrypted);
 
         return 0;

@@ -26,17 +26,17 @@ int main()
         make_default_key(key);
 
         aesni::KeySchedule256 encryption_schedule;
-        aesni_expand_key_schedule256(&key, &encryption_schedule);
+        aesni_aes256_expand_key(&key, &encryption_schedule);
         dump_encryption_schedule(encryption_schedule);
 
-        const auto ciphertext = aesni_encrypt_block_ecb256(plaintext, &encryption_schedule);
+        const auto ciphertext = aesni_aes256_encrypt_block_ecb(plaintext, &encryption_schedule);
         dump_ciphertext(ciphertext);
 
         aesni::KeySchedule256 decryption_schedule;
-        aesni_invert_key_schedule256(&encryption_schedule, &decryption_schedule);
+        aesni_aes256_derive_decryption_keys(&encryption_schedule, &decryption_schedule);
         dump_decryption_schedule(decryption_schedule);
 
-        const auto decrypted = aesni_decrypt_block_ecb256(ciphertext, &decryption_schedule);
+        const auto decrypted = aesni_aes256_decrypt_block_ecb(ciphertext, &decryption_schedule);
         dump_decrypted(decrypted);
 
         return 0;

@@ -23,9 +23,9 @@ namespace aesni
     typedef AesNI_Block192 Block192;
     typedef AesNI_Block256 Block256;
 
-    typedef AesNI_KeySchedule128 KeySchedule128;
-    typedef AesNI_KeySchedule192 KeySchedule192;
-    typedef AesNI_KeySchedule256 KeySchedule256;
+    typedef AesNI_Aes128_RoundKeys KeySchedule128;
+    typedef AesNI_Aes192_RoundKeys KeySchedule192;
+    typedef AesNI_Aes256_RoundKeys KeySchedule256;
 
     template <typename KeyScheduleT>
     inline std::size_t get_number_of_keys(const KeyScheduleT& key_schedule)

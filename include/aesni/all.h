@@ -15,11 +15,10 @@
  * \defgroup aesni AesNI
  */
 
+#include "aes.h"
 #include "algorithm.h"
-#include "block.h"
 #include "box.h"
 #include "buffer.h"
 #include "data.h"
 #include "error.h"
 #include "mode.h"
-#include "raw.h"
