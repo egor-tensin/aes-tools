@@ -202,6 +202,13 @@ AesNI_Aes_Block __fastcall aesni_aes256_decrypt_block_(
     AesNI_Aes_Block ciphertext,
     const AesNI_Aes256_RoundKeys*);
 
+static __inline AesNI_Aes_Block __fastcall aesni_aes_inc_counter(AesNI_Aes_Block block)
+{
+    block = aesni_reverse_byte_order_block128(block);
+    block = aesni_inc_block128(block);
+    return aesni_reverse_byte_order_block128(block);
+}
+
 /**
  * \brief Expands an AES-128 key into 10 encryption round keys.
  *
@@ -417,7 +424,7 @@ static __inline AesNI_Aes_Block __fastcall aesni_aes128_decrypt_block_ofb(
  * \param[in] plaintext The plaintext to be encrypted.
  * \param[in] encryption_keys The AES-128 encryption round keys. Must not be `NULL`.
  * \param[in] init_vector The CTR initialization vector.
- * \param[in] counter The counter, typically incremented between consecutive calls.
+ * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
  *
  * \return The encrypted 128-bit ciphertext.
  */
@@ -425,15 +432,14 @@ static __inline AesNI_Aes_Block __fastcall aesni_aes128_encrypt_block_ctr(
     AesNI_Aes_Block plaintext,
     const AesNI_Aes128_RoundKeys* encryption_keys,
     AesNI_Aes_Block init_vector,
-    int counter)
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
+    assert(next_init_vector);
 
-    init_vector = aesni_reverse_bytes_block128(init_vector);
-    init_vector = _mm_add_epi32(init_vector, aesni_make_block128(0, 0, 0, counter));
-    init_vector = aesni_reverse_bytes_block128(init_vector);
-
-    return aesni_xor_block128(plaintext, aesni_aes128_encrypt_block_(init_vector, encryption_keys));
+    AesNI_Aes_Block ciphertext = aesni_xor_block128(plaintext, aesni_aes128_encrypt_block_(init_vector, encryption_keys));
+    *next_init_vector = aesni_aes_inc_counter(init_vector);
+    return ciphertext;
 }
 
 /**
@@ -442,7 +448,7 @@ static __inline AesNI_Aes_Block __fastcall aesni_aes128_encrypt_block_ctr(
  * \param[in] ciphertext The ciphertext to be decrypted.
  * \param[in] encryption_keys The AES-128 **encryption** round keys. Must not be `NULL`.
  * \param[in] init_vector The CTR initialization vector.
- * \param[in] counter The counter, typically incremented between consecutive calls.
+ * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
  *
  * \return The decrypted 128-bit plaintext.
  */
@@ -450,15 +456,14 @@ static __inline AesNI_Aes_Block __fastcall aesni_aes128_decrypt_block_ctr(
     AesNI_Aes_Block ciphertext,
     const AesNI_Aes128_RoundKeys* encryption_keys,
     AesNI_Aes_Block init_vector,
-    int counter)
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
+    assert(next_init_vector);
 
-    init_vector = aesni_reverse_bytes_block128(init_vector);
-    init_vector = _mm_add_epi32(init_vector, aesni_make_block128(0, 0, 0, counter));
-    init_vector = aesni_reverse_bytes_block128(init_vector);
-
-    return aesni_xor_block128(ciphertext, aesni_aes128_encrypt_block_(init_vector, encryption_keys));
+    AesNI_Aes_Block plaintext = aesni_xor_block128(ciphertext, aesni_aes128_encrypt_block_(init_vector, encryption_keys));
+    *next_init_vector = aesni_aes_inc_counter(init_vector);
+    return plaintext;
 }
 
 /**
@@ -677,7 +682,7 @@ static __inline AesNI_Aes_Block __fastcall aesni_aes192_decrypt_block_ofb(
  * \param[in] plaintext The plaintext to be encrypted.
  * \param[in] encryption_keys The AES-192 encryption round keys. Must not be `NULL`.
  * \param[in] init_vector The CTR initialization vector.
- * \param[in] counter The counter, typically incremented between consecutive calls.
+ * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
  *
  * \return The encrypted 128-bit ciphertext.
  */
@@ -685,15 +690,14 @@ static __inline AesNI_Aes_Block __fastcall aesni_aes192_encrypt_block_ctr(
     AesNI_Aes_Block plaintext,
     const AesNI_Aes192_RoundKeys* encryption_keys,
     AesNI_Aes_Block init_vector,
-    int counter)
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
+    assert(next_init_vector);
 
-    init_vector = aesni_reverse_bytes_block128(init_vector);
-    init_vector = _mm_add_epi32(init_vector, aesni_make_block128(0, 0, 0, counter));
-    init_vector = aesni_reverse_bytes_block128(init_vector);
-
-    return aesni_xor_block128(plaintext, aesni_aes192_encrypt_block_(init_vector, encryption_keys));
+    AesNI_Aes_Block ciphertext = aesni_xor_block128(plaintext, aesni_aes192_encrypt_block_(init_vector, encryption_keys));
+    *next_init_vector = aesni_aes_inc_counter(init_vector);
+    return ciphertext;
 }
 
 /**
@@ -702,7 +706,7 @@ static __inline AesNI_Aes_Block __fastcall aesni_aes192_encrypt_block_ctr(
  * \param[in] ciphertext The ciphertext to be decrypted.
  * \param[in] encryption_keys The AES-192 **encryption** round keys. Must not be `NULL`.
  * \param[in] init_vector The CTR initialization vector.
- * \param[in] counter The counter, typically incremented between consecutive calls.
+ * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
  *
  * \return The decrypted 128-bit plaintext.
  */
@@ -710,15 +714,14 @@ static __inline AesNI_Aes_Block __fastcall aesni_aes192_decrypt_block_ctr(
     AesNI_Aes_Block ciphertext,
     const AesNI_Aes192_RoundKeys* encryption_keys,
     AesNI_Aes_Block init_vector,
-    int counter)
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
+    assert(next_init_vector);
 
-    init_vector = aesni_reverse_bytes_block128(init_vector);
-    init_vector = _mm_add_epi32(init_vector, aesni_make_block128(0, 0, 0, counter));
-    init_vector = aesni_reverse_bytes_block128(init_vector);
-
-    return aesni_xor_block128(ciphertext, aesni_aes192_encrypt_block_(init_vector, encryption_keys));
+    AesNI_Aes_Block plaintext = aesni_xor_block128(ciphertext, aesni_aes192_encrypt_block_(init_vector, encryption_keys));
+    *next_init_vector = aesni_aes_inc_counter(init_vector);
+    return plaintext;
 }
 
 /**
@@ -937,7 +940,7 @@ static __inline AesNI_Aes_Block __fastcall aesni_aes256_decrypt_block_ofb(
  * \param[in] plaintext The plaintext to be encrypted.
  * \param[in] encryption_keys The AES-256 encryption round keys. Must not be `NULL`.
  * \param[in] init_vector The CTR initialization vector.
- * \param[in] counter The counter, typically incremented between consecutive calls.
+ * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
  *
  * \return The encrypted 128-bit ciphertext.
  */
@@ -945,15 +948,14 @@ static __inline AesNI_Aes_Block __fastcall aesni_aes256_encrypt_block_ctr(
     AesNI_Aes_Block plaintext,
     const AesNI_Aes256_RoundKeys* encryption_keys,
     AesNI_Aes_Block init_vector,
-    int counter)
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
+    assert(next_init_vector);
 
-    init_vector = aesni_reverse_bytes_block128(init_vector);
-    init_vector = _mm_add_epi32(init_vector, aesni_make_block128(0, 0, 0, counter));
-    init_vector = aesni_reverse_bytes_block128(init_vector);
-
-    return aesni_xor_block128(plaintext, aesni_aes256_encrypt_block_(init_vector, encryption_keys));
+    AesNI_Aes_Block ciphertext = aesni_xor_block128(plaintext, aesni_aes256_encrypt_block_(init_vector, encryption_keys));
+    *next_init_vector = aesni_aes_inc_counter(init_vector);
+    return ciphertext;
 }
 
 /**
@@ -962,7 +964,7 @@ static __inline AesNI_Aes_Block __fastcall aesni_aes256_encrypt_block_ctr(
  * \param[in] ciphertext The ciphertext to be decrypted.
  * \param[in] encryption_keys The AES-256 **encryption** round keys. Must not be `NULL`.
  * \param[in] init_vector The CTR initialization vector.
- * \param[in] counter The counter, typically incremented between consecutive calls.
+ * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
  *
  * \return The decrypted 128-bit plaintext.
  */
@@ -970,15 +972,14 @@ static __inline AesNI_Aes_Block __fastcall aesni_aes256_decrypt_block_ctr(
     AesNI_Aes_Block ciphertext,
     const AesNI_Aes256_RoundKeys* encryption_keys,
     AesNI_Aes_Block init_vector,
-    int counter)
+    AesNI_Aes_Block* next_init_vector)
 {
     assert(encryption_keys);
+    assert(next_init_vector);
 
-    init_vector = aesni_reverse_bytes_block128(init_vector);
-    init_vector = _mm_add_epi32(init_vector, aesni_make_block128(0, 0, 0, counter));
-    init_vector = aesni_reverse_bytes_block128(init_vector);
-
-    return aesni_xor_block128(ciphertext, aesni_aes256_encrypt_block_(init_vector, encryption_keys));
+    AesNI_Aes_Block plaintext = aesni_xor_block128(ciphertext, aesni_aes256_encrypt_block_(init_vector, encryption_keys));
+    *next_init_vector = aesni_aes_inc_counter(init_vector);
+    return plaintext;
 }
 
 #ifdef __cplusplus

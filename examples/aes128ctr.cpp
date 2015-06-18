@@ -32,11 +32,14 @@ int main()
         aesni_aes128_expand_key(&key, &encryption_keys);
         dump_encryption_keys(encryption_keys);
 
-        const auto ciphertext = aesni_aes128_encrypt_block_ctr(plaintext, &encryption_keys, iv, 0);
+        aesni::aes::Block next_iv;
+        const auto ciphertext = aesni_aes128_encrypt_block_ctr(plaintext, &encryption_keys, iv, &next_iv);
         dump_ciphertext(ciphertext);
+        dump_next_iv(next_iv);
 
-        const auto decrypted = aesni_aes128_decrypt_block_ctr(ciphertext, &encryption_keys, iv, 0);
+        const auto decrypted = aesni_aes128_decrypt_block_ctr(ciphertext, &encryption_keys, iv, &next_iv);
         dump_decrypted(decrypted);
+        dump_next_iv(next_iv);
 
         return 0;
     }
