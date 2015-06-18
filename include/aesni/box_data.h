@@ -87,12 +87,17 @@ typedef AesNI_StatusCode (*AesNI_BoxXorBlock)(
     const AesNI_BoxBlock*,
     AesNI_ErrorDetails*);
 
+typedef AesNI_StatusCode (*AesNI_BoxIncCounter)(
+    AesNI_BoxBlock*,
+    AesNI_ErrorDetails*);
+
 typedef struct
 {
     AesNI_BoxDeriveParams derive_params;
     AesNI_BoxEncrypt encrypt;
     AesNI_BoxDecrypt decrypt;
     AesNI_BoxXorBlock xor_block;
+    AesNI_BoxIncCounter inc_counter;
 }
 AesNI_BoxAlgorithmInterface;
 

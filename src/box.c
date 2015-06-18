@@ -132,7 +132,19 @@ static AesNI_StatusCode aesni_box_encrypt_ctr(
     AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
-    return aesni_error_not_implemented(err_details, "box encryption in CTR mode");
+    AesNI_StatusCode status = box->algorithm_iface->encrypt(
+        &box->iv,
+        &box->encrypt_params,
+        output,
+        err_details);
+    if (aesni_is_error(status))
+        return status;
+
+    status = box->algorithm_iface->xor_block(output, input, err_details);
+    if (aesni_is_error(status))
+        return status;
+
+    return box->algorithm_iface->inc_counter(&box->iv, err_details);
 }
 
 typedef AesNI_StatusCode (*AesNI_BoxEncryptMode)(
@@ -219,7 +231,6 @@ static AesNI_StatusCode aesni_box_decrypt_cfb(
         return status;
 
     box->iv = *input;
-
     return status;
 }
 
@@ -255,7 +266,7 @@ static AesNI_StatusCode aesni_box_decrypt_ctr(
     AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
-    return aesni_error_not_implemented(err_details, "box decryption in CTR mode");
+    return aesni_box_encrypt_ctr(box, input, output, err_details);
 }
 
 typedef AesNI_BoxEncryptMode AesNI_BoxDecryptMode;

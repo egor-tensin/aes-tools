@@ -64,6 +64,14 @@ static AesNI_StatusCode aesni_box_xor_block_aes(
     return AESNI_SUCCESS;
 }
 
+static AesNI_StatusCode aesni_box_inc_counter_aes(
+    AesNI_BoxBlock* ctr,
+    AesNI_ErrorDetails* err_details)
+{
+    ctr->aes_block = aesni_aes_inc_counter(ctr->aes_block);
+    return AESNI_SUCCESS;
+}
+
 static AesNI_StatusCode aesni_box_encrypt_aes128(
     const AesNI_BoxBlock* input,
     const AesNI_BoxEncryptionParams* params,
@@ -142,6 +150,7 @@ AesNI_BoxAlgorithmInterface aesni_box_aes128_iface =
     &aesni_box_encrypt_aes128,
     &aesni_box_decrypt_aes128,
     &aesni_box_xor_block_aes,
+    &aesni_box_inc_counter_aes,
 };
 
 AesNI_BoxAlgorithmInterface aesni_box_aes192_iface =
@@ -150,6 +159,7 @@ AesNI_BoxAlgorithmInterface aesni_box_aes192_iface =
     &aesni_box_encrypt_aes192,
     &aesni_box_decrypt_aes192,
     &aesni_box_xor_block_aes,
+    &aesni_box_inc_counter_aes,
 };
 
 AesNI_BoxAlgorithmInterface aesni_box_aes256_iface =
@@ -158,4 +168,5 @@ AesNI_BoxAlgorithmInterface aesni_box_aes256_iface =
     &aesni_box_encrypt_aes256,
     &aesni_box_decrypt_aes256,
     &aesni_box_xor_block_aes,
+    &aesni_box_inc_counter_aes,
 };
