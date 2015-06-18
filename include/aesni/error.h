@@ -48,7 +48,7 @@ typedef enum
     AESNI_NULL_ARGUMENT_ERROR, ///< Invalid argument value NULL
     AESNI_PARSE_ERROR,         ///< Couldn't parse
     AESNI_INVALID_PKCS7_PADDING_ERROR, ///< Invalid PKCS7 padding
-    AESNI_NOT_IMPLEMENTED,
+    AESNI_NOT_IMPLEMENTED_ERROR,
 }
 AesNI_StatusCode;
 
@@ -83,19 +83,14 @@ typedef struct
 
     union
     {
+        struct { char param_name[32]; } null_arg;
         struct
         {
-            char param_name[32]; ///< Name of the NULL argument
-        }
-        null_arg_error;
-        ///< `NULL` argument error (AESNI_NULL_ARGUMENT_ERROR) parameters
-
-        struct
-        {
-            char src[128]; ///< The string that failed to be parsed
+            char src[128];
+            char what[32];
         }
         parse_error;
-        ///< Parse error (AESNI_PARSE_ERROR) parameters
+        struct { char what[128]; } not_implemented;
     }
     params;
 }
@@ -133,7 +128,7 @@ size_t aesni_format_error(
  *
  * \param[out] err_details The error details structure to fill.
  */
-AesNI_StatusCode aesni_initialize_error_details(
+AesNI_StatusCode aesni_success(
     AesNI_ErrorDetails* err_details);
 
 /**
@@ -142,7 +137,7 @@ AesNI_StatusCode aesni_initialize_error_details(
  * \param[out] err_details The error details structure to fill.
  * \param[in] param_name The parameter name. Must not be `NULL`.
  */
-AesNI_StatusCode aesni_make_null_argument_error(
+AesNI_StatusCode aesni_error_null_argument(
     AesNI_ErrorDetails* err_details,
     const char* param_name);
 
@@ -152,20 +147,22 @@ AesNI_StatusCode aesni_make_null_argument_error(
  * \param[out] err_details The error details structure to fill.
  * \param[in] src The string that failed to be parsed.
  */
-AesNI_StatusCode aesni_make_parse_error(
+AesNI_StatusCode aesni_error_parse(
     AesNI_ErrorDetails* err_details,
-    const char* src);
+    const char* src,
+    const char* what);
 
 /**
  * \brief Builds error details from an invalid PKCS7 padding error.
  *
  * \param[out] err_details The error details structure to fill.
  */
-AesNI_StatusCode aesni_make_invalid_pkcs7_padding_error(
+AesNI_StatusCode aesni_error_invalid_pkcs7_padding(
     AesNI_ErrorDetails* err_details);
 
 AesNI_StatusCode aesni_error_not_implemented(
-    AesNI_ErrorDetails* err_details);
+    AesNI_ErrorDetails* err_details,
+    const char* what);
 
 #ifdef __cplusplus
 }

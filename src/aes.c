@@ -21,9 +21,9 @@ AesNI_StatusCode aesni_aes_format_block(
     assert(block);
 
     if (str == NULL)
-        return aesni_make_null_argument_error(err_details, "str");
+        return aesni_error_null_argument(err_details, "str");
     if (block == NULL)
-        return aesni_make_null_argument_error(err_details, "block");
+        return aesni_error_null_argument(err_details, "block");
 
     char* cursor = str->str;
 
@@ -46,9 +46,9 @@ AesNI_StatusCode aesni_aes_format_block_as_matrix(
     assert(block);
 
     if (str == NULL)
-        return aesni_make_null_argument_error(err_details, "str");
+        return aesni_error_null_argument(err_details, "str");
     if (block == NULL)
-        return aesni_make_null_argument_error(err_details, "block");
+        return aesni_error_null_argument(err_details, "block");
 
     char* cursor = str->str;
 
@@ -73,7 +73,7 @@ AesNI_StatusCode aesni_aes_print_block(
     assert(block);
 
     if (block == NULL)
-        return aesni_make_null_argument_error(err_details, "block");
+        return aesni_error_null_argument(err_details, "block");
 
     AesNI_StatusCode ec = AESNI_SUCCESS;
     AesNI_Aes_BlockString str;
@@ -92,7 +92,7 @@ AesNI_StatusCode aesni_aes_print_block_as_matrix(
     assert(block);
 
     if (block == NULL)
-        return aesni_make_null_argument_error(err_details, "block");
+        return aesni_error_null_argument(err_details, "block");
 
     AesNI_StatusCode ec = AESNI_SUCCESS;
     AesNI_Aes_BlockMatrixString str;
@@ -113,9 +113,11 @@ AesNI_StatusCode aesni_aes_parse_block(
     assert(src);
 
     if (dest == NULL)
-        return aesni_make_null_argument_error(err_details, "dest");
+        return aesni_error_null_argument(err_details, "dest");
     if (src == NULL)
-        return aesni_make_null_argument_error(err_details, "src");
+        return aesni_error_null_argument(err_details, "src");
+
+    const char* cursor = src;
 
     __declspec(align(16)) unsigned char bytes[16];
 
@@ -123,10 +125,10 @@ AesNI_StatusCode aesni_aes_parse_block(
     {
         int n;
         unsigned int byte;
-        if (sscanf(src, "%2x%n", &byte, &n) != 1)
-            return aesni_make_parse_error(err_details, src);
+        if (sscanf(cursor, "%2x%n", &byte, &n) != 1)
+            return aesni_error_parse(err_details, src, "a 128-bit block");
         bytes[i] = (unsigned char) byte;
-        src += n;
+        cursor += n;
     }
 
     *dest = aesni_load_block128_aligned(bytes);
@@ -150,9 +152,9 @@ AesNI_StatusCode aesni_aes192_format_key(
     assert(key);
 
     if (str == NULL)
-        return aesni_make_null_argument_error(err_details, "str");
+        return aesni_error_null_argument(err_details, "str");
     if (key == NULL)
-        return aesni_make_null_argument_error(err_details, "key");
+        return aesni_error_null_argument(err_details, "key");
 
     char* cursor = str->str;
 
@@ -185,9 +187,9 @@ AesNI_StatusCode aesni_aes256_format_key(
     assert(key);
 
     if (str == NULL)
-        return aesni_make_null_argument_error(err_details, "str");
+        return aesni_error_null_argument(err_details, "str");
     if (key == NULL)
-        return aesni_make_null_argument_error(err_details, "key");
+        return aesni_error_null_argument(err_details, "key");
 
     char* cursor = str->str;
 
@@ -225,7 +227,7 @@ AesNI_StatusCode aesni_aes192_print_key(
     assert(key);
 
     if (key == NULL)
-        return aesni_make_null_argument_error(err_details, "key");
+        return aesni_error_null_argument(err_details, "key");
 
     AesNI_StatusCode ec = AESNI_SUCCESS;
     AesNI_Aes192_KeyString str;
@@ -244,7 +246,7 @@ AesNI_StatusCode aesni_aes256_print_key(
     assert(key);
 
     if (key == NULL)
-        return aesni_make_null_argument_error(err_details, "key");
+        return aesni_error_null_argument(err_details, "key");
 
     AesNI_StatusCode ec = AESNI_SUCCESS;
     AesNI_Aes256_KeyString str;
@@ -273,9 +275,11 @@ AesNI_StatusCode aesni_aes192_parse_key(
     assert(src);
 
     if (dest == NULL)
-        return aesni_make_null_argument_error(err_details, "dest");
+        return aesni_error_null_argument(err_details, "dest");
     if (src == NULL)
-        return aesni_make_null_argument_error(err_details, "src");
+        return aesni_error_null_argument(err_details, "src");
+
+    const char* cursor = src;
 
     {
         __declspec(align(16)) unsigned char bytes[16];
@@ -284,10 +288,10 @@ AesNI_StatusCode aesni_aes192_parse_key(
         {
             int n;
             unsigned int byte;
-            if (sscanf(src, "%2x%n", &byte, &n) != 1)
-                return aesni_make_parse_error(err_details, src);
+            if (sscanf(cursor, "%2x%n", &byte, &n) != 1)
+                return aesni_error_parse(err_details, src, "a 192-bit block");
             bytes[i] = (unsigned char) byte;
-            src += n;
+            cursor += n;
         }
 
         dest->lo = aesni_load_block128_aligned(bytes);
@@ -300,10 +304,10 @@ AesNI_StatusCode aesni_aes192_parse_key(
         {
             int n;
             unsigned int byte;
-            if (sscanf(src, "%2x%n", &byte, &n) != 1)
-                return aesni_make_parse_error(err_details, src);
+            if (sscanf(cursor, "%2x%n", &byte, &n) != 1)
+                return aesni_error_parse(err_details, src, "a 192-bit block");
             bytes[i] = (unsigned char) byte;
-            src += n;
+            cursor += n;
         }
 
         memset(bytes + 8, 0x00, 8);
@@ -322,9 +326,11 @@ AesNI_StatusCode aesni_aes256_parse_key(
     assert(src);
 
     if (dest == NULL)
-        return aesni_make_null_argument_error(err_details, "dest");
+        return aesni_error_null_argument(err_details, "dest");
     if (src == NULL)
-        return aesni_make_null_argument_error(err_details, "src");
+        return aesni_error_null_argument(err_details, "src");
+
+    const char* cursor = src;
 
     {
         __declspec(align(16)) unsigned char bytes[16];
@@ -333,10 +339,10 @@ AesNI_StatusCode aesni_aes256_parse_key(
         {
             int n;
             unsigned int byte;
-            if (sscanf(src, "%2x%n", &byte, &n) != 1)
-                return aesni_make_parse_error(err_details, src);
+            if (sscanf(cursor, "%2x%n", &byte, &n) != 1)
+                return aesni_error_parse(err_details, src, "a 256-bit block");
             bytes[i] = (unsigned char) byte;
-            src += n;
+            cursor += n;
         }
 
         dest->lo = aesni_load_block128_aligned(bytes);
@@ -349,10 +355,10 @@ AesNI_StatusCode aesni_aes256_parse_key(
         {
             int n;
             unsigned int byte;
-            if (sscanf(src, "%2x%n", &byte, &n) != 1)
-                return aesni_make_parse_error(err_details, src);
+            if (sscanf(cursor, "%2x%n", &byte, &n) != 1)
+                return aesni_error_parse(err_details, src, "a 256-bit block");
             bytes[i] = (unsigned char) byte;
-            src += n;
+            cursor += n;
         }
 
         dest->hi = aesni_load_block128_aligned(bytes);
