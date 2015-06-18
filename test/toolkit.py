@@ -87,9 +87,11 @@ class Tools:
         cmd_list.extend(args)
         logging.info('Trying to execute: {0}'.format(subprocess.list2cmdline(cmd_list)))
         try:
-            output = subprocess.check_output(cmd_list, universal_newlines=True)
+            output = subprocess.check_output(cmd_list, universal_newlines=True,
+                                             stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             logging.exception(e)
+            logging.error('Output:\n' + e.output)
             raise ToolkitError() from e
         logging.info('Output:\n' + output)
         return output.split()
