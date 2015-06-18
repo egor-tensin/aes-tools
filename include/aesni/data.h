@@ -4,21 +4,9 @@
  * \date 2015
  * \copyright This file is licensed under the terms of the MIT License.
  *            See LICENSE.txt for details.
- *
- * \brief Declares necessary data structures (for blocks, keys, etc.) and
- * auxiliary I/O functions.
  */
 
 #pragma once
-
-#include "error.h"
-
-/**
- * \defgroup aesni_data Data
- * \brief Data structures and I/O functions
- * \ingroup aesni
- * \{
- */
 
 #include <emmintrin.h>
 #include <tmmintrin.h>
@@ -114,10 +102,10 @@ static __inline AesNI_Block128 __fastcall aesni_xor_block128(
  * \param[in] hi2 The more significant 4-byte value.
  * \param[in] lo1 The less significant 4-byte value.
  * \param[in] lo0 The least significant 4-byte value.
+ *
  * \return The built 128-bit block.
  */
-static __inline AesNI_Block128 __fastcall aesni_make_block128(
-    int hi3, int hi2, int lo1, int lo0)
+static __inline AesNI_Block128 __fastcall aesni_make_block128(int hi3, int hi2, int lo1, int lo0)
 {
     return _mm_set_epi32(hi3, hi2, lo1, lo0);
 }
@@ -130,7 +118,3 @@ static __inline AesNI_Block128 __fastcall aesni_reverse_bytes_block128(AesNI_Blo
 #ifdef __cplusplus
 }
 #endif
-
-/**
- * \}
- */

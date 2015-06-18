@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "aes.h"
 #include "error.h"
 
 #ifdef __cplusplus

@@ -17,24 +17,24 @@ extern "C"
 #endif
 
 AesNI_StatusCode aesni_box_init(
-    AesNI_Box*,
-    AesNI_BoxAlgorithm,
-    const AesNI_BoxAlgorithmParams*,
-    AesNI_BoxMode,
+    AesNI_Box* box,
+    AesNI_BoxAlgorithm algorithm,
+    const AesNI_BoxAlgorithmParams* algorithm_params,
+    AesNI_BoxMode mode,
     const AesNI_BoxBlock* iv,
-    AesNI_ErrorDetails*);
+    AesNI_ErrorDetails* err_details);
 
 AesNI_StatusCode aesni_box_encrypt(
-    AesNI_Box*,
-    const AesNI_BoxBlock*,
-    AesNI_BoxBlock*,
-    AesNI_ErrorDetails*);
+    AesNI_Box* box,
+    const AesNI_BoxBlock* plaintext,
+    AesNI_BoxBlock* ciphertext,
+    AesNI_ErrorDetails* err_details);
 
 AesNI_StatusCode aesni_box_decrypt(
-    AesNI_Box*,
-    const AesNI_BoxBlock*,
-    AesNI_BoxBlock*,
-    AesNI_ErrorDetails*);
+    AesNI_Box* box,
+    const AesNI_BoxBlock* ciphertext,
+    AesNI_BoxBlock* plaintext,
+    AesNI_ErrorDetails* err_details);
 
 #ifdef __cplusplus
 }

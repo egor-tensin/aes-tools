@@ -32,6 +32,7 @@ AesNI_StatusCode aesni_box_init(
             &box->decrypt_params,
             err_details)))
         return status;
+
     box->mode = mode;
     if (iv != NULL)
         box->iv = *iv;

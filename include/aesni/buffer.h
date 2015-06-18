@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include "aes.h"
 #include "error.h"
 
 #include <stdlib.h>

@@ -9,6 +9,7 @@
 #pragma once
 
 #include "data.h"
+#include "error.h"
 
 #include <assert.h>
 
@@ -135,19 +136,19 @@ AesNI_StatusCode aesni_aes256_parse_key(
 
 typedef struct
 {
-    AesNI_Block128 keys[11];
+    AesNI_Aes_Block keys[11];
 }
 AesNI_Aes128_RoundKeys;
 
 typedef struct
 {
-    AesNI_Block128 keys[13];
+    AesNI_Aes_Block keys[13];
 }
 AesNI_Aes192_RoundKeys;
 
 typedef struct
 {
-    AesNI_Block128 keys[15];
+    AesNI_Aes_Block keys[15];
 }
 AesNI_Aes256_RoundKeys;
 

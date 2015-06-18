@@ -4,8 +4,6 @@
  * \date 2015
  * \copyright This file is licensed under the terms of the MIT License.
  *            See LICENSE.txt for details.
- *
- * \brief Declares error codes, error formatting functions, etc.
  */
 
 #pragma once
@@ -44,11 +42,11 @@ extern "C"
  */
 typedef enum
 {
-    AESNI_SUCCESS,             ///< Everything went fine
-    AESNI_NULL_ARGUMENT_ERROR, ///< Invalid argument value NULL
-    AESNI_PARSE_ERROR,         ///< Couldn't parse
-    AESNI_INVALID_PKCS7_PADDING_ERROR, ///< Invalid PKCS7 padding
-    AESNI_NOT_IMPLEMENTED_ERROR,
+    AESNI_SUCCESS,                     ///< Everything went fine
+    AESNI_NULL_ARGUMENT_ERROR,         ///< Invalid argument value NULL
+    AESNI_PARSE_ERROR,                 ///< Couldn't parse
+    AESNI_INVALID_PKCS7_PADDING_ERROR, ///< Invalid PKCS7 padding while decrypting
+    AESNI_NOT_IMPLEMENTED_ERROR,       ///< Not implemented
 }
 AesNI_StatusCode;
 
