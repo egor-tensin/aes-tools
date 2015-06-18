@@ -4,36 +4,21 @@ After you've [built](https://github.com/egor-tensin/aesni#building) the block en
 
 ## Manually
 
-The block encryption/decryption utilities have uniform interfaces.
-For the ECB mode of operation, the usage is:
+You can test the AES implementation using the block encryption/decryption utilities `encrypt_block_aes.exe` and `decrypt_block_aes.exe`.
+Use the `--help` option to examine the usage info of a utility.
 
-    aesNNNecb_encrypt_block.exe KEY0 [PLAIN0...] [-- KEY1 [PLAIN1...]...]
+For example, for AES-128 in ECB mode:
 
-and
-
-    aesNNNecb_decrypt_block.exe KEY0 [CIPHER0...] [-- KEY1 [CIPHER1--]...]
-
-where `NNN` is either `128`, `192` or `256`.
-
-For the modes of operation involving initialization vectors (CBC, CFB, OFB, CTR, etc.), use the utilities like this:
-
-    aesNNNxxx_encrypt_block.exe KEY0 IV0 [PLAIN0...] [-- KEY1 IV1 [PLAIN1...]...]
-
-and
-
-    aesNNNxxx_decrypt_block.exe KEY0 IV0 [CIPHER0...] [-- KEY1 IV1 [CIPHER1...]...]
-
-where `NNN` is the same and `xxx` is either `cbc`, `cfb`, `ofb`, `ctr` or some other mode of operation.
-
-For example,
-
-    > aes128ecb_encrypt_block.exe 000102030405060708090a0b0c0d0e0f 00112233445566778899aabbccddeeff
+    > encrypt_block_aes.exe -a aes128 -m ecb -- 000102030405060708090a0b0c0d0e0f 00112233445566778899aabbccddeeff
     69c4e0d86a7b0430d8cdb78070b4c55a
 
-    > aes192cbc_encrypt_block.exe 000102030405060708090a0b0c0d0e0f1011121314151617 1032547698badcfe1032547698badcfe 00112233445566778899aabbccddeeff 00112233445566778899aabbccddeeff 00112233445566778899aabbccddeeff
-    92c01276b27eb8baaa3cabe2c661d4a8
-    d42bdf90c1a48221a92a5137c1445418
-    96248fca82fbefa31345ae7d8fb7933e
+and for AES-192 in CBC mode:
+
+    > decrypt_block_aes.exe -a aes192 -m cbc -- 8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b 000102030405060708090a0b0c0d0e0f 4f021db243bc633d7178183a9fa071e8 b4d9ada9ad7dedf4e5e738763f69145a 571b242012fb7ae07fa9baac3df102e0 08b0e27988598881d920a9e64f5615cd
+    6bc1bee22e409f96e93d7e117393172a
+    ae2d8a571e03ac9c9eb76fac45af8e51
+    30c81c46a35ce411e5fbc1191a0a52ef
+    f69f2445df4f9b17ad2b417be66c3710
 
 On older CPUs, you can run the utilities [using Intel SDE](https://github.com/egor-tensin/aesni#running-on-older-cpus).
 
