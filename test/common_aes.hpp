@@ -104,7 +104,7 @@ namespace
 
         void print_usage()
         {
-            std::cout << "CommandLineParser: " << m_program_name << " [OPTIONS...] [-- KEY [IV] [PLAINTEXT...]...]\n";
+            std::cout << "Usage: " << m_program_name << " [OPTIONS...] [-- KEY [IV] [PLAINTEXT...]...]\n";
             std::cout << m_options << "\n";
         }
 
