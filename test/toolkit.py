@@ -75,14 +75,15 @@ class Tools:
     def _get_tool_path(self, fn):
         return os.path.join(self._root_dir_path, fn)
 
-    def get_encrypt_tool_path(self, algo, mode):
-        return self._get_tool_path('{0}{1}_encrypt_block.exe'.format(algo, mode))
+    def get_encrypt_tool_path(self):
+        return self._get_tool_path('encrypt_block_aes.exe')
 
-    def get_decrypt_tool_path(self, algo, mode):
-        return self._get_tool_path('{0}{1}_decrypt_block.exe'.format(algo, mode))
+    def get_decrypt_tool_path(self):
+        return self._get_tool_path('decrypt_block_aes.exe')
 
-    def run_tool(self, tool_path, args):
+    def run_tool(self, tool_path, algo, mode, args):
         cmd_list = ['sde', '--', tool_path] if self._use_sde else [tool_path]
+        cmd_list.extend(('-a', algo, '-m', mode, '--'))
         cmd_list.extend(args)
         logging.info('Trying to execute: {0}'.format(subprocess.list2cmdline(cmd_list)))
         try:
@@ -112,11 +113,11 @@ class Tools:
             args = self._inputs_to_args(iter(inputs))
         else:
             args = inputs.to_args()
-        return self.run_tool(self.get_encrypt_tool_path(algo, mode), args)
+        return self.run_tool(self.get_encrypt_tool_path(), algo, mode, args)
 
     def run_decrypt_tool(self, algo, mode, inputs):
         if isinstance(inputs, collections.Iterable):
             args = self._inputs_to_args(iter(inputs))
         else:
             args = inputs.to_args()
-        return self.run_tool(self.get_decrypt_tool_path(algo, mode), args)
+        return self.run_tool(self.get_decrypt_tool_path(), algo, mode, args)
