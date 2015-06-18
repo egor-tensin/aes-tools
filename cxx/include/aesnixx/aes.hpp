@@ -124,7 +124,7 @@ namespace aesni
         typedef AesNI_Aes256_RoundKeys RoundKeys256;
 
         template <typename RoundKeysT>
-        inline std::size_t get_number_of_keys(const RoundKeysT& round_keys)
+        inline std::size_t get_number_of_rounds(const RoundKeysT& round_keys)
         {
             return sizeof(round_keys) / sizeof(Block128);
         }

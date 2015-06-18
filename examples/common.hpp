@@ -86,7 +86,7 @@ namespace
     void dump_schedule(const char* name, const KeyScheduleT& schedule)
     {
         std::cout << name << ":\n";
-        for (std::size_t i = 0; i < aesni::aes::get_number_of_keys(schedule); ++i)
+        for (std::size_t i = 0; i < aesni::aes::get_number_of_rounds(schedule); ++i)
             std::cout << "\t[" << i << "]: " << aesni::aes::to_string(schedule.keys[i]) << "\n";
         std::cout << "\n";
     }
