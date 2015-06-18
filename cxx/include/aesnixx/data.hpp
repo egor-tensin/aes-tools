@@ -45,4 +45,14 @@ namespace aesni
     {
         return aesni_xor_block128(a, b);
     }
+
+    inline Block128 reverse_byte_order(Block128& block)
+    {
+        return aesni_reverse_byte_order_block128(block);
+    }
+
+    inline Block128 inc(Block128& block)
+    {
+        return aesni_inc_block128(block);
+    }
 }

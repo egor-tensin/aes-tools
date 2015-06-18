@@ -110,9 +110,14 @@ static __inline AesNI_Block128 __fastcall aesni_make_block128(int hi3, int hi2, 
     return _mm_set_epi32(hi3, hi2, lo1, lo0);
 }
 
-static __inline AesNI_Block128 __fastcall aesni_reverse_bytes_block128(AesNI_Block128 block)
+static __inline AesNI_Block128 __fastcall aesni_reverse_byte_order_block128(AesNI_Block128 block)
 {
     return _mm_shuffle_epi8(block, aesni_make_block128(0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f));
+}
+
+static __inline AesNI_Block128 __fastcall aesni_inc_block128(AesNI_Block128 x)
+{
+    return _mm_add_epi32(x, aesni_make_block128(0, 0, 0, 1));
 }
 
 #ifdef __cplusplus
