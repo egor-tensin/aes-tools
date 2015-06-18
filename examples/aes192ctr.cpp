@@ -28,14 +28,14 @@ int main()
         aesni::aes::Block iv;
         make_default_iv(iv);
 
-        aesni::aes::RoundKeys192 encryption_schedule;
-        aesni_aes192_expand_key(&key, &encryption_schedule);
-        dump_encryption_schedule(encryption_schedule);
+        aesni::aes::RoundKeys192 encryption_keys;
+        aesni_aes192_expand_key(&key, &encryption_keys);
+        dump_encryption_keys(encryption_keys);
 
-        const auto ciphertext = aesni_aes192_encrypt_block_ctr(plaintext, &encryption_schedule, iv, 0);
+        const auto ciphertext = aesni_aes192_encrypt_block_ctr(plaintext, &encryption_keys, iv, 0);
         dump_ciphertext(ciphertext);
 
-        const auto decrypted = aesni_aes192_decrypt_block_ctr(ciphertext, &encryption_schedule, iv, 0);
+        const auto decrypted = aesni_aes192_decrypt_block_ctr(ciphertext, &encryption_keys, iv, 0);
         dump_decrypted(decrypted);
     }
     catch (const std::exception& e)

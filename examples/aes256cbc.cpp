@@ -28,20 +28,20 @@ int main()
         aesni::aes::Block iv;
         make_default_iv(iv);
 
-        aesni::aes::RoundKeys256 encryption_schedule;
-        aesni_aes256_expand_key(&key, &encryption_schedule);
-        dump_encryption_schedule(encryption_schedule);
+        aesni::aes::RoundKeys256 encryption_keys;
+        aesni_aes256_expand_key(&key, &encryption_keys);
+        dump_encryption_keys(encryption_keys);
 
         aesni::aes::Block next_iv;
-        const auto ciphertext = aesni_aes256_encrypt_block_cbc(plaintext, &encryption_schedule, iv, &next_iv);
+        const auto ciphertext = aesni_aes256_encrypt_block_cbc(plaintext, &encryption_keys, iv, &next_iv);
         dump_ciphertext(ciphertext);
         dump_next_iv(next_iv);
 
-        aesni::aes::RoundKeys256 decryption_schedule;
-        aesni_aes256_derive_decryption_keys(&encryption_schedule, &decryption_schedule);
-        dump_decryption_schedule(decryption_schedule);
+        aesni::aes::RoundKeys256 decryption_keys;
+        aesni_aes256_derive_decryption_keys(&encryption_keys, &decryption_keys);
+        dump_decryption_keys(decryption_keys);
 
-        const auto decrypted = aesni_aes256_decrypt_block_cbc(ciphertext, &decryption_schedule, iv, &next_iv);
+        const auto decrypted = aesni_aes256_decrypt_block_cbc(ciphertext, &decryption_keys, iv, &next_iv);
         dump_decrypted(decrypted);
         dump_next_iv(next_iv);
 

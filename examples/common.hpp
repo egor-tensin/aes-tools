@@ -82,24 +82,24 @@ namespace
         dump_iv(iv);
     }
 
-    template <typename KeyScheduleT>
-    void dump_schedule(const char* name, const KeyScheduleT& schedule)
+    template <typename RoundKeysT>
+    void dump_round_keys(const char* name, const RoundKeysT& round_keys)
     {
         std::cout << name << ":\n";
-        for (std::size_t i = 0; i < aesni::aes::get_number_of_rounds(schedule); ++i)
-            std::cout << "\t[" << i << "]: " << aesni::aes::to_string(schedule.keys[i]) << "\n";
+        for (std::size_t i = 0; i < aesni::aes::get_number_of_rounds(round_keys); ++i)
+            std::cout << "\t[" << i << "]: " << aesni::aes::to_string(round_keys.keys[i]) << "\n";
         std::cout << "\n";
     }
 
-    template <typename KeyScheduleT>
-    void dump_encryption_schedule(const KeyScheduleT& schedule)
+    template <typename RoundKeysT>
+    void dump_encryption_keys(const RoundKeysT& round_keys)
     {
-        dump_schedule("Encryption schedule", schedule);
+        dump_round_keys("Encryption round keys", round_keys);
     }
 
-    template <typename KeyScheduleT>
-    void dump_decryption_schedule(const KeyScheduleT& schedule)
+    template <typename RoundKeysT>
+    void dump_decryption_keys(const RoundKeysT& round_keys)
     {
-        dump_schedule("Decryption schedule", schedule);
+        dump_round_keys("Decryption round keys", round_keys);
     }
 }
