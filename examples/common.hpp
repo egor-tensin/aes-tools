@@ -29,7 +29,7 @@ namespace
     template <typename KeyT>
     void dump_key(const KeyT& key)
     {
-        std::cout << "Key: " << aesni::aes::to_string(key) << "\n";
+        std::cout << "Key: " << aesni::aes::to_string(key) << "\n\n";
     }
 
     void dump_ciphertext(const aesni::aes::Block& ciphertext)
