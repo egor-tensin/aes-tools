@@ -115,12 +115,29 @@ size_t aesni_format_error(
     return err_formatters[err_details->ec](err_details, dest, dest_size);
 }
 
+#ifdef WIN32
+#include <Windows.h>
+
+static void aesni_collect_call_stack(AesNI_ErrorDetails* err_details)
+{
+    err_details->call_stack_size = CaptureStackBackTrace(1, AESNI_MAX_CALL_STACK_LENGTH, err_details->call_stack, NULL);
+}
+#else
+static void aesni_collect_call_stack(AesNI_ErrorDetails* err_details)
+{
+    err_details->call_stack_size = 0;
+}
+#endif
+
 static AesNI_StatusCode aesni_make_error(
     AesNI_ErrorDetails* err_details,
     AesNI_StatusCode ec)
 {
     if (err_details == NULL)
         return ec;
+
+    if (aesni_is_error(ec))
+        aesni_collect_call_stack(err_details);
 
     return err_details->ec = ec;
 }

@@ -10,4 +10,5 @@
 
 #include "aes.hpp"
 #include "data.hpp"
+#include "debug.hpp"
 #include "error.hpp"

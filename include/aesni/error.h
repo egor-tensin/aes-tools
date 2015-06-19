@@ -72,6 +72,8 @@ static __inline int aesni_is_error(AesNI_StatusCode ec)
  */
 const char* aesni_strerror(AesNI_StatusCode ec);
 
+#define AESNI_MAX_CALL_STACK_LENGTH 32
+
 /**
  * \brief Stores error details: error code & possibly a few parameters.
  */
@@ -91,6 +93,9 @@ typedef struct
         struct { char what[128]; } not_implemented;
     }
     params;
+
+    void* call_stack[AESNI_MAX_CALL_STACK_LENGTH];
+    size_t call_stack_size;
 }
 AesNI_ErrorDetails;
 
