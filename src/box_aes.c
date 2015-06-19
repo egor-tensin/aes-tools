@@ -8,6 +8,8 @@
 
 #include <aesni/all.h>
 
+#include <stdlib.h>
+
 static AesNI_StatusCode aesni_box_derive_params_aes128(
     const AesNI_BoxAlgorithmParams* algorithm_params,
     AesNI_BoxEncryptionParams* encrypt_params,
@@ -64,7 +66,7 @@ static AesNI_StatusCode aesni_box_xor_block_aes(
     return AESNI_SUCCESS;
 }
 
-static AesNI_StatusCode aesni_box_inc_counter_aes(
+static AesNI_StatusCode aesni_box_next_counter_aes(
     AesNI_BoxBlock* ctr,
     AesNI_ErrorDetails* err_details)
 {
@@ -72,7 +74,15 @@ static AesNI_StatusCode aesni_box_inc_counter_aes(
     return AESNI_SUCCESS;
 }
 
-static AesNI_StatusCode aesni_box_encrypt_aes128(
+static AesNI_StatusCode aesni_box_get_block_size_aes(
+    size_t* block_size,
+    AesNI_ErrorDetails* err_details)
+{
+    *block_size = 16;
+    return AESNI_SUCCESS;
+}
+
+static AesNI_StatusCode aesni_box_encrypt_block_aes128(
     const AesNI_BoxBlock* input,
     const AesNI_BoxEncryptionParams* params,
     AesNI_BoxBlock* output,
@@ -84,7 +94,7 @@ static AesNI_StatusCode aesni_box_encrypt_aes128(
     return AESNI_SUCCESS;
 }
 
-static AesNI_StatusCode aesni_box_decrypt_aes128(
+static AesNI_StatusCode aesni_box_decrypt_block_aes128(
     const AesNI_BoxBlock* input,
     const AesNI_BoxDecryptionParams* params,
     AesNI_BoxBlock* output,
@@ -96,7 +106,7 @@ static AesNI_StatusCode aesni_box_decrypt_aes128(
     return AESNI_SUCCESS;
 }
 
-static AesNI_StatusCode aesni_box_encrypt_aes192(
+static AesNI_StatusCode aesni_box_encrypt_block_aes192(
     const AesNI_BoxBlock* input,
     const AesNI_BoxEncryptionParams* params,
     AesNI_BoxBlock* output,
@@ -108,7 +118,7 @@ static AesNI_StatusCode aesni_box_encrypt_aes192(
     return AESNI_SUCCESS;
 }
 
-static AesNI_StatusCode aesni_box_decrypt_aes192(
+static AesNI_StatusCode aesni_box_decrypt_block_aes192(
     const AesNI_BoxBlock* input,
     const AesNI_BoxDecryptionParams* params,
     AesNI_BoxBlock* output,
@@ -120,7 +130,7 @@ static AesNI_StatusCode aesni_box_decrypt_aes192(
     return AESNI_SUCCESS;
 }
 
-static AesNI_StatusCode aesni_box_encrypt_aes256(
+static AesNI_StatusCode aesni_box_encrypt_block_aes256(
     const AesNI_BoxBlock* input,
     const AesNI_BoxEncryptionParams* params,
     AesNI_BoxBlock* output,
@@ -132,7 +142,7 @@ static AesNI_StatusCode aesni_box_encrypt_aes256(
     return AESNI_SUCCESS;
 }
 
-static AesNI_StatusCode aesni_box_decrypt_aes256(
+static AesNI_StatusCode aesni_box_decrypt_block_aes256(
     const AesNI_BoxBlock* input,
     const AesNI_BoxDecryptionParams* params,
     AesNI_BoxBlock* output,
@@ -144,29 +154,32 @@ static AesNI_StatusCode aesni_box_decrypt_aes256(
     return AESNI_SUCCESS;
 }
 
-AesNI_BoxAlgorithmInterface aesni_box_aes128_iface =
+AesNI_BoxAlgorithmInterface aesni_box_algorithm_aes128 =
 {
     &aesni_box_derive_params_aes128,
-    &aesni_box_encrypt_aes128,
-    &aesni_box_decrypt_aes128,
+    &aesni_box_encrypt_block_aes128,
+    &aesni_box_decrypt_block_aes128,
     &aesni_box_xor_block_aes,
-    &aesni_box_inc_counter_aes,
+    &aesni_box_next_counter_aes,
+    &aesni_box_get_block_size_aes,
 };
 
-AesNI_BoxAlgorithmInterface aesni_box_aes192_iface =
+AesNI_BoxAlgorithmInterface aesni_box_algorithm_aes192 =
 {
     &aesni_box_derive_params_aes192,
-    &aesni_box_encrypt_aes192,
-    &aesni_box_decrypt_aes192,
+    &aesni_box_encrypt_block_aes192,
+    &aesni_box_decrypt_block_aes192,
     &aesni_box_xor_block_aes,
-    &aesni_box_inc_counter_aes,
+    &aesni_box_next_counter_aes,
+    &aesni_box_get_block_size_aes,
 };
 
-AesNI_BoxAlgorithmInterface aesni_box_aes256_iface =
+AesNI_BoxAlgorithmInterface aesni_box_algorithm_aes256 =
 {
     &aesni_box_derive_params_aes256,
-    &aesni_box_encrypt_aes256,
-    &aesni_box_decrypt_aes256,
+    &aesni_box_encrypt_block_aes256,
+    &aesni_box_decrypt_block_aes256,
     &aesni_box_xor_block_aes,
-    &aesni_box_inc_counter_aes,
+    &aesni_box_next_counter_aes,
+    &aesni_box_get_block_size_aes,
 };

@@ -11,6 +11,8 @@
 #include "aes.h"
 #include "error.h"
 
+#include <stdlib.h>
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -70,13 +72,13 @@ typedef AesNI_StatusCode (*AesNI_BoxDeriveParams)(
     AesNI_BoxDecryptionParams*,
     AesNI_ErrorDetails* err_details);
 
-typedef AesNI_StatusCode (*AesNI_BoxEncrypt)(
+typedef AesNI_StatusCode (*AesNI_BoxEncryptBlock)(
     const AesNI_BoxBlock* plaintext,
     const AesNI_BoxEncryptionParams* params,
     AesNI_BoxBlock* ciphertext,
     AesNI_ErrorDetails* err_details);
 
-typedef AesNI_StatusCode (*AesNI_BoxDecrypt)(
+typedef AesNI_StatusCode (*AesNI_BoxDecryptBlock)(
     const AesNI_BoxBlock* ciphertext,
     const AesNI_BoxDecryptionParams* params,
     AesNI_BoxBlock* plaintext,
@@ -87,23 +89,28 @@ typedef AesNI_StatusCode (*AesNI_BoxXorBlock)(
     const AesNI_BoxBlock*,
     AesNI_ErrorDetails*);
 
-typedef AesNI_StatusCode (*AesNI_BoxIncCounter)(
+typedef AesNI_StatusCode (*AesNI_BoxNextCounter)(
     AesNI_BoxBlock*,
+    AesNI_ErrorDetails*);
+
+typedef AesNI_StatusCode (*AesNI_BoxGetBlockSize)(
+    size_t*,
     AesNI_ErrorDetails*);
 
 typedef struct
 {
     AesNI_BoxDeriveParams derive_params;
-    AesNI_BoxEncrypt encrypt;
-    AesNI_BoxDecrypt decrypt;
+    AesNI_BoxEncryptBlock encrypt_block;
+    AesNI_BoxDecryptBlock decrypt_block;
     AesNI_BoxXorBlock xor_block;
-    AesNI_BoxIncCounter inc_counter;
+    AesNI_BoxNextCounter next_counter;
+    AesNI_BoxGetBlockSize get_block_size;
 }
 AesNI_BoxAlgorithmInterface;
 
 typedef struct
 {
-    const AesNI_BoxAlgorithmInterface* algorithm_iface;
+    const AesNI_BoxAlgorithmInterface* algorithm;
     AesNI_BoxEncryptionParams encrypt_params;
     AesNI_BoxDecryptionParams decrypt_params;
     AesNI_BoxMode mode;

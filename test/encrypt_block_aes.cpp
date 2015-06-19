@@ -92,7 +92,7 @@ int main(int argc, char** argv)
                 args.pop_front();
 
                 AesNI_BoxBlock ciphertext;
-                aesni_box_encrypt(
+                aesni_box_encrypt_block(
                     &box,
                     &plaintext,
                     &ciphertext,

@@ -24,13 +24,13 @@ AesNI_StatusCode aesni_box_init(
     const AesNI_BoxBlock* iv,
     AesNI_ErrorDetails* err_details);
 
-AesNI_StatusCode aesni_box_encrypt(
+AesNI_StatusCode aesni_box_encrypt_block(
     AesNI_Box* box,
     const AesNI_BoxBlock* plaintext,
     AesNI_BoxBlock* ciphertext,
     AesNI_ErrorDetails* err_details);
 
-AesNI_StatusCode aesni_box_decrypt(
+AesNI_StatusCode aesni_box_decrypt_block(
     AesNI_Box* box,
     const AesNI_BoxBlock* ciphertext,
     AesNI_BoxBlock* plaintext,
