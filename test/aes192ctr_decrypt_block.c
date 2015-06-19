@@ -18,8 +18,15 @@ static void exit_with_usage()
     exit(EXIT_FAILURE);
 }
 
+static void print_error(AesNI_StatusCode status)
+{
+    fprintf(stderr, "AesNI error: %s\n", aesni_strerror(status));
+}
+
 int main(int argc, char** argv)
 {
+    AesNI_StatusCode status = AESNI_SUCCESS;
+
     for (--argc, ++argv; argc > -1; --argc, ++argv)
     {
         AesNI_Block128 plaintext, ciphertext, iv;
@@ -29,15 +36,15 @@ int main(int argc, char** argv)
         if (argc < 2)
             exit_with_usage();
 
-        if (aesni_is_error(aesni_aes192_parse_key(&key, *argv, NULL)))
+        if (aesni_is_error(status = aesni_aes192_parse_key(&key, *argv, NULL)))
         {
-            fprintf(stderr, "Invalid 192-bit AES block '%s'\n", *argv);
+            print_error(status);
             exit_with_usage();
         }
 
-        if (aesni_is_error(aesni_aes_parse_block(&iv, argv[1], NULL)))
+        if (aesni_is_error(status = aesni_aes_parse_block(&iv, argv[1], NULL)))
         {
-            fprintf(stderr, "Invalid 128-bit AES block '%s'\n", argv[1]);
+            print_error(status);
             exit_with_usage();
         }
 
@@ -48,13 +55,19 @@ int main(int argc, char** argv)
             if (strcmp("--", *argv) == 0)
                 break;
 
-            if (aesni_is_error(aesni_aes_parse_block(&ciphertext, *argv, NULL)))
+            if (aesni_is_error(status = aesni_aes_parse_block(&ciphertext, *argv, NULL)))
             {
-                fprintf(stderr, "Invalid 128-bit AES block '%s'\n", *argv);
+                print_error(status);
                 continue;
             }
+
             plaintext = aesni_aes192_decrypt_block_ctr(ciphertext, &encryption_keys, iv, &iv);
-            aesni_aes_print_block(&plaintext, NULL);
+
+            if (aesni_is_error(status = aesni_aes_print_block(&plaintext, NULL)))
+            {
+                print_error(status);
+                continue;
+            }
         }
     }
 
