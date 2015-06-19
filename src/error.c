@@ -53,7 +53,7 @@ static size_t aesni_format_null_argument_error(
     char* dest,
     size_t dest_size)
 {
-    static const char* const fmt = "Invalid argument value NULL (argument name: '%s')";
+    static const char* const fmt = "Invalid argument value NULL for parameter '%s'";
     const char* const param_name = err_details->params.null_arg.param_name;
 
     if (dest == NULL && dest_size == 0)
