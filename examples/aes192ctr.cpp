@@ -41,6 +41,11 @@ int main()
         dump_decrypted(decrypted);
         dump_next_iv(next_iv);
     }
+    catch (const aesni::Error& e)
+    {
+        std::cerr << e;
+        return 1;
+    }
     catch (const std::exception& e)
     {
         std::cerr << e.what() << "\n";

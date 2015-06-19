@@ -109,6 +109,11 @@ int main(int argc, char** argv)
         std::cerr << "Usage error: " << e.what() << "\n";
         return 1;
     }
+    catch (const aesni::Error& e)
+    {
+        std::cerr << e;
+        return 1;
+    }
     catch (const std::exception& e)
     {
         std::cerr << e.what() << "\n";

@@ -88,6 +88,11 @@ int main(int argc, char** argv)
         dest_ofs.open(dest_path, std::ofstream::binary);
         dest_ofs.write(dest_buf.data(), dest_size);
     }
+    catch (const aesni::Error& e)
+    {
+        std::cerr << e;
+        return 1;
+    }
     catch (const std::exception& e)
     {
         std::cerr << e.what() << "\n";

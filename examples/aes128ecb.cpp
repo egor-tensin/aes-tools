@@ -41,6 +41,11 @@ int main()
 
         return 0;
     }
+    catch (const aesni::Error& e)
+    {
+        std::cerr << e;
+        return 1;
+    }
     catch (const std::exception& e)
     {
         std::cerr << e.what() << "\n";
