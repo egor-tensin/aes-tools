@@ -47,6 +47,7 @@ typedef enum
     AESNI_PARSE_ERROR,                 ///< Couldn't parse
     AESNI_INVALID_PKCS7_PADDING_ERROR, ///< Invalid PKCS7 padding while decrypting
     AESNI_NOT_IMPLEMENTED_ERROR,       ///< Not implemented
+    AESNI_INVALID_PLAINTEXT_LENGTH_ERROR,
 }
 AesNI_StatusCode;
 
@@ -166,6 +167,9 @@ AesNI_StatusCode aesni_error_invalid_pkcs7_padding(
 AesNI_StatusCode aesni_error_not_implemented(
     AesNI_ErrorDetails* err_details,
     const char* what);
+
+AesNI_StatusCode aesni_error_invalid_plaintext_length(
+    AesNI_ErrorDetails* err_details);
 
 #ifdef __cplusplus
 }

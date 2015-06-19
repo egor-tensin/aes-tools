@@ -97,6 +97,34 @@ typedef AesNI_StatusCode (*AesNI_BoxGetBlockSize)(
     size_t*,
     AesNI_ErrorDetails*);
 
+typedef AesNI_StatusCode (*AesNI_BoxStoreBlock)(
+    void*,
+    const AesNI_BoxBlock*,
+    AesNI_ErrorDetails*);
+
+typedef AesNI_StatusCode (*AesNI_BoxStorePartialBlock)(
+    void*,
+    const AesNI_BoxBlock*,
+    size_t,
+    AesNI_ErrorDetails*);
+
+typedef AesNI_StatusCode (*AesNI_BoxLoadBlock)(
+    AesNI_BoxBlock*,
+    const void*,
+    AesNI_ErrorDetails*);
+
+typedef AesNI_StatusCode (*AesNI_BoxLoadPartialBlock)(
+    AesNI_BoxBlock*,
+    const void*,
+    size_t,
+    AesNI_ErrorDetails*);
+
+typedef AesNI_StatusCode (*AesNI_BoxLoadBlockWithPadding)(
+    AesNI_BoxBlock*,
+    const void*,
+    size_t,
+    AesNI_ErrorDetails*);
+
 typedef struct
 {
     AesNI_BoxDeriveParams derive_params;
@@ -105,6 +133,11 @@ typedef struct
     AesNI_BoxXorBlock xor_block;
     AesNI_BoxNextCounter next_counter;
     AesNI_BoxGetBlockSize get_block_size;
+    AesNI_BoxStoreBlock store_block;
+    AesNI_BoxStorePartialBlock store_partial_block;
+    AesNI_BoxLoadBlock load_block;
+    AesNI_BoxLoadPartialBlock load_partial_block;
+    AesNI_BoxLoadBlockWithPadding load_block_with_padding;
 }
 AesNI_BoxAlgorithmInterface;
 

@@ -26,6 +26,7 @@ static const char* aesni_strerror_messages[] =
     "Couldn't parse",
     "Invalid PKCS7 padding (wrong key?)",
     "Not implemented",
+    "Invalid plaintext length",
 };
 
 const char* aesni_strerror(AesNI_StatusCode ec)
@@ -103,6 +104,7 @@ static AesNI_ErrorFormatter err_formatters[] =
     &aesni_format_parse_error,
     &aesni_format_error_strerror,
     &aesni_format_not_implemented_error,
+    &aesni_format_error_strerror,
 };
 
 size_t aesni_format_error(
@@ -200,4 +202,10 @@ AesNI_StatusCode aesni_error_not_implemented(
             sizeof(err_details->params.not_implemented.what), what);
 
     return status;
+}
+
+AesNI_StatusCode aesni_error_invalid_plaintext_length(
+    AesNI_ErrorDetails* err_details)
+{
+    return aesni_make_error(err_details, AESNI_INVALID_PLAINTEXT_LENGTH_ERROR);
 }

@@ -11,6 +11,8 @@
 #include "box_data.h"
 #include "error.h"
 
+#include <stdlib.h>
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -34,6 +36,22 @@ AesNI_StatusCode aesni_box_decrypt_block(
     AesNI_Box* box,
     const AesNI_BoxBlock* ciphertext,
     AesNI_BoxBlock* plaintext,
+    AesNI_ErrorDetails* err_details);
+
+AesNI_StatusCode aesni_box_encrypt_buffer(
+    AesNI_Box* box,
+    const void* src,
+    size_t src_size,
+    void* dest,
+    size_t* dest_size,
+    AesNI_ErrorDetails* err_details);
+
+AesNI_StatusCode aesni_box_decrypt_buffer(
+    AesNI_Box* box,
+    const void* src,
+    size_t src_size,
+    void* dest,
+    size_t* dest_size,
     AesNI_ErrorDetails* err_details);
 
 #ifdef __cplusplus
