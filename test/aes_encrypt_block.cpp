@@ -6,7 +6,7 @@
  *            See LICENSE.txt for details.
  */
 
-#include "common_aes.hpp"
+#include "aes_common.hpp"
 
 #include <aesni/all.h>
 
@@ -87,18 +87,18 @@ int main(int argc, char** argv)
                     break;
                 }
 
-                AesNI_BoxBlock ciphertext;
-                aesni::aes::from_string(ciphertext.aes_block, args.front());
+                AesNI_BoxBlock plaintext;
+                aesni::aes::from_string(plaintext.aes_block, args.front());
                 args.pop_front();
 
-                AesNI_BoxBlock plaintext;
-                aesni_box_decrypt_block(
+                AesNI_BoxBlock ciphertext;
+                aesni_box_encrypt_block(
                     &box,
-                    &ciphertext,
                     &plaintext,
+                    &ciphertext,
                     aesni::ErrorDetailsThrowsInDestructor());
 
-                std::cout << aesni::aes::to_string(plaintext.aes_block) << "\n";
+                std::cout << aesni::aes::to_string(ciphertext.aes_block) << "\n";
             }
         }
 

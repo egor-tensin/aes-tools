@@ -6,7 +6,7 @@
  *            See LICENSE.txt for details.
  */
 
-#include "common_aes.hpp"
+#include "aes_common.hpp"
 
 #include <aesni/all.h>
 
@@ -139,7 +139,7 @@ int main(int argc, char** argv)
 
         std::size_t dest_size;
 
-        aesni_box_encrypt_buffer(
+        aesni_box_decrypt_buffer(
             &box,
             src_buf.data(),
             src_buf.size(),
@@ -150,7 +150,7 @@ int main(int argc, char** argv)
         std::vector<char> dest_buf;
         dest_buf.resize(dest_size);
 
-        aesni_box_encrypt_buffer(
+        aesni_box_decrypt_buffer(
             &box,
             src_buf.data(),
             src_buf.size(),
