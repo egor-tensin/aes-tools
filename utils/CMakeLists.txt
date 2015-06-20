@@ -18,3 +18,13 @@ add_executable(util_aes_decrypt_file aes_decrypt_file.cpp aes_common.hpp)
 target_include_directories(util_aes_decrypt_file PRIVATE ${Boost_INCLUDE_DIRS})
 target_link_libraries(util_aes_decrypt_file libaesni libaesnixx ${Boost_LIBRARIES})
 set_target_properties(util_aes_decrypt_file PROPERTIES OUTPUT_NAME aes_decrypt_file)
+
+add_executable(util_aes_encrypt_bmp aes_encrypt_bmp.cpp aes_common.hpp)
+target_include_directories(util_aes_encrypt_bmp PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(util_aes_encrypt_bmp libaesni libaesnixx ${Boost_LIBRARIES})
+set_target_properties(util_aes_encrypt_bmp PROPERTIES OUTPUT_NAME aes_encrypt_bmp)
+
+add_executable(util_aes_decrypt_bmp aes_decrypt_bmp.cpp aes_common.hpp)
+target_include_directories(util_aes_decrypt_bmp PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(util_aes_decrypt_bmp libaesni libaesnixx ${Boost_LIBRARIES})
+set_target_properties(util_aes_decrypt_bmp PROPERTIES OUTPUT_NAME aes_decrypt_bmp)
