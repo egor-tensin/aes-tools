@@ -22,7 +22,7 @@ To run programs that are using the AES-NI instruction set on a CPU w/o the suppo
 [Intel Software Development Emulator](https://software.intel.com/en-us/articles/intel-software-development-emulator).
 You can then run a program like this:
 
-    > sde -- encrypt_block_aes.exe -a aes128 -m ecb -- 000102030405060708090a0b0c0d0e0f 00112233445566778899aabbccddeeff
+    > sde -- aes_encrypt_block.exe -a aes128 -m ecb -- 000102030405060708090a0b0c0d0e0f 00112233445566778899aabbccddeeff
     69c4e0d86a7b0430d8cdb78070b4c55a
 
 ## Documentation

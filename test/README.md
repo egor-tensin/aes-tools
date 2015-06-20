@@ -1,20 +1,20 @@
 # Testing
 
-After you've [built](https://github.com/egor-tensin/aesni#building) the block encryption/decryption utilities, you can verify the implementation either manually or automatically using test vectors.
+After you've [built](https://github.com/egor-tensin/aesni#building) the block encryption/decryption utilities, you can verify the implementation either [manually](#manually) or [automatically](#using-test-vectors) using test vectors.
 
 ## Manually
 
-You can test the AES implementation using the block encryption/decryption utilities `encrypt_block_aes.exe` and `decrypt_block_aes.exe`.
+You can test the AES implementation using the block encryption/decryption utilities `aes_encrypt_block.exe` and `aes_decrypt_block.exe`.
 Use the `--help` option to examine the usage info of a utility.
 
 For example, for AES-128 in ECB mode:
 
-    > encrypt_block_aes.exe -a aes128 -m ecb -- 000102030405060708090a0b0c0d0e0f 00112233445566778899aabbccddeeff
+    > aes_encrypt_block.exe -a aes128 -m ecb -- 000102030405060708090a0b0c0d0e0f 00112233445566778899aabbccddeeff
     69c4e0d86a7b0430d8cdb78070b4c55a
 
 and for AES-192 in CBC mode:
 
-    > decrypt_block_aes.exe -a aes192 -m cbc -- 8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b 000102030405060708090a0b0c0d0e0f 4f021db243bc633d7178183a9fa071e8 b4d9ada9ad7dedf4e5e738763f69145a 571b242012fb7ae07fa9baac3df102e0 08b0e27988598881d920a9e64f5615cd
+    > aes_decrypt_block.exe -a aes192 -m cbc -- 8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b 000102030405060708090a0b0c0d0e0f 4f021db243bc633d7178183a9fa071e8 b4d9ada9ad7dedf4e5e738763f69145a 571b242012fb7ae07fa9baac3df102e0 08b0e27988598881d920a9e64f5615cd
     6bc1bee22e409f96e93d7e117393172a
     ae2d8a571e03ac9c9eb76fac45af8e51
     30c81c46a35ce411e5fbc1191a0a52ef
