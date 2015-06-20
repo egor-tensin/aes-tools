@@ -49,10 +49,7 @@ static AesNI_StatusCode aesni_box_encrypt_block_ecb(
     AesNI_ErrorDetails* err_details)
 {
     return box->algorithm->encrypt_block(
-        input,
-        &box->encrypt_params,
-        output,
-        err_details);
+        input, &box->encrypt_params, output, err_details);
 }
 
 static AesNI_StatusCode aesni_box_encrypt_block_cbc(
@@ -62,21 +59,14 @@ static AesNI_StatusCode aesni_box_encrypt_block_cbc(
     AesNI_ErrorDetails* err_details)
 {
     AesNI_StatusCode status = AESNI_SUCCESS;
-
     AesNI_BoxBlock xored_input = *input;
-    status = box->algorithm->xor_block(
-        &xored_input,
-        &box->iv,
-        err_details);
-    if (aesni_is_error(status))
+
+    if (aesni_is_error(status = box->algorithm->xor_block(
+            &xored_input, &box->iv, err_details)))
         return status;
 
-    status = box->algorithm->encrypt_block(
-        &xored_input,
-        &box->encrypt_params,
-        output,
-        err_details);
-    if (aesni_is_error(status))
+    if (aesni_is_error(status = box->algorithm->encrypt_block(
+            &xored_input, &box->encrypt_params, output, err_details)))
         return status;
 
     box->iv = *output;
@@ -89,16 +79,14 @@ static AesNI_StatusCode aesni_box_encrypt_block_cfb(
     AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
-    AesNI_StatusCode status = box->algorithm->encrypt_block(
-        &box->iv,
-        &box->encrypt_params,
-        output,
-        err_details);
-    if (aesni_is_error(status))
+    AesNI_StatusCode status = AESNI_SUCCESS;
+
+    if (aesni_is_error(status = box->algorithm->encrypt_block(
+            &box->iv, &box->encrypt_params, output, err_details)))
         return status;
 
-    status = box->algorithm->xor_block(output, input, err_details);
-    if (aesni_is_error(status))
+    if (aesni_is_error(status = box->algorithm->xor_block(
+            output, input, err_details)))
         return status;
 
     box->iv = *output;
@@ -111,18 +99,16 @@ static AesNI_StatusCode aesni_box_encrypt_block_ofb(
     AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
-    AesNI_StatusCode status = box->algorithm->encrypt_block(
-        &box->iv,
-        &box->encrypt_params,
-        &box->iv,
-        err_details);
-    if (aesni_is_error(status))
+    AesNI_StatusCode status = AESNI_SUCCESS;
+
+    if (aesni_is_error(status = box->algorithm->encrypt_block(
+            &box->iv, &box->encrypt_params, &box->iv, err_details)))
         return status;
 
     *output = box->iv;
 
-    status = box->algorithm->xor_block(output, input, err_details);
-    if (aesni_is_error(status))
+    if (aesni_is_error(status = box->algorithm->xor_block(
+            output, input, err_details)))
         return status;
 
     return status;
@@ -134,19 +120,21 @@ static AesNI_StatusCode aesni_box_encrypt_block_ctr(
     AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
-    AesNI_StatusCode status = box->algorithm->encrypt_block(
-        &box->iv,
-        &box->encrypt_params,
-        output,
-        err_details);
-    if (aesni_is_error(status))
+    AesNI_StatusCode status = AESNI_SUCCESS;
+
+    if (aesni_is_error(status = box->algorithm->encrypt_block(
+            &box->iv, &box->encrypt_params, output, err_details)))
         return status;
 
-    status = box->algorithm->xor_block(output, input, err_details);
-    if (aesni_is_error(status))
+    if (aesni_is_error(status = box->algorithm->xor_block(
+            output, input, err_details)))
         return status;
 
-    return box->algorithm->next_counter(&box->iv, err_details);
+    if (aesni_is_error(status = box->algorithm->next_counter(
+            &box->iv, err_details)))
+        return status;
+
+    return status;
 }
 
 typedef AesNI_StatusCode (*AesNI_BoxEncryptBlockInMode)(
@@ -170,7 +158,8 @@ AesNI_StatusCode aesni_box_encrypt_block(
     AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
-    return aesni_box_encrypt_block_in_mode[box->mode](box, input, output, err_details);
+    return aesni_box_encrypt_block_in_mode[box->mode](
+        box, input, output, err_details);
 }
 
 static AesNI_StatusCode aesni_box_decrypt_block_ecb(
@@ -180,10 +169,7 @@ static AesNI_StatusCode aesni_box_decrypt_block_ecb(
     AesNI_ErrorDetails* err_details)
 {
     return box->algorithm->decrypt_block(
-        input,
-        &box->decrypt_params,
-        output,
-        err_details);
+        input, &box->decrypt_params, output, err_details);
 }
 
 static AesNI_StatusCode aesni_box_decrypt_block_cbc(
@@ -192,19 +178,14 @@ static AesNI_StatusCode aesni_box_decrypt_block_cbc(
     AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
-    AesNI_StatusCode status = box->algorithm->decrypt_block(
-        input,
-        &box->decrypt_params,
-        output,
-        err_details);
-    if (aesni_is_error(status))
+    AesNI_StatusCode status = AESNI_SUCCESS;
+
+    if (aesni_is_error(status = box->algorithm->decrypt_block(
+            input, &box->decrypt_params, output, err_details)))
         return status;
 
-    status = box->algorithm->xor_block(
-        output,
-        &box->iv,
-        err_details);
-    if (aesni_is_error(status))
+    if (aesni_is_error(status = box->algorithm->xor_block(
+            output, &box->iv, err_details)))
         return status;
 
     box->iv = *input;
@@ -217,19 +198,14 @@ static AesNI_StatusCode aesni_box_decrypt_block_cfb(
     AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
-    AesNI_StatusCode status = box->algorithm->encrypt_block(
-        &box->iv,
-        &box->encrypt_params,
-        output,
-        err_details);
-    if (aesni_is_error(status))
+    AesNI_StatusCode status = AESNI_SUCCESS;
+
+    if (aesni_is_error(status = box->algorithm->encrypt_block(
+            &box->iv, &box->encrypt_params, output, err_details)))
         return status;
 
-    status = box->algorithm->xor_block(
-        output,
-        input,
-        err_details);
-    if (aesni_is_error(status))
+    if (aesni_is_error(status = box->algorithm->xor_block(
+            output, input, err_details)))
         return status;
 
     box->iv = *input;
@@ -253,7 +229,8 @@ AesNI_StatusCode aesni_box_decrypt_block(
     AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
-    return aesni_box_decrypt_block_in_mode[box->mode](box, input, output, err_details);
+    return aesni_box_decrypt_block_in_mode[box->mode](
+        box, input, output, err_details);
 }
 
 static AesNI_StatusCode aesni_box_get_encrypted_buffer_size(
@@ -289,7 +266,8 @@ static AesNI_StatusCode aesni_box_get_encrypted_buffer_size(
             return status;
 
         default:
-            return aesni_error_not_implemented(err_details, "unsupported mode of operation");
+            return aesni_error_not_implemented(
+                err_details, "unsupported mode of operation");
     }
 }
 
@@ -439,7 +417,8 @@ static AesNI_StatusCode aesni_box_get_decrypted_buffer_size(
             return status;
 
         default:
-            return aesni_error_not_implemented(err_details, "unsupported mode of operation");
+            return aesni_error_not_implemented(
+                err_details, "unsupported mode of operation");
     }
 }
 
@@ -539,7 +518,7 @@ AesNI_StatusCode aesni_box_decrypt_buffer(
             return aesni_error_invalid_pkcs7_padding(err_details);
 
         for (size_t i = 1; i < padding_size; ++i)
-            if (((unsigned char*) dest)[0 - i] != padding_size)
+            if (((unsigned char*) dest)[-1 - i] != padding_size)
                 return aesni_error_invalid_pkcs7_padding(err_details);
 
         *dest_size -= padding_size;
