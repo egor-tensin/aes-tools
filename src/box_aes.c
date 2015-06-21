@@ -92,50 +92,12 @@ static AesNI_StatusCode aesni_box_store_block_aes(
     return AESNI_SUCCESS;
 }
 
-static AesNI_StatusCode aesni_box_store_partial_block_aes(
-    void* dest,
-    const AesNI_BoxBlock* src,
-    size_t src_size,
-    AesNI_ErrorDetails* err_details)
-{
-    __declspec(align(16)) unsigned char buf[16];
-    aesni_store_block128(buf, src->aes_block);
-    memcpy(dest, buf, src_size);
-    return AESNI_SUCCESS;
-}
-
 static AesNI_StatusCode aesni_box_load_block_aes(
     AesNI_BoxBlock* dest,
     const void* src,
     AesNI_ErrorDetails* err_details)
 {
     dest->aes_block = aesni_load_block128(src);
-    return AESNI_SUCCESS;
-}
-
-static AesNI_StatusCode aesni_box_load_partial_block_aes(
-    AesNI_BoxBlock* dest,
-    const void* src,
-    size_t src_size,
-    AesNI_ErrorDetails* err_details)
-{
-    __declspec(align(16)) unsigned char buf[16];
-    memset(buf, 0x00, 16);
-    memcpy(buf, src, src_size);
-    dest->aes_block = aesni_load_block128_aligned(buf);
-    return AESNI_SUCCESS;
-}
-
-static AesNI_StatusCode aesni_box_load_block_with_padding_aes(
-    AesNI_BoxBlock* dest,
-    const void* src,
-    size_t src_size,
-    AesNI_ErrorDetails* err_details)
-{
-    __declspec(align(16)) unsigned char padding[16];
-    memset(padding + src_size, 16 - src_size, 16 - src_size);
-    memcpy(padding, src, src_size);
-    dest->aes_block = aesni_load_block128_aligned(padding);
     return AESNI_SUCCESS;
 }
 
@@ -220,10 +182,7 @@ AesNI_BoxAlgorithmInterface aesni_box_algorithm_aes128 =
     &aesni_box_next_counter_aes,
     &aesni_box_get_block_size_aes,
     &aesni_box_store_block_aes,
-    &aesni_box_store_partial_block_aes,
     &aesni_box_load_block_aes,
-    &aesni_box_load_partial_block_aes,
-    &aesni_box_load_block_with_padding_aes,
 };
 
 AesNI_BoxAlgorithmInterface aesni_box_algorithm_aes192 =
@@ -235,10 +194,7 @@ AesNI_BoxAlgorithmInterface aesni_box_algorithm_aes192 =
     &aesni_box_next_counter_aes,
     &aesni_box_get_block_size_aes,
     &aesni_box_store_block_aes,
-    &aesni_box_store_partial_block_aes,
     &aesni_box_load_block_aes,
-    &aesni_box_load_partial_block_aes,
-    &aesni_box_load_block_with_padding_aes,
 };
 
 AesNI_BoxAlgorithmInterface aesni_box_algorithm_aes256 =
@@ -250,8 +206,5 @@ AesNI_BoxAlgorithmInterface aesni_box_algorithm_aes256 =
     &aesni_box_next_counter_aes,
     &aesni_box_get_block_size_aes,
     &aesni_box_store_block_aes,
-    &aesni_box_store_partial_block_aes,
     &aesni_box_load_block_aes,
-    &aesni_box_load_partial_block_aes,
-    &aesni_box_load_block_with_padding_aes,
 };

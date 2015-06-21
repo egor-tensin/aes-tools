@@ -10,6 +10,7 @@
 
 #include "aes.h"
 #include "error.h"
+#include "mode.h"
 
 #include <stdlib.h>
 
@@ -25,24 +26,6 @@ typedef union
     AesNI_Aes256_Key aes256_key;
 }
 AesNI_BoxAlgorithmParams;
-
-typedef enum
-{
-    AESNI_AES128,
-    AESNI_AES192,
-    AESNI_AES256,
-}
-AesNI_BoxAlgorithm;
-
-typedef enum
-{
-    AESNI_ECB,
-    AESNI_CBC,
-    AESNI_CFB,
-    AESNI_OFB,
-    AESNI_CTR,
-}
-AesNI_BoxMode;
 
 typedef union
 {
@@ -102,27 +85,9 @@ typedef AesNI_StatusCode (*AesNI_BoxStoreBlock)(
     const AesNI_BoxBlock*,
     AesNI_ErrorDetails*);
 
-typedef AesNI_StatusCode (*AesNI_BoxStorePartialBlock)(
-    void*,
-    const AesNI_BoxBlock*,
-    size_t,
-    AesNI_ErrorDetails*);
-
 typedef AesNI_StatusCode (*AesNI_BoxLoadBlock)(
     AesNI_BoxBlock*,
     const void*,
-    AesNI_ErrorDetails*);
-
-typedef AesNI_StatusCode (*AesNI_BoxLoadPartialBlock)(
-    AesNI_BoxBlock*,
-    const void*,
-    size_t,
-    AesNI_ErrorDetails*);
-
-typedef AesNI_StatusCode (*AesNI_BoxLoadBlockWithPadding)(
-    AesNI_BoxBlock*,
-    const void*,
-    size_t,
     AesNI_ErrorDetails*);
 
 typedef struct
@@ -134,10 +99,7 @@ typedef struct
     AesNI_BoxNextCounter next_counter;
     AesNI_BoxGetBlockSize get_block_size;
     AesNI_BoxStoreBlock store_block;
-    AesNI_BoxStorePartialBlock store_partial_block;
     AesNI_BoxLoadBlock load_block;
-    AesNI_BoxLoadPartialBlock load_partial_block;
-    AesNI_BoxLoadBlockWithPadding load_block_with_padding;
 }
 AesNI_BoxAlgorithmInterface;
 
@@ -146,7 +108,7 @@ typedef struct
     const AesNI_BoxAlgorithmInterface* algorithm;
     AesNI_BoxEncryptionParams encrypt_params;
     AesNI_BoxDecryptionParams decrypt_params;
-    AesNI_BoxMode mode;
+    AesNI_Mode mode;
     AesNI_BoxBlock iv;
 }
 AesNI_Box;

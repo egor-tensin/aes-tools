@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "algorithm.h"
 #include "box_data.h"
 #include "error.h"
 
@@ -20,9 +21,9 @@ extern "C"
 
 AesNI_StatusCode aesni_box_init(
     AesNI_Box* box,
-    AesNI_BoxAlgorithm algorithm,
+    AesNI_Algorithm algorithm,
     const AesNI_BoxAlgorithmParams* algorithm_params,
-    AesNI_BoxMode mode,
+    AesNI_Mode mode,
     const AesNI_BoxBlock* iv,
     AesNI_ErrorDetails* err_details);
 

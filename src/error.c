@@ -26,7 +26,8 @@ static const char* aesni_strerror_messages[] =
     "Couldn't parse",
     "Invalid PKCS7 padding (wrong key?)",
     "Not implemented",
-    "Invalid plaintext length",
+    "Missing padding",
+    "Couldn't allocate memory",
 };
 
 const char* aesni_strerror(AesNI_StatusCode ec)
@@ -104,6 +105,7 @@ static AesNI_ErrorFormatter err_formatters[] =
     &aesni_format_parse_error,
     &aesni_format_error_strerror,
     &aesni_format_not_implemented_error,
+    &aesni_format_error_strerror,
     &aesni_format_error_strerror,
 };
 
@@ -204,8 +206,14 @@ AesNI_StatusCode aesni_error_not_implemented(
     return status;
 }
 
-AesNI_StatusCode aesni_error_invalid_plaintext_length(
+AesNI_StatusCode aesni_error_missing_padding(
     AesNI_ErrorDetails* err_details)
 {
-    return aesni_make_error(err_details, AESNI_INVALID_PLAINTEXT_LENGTH_ERROR);
+    return aesni_make_error(err_details, AESNI_MISSING_PADDING_ERROR);
+}
+
+AesNI_StatusCode aesni_error_memory_allocation(
+    AesNI_ErrorDetails* err_details)
+{
+    return aesni_make_error(err_details, AESNI_MEMORY_ALLOCATION_ERROR);
 }
