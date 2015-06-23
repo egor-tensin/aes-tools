@@ -72,7 +72,7 @@ typedef AesNI_StatusCode (*AesNI_BoxXorBlock)(
     const AesNI_BoxBlock*,
     AesNI_ErrorDetails*);
 
-typedef AesNI_StatusCode (*AesNI_BoxNextCounter)(
+typedef AesNI_StatusCode (*AesNI_BoxIncBlock)(
     AesNI_BoxBlock*,
     AesNI_ErrorDetails*);
 
@@ -96,7 +96,7 @@ typedef struct
     AesNI_BoxEncryptBlock encrypt_block;
     AesNI_BoxDecryptBlock decrypt_block;
     AesNI_BoxXorBlock xor_block;
-    AesNI_BoxNextCounter next_counter;
+    AesNI_BoxIncBlock inc_block;
     AesNI_BoxGetBlockSize get_block_size;
     AesNI_BoxStoreBlock store_block;
     AesNI_BoxLoadBlock load_block;

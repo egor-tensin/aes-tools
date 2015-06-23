@@ -63,11 +63,11 @@ static AesNI_StatusCode aesni_box_xor_block_aes(
     const AesNI_BoxBlock* src,
     AesNI_ErrorDetails* err_details)
 {
-    dest->aes_block = aesni_xor_block128(dest->aes_block, src->aes_block);
+    dest->aes_block = aesni_aes_xor_blocks(dest->aes_block, src->aes_block);
     return AESNI_SUCCESS;
 }
 
-static AesNI_StatusCode aesni_box_next_counter_aes(
+static AesNI_StatusCode aesni_box_inc_block_aes(
     AesNI_BoxBlock* ctr,
     AesNI_ErrorDetails* err_details)
 {
@@ -179,7 +179,7 @@ AesNI_BoxAlgorithmInterface aesni_box_algorithm_aes128 =
     &aesni_box_encrypt_block_aes128,
     &aesni_box_decrypt_block_aes128,
     &aesni_box_xor_block_aes,
-    &aesni_box_next_counter_aes,
+    &aesni_box_inc_block_aes,
     &aesni_box_get_block_size_aes,
     &aesni_box_store_block_aes,
     &aesni_box_load_block_aes,
@@ -191,7 +191,7 @@ AesNI_BoxAlgorithmInterface aesni_box_algorithm_aes192 =
     &aesni_box_encrypt_block_aes192,
     &aesni_box_decrypt_block_aes192,
     &aesni_box_xor_block_aes,
-    &aesni_box_next_counter_aes,
+    &aesni_box_inc_block_aes,
     &aesni_box_get_block_size_aes,
     &aesni_box_store_block_aes,
     &aesni_box_load_block_aes,
@@ -203,7 +203,7 @@ AesNI_BoxAlgorithmInterface aesni_box_algorithm_aes256 =
     &aesni_box_encrypt_block_aes256,
     &aesni_box_decrypt_block_aes256,
     &aesni_box_xor_block_aes,
-    &aesni_box_next_counter_aes,
+    &aesni_box_inc_block_aes,
     &aesni_box_get_block_size_aes,
     &aesni_box_store_block_aes,
     &aesni_box_load_block_aes,

@@ -131,7 +131,7 @@ static AesNI_StatusCode aesni_box_encrypt_block_ctr(
             output, input, err_details)))
         return status;
 
-    if (aesni_is_error(status = box->algorithm->next_counter(
+    if (aesni_is_error(status = box->algorithm->inc_block(
             &box->iv, err_details)))
         return status;
 

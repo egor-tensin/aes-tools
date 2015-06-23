@@ -41,7 +41,7 @@ namespace aesni
         aesni_store_block128_aligned(dest, src);
     }
 
-    inline Block128 xor_block(Block128& a, Block128& b)
+    inline Block128 xor_blocks(Block128& a, Block128& b)
     {
         return aesni_xor_block128(a, b);
     }
@@ -51,7 +51,7 @@ namespace aesni
         return aesni_reverse_byte_order_block128(block);
     }
 
-    inline Block128 inc(Block128& block)
+    inline Block128 inc_block(Block128& block)
     {
         return aesni_inc_block128(block);
     }
