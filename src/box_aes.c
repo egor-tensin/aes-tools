@@ -71,7 +71,7 @@ static AesNI_StatusCode aesni_box_next_counter_aes(
     AesNI_BoxBlock* ctr,
     AesNI_ErrorDetails* err_details)
 {
-    ctr->aes_block = aesni_aes_inc_counter(ctr->aes_block);
+    ctr->aes_block = aesni_aes_inc_block(ctr->aes_block);
     return AESNI_SUCCESS;
 }
 

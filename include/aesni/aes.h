@@ -10,6 +10,7 @@
 
 #include "data.h"
 #include "error.h"
+#include "mode.h"
 
 #include <assert.h>
 
@@ -202,12 +203,92 @@ AesNI_Aes_Block __fastcall aesni_aes256_decrypt_block_(
     AesNI_Aes_Block ciphertext,
     const AesNI_Aes256_RoundKeys*);
 
-static __inline AesNI_Aes_Block __fastcall aesni_aes_inc_counter(AesNI_Aes_Block block)
+static __inline AesNI_Aes_Block __fastcall aesni_aes_xor_blocks(
+    AesNI_Aes_Block a,
+    AesNI_Aes_Block b)
+{
+    return aesni_xor_block128(a, b);
+}
+
+static __inline AesNI_Aes_Block __fastcall aesni_aes128_xor_blocks(
+    AesNI_Aes_Block a,
+    AesNI_Aes_Block b)
+{
+    return aesni_aes_xor_blocks(a, b);
+}
+
+static __inline AesNI_Aes_Block __fastcall aesni_aes192_xor_blocks(
+    AesNI_Aes_Block a,
+    AesNI_Aes_Block b)
+{
+    return aesni_aes_xor_blocks(a, b);
+}
+
+static __inline AesNI_Aes_Block __fastcall aesni_aes256_xor_blocks(
+    AesNI_Aes_Block a,
+    AesNI_Aes_Block b)
+{
+    return aesni_aes_xor_blocks(a, b);
+}
+
+static __inline AesNI_Aes_Block __fastcall aesni_aes_inc_block(
+    AesNI_Aes_Block block)
 {
     block = aesni_reverse_byte_order_block128(block);
     block = aesni_inc_block128(block);
     return aesni_reverse_byte_order_block128(block);
 }
+
+static __inline AesNI_Aes_Block __fastcall aesni_aes128_inc_block(
+    AesNI_Aes_Block block)
+{
+    return aesni_aes_inc_block(block);
+}
+
+static __inline AesNI_Aes_Block __fastcall aesni_aes192_inc_block(
+    AesNI_Aes_Block block)
+{
+    return aesni_aes_inc_block(block);
+}
+
+static __inline AesNI_Aes_Block __fastcall aesni_aes256_inc_block(
+    AesNI_Aes_Block block)
+{
+    return aesni_aes_inc_block(block);
+}
+
+AESNI_ENCRYPT_BLOCK_ECB(aes128, AesNI_Aes_Block, AesNI_Aes128_RoundKeys);
+AESNI_DECRYPT_BLOCK_ECB(aes128, AesNI_Aes_Block, AesNI_Aes128_RoundKeys);
+AESNI_ENCRYPT_BLOCK_CBC(aes128, AesNI_Aes_Block, AesNI_Aes128_RoundKeys);
+AESNI_DECRYPT_BLOCK_CBC(aes128, AesNI_Aes_Block, AesNI_Aes128_RoundKeys);
+AESNI_ENCRYPT_BLOCK_CFB(aes128, AesNI_Aes_Block, AesNI_Aes128_RoundKeys);
+AESNI_DECRYPT_BLOCK_CFB(aes128, AesNI_Aes_Block, AesNI_Aes128_RoundKeys);
+AESNI_ENCRYPT_BLOCK_OFB(aes128, AesNI_Aes_Block, AesNI_Aes128_RoundKeys);
+AESNI_DECRYPT_BLOCK_OFB(aes128, AesNI_Aes_Block, AesNI_Aes128_RoundKeys);
+AESNI_ENCRYPT_BLOCK_CTR(aes128, AesNI_Aes_Block, AesNI_Aes128_RoundKeys);
+AESNI_DECRYPT_BLOCK_CTR(aes128, AesNI_Aes_Block, AesNI_Aes128_RoundKeys);
+
+AESNI_ENCRYPT_BLOCK_ECB(aes192, AesNI_Aes_Block, AesNI_Aes192_RoundKeys);
+AESNI_DECRYPT_BLOCK_ECB(aes192, AesNI_Aes_Block, AesNI_Aes192_RoundKeys);
+AESNI_ENCRYPT_BLOCK_CBC(aes192, AesNI_Aes_Block, AesNI_Aes192_RoundKeys);
+AESNI_DECRYPT_BLOCK_CBC(aes192, AesNI_Aes_Block, AesNI_Aes192_RoundKeys);
+AESNI_ENCRYPT_BLOCK_CFB(aes192, AesNI_Aes_Block, AesNI_Aes192_RoundKeys);
+AESNI_DECRYPT_BLOCK_CFB(aes192, AesNI_Aes_Block, AesNI_Aes192_RoundKeys);
+AESNI_ENCRYPT_BLOCK_OFB(aes192, AesNI_Aes_Block, AesNI_Aes192_RoundKeys);
+AESNI_DECRYPT_BLOCK_OFB(aes192, AesNI_Aes_Block, AesNI_Aes192_RoundKeys);
+AESNI_ENCRYPT_BLOCK_CTR(aes192, AesNI_Aes_Block, AesNI_Aes192_RoundKeys);
+AESNI_DECRYPT_BLOCK_CTR(aes192, AesNI_Aes_Block, AesNI_Aes192_RoundKeys);
+
+AESNI_ENCRYPT_BLOCK_ECB(aes256, AesNI_Aes_Block, AesNI_Aes256_RoundKeys);
+AESNI_DECRYPT_BLOCK_ECB(aes256, AesNI_Aes_Block, AesNI_Aes256_RoundKeys);
+AESNI_ENCRYPT_BLOCK_CBC(aes256, AesNI_Aes_Block, AesNI_Aes256_RoundKeys);
+AESNI_DECRYPT_BLOCK_CBC(aes256, AesNI_Aes_Block, AesNI_Aes256_RoundKeys);
+AESNI_ENCRYPT_BLOCK_CFB(aes256, AesNI_Aes_Block, AesNI_Aes256_RoundKeys);
+AESNI_DECRYPT_BLOCK_CFB(aes256, AesNI_Aes_Block, AesNI_Aes256_RoundKeys);
+AESNI_ENCRYPT_BLOCK_OFB(aes256, AesNI_Aes_Block, AesNI_Aes256_RoundKeys);
+AESNI_DECRYPT_BLOCK_OFB(aes256, AesNI_Aes_Block, AesNI_Aes256_RoundKeys);
+AESNI_ENCRYPT_BLOCK_CTR(aes256, AesNI_Aes_Block, AesNI_Aes256_RoundKeys);
+AESNI_DECRYPT_BLOCK_CTR(aes256, AesNI_Aes_Block, AesNI_Aes256_RoundKeys);
 
 /**
  * \brief Expands an AES-128 key into 10 encryption round keys.
@@ -238,222 +319,6 @@ static __inline void __fastcall aesni_aes128_derive_decryption_keys(
     assert(decryption_keys);
 
     aesni_aes128_derive_decryption_keys_(encryption_keys, decryption_keys);
-}
-
-/**
- * \brief Encrypts a 128-bit block using AES-128 in ECB mode of operation.
- *
- * \param[in] plaintext The plaintext to be encrypted.
- * \param[in] encryption_keys The AES-128 encryption round keys. Must not be `NULL`.
- *
- * \return The encrypted 128-bit ciphertext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes128_encrypt_block_ecb(
-    AesNI_Aes_Block plaintext,
-    const AesNI_Aes128_RoundKeys* encryption_keys)
-{
-    assert(encryption_keys);
-
-    return aesni_aes128_encrypt_block_(plaintext, encryption_keys);
-}
-
-/**
- * \brief Decrypts a 128-bit block using AES-128 in ECB mode of operation.
- *
- * \param[in] ciphertext The ciphertext to be decrypted.
- * \param[in] decryption_keys The AES-128 decryption round keys. Must not be `NULL`.
- *
- * \return The decrypted 128-bit plaintext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes128_decrypt_block_ecb(
-    AesNI_Aes_Block ciphertext,
-    const AesNI_Aes128_RoundKeys* decryption_keys)
-{
-    assert(decryption_keys);
-
-    return aesni_aes128_decrypt_block_(ciphertext, decryption_keys);
-}
-
-/**
- * \brief Encrypts a 128-bit block using AES-128 in CBC mode of operation.
- *
- * \param[in] plaintext The plaintext to be encrypted.
- * \param[in] encryption_keys The AES-128 encryption round keys. Must not be `NULL`.
- * \param[in] init_vector The CBC initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The encrypted 128-bit ciphertext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes128_encrypt_block_cbc(
-    AesNI_Aes_Block plaintext,
-    const AesNI_Aes128_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    assert(encryption_keys);
-    assert(next_init_vector);
-
-    AesNI_Aes_Block ciphertext = aesni_aes128_encrypt_block_(aesni_xor_block128(plaintext, init_vector), encryption_keys);
-    *next_init_vector = ciphertext;
-    return ciphertext;
-}
-
-/**
- * \brief Decrypts a 128-bit block using AES-128 in CBC mode of operation.
- *
- * \param[in] ciphertext The ciphertext to be decrypted.
- * \param[in] decryption_keys The AES-128 decryption round keys. Must not be `NULL`.
- * \param[in] init_vector The CBC initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The decrypted 128-bit plaintext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes128_decrypt_block_cbc(
-    AesNI_Aes_Block ciphertext,
-    const AesNI_Aes128_RoundKeys* decryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    assert(decryption_keys);
-    assert(next_init_vector);
-
-    AesNI_Aes_Block plaintext = aesni_xor_block128(aesni_aes128_decrypt_block_(ciphertext, decryption_keys), init_vector);
-    *next_init_vector = ciphertext;
-    return plaintext;
-}
-
-/**
- * \brief Encrypts a 128-bit block using AES-128 in CFB mode of operation.
- *
- * \param[in] plaintext The plaintext to be encrypted.
- * \param[in] encryption_keys The AES-128 encryption round keys. Must not be `NULL`.
- * \param[in] init_vector The CFB initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The encrypted 128-bit ciphertext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes128_encrypt_block_cfb(
-    AesNI_Aes_Block plaintext,
-    const AesNI_Aes128_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    assert(encryption_keys);
-    assert(next_init_vector);
-
-    AesNI_Aes_Block ciphertext = aesni_xor_block128(aesni_aes128_encrypt_block_(init_vector, encryption_keys), plaintext);
-    *next_init_vector = ciphertext;
-    return ciphertext;
-}
-
-/**
- * \brief Decrypts a 128-bit block using AES-128 in CFB mode of operation.
- *
- * \param[in] ciphertext The ciphertext to be decrypted.
- * \param[in] encryption_keys The AES-128 **encryption** round keys. Must not be `NULL`.
- * \param[in] init_vector The CFB initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The decrypted 128-bit plaintext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes128_decrypt_block_cfb(
-    AesNI_Aes_Block ciphertext,
-    const AesNI_Aes128_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    assert(encryption_keys);
-    assert(next_init_vector);
-
-    AesNI_Aes_Block plaintext = aesni_xor_block128(aesni_aes128_encrypt_block_(init_vector, encryption_keys), ciphertext);
-    *next_init_vector = ciphertext;
-    return plaintext;
-}
-
-/**
- * \brief Encrypts a 128-bit block using AES-128 in OFB mode of operation.
- *
- * \param[in] plaintext The plaintext to be encrypted.
- * \param[in] encryption_keys The AES-128 encryption round keys. Must not be `NULL`.
- * \param[in] init_vector The OFB initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The encrypted 128-bit ciphertext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes128_encrypt_block_ofb(
-    AesNI_Aes_Block plaintext,
-    const AesNI_Aes128_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    assert(encryption_keys);
-    assert(next_init_vector);
-
-    AesNI_Aes_Block tmp = aesni_aes128_encrypt_block_(init_vector, encryption_keys);
-    *next_init_vector = tmp;
-    return aesni_xor_block128(tmp, plaintext);
-}
-
-/**
- * \brief Decrypts a 128-bit block using AES-128 in OFB mode of operation.
- *
- * \param[in] ciphertext The ciphertext to be decrypted.
- * \param[in] encryption_keys The AES-128 **encryption** round keys. Must not be `NULL`.
- * \param[in] init_vector The OFB initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The decrypted 128-bit plaintext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes128_decrypt_block_ofb(
-    AesNI_Aes_Block ciphertext,
-    const AesNI_Aes128_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    return aesni_aes128_encrypt_block_ofb(ciphertext, encryption_keys, init_vector, next_init_vector);
-}
-
-/**
- * \brief Encrypts a 128-bit block using AES-128 in CTR mode of operation.
- *
- * \param[in] plaintext The plaintext to be encrypted.
- * \param[in] encryption_keys The AES-128 encryption round keys. Must not be `NULL`.
- * \param[in] init_vector The CTR initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The encrypted 128-bit ciphertext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes128_encrypt_block_ctr(
-    AesNI_Aes_Block plaintext,
-    const AesNI_Aes128_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    assert(encryption_keys);
-    assert(next_init_vector);
-
-    AesNI_Aes_Block ciphertext = aesni_xor_block128(plaintext, aesni_aes128_encrypt_block_(init_vector, encryption_keys));
-    *next_init_vector = aesni_aes_inc_counter(init_vector);
-    return ciphertext;
-}
-
-/**
- * \brief Decrypts a 128-bit block using AES-128 in CTR mode of operation.
- *
- * \param[in] ciphertext The ciphertext to be decrypted.
- * \param[in] encryption_keys The AES-128 **encryption** round keys. Must not be `NULL`.
- * \param[in] init_vector The CTR initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The decrypted 128-bit plaintext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes128_decrypt_block_ctr(
-    AesNI_Aes_Block ciphertext,
-    const AesNI_Aes128_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    return aesni_aes128_encrypt_block_ctr(ciphertext, encryption_keys, init_vector, next_init_vector);
 }
 
 /**
@@ -489,222 +354,6 @@ static __inline void __fastcall aesni_aes192_derive_decryption_keys(
 }
 
 /**
- * \brief Encrypts a 128-bit block using AES-192 in ECB mode of operation.
- *
- * \param[in] plaintext The plaintext to be encrypted.
- * \param[in] encryption_keys The AES-192 encryption round keys. Must not be `NULL`.
- *
- * \return The encrypted 128-bit ciphertext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes192_encrypt_block_ecb(
-    AesNI_Aes_Block plaintext,
-    const AesNI_Aes192_RoundKeys* encryption_keys)
-{
-    assert(encryption_keys);
-
-    return aesni_aes192_encrypt_block_(plaintext, encryption_keys);
-}
-
-/**
- * \brief Decrypts a 128-bit block using AES-192 in ECB mode of operation.
- *
- * \param[in] ciphertext The ciphertext to be decrypted.
- * \param[in] decryption_keys The AES-192 decryption round keys. Must not be `NULL`.
- *
- * \return The decrypted 128-bit plaintext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes192_decrypt_block_ecb(
-    AesNI_Aes_Block ciphertext,
-    const AesNI_Aes192_RoundKeys* decryption_keys)
-{
-    assert(decryption_keys);
-
-    return aesni_aes192_decrypt_block_(ciphertext, decryption_keys);
-}
-
-/**
- * \brief Encrypts a 128-bit block using AES-192 in CBC mode of operation.
- *
- * \param[in] plaintext The plaintext to be encrypted.
- * \param[in] encryption_keys The AES-192 encryption round keys. Must not be `NULL`.
- * \param[in] init_vector The CBC initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The encrypted 128-bit ciphertext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes192_encrypt_block_cbc(
-    AesNI_Aes_Block plaintext,
-    const AesNI_Aes192_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    assert(encryption_keys);
-    assert(next_init_vector);
-
-    AesNI_Aes_Block ciphertext = aesni_aes192_encrypt_block_(aesni_xor_block128(plaintext, init_vector), encryption_keys);
-    *next_init_vector = ciphertext;
-    return ciphertext;
-}
-
-/**
- * \brief Decrypts a 128-bit block using AES-192 in CBC mode of operation.
- *
- * \param[in] ciphertext The ciphertext to be decrypted.
- * \param[in] decryption_keys The AES-192 decryption round keys. Must not be `NULL`.
- * \param[in] init_vector The CBC initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The decrypted 128-bit plaintext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes192_decrypt_block_cbc(
-    AesNI_Aes_Block ciphertext,
-    const AesNI_Aes192_RoundKeys* decryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    assert(decryption_keys);
-    assert(next_init_vector);
-
-    AesNI_Aes_Block plaintext = aesni_xor_block128(aesni_aes192_decrypt_block_(ciphertext, decryption_keys), init_vector);
-    *next_init_vector = ciphertext;
-    return plaintext;
-}
-
-/**
- * \brief Encrypts a 128-bit block using AES-192 in CFB mode of operation.
- *
- * \param[in] plaintext The plaintext to be encrypted.
- * \param[in] encryption_keys The AES-192 encryption round keys. Must not be `NULL`.
- * \param[in] init_vector The CFB initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The encrypted 128-bit ciphertext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes192_encrypt_block_cfb(
-    AesNI_Aes_Block plaintext,
-    const AesNI_Aes192_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    assert(encryption_keys);
-    assert(next_init_vector);
-
-    AesNI_Aes_Block ciphertext = aesni_xor_block128(aesni_aes192_encrypt_block_(init_vector, encryption_keys), plaintext);
-    *next_init_vector = ciphertext;
-    return ciphertext;
-}
-
-/**
- * \brief Decrypts a 128-bit block using AES-192 in CFB mode of operation.
- *
- * \param[in] ciphertext The ciphertext to be decrypted.
- * \param[in] encryption_keys The AES-192 **encryption** round keys. Must not be `NULL`.
- * \param[in] init_vector The CFB initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The decrypted 128-bit plaintext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes192_decrypt_block_cfb(
-    AesNI_Aes_Block ciphertext,
-    const AesNI_Aes192_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    assert(encryption_keys);
-    assert(next_init_vector);
-
-    AesNI_Aes_Block plaintext = aesni_xor_block128(aesni_aes192_encrypt_block_(init_vector, encryption_keys), ciphertext);
-    *next_init_vector = ciphertext;
-    return plaintext;
-}
-
-/**
- * \brief Encrypts a 128-bit block using AES-192 in OFB mode of operation.
- *
- * \param[in] plaintext The plaintext to be encrypted.
- * \param[in] encryption_keys The AES-192 encryption round keys. Must not be `NULL`.
- * \param[in] init_vector The OFB initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The encrypted 128-bit ciphertext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes192_encrypt_block_ofb(
-    AesNI_Aes_Block plaintext,
-    const AesNI_Aes192_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    assert(encryption_keys);
-    assert(next_init_vector);
-
-    AesNI_Aes_Block tmp = aesni_aes192_encrypt_block_(init_vector, encryption_keys);
-    *next_init_vector = tmp;
-    return aesni_xor_block128(tmp, plaintext);
-}
-
-/**
- * \brief Decrypts a 128-bit block using AES-192 in OFB mode of operation.
- *
- * \param[in] ciphertext The ciphertext to be decrypted.
- * \param[in] encryption_keys The AES-192 **encryption** round keys. Must not be `NULL`.
- * \param[in] init_vector The OFB initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The decrypted 128-bit plaintext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes192_decrypt_block_ofb(
-    AesNI_Aes_Block ciphertext,
-    const AesNI_Aes192_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    return aesni_aes192_encrypt_block_ofb(ciphertext, encryption_keys, init_vector, next_init_vector);
-}
-
-/**
- * \brief Encrypts a 128-bit block using AES-192 in CTR mode of operation.
- *
- * \param[in] plaintext The plaintext to be encrypted.
- * \param[in] encryption_keys The AES-192 encryption round keys. Must not be `NULL`.
- * \param[in] init_vector The CTR initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The encrypted 128-bit ciphertext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes192_encrypt_block_ctr(
-    AesNI_Aes_Block plaintext,
-    const AesNI_Aes192_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    assert(encryption_keys);
-    assert(next_init_vector);
-
-    AesNI_Aes_Block ciphertext = aesni_xor_block128(plaintext, aesni_aes192_encrypt_block_(init_vector, encryption_keys));
-    *next_init_vector = aesni_aes_inc_counter(init_vector);
-    return ciphertext;
-}
-
-/**
- * \brief Decrypts a 128-bit block using AES-192 in CTR mode of operation.
- *
- * \param[in] ciphertext The ciphertext to be decrypted.
- * \param[in] encryption_keys The AES-192 **encryption** round keys. Must not be `NULL`.
- * \param[in] init_vector The CTR initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The decrypted 128-bit plaintext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes192_decrypt_block_ctr(
-    AesNI_Aes_Block ciphertext,
-    const AesNI_Aes192_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    return aesni_aes192_encrypt_block_ctr(ciphertext, encryption_keys, init_vector, next_init_vector);
-}
-
-/**
  * \brief Expands an AES-256 key into 14 encryption round keys.
  *
  * \param[in] key The AES-256 key.
@@ -734,222 +383,6 @@ static __inline void __fastcall aesni_aes256_derive_decryption_keys(
     assert(decryption_keys);
 
     aesni_aes256_derive_decryption_keys_(encryption_keys, decryption_keys);
-}
-
-/**
- * \brief Encrypts a 128-bit block using AES-256 in ECB mode of operation.
- *
- * \param[in] plaintext The plaintext to be encrypted.
- * \param[in] encryption_keys The AES-256 encryption round keys. Must not be `NULL`.
- *
- * \return The encrypted 128-bit ciphertext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes256_encrypt_block_ecb(
-    AesNI_Aes_Block plaintext,
-    const AesNI_Aes256_RoundKeys* encryption_keys)
-{
-    assert(encryption_keys);
-
-    return aesni_aes256_encrypt_block_(plaintext, encryption_keys);
-}
-
-/**
- * \brief Decrypts a 128-bit block using AES-256 in ECB mode of operation.
- *
- * \param[in] ciphertext The ciphertext to be decrypted.
- * \param[in] decryption_keys The AES-256 decryption round keys. Must not be `NULL`.
- *
- * \return The decrypted 128-bit plaintext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes256_decrypt_block_ecb(
-    AesNI_Aes_Block ciphertext,
-    const AesNI_Aes256_RoundKeys* decryption_keys)
-{
-    assert(decryption_keys);
-
-    return aesni_aes256_decrypt_block_(ciphertext, decryption_keys);
-}
-
-/**
- * \brief Encrypts a 128-bit block using AES-256 in CBC mode of operation.
- *
- * \param[in] plaintext The plaintext to be encrypted.
- * \param[in] encryption_keys The AES-256 encryption round keys. Must not be `NULL`.
- * \param[in] init_vector The CBC initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The encrypted 128-bit ciphertext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes256_encrypt_block_cbc(
-    AesNI_Aes_Block plaintext,
-    const AesNI_Aes256_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    assert(encryption_keys);
-    assert(next_init_vector);
-
-    AesNI_Aes_Block ciphertext = aesni_aes256_encrypt_block_(aesni_xor_block128(plaintext, init_vector), encryption_keys);
-    *next_init_vector = ciphertext;
-    return ciphertext;
-}
-
-/**
- * \brief Decrypts a 128-bit block using AES-256 in CBC mode of operation.
- *
- * \param[in] ciphertext The ciphertext to be decrypted.
- * \param[in] decryption_keys The AES-256 decryption round keys. Must not be `NULL`.
- * \param[in] init_vector The CBC initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The decrypted 128-bit plaintext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes256_decrypt_block_cbc(
-    AesNI_Aes_Block ciphertext,
-    const AesNI_Aes256_RoundKeys* decryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    assert(decryption_keys);
-    assert(next_init_vector);
-
-    AesNI_Aes_Block plaintext = aesni_xor_block128(aesni_aes256_decrypt_block_(ciphertext, decryption_keys), init_vector);
-    *next_init_vector = ciphertext;
-    return plaintext;
-}
-
-/**
- * \brief Encrypts a 128-bit block using AES-256 in CFB mode of operation.
- *
- * \param[in] plaintext The plaintext to be encrypted.
- * \param[in] encryption_keys The AES-256 encryption round keys. Must not be `NULL`.
- * \param[in] init_vector The CFB initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The encrypted 128-bit ciphertext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes256_encrypt_block_cfb(
-    AesNI_Aes_Block plaintext,
-    const AesNI_Aes256_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    assert(encryption_keys);
-    assert(next_init_vector);
-
-    AesNI_Aes_Block ciphertext = aesni_xor_block128(aesni_aes256_encrypt_block_(init_vector, encryption_keys), plaintext);
-    *next_init_vector = ciphertext;
-    return ciphertext;
-}
-
-/**
- * \brief Decrypts a 128-bit block using AES-256 in CFB mode of operation.
- *
- * \param[in] ciphertext The ciphertext to be decrypted.
- * \param[in] encryption_keys The AES-256 **encryption** round keys. Must not be `NULL`.
- * \param[in] init_vector The CFB initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The decrypted 128-bit plaintext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes256_decrypt_block_cfb(
-    AesNI_Aes_Block ciphertext,
-    const AesNI_Aes256_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    assert(encryption_keys);
-    assert(next_init_vector);
-
-    AesNI_Aes_Block plaintext = aesni_xor_block128(aesni_aes256_encrypt_block_(init_vector, encryption_keys), ciphertext);
-    *next_init_vector = ciphertext;
-    return plaintext;
-}
-
-/**
- * \brief Encrypts a 128-bit block using AES-256 in OFB mode of operation.
- *
- * \param[in] plaintext The plaintext to be encrypted.
- * \param[in] encryption_keys The AES-256 encryption round keys. Must not be `NULL`.
- * \param[in] init_vector The OFB initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The encrypted 128-bit ciphertext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes256_encrypt_block_ofb(
-    AesNI_Aes_Block plaintext,
-    const AesNI_Aes256_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    assert(encryption_keys);
-    assert(next_init_vector);
-
-    AesNI_Aes_Block tmp = aesni_aes256_encrypt_block_(init_vector, encryption_keys);
-    *next_init_vector = tmp;
-    return aesni_xor_block128(tmp, plaintext);
-}
-
-/**
- * \brief Decrypts a 128-bit block using AES-256 in OFB mode of operation.
- *
- * \param[in] ciphertext The ciphertext to be decrypted.
- * \param[in] encryption_keys The AES-256 **encryption** round keys. Must not be `NULL`.
- * \param[in] init_vector The OFB initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The decrypted 128-bit plaintext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes256_decrypt_block_ofb(
-    AesNI_Aes_Block ciphertext,
-    const AesNI_Aes256_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    return aesni_aes256_encrypt_block_ofb(ciphertext, encryption_keys, init_vector, next_init_vector);
-}
-
-/**
- * \brief Encrypts a 128-bit block using AES-256 in CTR mode of operation.
- *
- * \param[in] plaintext The plaintext to be encrypted.
- * \param[in] encryption_keys The AES-256 encryption round keys. Must not be `NULL`.
- * \param[in] init_vector The CTR initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The encrypted 128-bit ciphertext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes256_encrypt_block_ctr(
-    AesNI_Aes_Block plaintext,
-    const AesNI_Aes256_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    assert(encryption_keys);
-    assert(next_init_vector);
-
-    AesNI_Aes_Block ciphertext = aesni_xor_block128(plaintext, aesni_aes256_encrypt_block_(init_vector, encryption_keys));
-    *next_init_vector = aesni_aes_inc_counter(init_vector);
-    return ciphertext;
-}
-
-/**
- * \brief Decrypts a 128-bit block using AES-256 in CTR mode of operation.
- *
- * \param[in] ciphertext The ciphertext to be decrypted.
- * \param[in] encryption_keys The AES-256 **encryption** round keys. Must not be `NULL`.
- * \param[in] init_vector The CTR initialization vector.
- * \param[out] next_init_vector The initialization vector to be used for the next call. Must not be `NULL`.
- *
- * \return The decrypted 128-bit plaintext.
- */
-static __inline AesNI_Aes_Block __fastcall aesni_aes256_decrypt_block_ctr(
-    AesNI_Aes_Block ciphertext,
-    const AesNI_Aes256_RoundKeys* encryption_keys,
-    AesNI_Aes_Block init_vector,
-    AesNI_Aes_Block* next_init_vector)
-{
-    return aesni_aes256_encrypt_block_ctr(ciphertext, encryption_keys, init_vector, next_init_vector);
 }
 
 #ifdef __cplusplus
