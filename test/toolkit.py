@@ -67,21 +67,21 @@ class ToolkitError(RuntimeError):
     pass
 
 class Tools:
-    def __init__(self, root_dir_path, use_sde=False):
-        self._root_dir_path = root_dir_path
+    def __init__(self, search_dirs, use_sde=False):
+        if search_dirs:
+            if isinstance(search_dirs, str):
+                os.environ['PATH'] += os.pathsep + search_dirs
+            elif isinstance(search_dirs, collections.Iterable):
+                os.environ['PATH'] += os.pathsep + os.pathsep.join(search_dirs)
+            else:
+                os.environ['PATH'] += os.pathsep + str(search_dirs)
         self._use_sde = use_sde
         self._logger = logging.getLogger(__name__)
 
-    def _get_tool_path(self, fn):
-        return os.path.join(self._root_dir_path, fn)
+    _ENCRYPT_BLOCK = 'aes_encrypt_block.exe'
+    _DECRYPT_BLOCK = 'aes_decrypt_block.exe'
 
-    def get_encrypt_tool_path(self):
-        return self._get_tool_path('aes_encrypt_block.exe')
-
-    def get_decrypt_tool_path(self):
-        return self._get_tool_path('aes_decrypt_block.exe')
-
-    def run_tool(self, tool_path, algo, mode, args):
+    def run(self, tool_path, algo, mode, args):
         cmd_list = ['sde', '--', tool_path] if self._use_sde else [tool_path]
         cmd_list.extend(('-a', algo, '-m', mode, '--'))
         cmd_list.extend(args)
@@ -110,16 +110,16 @@ class Tools:
             args.extend(tail.to_args())
         return args
 
-    def run_encrypt_tool(self, algo, mode, inputs):
+    def run_encrypt_block(self, algo, mode, inputs):
         if isinstance(inputs, collections.Iterable):
             args = self._inputs_to_args(iter(inputs))
         else:
             args = inputs.to_args()
-        return self.run_tool(self.get_encrypt_tool_path(), algo, mode, args)
+        return self.run(self._ENCRYPT_BLOCK, algo, mode, args)
 
-    def run_decrypt_tool(self, algo, mode, inputs):
+    def run_decrypt_block(self, algo, mode, inputs):
         if isinstance(inputs, collections.Iterable):
             args = self._inputs_to_args(iter(inputs))
         else:
             args = inputs.to_args()
-        return self.run_tool(self.get_decrypt_tool_path(), algo, mode, args)
+        return self.run(self._DECRYPT_BLOCK, algo, mode, args)

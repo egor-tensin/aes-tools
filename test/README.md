@@ -33,7 +33,7 @@ You must therefore make sure that
 * all the tests succeeded,
 * and the skipped tests were skipped for a good reason.
 
-To pass a path to the directory with the required utilities, use the `--root` parameter.
+To pass a path to the directory with the required utilities, use the `--path` parameter.
 To make scripts run the utilities using Intel SDE, pass `--sde`.
 Use `--help` to see the script's usage details.
 
@@ -41,11 +41,11 @@ Use `--help` to see the script's usage details.
 
 To test the implementation against the vectors from [NIST SP 800-38A](http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf) using `nist-sp-800-32a.py`.
 
-    python nist-sp-800-38a.py -r C:\build\test\Debug
+    python nist-sp-800-38a.py -p C:\build\test\Debug
 
 ### Cryptographic Algorithm Validation Program
 
 To test the implementation against the vectors from [CAVP](http://csrc.nist.gov/groups/STM/cavp/) using `cavp.py`.
 The AES Known Answer Test (KAT) Vectors are used and read from `KAT_AES.zip`.
 
-    python cavp.py -r C:\build\test\Debug
+    python cavp.py -p C:\build\test\Debug

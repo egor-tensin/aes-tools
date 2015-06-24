@@ -111,7 +111,7 @@ def _run_encryption_tests(tools, algo, mode):
     ciphertexts = _ciphertexts[algo][mode]
     _input = toolkit.EncryptionInput(key, _plaintexts, iv=iv)
     try:
-        actual_output = tools.run_encrypt_tool(algo, mode, _input)
+        actual_output = tools.run_encrypt_block(algo, mode, _input)
         if not _assert_output(actual_output, ciphertexts):
             return _TestExitCode.FAILURE
         return _TestExitCode.SUCCESS
@@ -132,7 +132,7 @@ def _run_decryption_tests(tools, algo, mode):
     ciphertexts = _ciphertexts[algo][mode]
     _input = toolkit.DecryptionInput(key, ciphertexts, iv=iv)
     try:
-        actual_output = tools.run_decrypt_tool(algo, mode, _input)
+        actual_output = tools.run_decrypt_block(algo, mode, _input)
         if not _assert_output(actual_output, _plaintexts):
             return _TestExitCode.FAILURE
         return _TestExitCode.SUCCESS
@@ -144,14 +144,14 @@ def _run_decryption_tests(tools, algo, mode):
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--root', '-r', required=True,
-                        help='set path to *.exe files')
+    parser.add_argument('--path', '-p', nargs='*',
+                        help='set path to block encryption utilities')
     parser.add_argument('--sde', '-e', action='store_true',
                         help='use Intel SDE to run *.exe files')
     parser.add_argument('--log', '-l', help='set log file path')
     args = parser.parse_args()
 
-    tools = toolkit.Tools(args.root, args.sde)
+    tools = toolkit.Tools(args.path, args.sde)
 
     logging_options = {'format': '%(asctime)s | %(module)s | %(levelname)s | %(message)s',
                        'level': logging.DEBUG}

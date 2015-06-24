@@ -95,13 +95,13 @@ class _TestVectorsFile:
         logging.info('Running encryption tests...')
         keys, plaintexts, ciphertexts, init_vectors = self._extract_test_data('ENCRYPT')
         inputs = _gen_encryption_inputs(keys, plaintexts, init_vectors)
-        return self._run_tests(tools.run_encrypt_tool, inputs, ciphertexts)
+        return self._run_tests(tools.run_encrypt_block, inputs, ciphertexts)
 
     def run_decryption_tests(self, tools):
         logging.info('Running decryption tests...')
         keys, plaintexts, ciphertexts, init_vectors = self._extract_test_data('DECRYPT')
         inputs = _gen_decryption_inputs(keys, ciphertexts, init_vectors)
-        return self._run_tests(tools.run_decrypt_tool, inputs, plaintexts)
+        return self._run_tests(tools.run_decrypt_block, inputs, plaintexts)
 
     def _parse(self):
         logging.info('Trying to parse test vectors file name \'{0}\'...'.format(self._fn))
@@ -174,8 +174,8 @@ def _parse_test_vectors_archive(tools, archive_path='KAT_AES.zip'):
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--root', '-r', required=True,
-                        help='set path to *.exe files')
+    parser.add_argument('--path', '-p', nargs='*',
+                        help='set path to block encryption utilities')
     parser.add_argument('--sde', '-e', action='store_true',
                         help='use Intel SDE to run *.exe files')
     parser.add_argument('--log', '-l', help='set log file path')
@@ -189,5 +189,5 @@ if __name__ == '__main__':
         logging_options['filename'] = args.log
     logging.basicConfig(**logging_options)
 
-    tools = toolkit.Tools(args.root, use_sde=args.sde)
+    tools = toolkit.Tools(args.path, use_sde=args.sde)
     _parse_test_vectors_archive(tools)
