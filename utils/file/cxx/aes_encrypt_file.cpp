@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 {
     try
     {
-        CommandLineParser cmd_parser("encrypt_file_aes.exe");
+        CommandLineParser cmd_parser("aes_encrypt_file.exe");
 
         if (!cmd_parser.parse_options(argc, argv))
             return 0;

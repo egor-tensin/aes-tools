@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 {
     try
     {
-        CommandLineParser cmd_parser("encrypt_block_aes.exe");
+        CommandLineParser cmd_parser("aes_encrypt_block.exe");
 
         if (!cmd_parser.parse_options(argc, argv))
             return 0;
