@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <aesni/all.h>
+#include <aesnixx/all.hpp>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>
@@ -22,7 +22,7 @@
 #include <string>
 #include <vector>
 
-static std::istream& operator>>(std::istream& is, AesNI_Mode& dest)
+static std::istream& operator>>(std::istream& is, aesni::Mode& dest)
 {
     std::string src;
     is >> src;
@@ -43,7 +43,7 @@ static std::istream& operator>>(std::istream& is, AesNI_Mode& dest)
     return is;
 }
 
-static std::istream& operator>>(std::istream& is, AesNI_Algorithm& dest)
+static std::istream& operator>>(std::istream& is, aesni::Algorithm& dest)
 {
     std::string src;
     is >> src;
@@ -76,8 +76,8 @@ namespace
 
             m_options.add_options()
                 ("help,h", "show this message and exit")
-                ("mode,m", po::value<AesNI_Mode>(&m_mode)->required(), "set mode of operation")
-                ("algorithm,a", po::value<AesNI_Algorithm>(&m_algorithm)->required(), "set algorithm");
+                ("mode,m", po::value<aesni::Mode>(&m_mode)->required(), "set mode of operation")
+                ("algorithm,a", po::value<aesni::Algorithm>(&m_algorithm)->required(), "set algorithm");
 
             po::options_description hidden_options;
             hidden_options.add_options()
@@ -108,12 +108,12 @@ namespace
             std::cout << m_options << "\n";
         }
 
-        AesNI_Mode get_mode() const
+        aesni::Mode get_mode() const
         {
             return m_mode;
         }
 
-        AesNI_Algorithm get_algorithm() const
+        aesni::Algorithm get_algorithm() const
         {
             return m_algorithm;
         }
@@ -127,8 +127,8 @@ namespace
         const std::string m_program_name;
         boost::program_options::options_description m_options;
 
-        AesNI_Mode m_mode;
-        AesNI_Algorithm m_algorithm;
+        aesni::Mode m_mode;
+        aesni::Algorithm m_algorithm;
         std::vector<std::string> m_args;
     };
 }

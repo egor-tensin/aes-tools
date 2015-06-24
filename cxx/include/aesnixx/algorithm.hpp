@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include "aes.hpp"
-#include "algorithm.hpp"
-#include "data.hpp"
-#include "debug.hpp"
-#include "error.hpp"
-#include "mode.hpp"
+#include <aesni/all.h>
+
+namespace aesni
+{
+    typedef AesNI_Algorithm Algorithm;
+}
