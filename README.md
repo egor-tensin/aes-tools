@@ -21,7 +21,7 @@ Remember that in order to link to the static Boost libraries, you also have to p
 A couple of useful utilities built on top of the library are included.
 Namely,
 
-* [the file encryption utilities](utils/file/cxx#file-encryption-utilities),
+* [the file encryption utilities](utils/file#file-encryption-utilities),
 * and [the block encryption utilities](utils/block/cxx#block-encryption-utilities) (used mainly for testing).
 
 ## Running on older CPUs
