@@ -12,6 +12,11 @@
 
 #include <stdlib.h>
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 typedef enum
 {
     AESNI_PADDING_PKCS7,
@@ -30,3 +35,7 @@ AesNI_StatusCode aesni_fill_with_padding(
     void* dest,
     size_t padding_size,
     AesNI_ErrorDetails*);
+
+#ifdef __cplusplus
+}
+#endif

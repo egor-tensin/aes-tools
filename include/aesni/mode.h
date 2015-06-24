@@ -10,6 +10,11 @@
 
 #include <assert.h>
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 typedef enum
 {
     AESNI_ECB,
@@ -152,3 +157,7 @@ static __inline BlockT __fastcall aesni_## prefix ##_decrypt_block_ctr( \
     return aesni_## prefix ##_encrypt_block_ctr( \
         ciphertext, key, init_vector, next_init_vector); \
 }
+
+#ifdef __cplusplus
+}
+#endif

@@ -8,6 +8,11 @@
 
 #pragma once
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 typedef enum
 {
     AESNI_AES128,
@@ -15,3 +20,7 @@ typedef enum
     AESNI_AES256,
 }
 AesNI_Algorithm;
+
+#ifdef __cplusplus
+}
+#endif
