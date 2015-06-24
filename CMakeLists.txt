@@ -17,5 +17,4 @@ target_compile_definitions(libaesni PRIVATE _CRT_SECURE_NO_WARNINGS)
 add_subdirectory(cxx)
 
 add_subdirectory(examples)
-add_subdirectory(test)
 add_subdirectory(utils)

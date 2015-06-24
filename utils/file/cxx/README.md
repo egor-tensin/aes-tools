@@ -1,6 +1,6 @@
-# Utilities
+# File encryption utilities
 
-Here are a couple of useful utilities built on top of the library.
+Here are a couple of useful file encryption utilities built on top of the library.
 Each of the utilities accepts `--help` flag, which can be used to examine utility's usage info.
 
 The included utilities are:
