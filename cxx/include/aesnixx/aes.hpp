@@ -6,7 +6,9 @@
  *            See LICENSE.txt for details.
  */
 
+#include "algorithm.hpp"
 #include "data.hpp"
+#include "mode.hpp"
 
 #include <aesni/all.h>
 
@@ -128,5 +130,470 @@ namespace aesni
         {
             return sizeof(round_keys) / sizeof(Block128);
         }
+
+        inline void expand_key(
+            const Key128& key,
+            RoundKeys128& encryption_keys)
+        {
+            aesni_aes128_expand_key(&key, &encryption_keys);
+        }
+
+        inline void expand_key(
+            const Key192& key,
+            RoundKeys192& encryption_keys)
+        {
+            aesni_aes192_expand_key(&key, &encryption_keys);
+        }
+
+        inline void expand_key(
+            const Key256& key,
+            RoundKeys256& encryption_keys)
+        {
+            aesni_aes256_expand_key(&key, &encryption_keys);
+        }
+
+        inline void derive_decryption_keys(
+            const RoundKeys128& encryption_keys,
+            RoundKeys128& decryption_keys)
+        {
+            aesni_aes128_derive_decryption_keys(
+                &encryption_keys, &decryption_keys);
+        }
+
+        inline void derive_decryption_keys(
+            const RoundKeys192& encryption_keys,
+            RoundKeys192& decryption_keys)
+        {
+            aesni_aes192_derive_decryption_keys(
+                &encryption_keys, &decryption_keys);
+        }
+
+        inline void derive_decryption_keys(
+            const RoundKeys256& encryption_keys,
+            RoundKeys256& decryption_keys)
+        {
+            aesni_aes256_derive_decryption_keys(
+                &encryption_keys, &decryption_keys);
+        }
+
+        inline Block encrypt_ecb(
+            const Block& plaintext,
+            const RoundKeys128& encryption_keys)
+        {
+            return aesni_aes128_encrypt_block_ecb(plaintext, &encryption_keys);
+        }
+
+        inline Block decrypt_ecb(
+            const Block& ciphertext,
+            const RoundKeys128& decryption_keys)
+        {
+            return aesni_aes128_decrypt_block_ecb(ciphertext, &decryption_keys);
+        }
+
+        inline Block encrypt_cbc(
+            const Block& plaintext,
+            const RoundKeys128& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes128_encrypt_block_cbc(plaintext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block decrypt_cbc(
+            const Block& ciphertext,
+            const RoundKeys128& decryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes128_decrypt_block_cbc(ciphertext, &decryption_keys, iv, &next_iv);
+        }
+
+        inline Block encrypt_cfb(
+            const Block& plaintext,
+            const RoundKeys128& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes128_encrypt_block_cfb(plaintext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block decrypt_cfb(
+            const Block& ciphertext,
+            const RoundKeys128& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes128_decrypt_block_cfb(ciphertext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block encrypt_ofb(
+            const Block& plaintext,
+            const RoundKeys128& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes128_encrypt_block_ofb(plaintext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block decrypt_ofb(
+            const Block& ciphertext,
+            const RoundKeys128& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes128_decrypt_block_ofb(ciphertext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block encrypt_ctr(
+            const Block& plaintext,
+            const RoundKeys128& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes128_encrypt_block_ctr(plaintext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block decrypt_ctr(
+            const Block& ciphertext,
+            const RoundKeys128& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes128_decrypt_block_ctr(ciphertext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block encrypt_ecb(
+            const Block& plaintext,
+            const RoundKeys192& encryption_keys)
+        {
+            return aesni_aes192_encrypt_block_ecb(plaintext, &encryption_keys);
+        }
+
+        inline Block decrypt_ecb(
+            const Block& ciphertext,
+            const RoundKeys192& decryption_keys)
+        {
+            return aesni_aes192_decrypt_block_ecb(ciphertext, &decryption_keys);
+        }
+
+        inline Block encrypt_cbc(
+            const Block& plaintext,
+            const RoundKeys192& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes192_encrypt_block_cbc(plaintext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block decrypt_cbc(
+            const Block& ciphertext,
+            const RoundKeys192& decryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes192_decrypt_block_cbc(ciphertext, &decryption_keys, iv, &next_iv);
+        }
+
+        inline Block encrypt_cfb(
+            const Block& plaintext,
+            const RoundKeys192& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes192_encrypt_block_cfb(plaintext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block decrypt_cfb(
+            const Block& ciphertext,
+            const RoundKeys192& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes192_decrypt_block_cfb(ciphertext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block encrypt_ofb(
+            const Block& plaintext,
+            const RoundKeys192& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes192_encrypt_block_ofb(plaintext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block decrypt_ofb(
+            const Block& ciphertext,
+            const RoundKeys192& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes192_decrypt_block_ofb(ciphertext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block encrypt_ctr(
+            const Block& plaintext,
+            const RoundKeys192& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes192_encrypt_block_ctr(plaintext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block decrypt_ctr(
+            const Block& ciphertext,
+            const RoundKeys192& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes192_decrypt_block_ctr(ciphertext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block encrypt_ecb(
+            const Block& plaintext,
+            const RoundKeys256& encryption_keys)
+        {
+            return aesni_aes256_encrypt_block_ecb(plaintext, &encryption_keys);
+        }
+
+        inline Block decrypt_ecb(
+            const Block& ciphertext,
+            const RoundKeys256& decryption_keys)
+        {
+            return aesni_aes256_decrypt_block_ecb(ciphertext, &decryption_keys);
+        }
+
+        inline Block encrypt_cbc(
+            const Block& plaintext,
+            const RoundKeys256& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes256_encrypt_block_cbc(plaintext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block decrypt_cbc(
+            const Block& ciphertext,
+            const RoundKeys256& decryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes256_decrypt_block_cbc(ciphertext, &decryption_keys, iv, &next_iv);
+        }
+
+        inline Block encrypt_cfb(
+            const Block& plaintext,
+            const RoundKeys256& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes256_encrypt_block_cfb(plaintext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block decrypt_cfb(
+            const Block& ciphertext,
+            const RoundKeys256& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes256_decrypt_block_cfb(ciphertext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block encrypt_ofb(
+            const Block& plaintext,
+            const RoundKeys256& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes256_encrypt_block_ofb(plaintext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block decrypt_ofb(
+            const Block& ciphertext,
+            const RoundKeys256& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes256_decrypt_block_ofb(ciphertext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block encrypt_ctr(
+            const Block& plaintext,
+            const RoundKeys256& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes256_encrypt_block_ctr(plaintext, &encryption_keys, iv, &next_iv);
+        }
+
+        inline Block decrypt_ctr(
+            const Block& ciphertext,
+            const RoundKeys256& encryption_keys,
+            const Block& iv,
+            Block& next_iv)
+        {
+            return aesni_aes256_decrypt_block_ctr(ciphertext, &encryption_keys, iv, &next_iv);
+        }
+
+        template <Algorithm>
+        struct Types;
+
+        template <>
+        struct Types<AESNI_AES128>
+        {
+            typedef aesni::aes::Block BlockT;
+            typedef aesni::aes::Key128 KeyT;
+            typedef aesni::aes::RoundKeys128 RoundKeysT;
+        };
+
+        template <>
+        struct Types<AESNI_AES192>
+        {
+            typedef aesni::aes::Block BlockT;
+            typedef aesni::aes::Key192 KeyT;
+            typedef aesni::aes::RoundKeys192 RoundKeysT;
+        };
+
+        template <>
+        struct Types<AESNI_AES256>
+        {
+            typedef aesni::aes::Block BlockT;
+            typedef aesni::aes::Key256 KeyT;
+            typedef aesni::aes::RoundKeys256 RoundKeysT;
+        };
+
+        template <Algorithm algorithm, Mode mode>
+        class Encrypt;
+
+        template <Algorithm algorithm>
+        class Encrypt<algorithm, AESNI_ECB>
+        {
+        public:
+            Encrypt(const typename Types<algorithm>::KeyT& key,
+                    const typename Types<algorithm>::BlockT& iv)
+            {
+                expand_key(key, m_encryption_keys);
+                derive_decryption_keys(m_encryption_keys, m_decryption_keys);
+            }
+
+            inline typename Types<algorithm>::BlockT encrypt(const typename Types<algorithm>::BlockT& plaintext)
+            {
+                return encrypt_ecb(plaintext, m_encryption_keys);
+            }
+
+            inline typename Types<algorithm>::BlockT decrypt(const typename Types<algorithm>::BlockT& ciphertext)
+            {
+                return decrypt_ecb(ciphertext, m_decryption_keys);
+            }
+
+        private:
+            typename Types<algorithm>::RoundKeysT m_encryption_keys;
+            typename Types<algorithm>::RoundKeysT m_decryption_keys;
+        };
+
+        template <Algorithm algorithm>
+        class Encrypt<algorithm, AESNI_CBC>
+        {
+        public:
+            Encrypt(const typename Types<algorithm>::KeyT& key,
+                    const typename Types<algorithm>::BlockT& iv)
+                : m_iv(iv)
+            {
+                expand_key(key, m_encryption_keys);
+                derive_decryption_keys(m_encryption_keys, m_decryption_keys);
+            }
+
+            inline typename Types<algorithm>::BlockT encrypt(const typename Types<algorithm>::BlockT& plaintext)
+            {
+                return encrypt_cbc(plaintext, m_encryption_keys, m_iv, m_iv);
+            }
+
+            inline typename Types<algorithm>::BlockT decrypt(const typename Types<algorithm>::BlockT& ciphertext)
+            {
+                return decrypt_cbc(ciphertext, m_decryption_keys, m_iv, m_iv);
+            }
+
+        private:
+            typename Types<algorithm>::BlockT m_iv;
+            typename Types<algorithm>::RoundKeysT m_encryption_keys;
+            typename Types<algorithm>::RoundKeysT m_decryption_keys;
+        };
+
+        template <Algorithm algorithm>
+        class Encrypt<algorithm, AESNI_CFB>
+        {
+        public:
+            Encrypt(const typename Types<algorithm>::KeyT& key,
+                    const typename Types<algorithm>::BlockT& iv)
+                : m_iv(iv)
+            {
+                expand_key(key, m_encryption_keys);
+            }
+
+            inline typename Types<algorithm>::BlockT encrypt(const typename Types<algorithm>::BlockT& plaintext)
+            {
+                return encrypt_cfb(plaintext, m_encryption_keys, m_iv, m_iv);
+            }
+
+            inline typename Types<algorithm>::BlockT decrypt(const typename Types<algorithm>::BlockT& ciphertext)
+            {
+                return decrypt_cfb(ciphertext, m_encryption_keys, m_iv, m_iv);
+            }
+
+        private:
+            typename Types<algorithm>::BlockT m_iv;
+            typename Types<algorithm>::RoundKeysT m_encryption_keys;
+        };
+
+        template <Algorithm algorithm>
+        class Encrypt<algorithm, AESNI_OFB>
+        {
+        public:
+            Encrypt(const typename Types<algorithm>::KeyT& key,
+                    const typename Types<algorithm>::BlockT& iv)
+                : m_iv(iv)
+            {
+                expand_key(key, m_encryption_keys);
+            }
+
+            inline typename Types<algorithm>::BlockT encrypt(const typename Types<algorithm>::BlockT& plaintext)
+            {
+                return encrypt_ofb(plaintext, m_encryption_keys, m_iv, m_iv);
+            }
+
+            inline typename Types<algorithm>::BlockT decrypt(const typename Types<algorithm>::BlockT& ciphertext)
+            {
+                return decrypt_ofb(ciphertext, m_encryption_keys, m_iv, m_iv);
+            }
+
+        private:
+            typename Types<algorithm>::BlockT m_iv;
+            typename Types<algorithm>::RoundKeysT m_encryption_keys;
+        };
+
+        template <Algorithm algorithm>
+        class Encrypt<algorithm, AESNI_CTR>
+        {
+        public:
+            Encrypt(const typename Types<algorithm>::KeyT& key,
+                    const typename Types<algorithm>::BlockT& iv)
+                : m_iv(iv)
+            {
+                expand_key(key, m_encryption_keys);
+            }
+
+            inline typename Types<algorithm>::BlockT encrypt(const typename Types<algorithm>::BlockT& plaintext)
+            {
+                return encrypt_ctr(plaintext, m_encryption_keys, m_iv, m_iv);
+            }
+
+            inline typename Types<algorithm>::BlockT decrypt(const typename Types<algorithm>::BlockT& ciphertext)
+            {
+                return decrypt_ctr(ciphertext, m_encryption_keys, m_iv, m_iv);
+            }
+
+        private:
+            typename Types<algorithm>::RoundKeysT m_encryption_keys;
+            typename Types<algorithm>::BlockT m_iv;
+        };
     }
 }
