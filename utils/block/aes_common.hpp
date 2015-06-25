@@ -68,6 +68,7 @@ namespace
         CommandLineParser(const std::string& program_name)
             : m_program_name(program_name)
             , m_options("Options")
+            , m_boxes(false)
         { }
 
         bool parse_options(int argc, char** argv)
@@ -76,6 +77,7 @@ namespace
 
             m_options.add_options()
                 ("help,h", "show this message and exit")
+                ("box,b", po::bool_switch(&m_boxes)->default_value(false), "use the \"boxes\" interface")
                 ("mode,m", po::value<aesni::Mode>(&m_mode)->required(), "set mode of operation")
                 ("algorithm,a", po::value<aesni::Algorithm>(&m_algorithm)->required(), "set algorithm");
 
@@ -118,6 +120,11 @@ namespace
             return m_algorithm;
         }
 
+        bool use_boxes() const
+        {
+            return m_boxes;
+        }
+
         std::deque<std::string> get_args()
         {
             return { std::make_move_iterator(m_args.begin()), std::make_move_iterator(m_args.end()) };
@@ -129,6 +136,7 @@ namespace
 
         aesni::Mode m_mode;
         aesni::Algorithm m_algorithm;
+        bool m_boxes;
         std::vector<std::string> m_args;
     };
 }

@@ -148,10 +148,12 @@ if __name__ == '__main__':
                         help='set path to block encryption utilities')
     parser.add_argument('--sde', '-e', action='store_true',
                         help='use Intel SDE to run *.exe files')
+    parser.add_argument('--box', '-b', action='store_true',
+                        help='use the "boxes" interface')
     parser.add_argument('--log', '-l', help='set log file path')
     args = parser.parse_args()
 
-    tools = toolkit.Tools(args.path, args.sde)
+    tools = toolkit.Tools(args.path, use_sde=args.sde, use_boxes=args.box)
 
     logging_options = {'format': '%(asctime)s | %(module)s | %(levelname)s | %(message)s',
                        'level': logging.DEBUG}

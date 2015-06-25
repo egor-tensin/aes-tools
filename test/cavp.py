@@ -178,6 +178,8 @@ if __name__ == '__main__':
                         help='set path to block encryption utilities')
     parser.add_argument('--sde', '-e', action='store_true',
                         help='use Intel SDE to run *.exe files')
+    parser.add_argument('--box', '-b', action='store_true',
+                        help='use the "boxes" interface')
     parser.add_argument('--log', '-l', help='set log file path')
     args = parser.parse_args()
 
@@ -189,5 +191,5 @@ if __name__ == '__main__':
         logging_options['filename'] = args.log
     logging.basicConfig(**logging_options)
 
-    tools = toolkit.Tools(args.path, use_sde=args.sde)
+    tools = toolkit.Tools(args.path, use_sde=args.sde, use_boxes=args.box)
     _parse_test_vectors_archive(tools)

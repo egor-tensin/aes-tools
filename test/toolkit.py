@@ -67,7 +67,7 @@ class ToolkitError(RuntimeError):
     pass
 
 class Tools:
-    def __init__(self, search_dirs, use_sde=False):
+    def __init__(self, search_dirs, use_sde=False, use_boxes=False):
         if search_dirs:
             if isinstance(search_dirs, str):
                 os.environ['PATH'] += os.pathsep + search_dirs
@@ -76,6 +76,7 @@ class Tools:
             else:
                 os.environ['PATH'] += os.pathsep + str(search_dirs)
         self._use_sde = use_sde
+        self._use_boxes = use_boxes
         self._logger = logging.getLogger(__name__)
 
     _ENCRYPT_BLOCK = 'aes_encrypt_block.exe'
@@ -83,6 +84,8 @@ class Tools:
 
     def run(self, tool_path, algo, mode, args):
         cmd_list = ['sde', '--', tool_path] if self._use_sde else [tool_path]
+        if self._use_boxes:
+            cmd_list.append('-b')
         cmd_list.extend(('-a', algo, '-m', mode, '--'))
         cmd_list.extend(args)
         logging.info('Trying to execute: {0}'.format(subprocess.list2cmdline(cmd_list)))
