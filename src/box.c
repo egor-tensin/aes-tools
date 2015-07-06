@@ -29,6 +29,7 @@ AesNI_StatusCode aesni_box_init(
     AesNI_StatusCode status = AESNI_SUCCESS;
 
     box->algorithm = aesni_box_algorithms[algorithm];
+
     if (aesni_is_error(status = box->algorithm->derive_params(
             algorithm_params,
             &box->encrypt_params,
@@ -316,6 +317,7 @@ static AesNI_StatusCode aesni_box_encrypt_buffer_partial_block_with_padding(
         return status;
 
     void* plaintext_buf = malloc(block_size);
+
     if (plaintext_buf == NULL)
         return status = aesni_error_memory_allocation(err_details);
 
@@ -357,6 +359,7 @@ static AesNI_StatusCode aesni_box_encrypt_buffer_partial_block(
         return status;
 
     void* plaintext_buf = malloc(block_size);
+
     if (plaintext_buf == NULL)
         return status = aesni_error_memory_allocation(err_details);
 
@@ -364,6 +367,7 @@ static AesNI_StatusCode aesni_box_encrypt_buffer_partial_block(
     memcpy(plaintext_buf, src, src_size);
 
     void* ciphertext_buf = malloc(block_size);
+
     if (ciphertext_buf == NULL)
     {
         status = aesni_error_memory_allocation(err_details);
@@ -393,12 +397,13 @@ AesNI_StatusCode aesni_box_encrypt_buffer(
     size_t* dest_size,
     AesNI_ErrorDetails* err_details)
 {
+    AesNI_StatusCode status = AESNI_SUCCESS;
+
     if (box == NULL)
         return aesni_error_null_argument(err_details, "box");
     if (dest_size == NULL)
         return aesni_error_null_argument(err_details, "dest_size");
 
-    AesNI_StatusCode status = AESNI_SUCCESS;
     size_t padding_size = 0;
 
     if (aesni_is_error(status = aesni_box_get_encrypted_buffer_size(
@@ -418,10 +423,14 @@ AesNI_StatusCode aesni_box_encrypt_buffer(
 
     const size_t src_len = src_size / block_size;
 
-    for (size_t i = 0; i < src_len; ++i, (char*) src += block_size, (char*) dest += block_size)
+    for (size_t i = 0; i < src_len; ++i)
+    {
         if (aesni_is_error(status = aesni_box_encrypt_buffer_block(
                 box, src, dest, err_details)))
             return status;
+
+        (char*) src += block_size, (char*) dest += block_size;
+    }
 
     if (padding_size == 0)
         return aesni_box_encrypt_buffer_partial_block(
@@ -518,6 +527,7 @@ static AesNI_StatusCode aesni_box_decrypt_buffer_partial_block(
         return status;
 
     void* ciphertext_buf = malloc(block_size);
+
     if (ciphertext_buf == NULL)
         return status = aesni_error_memory_allocation(err_details);
 
@@ -525,6 +535,7 @@ static AesNI_StatusCode aesni_box_decrypt_buffer_partial_block(
     memcpy(ciphertext_buf, src, src_size);
 
     void* plaintext_buf = malloc(block_size);
+
     if (plaintext_buf == NULL)
     {
         status = aesni_error_memory_allocation(err_details);
@@ -579,10 +590,14 @@ AesNI_StatusCode aesni_box_decrypt_buffer(
 
     const size_t src_len = src_size / block_size;
 
-    for (size_t i = 0; i < src_len; ++i, (char*) src += block_size, (char*) dest += block_size)
+    for (size_t i = 0; i < src_len; ++i)
+    {
         if (aesni_is_error(status = aesni_box_decrypt_buffer_block(
                 box, src, dest, err_details)))
             return status;
+
+        (char*) src += block_size, (char*) dest += block_size;
+    }
 
     if (max_padding_size == 0)
     {
