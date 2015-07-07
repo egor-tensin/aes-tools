@@ -6,7 +6,7 @@
  *            See LICENSE.txt for details.
  */
 
-#include "aes_common.hpp"
+#include "aes_file_common.hpp"
 
 #include <aesni/all.h>
 
@@ -15,7 +15,6 @@
 #include <boost/program_options.hpp>
 
 #include <cstdlib>
-#include <cstring>
 
 #include <exception>
 #include <fstream>
@@ -23,8 +22,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-#include <Windows.h>
 
 namespace
 {
@@ -64,7 +61,7 @@ int main(int argc, char** argv)
 {
     try
     {
-        CommandLineParser cmd_parser("aes_decrypt_bmp.exe");
+        CommandLineParser cmd_parser("aes_encrypt_file.exe");
 
         if (!cmd_parser.parse_options(argc, argv))
             return 0;
@@ -130,12 +127,6 @@ int main(int argc, char** argv)
 
         const auto src_buf = read_file(src_path);
 
-        const auto bmp_header = reinterpret_cast<const BITMAPFILEHEADER*>(src_buf.data());
-
-        const auto header_size = bmp_header->bfOffBits;
-        const auto cipherpixels = src_buf.data() + header_size;
-        const auto cipherpixels_size = src_buf.size() - header_size;
-
         AesNI_Box box;
 
         aesni_box_init(
@@ -146,29 +137,29 @@ int main(int argc, char** argv)
             iv_ptr,
             aesni::ErrorDetailsThrowsInDestructor());
 
-        std::size_t pixels_size;
+        std::size_t dest_size;
 
         aesni_box_decrypt_buffer(
             &box,
-            cipherpixels,
-            cipherpixels_size,
+            src_buf.data(),
+            src_buf.size(),
             nullptr,
-            &pixels_size,
+            &dest_size,
             aesni::ErrorDetailsThrowsInDestructor());
 
         std::vector<char> dest_buf;
-        dest_buf.resize(header_size + pixels_size);
-        std::memcpy(dest_buf.data(), src_buf.data(), header_size);
+        dest_buf.resize(dest_size);
 
         aesni_box_decrypt_buffer(
             &box,
-            cipherpixels,
-            cipherpixels_size,
-            dest_buf.data() + header_size,
-            &pixels_size,
+            src_buf.data(),
+            src_buf.size(),
+            dest_buf.data(),
+            &dest_size,
             aesni::ErrorDetailsThrowsInDestructor());
 
-        dest_buf.resize(header_size + pixels_size);
+        dest_buf.resize(dest_size);
+
         write_file(dest_path, dest_buf);
 
         return 0;

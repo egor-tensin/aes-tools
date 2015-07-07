@@ -1,2 +1,31 @@
-add_subdirectory(block)
-add_subdirectory(file)
+find_package(Boost REQUIRED COMPONENTS program_options)
+
+add_executable(util_aes_encrypt_block aes_encrypt_block.cpp aes_block_common.hpp)
+target_include_directories(util_aes_encrypt_block PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(util_aes_encrypt_block libaesni libaesnixx ${Boost_LIBRARIES})
+set_target_properties(util_aes_encrypt_block PROPERTIES OUTPUT_NAME aes_encrypt_block)
+
+add_executable(util_aes_decrypt_block aes_decrypt_block.cpp aes_block_common.hpp)
+target_include_directories(util_aes_decrypt_block PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(util_aes_decrypt_block libaesni libaesnixx ${Boost_LIBRARIES})
+set_target_properties(util_aes_decrypt_block PROPERTIES OUTPUT_NAME aes_decrypt_block)
+
+add_executable(util_aes_encrypt_file aes_encrypt_file.cpp aes_file_common.hpp)
+target_include_directories(util_aes_encrypt_file PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(util_aes_encrypt_file libaesni libaesnixx ${Boost_LIBRARIES})
+set_target_properties(util_aes_encrypt_file PROPERTIES OUTPUT_NAME aes_encrypt_file)
+
+add_executable(util_aes_decrypt_file aes_decrypt_file.cpp aes_file_common.hpp)
+target_include_directories(util_aes_decrypt_file PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(util_aes_decrypt_file libaesni libaesnixx ${Boost_LIBRARIES})
+set_target_properties(util_aes_decrypt_file PROPERTIES OUTPUT_NAME aes_decrypt_file)
+
+add_executable(util_aes_encrypt_bmp aes_encrypt_bmp.cpp aes_file_common.hpp)
+target_include_directories(util_aes_encrypt_bmp PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(util_aes_encrypt_bmp libaesni libaesnixx ${Boost_LIBRARIES})
+set_target_properties(util_aes_encrypt_bmp PROPERTIES OUTPUT_NAME aes_encrypt_bmp)
+
+add_executable(util_aes_decrypt_bmp aes_decrypt_bmp.cpp aes_file_common.hpp)
+target_include_directories(util_aes_decrypt_bmp PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(util_aes_decrypt_bmp libaesni libaesnixx ${Boost_LIBRARIES})
+set_target_properties(util_aes_decrypt_bmp PROPERTIES OUTPUT_NAME aes_decrypt_bmp)

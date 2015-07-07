@@ -16,14 +16,6 @@ To enable CMake to find Boost libraries, pass the path to the root Boost directo
 
 Remember that in order to link to the static Boost libraries, you also have to pass `-D Boost_USE_STATIC_LIBS=ON` to CMake.
 
-## Utilities
-
-A couple of useful utilities built on top of the library are included.
-Namely,
-
-* [the file encryption utilities](utils/file#file-encryption-utilities),
-* and [the block encryption utilities](utils/block#block-encryption-utilities) (used mainly for testing).
-
 ## Running on older CPUs
 
 To run the executables that are using the AES-NI instruction set on a CPU w/o the support for these instructions, one can use

@@ -6,7 +6,7 @@
  *            See LICENSE.txt for details.
  */
 
-#include "aes_common.hpp"
+#include "aes_block_common.hpp"
 
 #include <aesni/all.h>
 
@@ -20,19 +20,19 @@
 namespace
 {
     template <aesni::Algorithm algorithm, aesni::Mode mode>
-    bool encrypt_with_mode(
+    bool decrypt_with_mode(
         const std::string& key_str,
-        std::deque<std::string>& plaintexts)
+        std::deque<std::string>& ciphertexts)
     {
         typename aesni::aes::Types<algorithm>::BlockT iv;
 
         if (aesni::ModeRequiresInitializationVector<mode>())
         {
-            if (plaintexts.empty())
+            if (ciphertexts.empty())
                 return false;
 
-            aesni::aes::from_string(iv, plaintexts.front());
-            plaintexts.pop_front();
+            aesni::aes::from_string(iv, ciphertexts.front());
+            ciphertexts.pop_front();
         }
 
         typename aesni::aes::Types<algorithm>::KeyT key;
@@ -40,73 +40,73 @@ namespace
 
         aesni::aes::Encrypt<algorithm, mode> encrypt(key, iv);
 
-        while (!plaintexts.empty())
+        while (!ciphertexts.empty())
         {
-            typename aesni::aes::Types<algorithm>::BlockT plaintext;
-            aesni::aes::from_string(plaintext, plaintexts.front());
-            plaintexts.pop_front();
+            typename aesni::aes::Types<algorithm>::BlockT ciphertext;
+            aesni::aes::from_string(ciphertext, ciphertexts.front());
+            ciphertexts.pop_front();
 
-            std::cout << aesni::aes::to_string(encrypt.encrypt(plaintext)) << "\n";
+            std::cout << aesni::aes::to_string(encrypt.decrypt(ciphertext)) << "\n";
         }
 
         return true;
     }
 
     template <aesni::Algorithm algorithm>
-    bool encrypt_with_algorithm(
+    bool decrypt_with_algorithm(
         aesni::Mode mode,
         const std::string& key_str,
-        std::deque<std::string>& plaintexts)
+        std::deque<std::string>& ciphertexts)
     {
         switch (mode)
         {
             case AESNI_ECB:
-                return encrypt_with_mode<algorithm, AESNI_ECB>(key_str, plaintexts);
+                return decrypt_with_mode<algorithm, AESNI_ECB>(key_str, ciphertexts);
 
             case AESNI_CBC:
-                return encrypt_with_mode<algorithm, AESNI_CBC>(key_str, plaintexts);
+                return decrypt_with_mode<algorithm, AESNI_CBC>(key_str, ciphertexts);
 
             case AESNI_CFB:
-                return encrypt_with_mode<algorithm, AESNI_CFB>(key_str, plaintexts);
+                return decrypt_with_mode<algorithm, AESNI_CFB>(key_str, ciphertexts);
 
             case AESNI_OFB:
-                return encrypt_with_mode<algorithm, AESNI_OFB>(key_str, plaintexts);
+                return decrypt_with_mode<algorithm, AESNI_OFB>(key_str, ciphertexts);
 
             case AESNI_CTR:
-                return encrypt_with_mode<algorithm, AESNI_CTR>(key_str, plaintexts);
+                return decrypt_with_mode<algorithm, AESNI_CTR>(key_str, ciphertexts);
 
             default:
                 return false;
         }
     }
 
-    bool encrypt(
+    bool decrypt(
         aesni::Algorithm algorithm,
         aesni::Mode mode,
         const std::string& key_str,
-        std::deque<std::string> plaintexts)
+        std::deque<std::string> ciphertexts)
     {
         switch (algorithm)
         {
             case AESNI_AES128:
-                return encrypt_with_algorithm<AESNI_AES128>(mode, key_str, plaintexts);
+                return decrypt_with_algorithm<AESNI_AES128>(mode, key_str, ciphertexts);
 
             case AESNI_AES192:
-                return encrypt_with_algorithm<AESNI_AES192>(mode, key_str, plaintexts);
+                return decrypt_with_algorithm<AESNI_AES192>(mode, key_str, ciphertexts);
 
             case AESNI_AES256:
-                return encrypt_with_algorithm<AESNI_AES256>(mode, key_str, plaintexts);
+                return decrypt_with_algorithm<AESNI_AES256>(mode, key_str, ciphertexts);
 
             default:
                 return false;
         }
     }
 
-    bool encrypt_using_boxes(
+    bool decrypt_using_boxes(
         aesni::Algorithm algorithm,
         aesni::Mode mode,
         const std::string& key,
-        std::deque<std::string> plaintexts)
+        std::deque<std::string> ciphertexts)
     {
         AesNI_BoxAlgorithmParams algorithm_params;
 
@@ -133,12 +133,12 @@ namespace
 
         if (aesni::mode_requires_initialization_vector(mode))
         {
-            if (plaintexts.empty())
+            if (ciphertexts.empty())
                 return false;
 
-            aesni::aes::from_string(iv.aes_block, plaintexts.front());
+            aesni::aes::from_string(iv.aes_block, ciphertexts.front());
             iv_ptr = &iv;
-            plaintexts.pop_front();
+            ciphertexts.pop_front();
         }
 
         AesNI_Box box;
@@ -150,20 +150,20 @@ namespace
             iv_ptr,
             aesni::ErrorDetailsThrowsInDestructor());
 
-        while (!plaintexts.empty())
+        while (!ciphertexts.empty())
         {
-            AesNI_BoxBlock plaintext;
-            aesni::aes::from_string(plaintext.aes_block, plaintexts.front());
-            plaintexts.pop_front();
-
             AesNI_BoxBlock ciphertext;
-            aesni_box_encrypt_block(
+            aesni::aes::from_string(ciphertext.aes_block, ciphertexts.front());
+            ciphertexts.pop_front();
+
+            AesNI_BoxBlock plaintext;
+            aesni_box_decrypt_block(
                 &box,
-                &plaintext,
                 &ciphertext,
+                &plaintext,
                 aesni::ErrorDetailsThrowsInDestructor());
 
-            std::cout << aesni::aes::to_string(ciphertext.aes_block) << "\n";
+            std::cout << aesni::aes::to_string(plaintext.aes_block) << "\n";
         }
 
         return true;
@@ -174,7 +174,7 @@ int main(int argc, char** argv)
 {
     try
     {
-        CommandLineParser cmd_parser("aes_encrypt_block.exe");
+        CommandLineParser cmd_parser("aes_decrypt_block.exe");
 
         if (!cmd_parser.parse_options(argc, argv))
             return 0;
@@ -189,7 +189,7 @@ int main(int argc, char** argv)
             const auto key = args.front();
             args.pop_front();
 
-            std::deque<std::string> plaintexts;
+            std::deque<std::string> ciphertexts;
 
             while (!args.empty())
             {
@@ -199,13 +199,13 @@ int main(int argc, char** argv)
                     break;
                 }
 
-                plaintexts.push_back(args.front());
+                ciphertexts.push_back(args.front());
                 args.pop_front();
             }
 
             const auto success = cmd_parser.use_boxes()
-                ? encrypt_using_boxes(algorithm, mode, key, plaintexts)
-                : encrypt(algorithm, mode, key, plaintexts);
+                ? decrypt_using_boxes(algorithm, mode, key, ciphertexts)
+                : decrypt(algorithm, mode, key, ciphertexts);
 
             if (!success)
             {
