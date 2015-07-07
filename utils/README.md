@@ -9,9 +9,9 @@ The included utilities are:
 * [file encryption](#file-encryption) utilities,
 * and [bitmap encryption](#bitmap-encryption) utilities.
 
-## Block encryption
+On older CPUs, you can run the utilities [using Intel SDE](../README.md#running-on-older-cpus).
 
-On older CPUs, you can run the utilities [using Intel SDE](https://github.com/egor-tensin/aesni#running-on-older-cpus).
+## Block encryption
 
 ### aes_encrypt_block.exe
 

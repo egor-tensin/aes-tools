@@ -30,9 +30,13 @@ You can then run an executable like this:
 You can generate the docs using [Doxygen](http://www.stack.nl/~dimitri/doxygen/).
 The docs will be put into the `doc` directory in the repository's root.
 
+## Utilities
+
+See [Utilities](utils#utilities).
+
 ## Testing
 
-See [Testing](https://github.com/egor-tensin/aesni/tree/master/test#testing).
+See [Testing](test#testing).
 
 ## Licensing
 

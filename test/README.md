@@ -1,6 +1,6 @@
 # Testing
 
-After you've [built](https://github.com/egor-tensin/aesni#building) the block encryption/decryption utilities, you can verify the implementation either [manually](#manually) or [automatically](#using-test-vectors) using test vectors.
+After you've [built](../#building) the block encryption/decryption utilities, you can verify the implementation either [manually](#manually) or [automatically](#using-test-vectors) using test vectors.
 
 ## Manually
 
@@ -20,7 +20,7 @@ and for AES-192 in CBC mode:
     30c81c46a35ce411e5fbc1191a0a52ef
     f69f2445df4f9b17ad2b417be66c3710
 
-On older CPUs, you can run the utilities [using Intel SDE](https://github.com/egor-tensin/aesni#running-on-older-cpus).
+On older CPUs, you can run the utilities [using Intel SDE](../README.md#running-on-older-cpus).
 
 ## Using test vectors
 
@@ -41,11 +41,11 @@ Use `--help` to see the script's usage details.
 
 To test the implementation against the vectors from [NIST SP 800-38A](http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf) using `nist-sp-800-32a.py`.
 
-    python nist-sp-800-38a.py -p C:\build\utils\block\Debug
+    python nist-sp-800-38a.py -p C:\build\utils\Debug
 
 ### Cryptographic Algorithm Validation Program
 
 To test the implementation against the vectors from [CAVP](http://csrc.nist.gov/groups/STM/cavp/) using `cavp.py`.
 The AES Known Answer Test (KAT) Vectors are used and read from `KAT_AES.zip`.
 
-    python cavp.py -p C:\build\utils\block\Debug
+    python cavp.py -p C:\build\utils\Debug
