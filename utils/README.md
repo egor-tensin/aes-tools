@@ -1,7 +1,8 @@
 # Utilities
 
 Here are a couple of useful utilities built on top of the library.
-Each of the utilities accepts the `--help` flag, which can be used to examine utility's usage info.
+Each of the utilities accepts the `--help` flag, which can be used to examine
+utility's usage info.
 
 The included utilities are:
 
@@ -9,13 +10,15 @@ The included utilities are:
 * [file encryption](#file-encryption) utilities,
 * and [bitmap encryption](#bitmap-encryption) utilities.
 
-On older CPUs, you can run the utilities [using Intel SDE](../README.md#running-on-older-cpus).
+On older CPUs, you can run the utilities
+[using Intel SDE](../README.md#running-on-older-cpus).
 
 ## Block encryption
 
 ### aes_encrypt_block.exe
 
-Encrypts 16-byte blocks using AES-128/192/256 in the specified mode of operation.
+Encrypts 16-byte blocks using AES-128/192/256 in the specified mode of
+operation.
 
 #### Usage examples
 
@@ -42,7 +45,8 @@ run:
 
 ### aes_decrypt_block.exe
 
-Decrypts 16-byte blocks using AES-128/192/256 in the specified mode of operation.
+Decrypts 16-byte blocks using AES-128/192/256 in the specified mode of
+operation.
 
 #### Usage examples
 
@@ -125,8 +129,9 @@ run
 
 ## Bitmap encryption
 
-These utilities were developed primarily to demonstrate the drawbacks of using ECB mode
-(namely, the fact that identical plaintext blocks get mapped to identical ciphertext blocks).
+These utilities were developed primarily to demonstrate the drawbacks of using
+ECB mode (namely, the fact that identical plaintext blocks get mapped to
+identical ciphertext blocks).
 This can be explicitly shown using 8-bit-per-pixel bitmaps:
 
 Plaintext BMP | Encrypted in ECB mode | Encrypted in CBC mode

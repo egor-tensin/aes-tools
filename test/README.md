@@ -1,10 +1,13 @@
 # Testing
 
-After you've [built](../#building) the block encryption/decryption utilities, you can verify the implementation either [manually](#manually) or [automatically](#using-test-vectors) using test vectors.
+After you've [built](../#building) the block encryption/decryption utilities,
+you can verify the implementation either [manually](#manually) or
+[automatically](#using-test-vectors) using test vectors.
 
 ## Manually
 
-You can test the AES implementation using the block encryption/decryption utilities `aes_encrypt_block.exe` and `aes_decrypt_block.exe`.
+You can test the AES implementation using the block encryption/decryption
+utilities `aes_encrypt_block.exe` and `aes_decrypt_block.exe`.
 Use the `--help` option to examine the usage info of a utility.
 
 For example, for AES-128 in ECB mode:
@@ -20,32 +23,40 @@ and for AES-192 in CBC mode:
     30c81c46a35ce411e5fbc1191a0a52ef
     f69f2445df4f9b17ad2b417be66c3710
 
-On older CPUs, you can run the utilities [using Intel SDE](../README.md#running-on-older-cpus).
+On older CPUs, you can run the utilities
+[using Intel SDE](../README.md#running-on-older-cpus).
 
 ## Using test vectors
 
-The test scripts are written in Python 3 and have uniform interfaces: they accept a path to the directory with the block encryption/decryption utilities and allow to run them [using Intel SDE](https://github.com/egor-tensin/aesni#running-on-older-cpus).
+The test scripts are written in Python 3 and have uniform interfaces: they
+accept a path to the directory with the block encryption/decryption utilities
+and allow to run them [using Intel SDE](../README.md#running-on-older-cpus).
 They also write log files with a short summary at the end.
-In general, each scripts counts the number of tests that failed, succeeded, caused an error, and the tests that were skipped.
+In general, each scripts counts the number of tests that failed, succeeded,
+caused an error, and the tests that were skipped.
 You must therefore make sure that
 
 * no errors occured while running the tests,
 * all the tests succeeded,
 * and the skipped tests were skipped for a good reason.
 
-To pass a path to the directory with the required utilities, use the `--path` parameter.
+To pass a path to the directory with the required utilities, use the `--path`
+parameter.
 To make scripts run the utilities using Intel SDE, pass `--sde`.
 Use `--help` to see the script's usage details.
 
 ### NIST Special Publication 800-38A
 
-To test the implementation against the vectors from [NIST SP 800-38A](http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf) using `nist-sp-800-32a.py`.
+To test the implementation against the vectors from
+[NIST SP 800-38A](http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf),
+use `nist-sp-800-32a.py`.
 
     python nist-sp-800-38a.py -p C:\build\utils\Debug
 
 ### Cryptographic Algorithm Validation Program
 
-To test the implementation against the vectors from [CAVP](http://csrc.nist.gov/groups/STM/cavp/) using `cavp.py`.
+To test the implementation against the vectors from
+[CAVP](http://csrc.nist.gov/groups/STM/cavp/), use `cavp.py`.
 The AES Known Answer Test (KAT) Vectors are used and read from `KAT_AES.zip`.
 
     python cavp.py -p C:\build\utils\Debug
