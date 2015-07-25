@@ -22,7 +22,8 @@ namespace
     template <aesni::Algorithm algorithm, aesni::Mode mode>
     bool decrypt_with_mode(
         const std::string& key_str,
-        std::deque<std::string>& ciphertexts)
+        std::deque<std::string>& ciphertexts,
+        bool verbose = false)
     {
         typename aesni::aes::Types<algorithm>::BlockT iv;
 
@@ -33,12 +34,21 @@ namespace
 
             aesni::aes::from_string(iv, ciphertexts.front());
             ciphertexts.pop_front();
+
+            if (verbose)
+                dump_iv(iv);
         }
 
         typename aesni::aes::Types<algorithm>::KeyT key;
         aesni::aes::from_string(key, key_str);
 
+        if (verbose)
+            dump_key(key);
+
         aesni::aes::Encrypt<algorithm, mode> encrypt(key, iv);
+
+        if (verbose)
+            Dumper<algorithm, mode>::dump_round_keys(encrypt);
 
         while (!ciphertexts.empty())
         {
@@ -46,7 +56,18 @@ namespace
             aesni::aes::from_string(ciphertext, ciphertexts.front());
             ciphertexts.pop_front();
 
-            std::cout << aesni::aes::to_string(encrypt.decrypt(ciphertext)) << "\n";
+            const auto plaintext = encrypt.decrypt(ciphertext);
+
+            if (verbose)
+            {
+                dump_ciphertext(ciphertext);
+                dump_plaintext(plaintext);
+                Dumper<algorithm, mode>::dump_next_iv(encrypt);
+            }
+            else
+            {
+                std::cout << aesni::aes::to_string(plaintext) << "\n";
+            }
         }
 
         return true;
@@ -56,24 +77,25 @@ namespace
     bool decrypt_with_algorithm(
         aesni::Mode mode,
         const std::string& key_str,
-        std::deque<std::string>& ciphertexts)
+        std::deque<std::string>& ciphertexts,
+        bool verbose = false)
     {
         switch (mode)
         {
             case AESNI_ECB:
-                return decrypt_with_mode<algorithm, AESNI_ECB>(key_str, ciphertexts);
+                return decrypt_with_mode<algorithm, AESNI_ECB>(key_str, ciphertexts, verbose);
 
             case AESNI_CBC:
-                return decrypt_with_mode<algorithm, AESNI_CBC>(key_str, ciphertexts);
+                return decrypt_with_mode<algorithm, AESNI_CBC>(key_str, ciphertexts, verbose);
 
             case AESNI_CFB:
-                return decrypt_with_mode<algorithm, AESNI_CFB>(key_str, ciphertexts);
+                return decrypt_with_mode<algorithm, AESNI_CFB>(key_str, ciphertexts, verbose);
 
             case AESNI_OFB:
-                return decrypt_with_mode<algorithm, AESNI_OFB>(key_str, ciphertexts);
+                return decrypt_with_mode<algorithm, AESNI_OFB>(key_str, ciphertexts, verbose);
 
             case AESNI_CTR:
-                return decrypt_with_mode<algorithm, AESNI_CTR>(key_str, ciphertexts);
+                return decrypt_with_mode<algorithm, AESNI_CTR>(key_str, ciphertexts, verbose);
 
             default:
                 return false;
@@ -84,18 +106,19 @@ namespace
         aesni::Algorithm algorithm,
         aesni::Mode mode,
         const std::string& key_str,
-        std::deque<std::string> ciphertexts)
+        std::deque<std::string> ciphertexts,
+        bool verbose = false)
     {
         switch (algorithm)
         {
             case AESNI_AES128:
-                return decrypt_with_algorithm<AESNI_AES128>(mode, key_str, ciphertexts);
+                return decrypt_with_algorithm<AESNI_AES128>(mode, key_str, ciphertexts, verbose);
 
             case AESNI_AES192:
-                return decrypt_with_algorithm<AESNI_AES192>(mode, key_str, ciphertexts);
+                return decrypt_with_algorithm<AESNI_AES192>(mode, key_str, ciphertexts, verbose);
 
             case AESNI_AES256:
-                return decrypt_with_algorithm<AESNI_AES256>(mode, key_str, ciphertexts);
+                return decrypt_with_algorithm<AESNI_AES256>(mode, key_str, ciphertexts, verbose);
 
             default:
                 return false;
@@ -205,7 +228,7 @@ int main(int argc, char** argv)
 
             const auto success = cmd_parser.use_boxes()
                 ? decrypt_using_boxes(algorithm, mode, key, ciphertexts)
-                : decrypt(algorithm, mode, key, ciphertexts);
+                : decrypt(algorithm, mode, key, ciphertexts, cmd_parser.verbose());
 
             if (!success)
             {

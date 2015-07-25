@@ -462,138 +462,128 @@ namespace aesni
         };
 
         template <Algorithm algorithm, Mode mode>
-        class Encrypt;
+        struct Encrypt;
 
         template <Algorithm algorithm>
-        class Encrypt<algorithm, AESNI_ECB>
+        struct Encrypt<algorithm, AESNI_ECB>
         {
-        public:
             Encrypt(const typename Types<algorithm>::KeyT& key,
                     const typename Types<algorithm>::BlockT& iv)
             {
-                expand_key(key, m_encryption_keys);
-                derive_decryption_keys(m_encryption_keys, m_decryption_keys);
+                expand_key(key, encryption_keys);
+                derive_decryption_keys(encryption_keys, decryption_keys);
             }
 
             inline typename Types<algorithm>::BlockT encrypt(const typename Types<algorithm>::BlockT& plaintext)
             {
-                return encrypt_ecb(plaintext, m_encryption_keys);
+                return encrypt_ecb(plaintext, encryption_keys);
             }
 
             inline typename Types<algorithm>::BlockT decrypt(const typename Types<algorithm>::BlockT& ciphertext)
             {
-                return decrypt_ecb(ciphertext, m_decryption_keys);
+                return decrypt_ecb(ciphertext, decryption_keys);
             }
 
-        private:
-            typename Types<algorithm>::RoundKeysT m_encryption_keys;
-            typename Types<algorithm>::RoundKeysT m_decryption_keys;
+            typename Types<algorithm>::RoundKeysT encryption_keys;
+            typename Types<algorithm>::RoundKeysT decryption_keys;
         };
 
         template <Algorithm algorithm>
-        class Encrypt<algorithm, AESNI_CBC>
+        struct Encrypt<algorithm, AESNI_CBC>
         {
-        public:
             Encrypt(const typename Types<algorithm>::KeyT& key,
                     const typename Types<algorithm>::BlockT& iv)
-                : m_iv(iv)
+                : iv(iv)
             {
-                expand_key(key, m_encryption_keys);
-                derive_decryption_keys(m_encryption_keys, m_decryption_keys);
+                expand_key(key, encryption_keys);
+                derive_decryption_keys(encryption_keys, decryption_keys);
             }
 
             inline typename Types<algorithm>::BlockT encrypt(const typename Types<algorithm>::BlockT& plaintext)
             {
-                return encrypt_cbc(plaintext, m_encryption_keys, m_iv, m_iv);
+                return encrypt_cbc(plaintext, encryption_keys, iv, iv);
             }
 
             inline typename Types<algorithm>::BlockT decrypt(const typename Types<algorithm>::BlockT& ciphertext)
             {
-                return decrypt_cbc(ciphertext, m_decryption_keys, m_iv, m_iv);
+                return decrypt_cbc(ciphertext, decryption_keys, iv, iv);
             }
 
-        private:
-            typename Types<algorithm>::BlockT m_iv;
-            typename Types<algorithm>::RoundKeysT m_encryption_keys;
-            typename Types<algorithm>::RoundKeysT m_decryption_keys;
+            typename Types<algorithm>::BlockT iv;
+            typename Types<algorithm>::RoundKeysT encryption_keys;
+            typename Types<algorithm>::RoundKeysT decryption_keys;
         };
 
         template <Algorithm algorithm>
-        class Encrypt<algorithm, AESNI_CFB>
+        struct Encrypt<algorithm, AESNI_CFB>
         {
-        public:
             Encrypt(const typename Types<algorithm>::KeyT& key,
                     const typename Types<algorithm>::BlockT& iv)
-                : m_iv(iv)
+                : iv(iv)
             {
-                expand_key(key, m_encryption_keys);
+                expand_key(key, encryption_keys);
             }
 
             inline typename Types<algorithm>::BlockT encrypt(const typename Types<algorithm>::BlockT& plaintext)
             {
-                return encrypt_cfb(plaintext, m_encryption_keys, m_iv, m_iv);
+                return encrypt_cfb(plaintext, encryption_keys, iv, iv);
             }
 
             inline typename Types<algorithm>::BlockT decrypt(const typename Types<algorithm>::BlockT& ciphertext)
             {
-                return decrypt_cfb(ciphertext, m_encryption_keys, m_iv, m_iv);
+                return decrypt_cfb(ciphertext, encryption_keys, iv, iv);
             }
 
-        private:
-            typename Types<algorithm>::BlockT m_iv;
-            typename Types<algorithm>::RoundKeysT m_encryption_keys;
+            typename Types<algorithm>::BlockT iv;
+            typename Types<algorithm>::RoundKeysT encryption_keys;
         };
 
         template <Algorithm algorithm>
-        class Encrypt<algorithm, AESNI_OFB>
+        struct Encrypt<algorithm, AESNI_OFB>
         {
-        public:
             Encrypt(const typename Types<algorithm>::KeyT& key,
                     const typename Types<algorithm>::BlockT& iv)
-                : m_iv(iv)
+                : iv(iv)
             {
-                expand_key(key, m_encryption_keys);
+                expand_key(key, encryption_keys);
             }
 
             inline typename Types<algorithm>::BlockT encrypt(const typename Types<algorithm>::BlockT& plaintext)
             {
-                return encrypt_ofb(plaintext, m_encryption_keys, m_iv, m_iv);
+                return encrypt_ofb(plaintext, encryption_keys, iv, iv);
             }
 
             inline typename Types<algorithm>::BlockT decrypt(const typename Types<algorithm>::BlockT& ciphertext)
             {
-                return decrypt_ofb(ciphertext, m_encryption_keys, m_iv, m_iv);
+                return decrypt_ofb(ciphertext, encryption_keys, iv, iv);
             }
 
-        private:
-            typename Types<algorithm>::BlockT m_iv;
-            typename Types<algorithm>::RoundKeysT m_encryption_keys;
+            typename Types<algorithm>::BlockT iv;
+            typename Types<algorithm>::RoundKeysT encryption_keys;
         };
 
         template <Algorithm algorithm>
-        class Encrypt<algorithm, AESNI_CTR>
+        struct Encrypt<algorithm, AESNI_CTR>
         {
-        public:
             Encrypt(const typename Types<algorithm>::KeyT& key,
                     const typename Types<algorithm>::BlockT& iv)
-                : m_iv(iv)
+                : iv(iv)
             {
-                expand_key(key, m_encryption_keys);
+                expand_key(key, encryption_keys);
             }
 
             inline typename Types<algorithm>::BlockT encrypt(const typename Types<algorithm>::BlockT& plaintext)
             {
-                return encrypt_ctr(plaintext, m_encryption_keys, m_iv, m_iv);
+                return encrypt_ctr(plaintext, encryption_keys, iv, iv);
             }
 
             inline typename Types<algorithm>::BlockT decrypt(const typename Types<algorithm>::BlockT& ciphertext)
             {
-                return decrypt_ctr(ciphertext, m_encryption_keys, m_iv, m_iv);
+                return decrypt_ctr(ciphertext, encryption_keys, iv, iv);
             }
 
-        private:
-            typename Types<algorithm>::RoundKeysT m_encryption_keys;
-            typename Types<algorithm>::BlockT m_iv;
+            typename Types<algorithm>::RoundKeysT encryption_keys;
+            typename Types<algorithm>::BlockT iv;
         };
     }
 }

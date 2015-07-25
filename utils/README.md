@@ -15,6 +15,13 @@ On older CPUs, you can run the utilities
 
 ## Block encryption
 
+The block encryption utilities can produce verbose human-readable output,
+including round keys, intermediate initialization vector values, etc.
+This is primarily intended for debugging purposes.
+Enable verbose output by passing the `--verbose` flag to the utilities.
+Please note that verbose output can only be produced when *not* using "boxes"
+(the `--boxes` flag).
+
 ### aes_encrypt_block.exe
 
 Encrypts 16-byte blocks using AES-128/192/256 in the specified mode of
