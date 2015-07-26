@@ -32,14 +32,14 @@ namespace aesni
             CallStackFormatter()
             {
                 #ifdef WIN32
-                m_valid = SymInitialize(GetCurrentProcess(), NULL, TRUE) ? true : false;
+                valid_flag = SymInitialize(GetCurrentProcess(), NULL, TRUE) ? true : false;
                 #endif
             }
 
             std::string format(void* addr) const
             {
                 #ifdef WIN32
-                if (!m_valid)
+                if (!valid_flag)
                     return format_fallback(addr);
 
                 DWORD64 symbol_info_buf[sizeof(SYMBOL_INFO) + MAX_SYM_NAME];
@@ -73,7 +73,7 @@ namespace aesni
             ~CallStackFormatter()
             {
                 #ifdef WIN32
-                if (m_valid)
+                if (valid_flag)
                     SymCleanup(GetCurrentProcess());
                 #endif
             }
@@ -119,7 +119,7 @@ namespace aesni
             }
 
             #ifdef WIN32
-            bool m_valid = false;
+            bool valid_flag = false;
             #endif
         };
     }

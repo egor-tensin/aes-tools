@@ -36,7 +36,7 @@ namespace aesni
         void for_each_in_call_stack(const std::function<void (void*, const std::string&)>& callback) const
         {
             aux::CallStackFormatter formatter;
-            std::for_each(m_call_stack, m_call_stack + m_call_stack_size, [&formatter, &callback] (void* addr)
+            std::for_each(call_stack, call_stack + call_stack_size, [&formatter, &callback] (void* addr)
             {
                 callback(addr, formatter.format(addr));
             });
@@ -53,12 +53,12 @@ namespace aesni
 
         void copy_call_stack(const AesNI_ErrorDetails& err_details)
         {
-            m_call_stack_size = err_details.call_stack_size;
-            std::memcpy(m_call_stack, err_details.call_stack, m_call_stack_size * sizeof(void*));
+            call_stack_size = err_details.call_stack_size;
+            std::memcpy(call_stack, err_details.call_stack, call_stack_size * sizeof(void*));
         }
 
-        void* m_call_stack[AESNI_MAX_CALL_STACK_LENGTH];
-        std::size_t m_call_stack_size;
+        void* call_stack[AESNI_MAX_CALL_STACK_LENGTH];
+        std::size_t call_stack_size;
     };
 
     std::ostream& operator<<(std::ostream& os, const Error& e)
@@ -87,14 +87,14 @@ namespace aesni
         #endif
         {
             if (aesni_is_error(aesni_get_error_code(get())))
-                throw Error(m_impl);
+                throw Error(impl);
         }
 
-        AesNI_ErrorDetails* get() { return &m_impl; }
+        AesNI_ErrorDetails* get() { return &impl; }
 
         operator AesNI_ErrorDetails*() { return get(); }
 
     private:
-        AesNI_ErrorDetails m_impl;
+        AesNI_ErrorDetails impl;
     };
 }

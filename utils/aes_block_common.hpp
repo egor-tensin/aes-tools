@@ -65,30 +65,30 @@ namespace
     class CommandLineParser
     {
     public:
-        CommandLineParser(const std::string& program_name)
-            : m_program_name(program_name)
-            , m_options("Options")
-            , m_boxes(false)
-            , m_verbose(false)
+        CommandLineParser(const std::string& prog_name)
+            : prog_name(prog_name)
+            , options("Options")
+            , boxes_flag(false)
+            , verbose_flag(false)
         { }
 
         bool parse_options(int argc, char** argv)
         {
             namespace po = boost::program_options;
 
-            m_options.add_options()
+            options.add_options()
                 ("help,h", "show this message and exit")
-                ("box,b", po::bool_switch(&m_boxes)->default_value(false), "use the \"boxes\" interface")
-                ("mode,m", po::value<aesni::Mode>(&m_mode)->required(), "set mode of operation")
-                ("algorithm,a", po::value<aesni::Algorithm>(&m_algorithm)->required(), "set algorithm")
-                ("verbose,v", po::bool_switch(&m_verbose)->default_value(false), "enable verbose output");
+                ("box,b", po::bool_switch(&boxes_flag)->default_value(false), "use the \"boxes\" interface")
+                ("mode,m", po::value<aesni::Mode>(&encryption_mode)->required(), "set mode of operation")
+                ("algorithm,a", po::value<aesni::Algorithm>(&encryption_algo)->required(), "set algorithm")
+                ("verbose,v", po::bool_switch(&verbose_flag)->default_value(false), "enable verbose output");
 
             po::options_description hidden_options;
             hidden_options.add_options()
-                ("positional", po::value<std::vector<std::string>>(&m_args));
+                ("positional", po::value<std::vector<std::string>>(&args));
 
             po::options_description all_options;
-            all_options.add(m_options).add(hidden_options);
+            all_options.add(options).add(hidden_options);
 
             po::positional_options_description positional_options;
             positional_options.add("positional", -1);
@@ -108,44 +108,44 @@ namespace
 
         void print_usage()
         {
-            std::cout << "Usage: " << m_program_name << " [OPTIONS...] [-- KEY [IV] [BLOCK...]...]\n";
-            std::cout << m_options << "\n";
+            std::cout << "Usage: " << prog_name << " [OPTIONS...] [-- KEY [IV] [BLOCK...]...]\n";
+            std::cout << options << "\n";
         }
 
         aesni::Mode get_mode() const
         {
-            return m_mode;
+            return encryption_mode;
         }
 
         aesni::Algorithm get_algorithm() const
         {
-            return m_algorithm;
+            return encryption_algo;
         }
 
         bool use_boxes() const
         {
-            return m_boxes;
+            return boxes_flag;
         }
 
         std::deque<std::string> get_args()
         {
-            return { std::make_move_iterator(m_args.begin()), std::make_move_iterator(m_args.end()) };
+            return { std::make_move_iterator(args.begin()), std::make_move_iterator(args.end()) };
         }
 
         bool verbose() const
         {
-            return m_verbose;
+            return verbose_flag;
         }
 
     private:
-        const std::string m_program_name;
-        boost::program_options::options_description m_options;
+        const std::string prog_name;
+        boost::program_options::options_description options;
 
-        aesni::Mode m_mode;
-        aesni::Algorithm m_algorithm;
-        bool m_boxes;
-        std::vector<std::string> m_args;
-        bool m_verbose;
+        aesni::Mode encryption_mode;
+        aesni::Algorithm encryption_algo;
+        bool boxes_flag;
+        std::vector<std::string> args;
+        bool verbose_flag;
     };
 }
 

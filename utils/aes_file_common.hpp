@@ -63,26 +63,26 @@ namespace
     class CommandLineParser
     {
     public:
-        CommandLineParser(const std::string& program_name)
-            : m_program_name(program_name)
-            , m_options("Options")
+        CommandLineParser(const std::string& prog_name)
+            : prog_name(prog_name)
+            , options("Options")
         { }
 
         bool parse_options(int argc, char** argv)
         {
             namespace po = boost::program_options;
 
-            m_options.add_options()
+            options.add_options()
                 ("help,h", "show this message and exit")
-                ("mode,m", po::value<aesni::Mode>(&m_mode)->required(), "set mode of operation")
-                ("algorithm,a", po::value<aesni::Algorithm>(&m_algorithm)->required(), "set algorithm");
+                ("mode,m", po::value<aesni::Mode>(&encryption_mode)->required(), "set mode of operation")
+                ("algorithm,a", po::value<aesni::Algorithm>(&encryption_algo)->required(), "set algorithm");
 
             po::options_description hidden_options;
             hidden_options.add_options()
-                ("positional", po::value<std::vector<std::string>>(&m_args));
+                ("positional", po::value<std::vector<std::string>>(&args));
 
             po::options_description all_options;
-            all_options.add(m_options).add(hidden_options);
+            all_options.add(options).add(hidden_options);
 
             po::positional_options_description positional_options;
             positional_options.add("positional", -1);
@@ -102,31 +102,31 @@ namespace
 
         void print_usage()
         {
-            std::cout << "Usage: " << m_program_name << " [OPTIONS...] KEY [IV] SRC_PATH DEST_PATH\n";
-            std::cout << m_options << "\n";
+            std::cout << "Usage: " << prog_name << " [OPTIONS...] KEY [IV] SRC_PATH DEST_PATH\n";
+            std::cout << options << "\n";
         }
 
         aesni::Mode get_mode() const
         {
-            return m_mode;
+            return encryption_mode;
         }
 
         aesni::Algorithm get_algorithm() const
         {
-            return m_algorithm;
+            return encryption_algo;
         }
 
         std::deque<std::string> get_args()
         {
-            return { std::make_move_iterator(m_args.begin()), std::make_move_iterator(m_args.end()) };
+            return { std::make_move_iterator(args.begin()), std::make_move_iterator(args.end()) };
         }
 
     private:
-        const std::string m_program_name;
-        boost::program_options::options_description m_options;
+        const std::string prog_name;
+        boost::program_options::options_description options;
 
-        aesni::Mode m_mode;
-        aesni::Algorithm m_algorithm;
-        std::vector<std::string> m_args;
+        aesni::Mode encryption_mode;
+        aesni::Algorithm encryption_algo;
+        std::vector<std::string> args;
     };
 }
