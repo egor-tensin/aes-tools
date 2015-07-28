@@ -11,9 +11,9 @@
 #include <emmintrin.h>
 #include <wmmintrin.h>
 
-AesNI_Aes_Block __fastcall aesni_aes256_encrypt_block_(
-    AesNI_Aes_Block plaintext,
-    const AesNI_Aes256_RoundKeys* encryption_keys)
+AesNI_AES_Block __fastcall aesni_AES256_encrypt_block_(
+    AesNI_AES_Block plaintext,
+    const AesNI_AES256_RoundKeys* encryption_keys)
 {
     plaintext = _mm_xor_si128(plaintext, encryption_keys->keys[0]);
     plaintext = _mm_aesenc_si128(plaintext, encryption_keys->keys[1]);
@@ -32,9 +32,9 @@ AesNI_Aes_Block __fastcall aesni_aes256_encrypt_block_(
     return _mm_aesenclast_si128(plaintext, encryption_keys->keys[14]);
 }
 
-AesNI_Aes_Block __fastcall aesni_aes256_decrypt_block_(
-    AesNI_Aes_Block ciphertext,
-    const AesNI_Aes256_RoundKeys* decryption_keys)
+AesNI_AES_Block __fastcall aesni_AES256_decrypt_block_(
+    AesNI_AES_Block ciphertext,
+    const AesNI_AES256_RoundKeys* decryption_keys)
 {
     ciphertext = _mm_xor_si128(ciphertext, decryption_keys->keys[0]);
     ciphertext = _mm_aesdec_si128(ciphertext, decryption_keys->keys[1]);
@@ -53,12 +53,12 @@ AesNI_Aes_Block __fastcall aesni_aes256_decrypt_block_(
     return _mm_aesdeclast_si128(ciphertext, decryption_keys->keys[14]);
 }
 
-static AesNI_Aes_Block __fastcall aesni_aes256_expand_key_assist(
-    AesNI_Aes_Block* prev_lo,
-    AesNI_Aes_Block* prev_hi,
-    AesNI_Aes_Block hwgen)
+static AesNI_AES_Block __fastcall aesni_aes256_expand_key_assist(
+    AesNI_AES_Block* prev_lo,
+    AesNI_AES_Block* prev_hi,
+    AesNI_AES_Block hwgen)
 {
-    AesNI_Aes_Block tmp = *prev_lo;
+    AesNI_AES_Block tmp = *prev_lo;
 
     tmp = _mm_slli_si128(tmp, 4);
     *prev_lo = _mm_xor_si128(*prev_lo, tmp);
@@ -76,13 +76,13 @@ static AesNI_Aes_Block __fastcall aesni_aes256_expand_key_assist(
     return *prev_hi;
 }
 
-void __fastcall aesni_aes256_expand_key_(
-    AesNI_Aes_Block key_lo,
-    AesNI_Aes_Block key_hi,
-    AesNI_Aes256_RoundKeys* encryption_keys)
+void __fastcall aesni_AES256_expand_key_(
+    AesNI_AES_Block key_lo,
+    AesNI_AES_Block key_hi,
+    AesNI_AES256_RoundKeys* encryption_keys)
 {
-    AesNI_Aes_Block prev_lo, prev_hi;
-    AesNI_Aes_Block hwgen;
+    AesNI_AES_Block prev_lo, prev_hi;
+    AesNI_AES_Block hwgen;
 
     prev_lo = encryption_keys->keys[0] = key_lo;
     prev_hi = encryption_keys->keys[1] = key_hi;
@@ -140,9 +140,9 @@ void __fastcall aesni_aes256_expand_key_(
     encryption_keys->keys[14] = aesni_aes256_expand_key_assist(&prev_lo, &prev_hi, hwgen);
 }
 
-void __fastcall aesni_aes256_derive_decryption_keys_(
-    const AesNI_Aes256_RoundKeys* encryption_keys,
-    AesNI_Aes256_RoundKeys* decryption_keys)
+void __fastcall aesni_AES256_derive_decryption_keys_(
+    const AesNI_AES256_RoundKeys* encryption_keys,
+    AesNI_AES256_RoundKeys* decryption_keys)
 {
     decryption_keys->keys[0] = encryption_keys->keys[14];
     decryption_keys->keys[1] = _mm_aesimc_si128(encryption_keys->keys[13]);

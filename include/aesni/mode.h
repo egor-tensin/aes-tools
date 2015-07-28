@@ -25,137 +25,137 @@ typedef enum
 }
 AesNI_Mode;
 
-#define AESNI_ENCRYPT_BLOCK_ECB(prefix, BlockT, KeyT) \
-static __inline BlockT __fastcall aesni_## prefix ##_encrypt_block_ecb( \
-    BlockT plaintext, \
-    const KeyT* key) \
+#define AESNI_ENCRYPT_BLOCK_ECB(prefix) \
+static __inline AesNI_## prefix ##_Block __fastcall aesni_## prefix ##_encrypt_block_ECB( \
+    AesNI_## prefix ##_Block plaintext, \
+    const AesNI_## prefix ##_RoundKeys* encryption_keys) \
 { \
-    assert(key); \
+    assert(encryption_keys); \
 \
-    return aesni_## prefix ##_encrypt_block_(plaintext, key); \
+    return aesni_## prefix ##_encrypt_block_(plaintext, encryption_keys); \
 }
 
-#define AESNI_DECRYPT_BLOCK_ECB(prefix, BlockT, KeyT) \
-static __inline BlockT __fastcall aesni_## prefix ##_decrypt_block_ecb( \
-    BlockT ciphertext, \
-    const KeyT* key) \
+#define AESNI_DECRYPT_BLOCK_ECB(prefix) \
+static __inline AesNI_## prefix ##_Block  __fastcall aesni_## prefix ##_decrypt_block_ECB( \
+    AesNI_## prefix ##_Block ciphertext, \
+    const AesNI_## prefix ##_RoundKeys* decryption_keys) \
 { \
-    assert(key); \
+    assert(decryption_keys); \
 \
-    return aesni_## prefix ##_decrypt_block_(ciphertext, key); \
+    return aesni_## prefix ##_decrypt_block_(ciphertext, decryption_keys); \
 }
 
-#define AESNI_ENCRYPT_BLOCK_CBC(prefix, BlockT, KeyT) \
-static __inline BlockT __fastcall aesni_## prefix ##_encrypt_block_cbc( \
-    BlockT plaintext, \
-    const KeyT* key, \
-    BlockT init_vector, \
-    BlockT* next_init_vector) \
+#define AESNI_ENCRYPT_BLOCK_CBC(prefix) \
+static __inline AesNI_## prefix ##_Block __fastcall aesni_## prefix ##_encrypt_block_CBC( \
+    AesNI_## prefix ##_Block plaintext, \
+    const AesNI_## prefix ##_RoundKeys* encryption_keys, \
+    AesNI_## prefix ##_Block init_vector, \
+    AesNI_## prefix ##_Block* next_init_vector) \
 { \
-    assert(key); \
+    assert(encryption_keys); \
     assert(next_init_vector); \
 \
-    return *next_init_vector = aesni_## prefix ##_encrypt_block_ecb( \
-        aesni_## prefix ##_xor_blocks(plaintext, init_vector), key); \
+    return *next_init_vector = aesni_## prefix ##_encrypt_block_( \
+        aesni_## prefix ##_xor_blocks(plaintext, init_vector), encryption_keys); \
 }
 
-#define AESNI_DECRYPT_BLOCK_CBC(prefix, BlockT, KeyT) \
-static __inline BlockT __fastcall aesni_## prefix ##_decrypt_block_cbc( \
-    BlockT ciphertext, \
-    const KeyT* key, \
-    BlockT init_vector, \
-    BlockT* next_init_vector) \
+#define AESNI_DECRYPT_BLOCK_CBC(prefix) \
+static __inline AesNI_## prefix ##_Block __fastcall aesni_## prefix ##_decrypt_block_CBC( \
+    AesNI_## prefix ##_Block ciphertext, \
+    const AesNI_## prefix ##_RoundKeys* decryption_keys, \
+    AesNI_## prefix ##_Block init_vector, \
+    AesNI_## prefix ##_Block* next_init_vector) \
 { \
-    assert(key); \
+    assert(decryption_keys); \
     assert(next_init_vector); \
 \
-    BlockT plaintext = aesni_## prefix ##_xor_blocks( \
-        aesni_## prefix ##_decrypt_block_ecb(ciphertext, key), init_vector); \
+    AesNI_## prefix ##_Block plaintext = aesni_## prefix ##_xor_blocks( \
+        aesni_## prefix ##_decrypt_block_(ciphertext, decryption_keys), init_vector); \
     *next_init_vector = ciphertext; \
     return plaintext; \
 }
 
-#define AESNI_ENCRYPT_BLOCK_CFB(prefix, BlockT, KeyT) \
-static __inline BlockT __fastcall aesni_## prefix ##_encrypt_block_cfb( \
-    BlockT plaintext, \
-    const KeyT* key, \
-    BlockT init_vector, \
-    BlockT* next_init_vector) \
+#define AESNI_ENCRYPT_BLOCK_CFB(prefix) \
+static __inline AesNI_## prefix ##_Block __fastcall aesni_## prefix ##_encrypt_block_CFB( \
+    AesNI_## prefix ##_Block plaintext, \
+    const AesNI_## prefix ##_RoundKeys* encryption_keys, \
+    AesNI_## prefix ##_Block init_vector, \
+    AesNI_## prefix ##_Block* next_init_vector) \
 { \
-    assert(key); \
+    assert(encryption_keys); \
     assert(next_init_vector); \
 \
     return *next_init_vector = aesni_## prefix ##_xor_blocks( \
-        aesni_## prefix ##_encrypt_block_ecb(init_vector, key), plaintext); \
+        aesni_## prefix ##_encrypt_block_(init_vector, encryption_keys), plaintext); \
 }
 
-#define AESNI_DECRYPT_BLOCK_CFB(prefix, BlockT, KeyT) \
-static __inline BlockT __fastcall aesni_## prefix ##_decrypt_block_cfb( \
-    BlockT ciphertext, \
-    const KeyT* key, \
-    BlockT init_vector, \
-    BlockT* next_init_vector) \
+#define AESNI_DECRYPT_BLOCK_CFB(prefix) \
+static __inline AesNI_## prefix ##_Block __fastcall aesni_## prefix ##_decrypt_block_CFB( \
+    AesNI_## prefix ##_Block ciphertext, \
+    const AesNI_## prefix ##_RoundKeys* encryption_keys, \
+    AesNI_## prefix ##_Block init_vector, \
+    AesNI_## prefix ##_Block* next_init_vector) \
 { \
-    assert(key); \
+    assert(encryption_keys); \
     assert(next_init_vector); \
 \
-    BlockT plaintext = aesni_## prefix ##_xor_blocks( \
-        aesni_## prefix ##_encrypt_block_ecb(init_vector, key), ciphertext); \
+    AesNI_## prefix ##_Block plaintext = aesni_## prefix ##_xor_blocks( \
+        aesni_## prefix ##_encrypt_block_(init_vector, encryption_keys), ciphertext); \
     *next_init_vector = ciphertext; \
     return plaintext; \
 }
 
-#define AESNI_ENCRYPT_BLOCK_OFB(prefix, BlockT, KeyT) \
-static __inline BlockT __fastcall aesni_## prefix ##_encrypt_block_ofb( \
-    BlockT plaintext, \
-    const KeyT* key, \
-    BlockT init_vector, \
-    BlockT* next_init_vector) \
+#define AESNI_ENCRYPT_BLOCK_OFB(prefix) \
+static __inline AesNI_## prefix ##_Block __fastcall aesni_## prefix ##_encrypt_block_OFB( \
+    AesNI_## prefix ##_Block plaintext, \
+    const AesNI_## prefix ##_RoundKeys* encryption_keys, \
+    AesNI_## prefix ##_Block init_vector, \
+    AesNI_## prefix ##_Block* next_init_vector) \
 { \
-    assert(key); \
+    assert(encryption_keys); \
     assert(next_init_vector); \
 \
-    BlockT tmp = aesni_## prefix ##_encrypt_block_ecb(init_vector, key); \
+    AesNI_## prefix ##_Block tmp = aesni_## prefix ##_encrypt_block_(init_vector, encryption_keys); \
     *next_init_vector = tmp; \
     return aesni_## prefix ##_xor_blocks(tmp, plaintext); \
 }
 
-#define AESNI_DECRYPT_BLOCK_OFB(prefix, BlockT, KeyT) \
-static __inline BlockT __fastcall aesni_## prefix ##_decrypt_block_ofb( \
-    BlockT ciphertext, \
-    const KeyT* key, \
-    BlockT init_vector, \
-    BlockT* next_init_vector) \
+#define AESNI_DECRYPT_BLOCK_OFB(prefix) \
+static __inline AesNI_## prefix ##_Block __fastcall aesni_## prefix ##_decrypt_block_OFB( \
+    AesNI_## prefix ##_Block ciphertext, \
+    const AesNI_## prefix ##_RoundKeys* encryption_keys, \
+    AesNI_## prefix ##_Block init_vector, \
+    AesNI_## prefix ##_Block* next_init_vector) \
 { \
-    return aesni_## prefix ##_encrypt_block_ofb( \
-        ciphertext, key, init_vector, next_init_vector); \
+    return aesni_## prefix ##_encrypt_block_OFB( \
+        ciphertext, encryption_keys, init_vector, next_init_vector); \
 }
 
-#define AESNI_ENCRYPT_BLOCK_CTR(prefix, BlockT, KeyT) \
-static __inline BlockT __fastcall aesni_## prefix ##_encrypt_block_ctr( \
-    BlockT plaintext, \
-    const KeyT* key, \
-    BlockT init_vector, \
-    BlockT* next_init_vector) \
+#define AESNI_ENCRYPT_BLOCK_CTR(prefix) \
+static __inline AesNI_## prefix ##_Block __fastcall aesni_## prefix ##_encrypt_block_CTR( \
+    AesNI_## prefix ##_Block plaintext, \
+    const AesNI_## prefix ##_RoundKeys* encryption_keys, \
+    AesNI_## prefix ##_Block init_vector, \
+    AesNI_## prefix ##_Block* next_init_vector) \
 { \
-    assert(key); \
+    assert(encryption_keys); \
     assert(next_init_vector); \
 \
-    BlockT ciphertext = aesni_## prefix ##_xor_blocks( \
-        plaintext, aesni_## prefix ##_encrypt_block_ecb(init_vector, key)); \
+    AesNI_## prefix ##_Block ciphertext = aesni_## prefix ##_xor_blocks( \
+        plaintext, aesni_## prefix ##_encrypt_block_(init_vector, encryption_keys)); \
     *next_init_vector = aesni_## prefix ##_inc_block(init_vector); \
     return ciphertext; \
 }
 
-#define AESNI_DECRYPT_BLOCK_CTR(prefix, BlockT, KeyT) \
-static __inline BlockT __fastcall aesni_## prefix ##_decrypt_block_ctr( \
-    BlockT ciphertext, \
-    const KeyT* key, \
-    BlockT init_vector, \
-    BlockT* next_init_vector) \
+#define AESNI_DECRYPT_BLOCK_CTR(prefix) \
+static __inline AesNI_## prefix ##_Block __fastcall aesni_## prefix ##_decrypt_block_CTR( \
+    AesNI_## prefix ##_Block ciphertext, \
+    const AesNI_## prefix ##_RoundKeys* encryption_keys, \
+    AesNI_## prefix ##_Block init_vector, \
+    AesNI_## prefix ##_Block* next_init_vector) \
 { \
-    return aesni_## prefix ##_encrypt_block_ctr( \
-        ciphertext, key, init_vector, next_init_vector); \
+    return aesni_## prefix ##_encrypt_block_CTR( \
+        ciphertext, encryption_keys, init_vector, next_init_vector); \
 }
 
 #ifdef __cplusplus

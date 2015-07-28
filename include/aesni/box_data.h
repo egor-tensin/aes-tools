@@ -21,31 +21,31 @@ extern "C"
 
 typedef union
 {
-    AesNI_Aes128_Key aes128_key;
-    AesNI_Aes192_Key aes192_key;
-    AesNI_Aes256_Key aes256_key;
+    AesNI_AES128_Key aes128_key;
+    AesNI_AES192_Key aes192_key;
+    AesNI_AES256_Key aes256_key;
 }
 AesNI_BoxAlgorithmParams;
 
 typedef union
 {
-    AesNI_Aes128_RoundKeys aes128_encryption_keys;
-    AesNI_Aes192_RoundKeys aes192_encryption_keys;
-    AesNI_Aes256_RoundKeys aes256_encryption_keys;
+    AesNI_AES128_RoundKeys aes128_encryption_keys;
+    AesNI_AES192_RoundKeys aes192_encryption_keys;
+    AesNI_AES256_RoundKeys aes256_encryption_keys;
 }
 AesNI_BoxEncryptionParams;
 
 typedef union
 {
-    AesNI_Aes128_RoundKeys aes128_decryption_keys;
-    AesNI_Aes192_RoundKeys aes192_decryption_keys;
-    AesNI_Aes256_RoundKeys aes256_decryption_keys;
+    AesNI_AES128_RoundKeys aes128_decryption_keys;
+    AesNI_AES192_RoundKeys aes192_decryption_keys;
+    AesNI_AES256_RoundKeys aes256_decryption_keys;
 }
 AesNI_BoxDecryptionParams;
 
 typedef union
 {
-    AesNI_Aes_Block aes_block;
+    AesNI_AES_Block aes_block;
 }
 AesNI_BoxBlock;
 

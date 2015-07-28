@@ -12,9 +12,9 @@
 #include <stdio.h>
 #include <string.h>
 
-AesNI_StatusCode aesni_aes_format_block(
-    AesNI_Aes_BlockString* str,
-    const AesNI_Aes_Block* block,
+AesNI_StatusCode aesni_AES_format_block(
+    AesNI_AES_BlockString* str,
+    const AesNI_AES_Block* block,
     AesNI_ErrorDetails* err_details)
 {
     assert(str);
@@ -37,9 +37,9 @@ AesNI_StatusCode aesni_aes_format_block(
     return AESNI_SUCCESS;
 }
 
-AesNI_StatusCode aesni_aes_format_block_as_matrix(
-    AesNI_Aes_BlockMatrixString* str,
-    const AesNI_Aes_Block* block,
+AesNI_StatusCode aesni_AES_format_block_as_matrix(
+    AesNI_AES_BlockMatrixString* str,
+    const AesNI_AES_Block* block,
     AesNI_ErrorDetails* err_details)
 {
     assert(str);
@@ -66,8 +66,8 @@ AesNI_StatusCode aesni_aes_format_block_as_matrix(
     return AESNI_SUCCESS;
 }
 
-AesNI_StatusCode aesni_aes_print_block(
-    const AesNI_Aes_Block* block,
+AesNI_StatusCode aesni_AES_print_block(
+    const AesNI_AES_Block* block,
     AesNI_ErrorDetails* err_details)
 {
     assert(block);
@@ -76,17 +76,17 @@ AesNI_StatusCode aesni_aes_print_block(
         return aesni_error_null_argument(err_details, "block");
 
     AesNI_StatusCode ec = AESNI_SUCCESS;
-    AesNI_Aes_BlockString str;
+    AesNI_AES_BlockString str;
 
-    if (aesni_is_error(ec = aesni_aes_format_block(&str, block, err_details)))
+    if (aesni_is_error(ec = aesni_AES_format_block(&str, block, err_details)))
         return ec;
 
     printf("%s\n", str.str);
     return ec;
 }
 
-AesNI_StatusCode aesni_aes_print_block_as_matrix(
-    const AesNI_Aes_Block* block,
+AesNI_StatusCode aesni_AES_print_block_as_matrix(
+    const AesNI_AES_Block* block,
     AesNI_ErrorDetails* err_details)
 {
     assert(block);
@@ -95,17 +95,17 @@ AesNI_StatusCode aesni_aes_print_block_as_matrix(
         return aesni_error_null_argument(err_details, "block");
 
     AesNI_StatusCode ec = AESNI_SUCCESS;
-    AesNI_Aes_BlockMatrixString str;
+    AesNI_AES_BlockMatrixString str;
 
-    if (aesni_is_error(ec = aesni_aes_format_block_as_matrix(&str, block, err_details)))
+    if (aesni_is_error(ec = aesni_AES_format_block_as_matrix(&str, block, err_details)))
         return ec;
 
     printf("%s", str.str);
     return ec;
 }
 
-AesNI_StatusCode aesni_aes_parse_block(
-    AesNI_Aes_Block* dest,
+AesNI_StatusCode aesni_AES_parse_block(
+    AesNI_AES_Block* dest,
     const char* src,
     AesNI_ErrorDetails* err_details)
 {
@@ -135,17 +135,34 @@ AesNI_StatusCode aesni_aes_parse_block(
     return AESNI_SUCCESS;
 }
 
-AesNI_StatusCode aesni_aes128_format_key(
-    AesNI_Aes128_KeyString* str,
-    const AesNI_Aes128_Key* key,
+AesNI_StatusCode aesni_AES128_format_key(
+    AesNI_AES128_KeyString* str,
+    const AesNI_AES128_Key* key,
     AesNI_ErrorDetails* err_details)
 {
-    return aesni_aes_format_block(str, &key->key, err_details);
+    assert(str);
+    assert(key);
+
+    if (str == NULL)
+        return aesni_error_null_argument(err_details, "str");
+    if (key == NULL)
+        return aesni_error_null_argument(err_details, "key");
+
+    char* cursor = str->str;
+
+    __declspec(align(16)) unsigned char bytes[16];
+    aesni_store_block128_aligned(bytes, key->key);
+
+    for (int i = 0; i < 16; ++i, cursor += 2)
+        sprintf(cursor, "%02x", bytes[i]);
+
+    *cursor = '\0';
+    return AESNI_SUCCESS;
 }
 
-AesNI_StatusCode aesni_aes192_format_key(
-    AesNI_Aes192_KeyString* str,
-    const AesNI_Aes192_Key* key,
+AesNI_StatusCode aesni_AES192_format_key(
+    AesNI_AES192_KeyString* str,
+    const AesNI_AES192_Key* key,
     AesNI_ErrorDetails* err_details)
 {
     assert(str);
@@ -178,9 +195,9 @@ AesNI_StatusCode aesni_aes192_format_key(
     return AESNI_SUCCESS;
 }
 
-AesNI_StatusCode aesni_aes256_format_key(
-    AesNI_Aes256_KeyString* str,
-    const AesNI_Aes256_Key* key,
+AesNI_StatusCode aesni_AES256_format_key(
+    AesNI_AES256_KeyString* str,
+    const AesNI_AES256_Key* key,
     AesNI_ErrorDetails* err_details)
 {
     assert(str);
@@ -213,34 +230,15 @@ AesNI_StatusCode aesni_aes256_format_key(
     return AESNI_SUCCESS;
 }
 
-AesNI_StatusCode aesni_aes128_print_key(
-    const AesNI_Aes128_Key* key,
+AesNI_StatusCode aesni_AES128_print_key(
+    const AesNI_AES128_Key* key,
     AesNI_ErrorDetails* err_details)
 {
-    return aesni_aes_print_block(&key->key, err_details);
+    return aesni_AES_print_block(&key->key, err_details);
 }
 
-AesNI_StatusCode aesni_aes192_print_key(
-    const AesNI_Aes192_Key* key,
-    AesNI_ErrorDetails* err_details)
-{
-    assert(key);
-
-    if (key == NULL)
-        return aesni_error_null_argument(err_details, "key");
-
-    AesNI_StatusCode ec = AESNI_SUCCESS;
-    AesNI_Aes192_KeyString str;
-
-    if (aesni_is_error(ec = aesni_aes192_format_key(&str, key, err_details)))
-        return ec;
-
-    printf("%s\n", str.str);
-    return ec;
-}
-
-AesNI_StatusCode aesni_aes256_print_key(
-    const AesNI_Aes256_Key* key,
+AesNI_StatusCode aesni_AES192_print_key(
+    const AesNI_AES192_Key* key,
     AesNI_ErrorDetails* err_details)
 {
     assert(key);
@@ -249,25 +247,44 @@ AesNI_StatusCode aesni_aes256_print_key(
         return aesni_error_null_argument(err_details, "key");
 
     AesNI_StatusCode ec = AESNI_SUCCESS;
-    AesNI_Aes256_KeyString str;
+    AesNI_AES192_KeyString str;
 
-    if (aesni_is_error(ec = aesni_aes256_format_key(&str, key, err_details)))
+    if (aesni_is_error(ec = aesni_AES192_format_key(&str, key, err_details)))
         return ec;
 
     printf("%s\n", str.str);
     return ec;
 }
 
-AesNI_StatusCode aesni_aes128_parse_key(
-    AesNI_Aes128_Key* dest,
+AesNI_StatusCode aesni_AES256_print_key(
+    const AesNI_AES256_Key* key,
+    AesNI_ErrorDetails* err_details)
+{
+    assert(key);
+
+    if (key == NULL)
+        return aesni_error_null_argument(err_details, "key");
+
+    AesNI_StatusCode ec = AESNI_SUCCESS;
+    AesNI_AES256_KeyString str;
+
+    if (aesni_is_error(ec = aesni_AES256_format_key(&str, key, err_details)))
+        return ec;
+
+    printf("%s\n", str.str);
+    return ec;
+}
+
+AesNI_StatusCode aesni_AES128_parse_key(
+    AesNI_AES128_Key* dest,
     const char* src,
     AesNI_ErrorDetails* err_details)
 {
-    return aesni_aes_parse_block(&dest->key, src, err_details);
+    return aesni_AES_parse_block(&dest->key, src, err_details);
 }
 
-AesNI_StatusCode aesni_aes192_parse_key(
-    AesNI_Aes192_Key* dest,
+AesNI_StatusCode aesni_AES192_parse_key(
+    AesNI_AES192_Key* dest,
     const char* src,
     AesNI_ErrorDetails* err_details)
 {
@@ -317,8 +334,8 @@ AesNI_StatusCode aesni_aes192_parse_key(
     return AESNI_SUCCESS;
 }
 
-AesNI_StatusCode aesni_aes256_parse_key(
-    AesNI_Aes256_Key* dest,
+AesNI_StatusCode aesni_AES256_parse_key(
+    AesNI_AES256_Key* dest,
     const char* src,
     AesNI_ErrorDetails* err_details)
 {
