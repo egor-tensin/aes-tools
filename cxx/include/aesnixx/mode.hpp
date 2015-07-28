@@ -24,8 +24,25 @@ namespace aesni
     struct ModeRequiresInitializationVector<AESNI_ECB> : public std::false_type
     { };
 
+    template <Mode mode>
+    struct ModeUsesEncryptionKeysOnly : public std::true_type
+    { };
+
     inline bool mode_requires_initialization_vector(Mode mode)
     {
         return mode != AESNI_ECB;
+    }
+
+    template <>
+    struct ModeUsesEncryptionKeysOnly<AESNI_ECB> : public std::false_type
+    { };
+
+    template <>
+    struct ModeUsesEncryptionKeysOnly<AESNI_CBC> : public std::false_type
+    { };
+
+    inline bool mode_uses_encryption_keys_only(Mode mode)
+    {
+        return mode != AESNI_ECB && mode != AESNI_CBC;
     }
 }
