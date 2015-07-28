@@ -6,6 +6,8 @@
  *            See LICENSE.txt for details.
  */
 
+#pragma once
+
 #include "algorithm.hpp"
 #include "data.hpp"
 #include "mode.hpp"
@@ -13,8 +15,6 @@
 #include <aesni/all.h>
 
 #include <string>
-
-#pragma once
 
 namespace aesni
 {
