@@ -25,48 +25,48 @@ namespace
         std::deque<std::string>& ciphertexts,
         bool verbose = false)
     {
-        typename aesni::aes::Types<algorithm>::BlockT iv;
+        typename aesni::Types<algorithm>::Block iv;
 
         if (aesni::ModeRequiresInitializationVector<mode>())
         {
             if (ciphertexts.empty())
                 return false;
 
-            aesni::aes::from_string(iv, ciphertexts.front());
+            aesni::from_string<algorithm>(iv, ciphertexts.front());
             ciphertexts.pop_front();
 
             if (verbose)
-                dump_iv(iv);
+                dump_iv<algorithm>(iv);
         }
 
-        typename aesni::aes::Types<algorithm>::KeyT key;
-        aesni::aes::from_string(key, key_str);
+        typename aesni::Types<algorithm>::Key key;
+        aesni::from_string<algorithm>(key, key_str);
 
         if (verbose)
-            dump_key(key);
+            dump_key<algorithm>(key);
 
-        aesni::aes::Encrypt<algorithm, mode> encrypt(key, iv);
+        aesni::DecryptWrapper<algorithm, mode> decrypt(key, iv);
 
         if (verbose)
-            Dumper<algorithm, mode>::dump_round_keys(encrypt);
+            dump_wrapper<algorithm, mode>(decrypt);
 
         while (!ciphertexts.empty())
         {
-            typename aesni::aes::Types<algorithm>::BlockT ciphertext;
-            aesni::aes::from_string(ciphertext, ciphertexts.front());
+            typename aesni::Types<algorithm>::Block ciphertext, plaintext;
+            aesni::from_string<algorithm>(ciphertext, ciphertexts.front());
             ciphertexts.pop_front();
 
-            const auto plaintext = encrypt.decrypt(ciphertext);
+            decrypt.decrypt_block(ciphertext, plaintext);
 
             if (verbose)
             {
-                dump_ciphertext(ciphertext);
-                dump_plaintext(plaintext);
-                Dumper<algorithm, mode>::dump_next_iv(encrypt);
+                dump_ciphertext<algorithm>(ciphertext);
+                dump_plaintext<algorithm>(plaintext);
+                dump_next_iv<algorithm, mode>(decrypt);
             }
             else
             {
-                std::cout << aesni::aes::to_string(plaintext) << "\n";
+                std::cout << aesni::to_string<algorithm>(plaintext) << "\n";
             }
         }
 
@@ -102,7 +102,7 @@ namespace
         }
     }
 
-    bool decrypt(
+    bool decrypt_using_cxx_api(
         aesni::Algorithm algorithm,
         aesni::Mode mode,
         const std::string& key_str,
@@ -125,32 +125,13 @@ namespace
         }
     }
 
-    bool decrypt_using_boxes(
-        aesni::Algorithm algorithm,
+    template <aesni::Algorithm algorithm>
+    bool decrypt_using_boxes_with_algorithm(
+        const AesNI_BoxAlgorithmParams& algorithm_params,
         aesni::Mode mode,
         const std::string& key,
         std::deque<std::string> ciphertexts)
     {
-        AesNI_BoxAlgorithmParams algorithm_params;
-
-        switch (algorithm)
-        {
-            case AESNI_AES128:
-                aesni::aes::from_string(algorithm_params.aes128_key, key);
-                break;
-
-            case AESNI_AES192:
-                aesni::aes::from_string(algorithm_params.aes192_key, key);
-                break;
-
-            case AESNI_AES256:
-                aesni::aes::from_string(algorithm_params.aes256_key, key);
-                break;
-
-            default:
-                return false;
-        }
-
         AesNI_BoxBlock iv;
         AesNI_BoxBlock* iv_ptr = nullptr;
 
@@ -159,7 +140,7 @@ namespace
             if (ciphertexts.empty())
                 return false;
 
-            aesni::aes::from_string(iv.aes_block, ciphertexts.front());
+            aesni::from_string<algorithm>(iv.aes_block, ciphertexts.front());
             iv_ptr = &iv;
             ciphertexts.pop_front();
         }
@@ -176,7 +157,7 @@ namespace
         while (!ciphertexts.empty())
         {
             AesNI_BoxBlock ciphertext;
-            aesni::aes::from_string(ciphertext.aes_block, ciphertexts.front());
+            aesni::from_string<algorithm>(ciphertext.aes_block, ciphertexts.front());
             ciphertexts.pop_front();
 
             AesNI_BoxBlock plaintext;
@@ -186,10 +167,43 @@ namespace
                 &plaintext,
                 aesni::ErrorDetailsThrowsInDestructor());
 
-            std::cout << aesni::aes::to_string(plaintext.aes_block) << "\n";
+            std::cout << aesni::to_string<algorithm>(plaintext.aes_block) << "\n";
         }
 
         return true;
+    }
+
+    bool decrypt_using_boxes(
+        aesni::Algorithm algorithm,
+        aesni::Mode mode,
+        const std::string& key,
+        std::deque<std::string> ciphertexts)
+    {
+        AesNI_BoxAlgorithmParams algorithm_params;
+
+        switch (algorithm)
+        {
+            case AESNI_AES128:
+                aesni::from_string<AESNI_AES128>(
+                    algorithm_params.aes128_key, key);
+                return decrypt_using_boxes_with_algorithm<AESNI_AES128>(
+                    algorithm_params, mode, key, ciphertexts);
+
+            case AESNI_AES192:
+                aesni::from_string<AESNI_AES192>(
+                    algorithm_params.aes192_key, key);
+                return decrypt_using_boxes_with_algorithm<AESNI_AES192>(
+                    algorithm_params, mode, key, ciphertexts);
+
+            case AESNI_AES256:
+                aesni::from_string<AESNI_AES256>(
+                    algorithm_params.aes256_key, key);
+                return decrypt_using_boxes_with_algorithm<AESNI_AES256>(
+                    algorithm_params, mode, key, ciphertexts);
+
+            default:
+                return false;
+        }
     }
 }
 
@@ -228,7 +242,7 @@ int main(int argc, char** argv)
 
             const auto success = cmd_parser.use_boxes()
                 ? decrypt_using_boxes(algorithm, mode, key, ciphertexts)
-                : decrypt(algorithm, mode, key, ciphertexts, cmd_parser.verbose());
+                : decrypt_using_cxx_api(algorithm, mode, key, ciphertexts, cmd_parser.verbose());
 
             if (!success)
             {

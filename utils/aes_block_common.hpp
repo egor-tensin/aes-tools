@@ -151,126 +151,92 @@ namespace
 
 namespace
 {
-    void dump_block(const char* name, const aesni::aes::Block& block)
+    template <aesni::Algorithm algorithm>
+    void dump_block(const char* name, const typename aesni::Types<algorithm>::Block& block)
     {
-        std::cout << name << ": " << aesni::aes::to_string(block) << "\n" << aesni::aes::to_matrix_string(block) << "\n";
+        std::cout << name << ": " << aesni::to_string<algorithm>(block) << "\n" << aesni::to_matrix_string<algorithm>(block) << "\n";
     }
 
-    void dump_plaintext(const aesni::aes::Block& block)
+    template <aesni::Algorithm algorithm>
+    void dump_plaintext(const typename aesni::Types<algorithm>::Block& block)
     {
-        dump_block("Plaintext", block);
+        dump_block<algorithm>("Plaintext", block);
     }
 
-    template <typename KeyT>
-    void dump_key(const KeyT& key)
+    template <aesni::Algorithm algorithm>
+    void dump_key(const typename aesni::Types<algorithm>::Key& key)
     {
-        std::cout << "Key: " << aesni::aes::to_string(key) << "\n\n";
+        std::cout << "Key: " << aesni::to_string<algorithm>(key) << "\n\n";
     }
 
-    void dump_ciphertext(const aesni::aes::Block& ciphertext)
+    template <aesni::Algorithm algorithm>
+    void dump_ciphertext(const typename aesni::Types<algorithm>::Block& ciphertext)
     {
-        dump_block("Ciphertext", ciphertext);
+        dump_block<algorithm>("Ciphertext", ciphertext);
     }
 
-    void dump_iv(const aesni::aes::Block& iv)
+    template <aesni::Algorithm algorithm>
+    void dump_iv(const typename aesni::Types<algorithm>::Block& iv)
     {
-        dump_block("Initialization vector", iv);
+        dump_block<algorithm>("Initialization vector", iv);
     }
 
-    void dump_next_iv(const aesni::aes::Block& next_iv)
-    {
-        dump_block("Next initialization vector", next_iv);
-    }
-
-    template <typename RoundKeysT>
-    void dump_round_keys(const char* name, const RoundKeysT& round_keys)
+    template <aesni::Algorithm algorithm>
+    void dump_round_keys(const char* name, const typename aesni::Types<algorithm>::RoundKeys& round_keys)
     {
         std::cout << name << ":\n";
-        for (std::size_t i = 0; i < aesni::aes::get_number_of_rounds(round_keys); ++i)
-            std::cout << "\t[" << i << "]: " << aesni::aes::to_string(round_keys.keys[i]) << "\n";
+        for (std::size_t i = 0; i < aesni::get_number_of_rounds<algorithm>(); ++i)
+            std::cout << "\t[" << i << "]: " << aesni::to_string<algorithm>(round_keys.keys[i]) << "\n";
         std::cout << "\n";
     }
 
-    template <typename RoundKeysT>
-    void dump_encryption_keys(const RoundKeysT& round_keys)
+    template <aesni::Algorithm algorithm>
+    void dump_encryption_keys(const typename aesni::Types<algorithm>::RoundKeys& round_keys)
     {
-        dump_round_keys("Encryption round keys", round_keys);
+        dump_round_keys<algorithm>("Encryption round keys", round_keys);
     }
 
-    template <typename RoundKeysT>
-    void dump_decryption_keys(const RoundKeysT& round_keys)
+    template <aesni::Algorithm algorithm>
+    void dump_decryption_keys(const typename aesni::Types<algorithm>::RoundKeys& round_keys)
     {
-        dump_round_keys("Decryption round keys", round_keys);
+        dump_round_keys<algorithm>("Decryption round keys", round_keys);
     }
 
-    template <aesni::Algorithm algo, aesni::Mode mode>
-    struct Dumper;
-
-    template <aesni::Algorithm algo>
-    struct Dumper<algo, AESNI_ECB>
+    template <aesni::Algorithm algorithm, aesni::Mode mode>
+    void dump_wrapper(
+        const aesni::EncryptWrapper<algorithm, mode>& wrapper)
     {
-        static void dump_round_keys(const aesni::aes::Encrypt<algo, AESNI_ECB>& encrypt)
-        {
-            dump_encryption_keys(encrypt.encryption_keys);
-            dump_decryption_keys(encrypt.decryption_keys);
-        }
+        dump_encryption_keys<algorithm>(wrapper.encryption_keys);
+    }
 
-        static void dump_next_iv(const aesni::aes::Encrypt<algo, AESNI_ECB>&)
-        { }
-    };
-
-    template <aesni::Algorithm algo>
-    struct Dumper<algo, AESNI_CBC>
+    template <aesni::Algorithm algorithm, aesni::Mode mode>
+    void dump_wrapper(
+        const aesni::DecryptWrapper<algorithm, mode>& wrapper)
     {
-        static void dump_round_keys(const aesni::aes::Encrypt<algo, AESNI_CBC>& encrypt)
-        {
-            dump_encryption_keys(encrypt.encryption_keys);
-            dump_decryption_keys(encrypt.decryption_keys);
-        }
+        dump_decryption_keys<algorithm>(wrapper.decryption_keys);
+    }
 
-        static void dump_next_iv(const aesni::aes::Encrypt<algo, AESNI_CBC>&)
-        { }
-    };
-
-    template <aesni::Algorithm algo>
-    struct Dumper<algo, AESNI_CFB>
+    template <aesni::Algorithm algorithm, aesni::Mode mode, typename std::enable_if<aesni::ModeRequiresInitializationVector<mode>::value>::type* = 0>
+    void dump_next_iv(
+        const aesni::EncryptWrapper<algorithm, mode>& wrapper)
     {
-        static void dump_round_keys(const aesni::aes::Encrypt<algo, AESNI_CFB>& encrypt)
-        {
-            dump_encryption_keys(encrypt.encryption_keys);
-        }
+        dump_block<algorithm>("Next initialization vector", wrapper.iv);
+    }
 
-        static void dump_next_iv(const aesni::aes::Encrypt<algo, AESNI_CFB>& encrypt)
-        {
-            ::dump_next_iv(encrypt.iv);
-        }
-    };
+    template <aesni::Algorithm algorithm, aesni::Mode mode, typename std::enable_if<!aesni::ModeRequiresInitializationVector<mode>::value>::type* = 0>
+    void dump_next_iv(
+        const aesni::EncryptWrapper<algorithm, mode>&)
+    { }
 
-    template <aesni::Algorithm algo>
-    struct Dumper<algo, AESNI_OFB>
+    template <aesni::Algorithm algorithm, aesni::Mode mode, typename std::enable_if<aesni::ModeRequiresInitializationVector<mode>::value>::type* = 0>
+    void dump_next_iv(
+        const aesni::DecryptWrapper<algorithm, mode>& wrapper)
     {
-        static void dump_round_keys(const aesni::aes::Encrypt<algo, AESNI_OFB>& encrypt)
-        {
-            dump_encryption_keys(encrypt.encryption_keys);
-        }
+        dump_block<algorithm>("Next initialization vector", wrapper.iv);
+    }
 
-        static void dump_next_iv(const aesni::aes::Encrypt<algo, AESNI_OFB>& encrypt)
-        {
-            ::dump_next_iv(encrypt.iv);
-        }
-    };
-
-    template <aesni::Algorithm algo>
-    struct Dumper<algo, AESNI_CTR>
-    {
-        static void dump_round_keys(const aesni::aes::Encrypt<algo, AESNI_CTR>& encrypt)
-        {
-            dump_encryption_keys(encrypt.encryption_keys);
-        }
-
-        static void dump_next_iv(const aesni::aes::Encrypt<algo, AESNI_CTR>& encrypt)
-        {
-            ::dump_next_iv(encrypt.iv);
-        }
-    };
+    template <aesni::Algorithm algorithm, aesni::Mode mode, typename std::enable_if<!aesni::ModeRequiresInitializationVector<mode>::value>::type* = 0>
+    void dump_next_iv(
+        const aesni::DecryptWrapper<algorithm, mode>&)
+    { }
 }

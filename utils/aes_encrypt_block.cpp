@@ -25,47 +25,47 @@ namespace
         std::deque<std::string>& plaintexts,
         bool verbose = false)
     {
-        typename aesni::aes::Types<algorithm>::BlockT iv;
+        typename aesni::Types<algorithm>::Block iv;
 
-        if (aesni::ModeRequiresInitializationVector<mode>())
+        if (aesni::ModeRequiresInitializationVector<mode>::value)
         {
             if (plaintexts.empty())
                 return false;
 
-            aesni::aes::from_string(iv, plaintexts.front());
+            aesni::from_string<algorithm>(iv, plaintexts.front());
             plaintexts.pop_front();
 
             if (verbose)
-                dump_iv(iv);
+                dump_iv<algorithm>(iv);
         }
 
-        typename aesni::aes::Types<algorithm>::KeyT key;
-        aesni::aes::from_string(key, key_str);
+        typename aesni::Types<algorithm>::Key key;
+        aesni::from_string<algorithm>(key, key_str);
 
         if (verbose)
-            dump_key(key);
+            dump_key<algorithm>(key);
 
-        aesni::aes::Encrypt<algorithm, mode> encrypt(key, iv);
+        aesni::EncryptWrapper<algorithm, mode> encrypt(key, iv);
 
         if (verbose)
-            Dumper<algorithm, mode>::dump_round_keys(encrypt);
+            dump_wrapper<algorithm, mode>(encrypt);
 
         while (!plaintexts.empty())
         {
-            typename aesni::aes::Types<algorithm>::BlockT plaintext;
-            aesni::aes::from_string(plaintext, plaintexts.front());
+            typename aesni::Types<algorithm>::Block plaintext, ciphertext;
+            aesni::from_string<algorithm>(plaintext, plaintexts.front());
             plaintexts.pop_front();
-            const auto ciphertext = encrypt.encrypt(plaintext);
+            encrypt.encrypt_block(plaintext, ciphertext);
 
             if (verbose)
             {
-                dump_plaintext(plaintext);
-                dump_ciphertext(ciphertext);
-                Dumper<algorithm, mode>::dump_next_iv(encrypt);
+                dump_plaintext<algorithm>(plaintext);
+                dump_ciphertext<algorithm>(ciphertext);
+                dump_next_iv<algorithm, mode>(encrypt);
             }
             else
             {
-                std::cout << aesni::aes::to_string(ciphertext) << "\n";
+                std::cout << aesni::to_string<algorithm>(ciphertext) << "\n";
             }
         }
 
@@ -101,11 +101,11 @@ namespace
         }
     }
 
-    bool encrypt(
+    bool encrypt_using_cxx_api(
         aesni::Algorithm algorithm,
         aesni::Mode mode,
         const std::string& key_str,
-        std::deque<std::string> plaintexts,
+        std::deque<std::string>& plaintexts,
         bool verbose = false)
     {
         switch (algorithm)
@@ -124,32 +124,13 @@ namespace
         }
     }
 
-    bool encrypt_using_boxes(
-        aesni::Algorithm algorithm,
+    template <aesni::Algorithm algorithm>
+    bool encrypt_using_boxes_with_algorithm(
+        const AesNI_BoxAlgorithmParams& algorithm_params,
         aesni::Mode mode,
         const std::string& key,
         std::deque<std::string> plaintexts)
     {
-        AesNI_BoxAlgorithmParams algorithm_params;
-
-        switch (algorithm)
-        {
-            case AESNI_AES128:
-                aesni::aes::from_string(algorithm_params.aes128_key, key);
-                break;
-
-            case AESNI_AES192:
-                aesni::aes::from_string(algorithm_params.aes192_key, key);
-                break;
-
-            case AESNI_AES256:
-                aesni::aes::from_string(algorithm_params.aes256_key, key);
-                break;
-
-            default:
-                return false;
-        }
-
         AesNI_BoxBlock iv;
         AesNI_BoxBlock* iv_ptr = nullptr;
 
@@ -158,7 +139,7 @@ namespace
             if (plaintexts.empty())
                 return false;
 
-            aesni::aes::from_string(iv.aes_block, plaintexts.front());
+            aesni::from_string<AESNI_AES128>(iv.aes_block, plaintexts.front());
             iv_ptr = &iv;
             plaintexts.pop_front();
         }
@@ -175,7 +156,7 @@ namespace
         while (!plaintexts.empty())
         {
             AesNI_BoxBlock plaintext;
-            aesni::aes::from_string(plaintext.aes_block, plaintexts.front());
+            aesni::from_string<algorithm>(plaintext.aes_block, plaintexts.front());
             plaintexts.pop_front();
 
             AesNI_BoxBlock ciphertext;
@@ -185,10 +166,43 @@ namespace
                 &ciphertext,
                 aesni::ErrorDetailsThrowsInDestructor());
 
-            std::cout << aesni::aes::to_string(ciphertext.aes_block) << "\n";
+            std::cout << aesni::to_string<algorithm>(ciphertext.aes_block) << "\n";
         }
 
         return true;
+    }
+
+    bool encrypt_using_boxes(
+        aesni::Algorithm algorithm,
+        aesni::Mode mode,
+        const std::string& key,
+        std::deque<std::string> plaintexts)
+    {
+        AesNI_BoxAlgorithmParams algorithm_params;
+
+        switch (algorithm)
+        {
+            case AESNI_AES128:
+                aesni::from_string<AESNI_AES128>(
+                    algorithm_params.aes128_key, key);
+                return encrypt_using_boxes_with_algorithm<AESNI_AES128>(
+                    algorithm_params, mode, key, plaintexts);
+
+            case AESNI_AES192:
+                aesni::from_string<AESNI_AES192>(
+                    algorithm_params.aes192_key, key);
+                return encrypt_using_boxes_with_algorithm<AESNI_AES192>(
+                    algorithm_params, mode, key, plaintexts);
+
+            case AESNI_AES256:
+                aesni::from_string<AESNI_AES256>(
+                    algorithm_params.aes256_key, key);
+                return encrypt_using_boxes_with_algorithm<AESNI_AES256>(
+                    algorithm_params, mode, key, plaintexts);
+
+            default:
+                return false;
+        }
     }
 }
 
@@ -227,7 +241,7 @@ int main(int argc, char** argv)
 
             const auto success = cmd_parser.use_boxes()
                 ? encrypt_using_boxes(algorithm, mode, key, plaintexts)
-                : encrypt(algorithm, mode, key, plaintexts, cmd_parser.verbose());
+                : encrypt_using_cxx_api(algorithm, mode, key, plaintexts, cmd_parser.verbose());
 
             if (!success)
             {

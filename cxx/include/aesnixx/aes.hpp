@@ -9,581 +9,270 @@
 #pragma once
 
 #include "algorithm.hpp"
-#include "data.hpp"
+#include "api.hpp"
+#include "error.hpp"
 #include "mode.hpp"
 
 #include <aesni/all.h>
+
+#include <cstddef>
 
 #include <string>
 
 namespace aesni
 {
-    namespace aes
+    namespace aes128
     {
-        typedef AesNI_AES_Block Block;
-
-        typedef AesNI_AES128_Key Key128;
-        typedef AesNI_AES192_Key Key192;
-        typedef AesNI_AES256_Key Key256;
-
-        inline void make_block(Block& dest, int hi3, int hi2, int lo1, int lo0)
-        {
-            aesni_AES_make_block(&dest, hi3, hi2, lo1, lo0);
-        }
-
-        inline void make_key(Key128& dest, int hi3, int hi2, int lo1, int lo0)
-        {
-            aesni_AES128_make_key(&dest, hi3, hi2, lo1, lo0);
-        }
-
-        inline void make_key(Key192& dest, int hi5, int hi4, int hi3, int lo2, int lo1, int lo0)
-        {
-            aesni_AES192_make_key(&dest, hi5, hi4, hi3, lo2, lo1, lo0);
-        }
-
-        inline void make_key(Key256& dest, int hi7, int hi6, int hi5, int hi4, int lo3, int lo2, int lo1, int lo0)
-        {
-            aesni_AES256_make_key(&dest, hi7, hi6, hi5, hi4, lo3, lo2, lo1, lo0);
-        }
-
-        std::string to_string(const Block& block)
-        {
-            AesNI_AES_BlockString str;
-            aesni_AES_format_block(&str, &block, ErrorDetailsThrowsInDestructor());
-            return std::string(str.str);
-        }
-
-        std::string to_matrix_string(const Block& block)
-        {
-            AesNI_AES_BlockMatrixString str;
-            aesni_AES_format_block_as_matrix(&str, &block, ErrorDetailsThrowsInDestructor());
-            return std::string(str.str);
-        }
-
-        inline void from_string(Block& dest, const char* src)
-        {
-            aesni_AES_parse_block(&dest, src, ErrorDetailsThrowsInDestructor());
-        }
-
-        inline void from_string(Block& dest, const std::string& src)
-        {
-            from_string(dest, src.c_str());
-        }
-
-        std::string to_string(const Key128& block)
-        {
-            AesNI_AES128_KeyString str;
-            aesni_AES128_format_key(&str, &block, ErrorDetailsThrowsInDestructor());
-            return std::string(str.str);
-        }
-
-        std::string to_string(const Key192& block)
-        {
-            AesNI_AES192_KeyString str;
-            aesni_AES192_format_key(&str, &block, ErrorDetailsThrowsInDestructor());
-            return std::string(str.str);
-        }
-
-        std::string to_string(const Key256& block)
-        {
-            AesNI_AES256_KeyString str;
-            aesni_AES256_format_key(&str, &block, ErrorDetailsThrowsInDestructor());
-            return std::string(str.str);
-        }
-
-        inline void from_string(Key128& dest, const char* src)
-        {
-            aesni_AES128_parse_key(&dest, src, ErrorDetailsThrowsInDestructor());
-        }
-
-        inline void from_string(Key192& dest, const char* src)
-        {
-            aesni_AES192_parse_key(&dest, src, ErrorDetailsThrowsInDestructor());
-        }
-
-        inline void from_string(Key256& dest, const char* src)
-        {
-            aesni_AES256_parse_key(&dest, src, ErrorDetailsThrowsInDestructor());
-        }
-
-        inline void from_string(Key128& dest, const std::string& src)
-        {
-            return from_string(dest, src.c_str());
-        }
-
-        inline void from_string(Key192& dest, const std::string& src)
-        {
-            return from_string(dest, src.c_str());
-        }
-
-        inline void from_string(Key256& dest, const std::string& src)
-        {
-            return from_string(dest, src.c_str());
-        }
-
-        typedef AesNI_AES128_RoundKeys RoundKeys128;
-        typedef AesNI_AES192_RoundKeys RoundKeys192;
-        typedef AesNI_AES256_RoundKeys RoundKeys256;
-
-        template <typename RoundKeysT>
-        inline std::size_t get_number_of_rounds(const RoundKeysT& round_keys)
-        {
-            return sizeof(round_keys) / sizeof(Block128);
-        }
-
-        inline void expand_key(
-            const Key128& key,
-            RoundKeys128& encryption_keys)
-        {
-            aesni_AES128_expand_key(&key, &encryption_keys);
-        }
-
-        inline void expand_key(
-            const Key192& key,
-            RoundKeys192& encryption_keys)
-        {
-            aesni_AES192_expand_key(&key, &encryption_keys);
-        }
-
-        inline void expand_key(
-            const Key256& key,
-            RoundKeys256& encryption_keys)
-        {
-            aesni_AES256_expand_key(&key, &encryption_keys);
-        }
-
-        inline void derive_decryption_keys(
-            const RoundKeys128& encryption_keys,
-            RoundKeys128& decryption_keys)
-        {
-            aesni_AES128_derive_decryption_keys(
-                &encryption_keys, &decryption_keys);
-        }
-
-        inline void derive_decryption_keys(
-            const RoundKeys192& encryption_keys,
-            RoundKeys192& decryption_keys)
-        {
-            aesni_AES192_derive_decryption_keys(
-                &encryption_keys, &decryption_keys);
-        }
-
-        inline void derive_decryption_keys(
-            const RoundKeys256& encryption_keys,
-            RoundKeys256& decryption_keys)
-        {
-            aesni_AES256_derive_decryption_keys(
-                &encryption_keys, &decryption_keys);
-        }
-
-        inline Block encrypt_ecb(
-            const Block& plaintext,
-            const RoundKeys128& encryption_keys)
-        {
-            return aesni_AES128_encrypt_block_ECB(plaintext, &encryption_keys);
-        }
-
-        inline Block decrypt_ecb(
-            const Block& ciphertext,
-            const RoundKeys128& decryption_keys)
-        {
-            return aesni_AES128_decrypt_block_ECB(ciphertext, &decryption_keys);
-        }
-
-        inline Block encrypt_cbc(
-            const Block& plaintext,
-            const RoundKeys128& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES128_encrypt_block_CBC(plaintext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block decrypt_cbc(
-            const Block& ciphertext,
-            const RoundKeys128& decryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES128_decrypt_block_CBC(ciphertext, &decryption_keys, iv, &next_iv);
-        }
-
-        inline Block encrypt_cfb(
-            const Block& plaintext,
-            const RoundKeys128& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES128_encrypt_block_CFB(plaintext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block decrypt_cfb(
-            const Block& ciphertext,
-            const RoundKeys128& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES128_decrypt_block_CFB(ciphertext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block encrypt_ofb(
-            const Block& plaintext,
-            const RoundKeys128& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES128_encrypt_block_OFB(plaintext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block decrypt_ofb(
-            const Block& ciphertext,
-            const RoundKeys128& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES128_decrypt_block_OFB(ciphertext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block encrypt_ctr(
-            const Block& plaintext,
-            const RoundKeys128& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES128_encrypt_block_CTR(plaintext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block decrypt_ctr(
-            const Block& ciphertext,
-            const RoundKeys128& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES128_decrypt_block_CTR(ciphertext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block encrypt_ecb(
-            const Block& plaintext,
-            const RoundKeys192& encryption_keys)
-        {
-            return aesni_AES192_encrypt_block_ECB(plaintext, &encryption_keys);
-        }
-
-        inline Block decrypt_ecb(
-            const Block& ciphertext,
-            const RoundKeys192& decryption_keys)
-        {
-            return aesni_AES192_decrypt_block_ECB(ciphertext, &decryption_keys);
-        }
-
-        inline Block encrypt_cbc(
-            const Block& plaintext,
-            const RoundKeys192& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES192_encrypt_block_CBC(plaintext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block decrypt_cbc(
-            const Block& ciphertext,
-            const RoundKeys192& decryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES192_decrypt_block_CBC(ciphertext, &decryption_keys, iv, &next_iv);
-        }
-
-        inline Block encrypt_cfb(
-            const Block& plaintext,
-            const RoundKeys192& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES192_encrypt_block_CFB(plaintext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block decrypt_cfb(
-            const Block& ciphertext,
-            const RoundKeys192& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES192_decrypt_block_CFB(ciphertext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block encrypt_ofb(
-            const Block& plaintext,
-            const RoundKeys192& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES192_encrypt_block_OFB(plaintext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block decrypt_ofb(
-            const Block& ciphertext,
-            const RoundKeys192& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES192_decrypt_block_OFB(ciphertext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block encrypt_ctr(
-            const Block& plaintext,
-            const RoundKeys192& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES192_encrypt_block_CTR(plaintext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block decrypt_ctr(
-            const Block& ciphertext,
-            const RoundKeys192& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES192_decrypt_block_CTR(ciphertext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block encrypt_ecb(
-            const Block& plaintext,
-            const RoundKeys256& encryption_keys)
-        {
-            return aesni_AES256_encrypt_block_ECB(plaintext, &encryption_keys);
-        }
-
-        inline Block decrypt_ecb(
-            const Block& ciphertext,
-            const RoundKeys256& decryption_keys)
-        {
-            return aesni_AES256_decrypt_block_ECB(ciphertext, &decryption_keys);
-        }
-
-        inline Block encrypt_cbc(
-            const Block& plaintext,
-            const RoundKeys256& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES256_encrypt_block_CBC(plaintext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block decrypt_cbc(
-            const Block& ciphertext,
-            const RoundKeys256& decryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES256_decrypt_block_CBC(ciphertext, &decryption_keys, iv, &next_iv);
-        }
-
-        inline Block encrypt_cfb(
-            const Block& plaintext,
-            const RoundKeys256& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES256_encrypt_block_CFB(plaintext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block decrypt_cfb(
-            const Block& ciphertext,
-            const RoundKeys256& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES256_decrypt_block_CFB(ciphertext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block encrypt_ofb(
-            const Block& plaintext,
-            const RoundKeys256& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES256_encrypt_block_OFB(plaintext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block decrypt_ofb(
-            const Block& ciphertext,
-            const RoundKeys256& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES256_decrypt_block_OFB(ciphertext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block encrypt_ctr(
-            const Block& plaintext,
-            const RoundKeys256& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES256_encrypt_block_CTR(plaintext, &encryption_keys, iv, &next_iv);
-        }
-
-        inline Block decrypt_ctr(
-            const Block& ciphertext,
-            const RoundKeys256& encryption_keys,
-            const Block& iv,
-            Block& next_iv)
-        {
-            return aesni_AES256_decrypt_block_CTR(ciphertext, &encryption_keys, iv, &next_iv);
-        }
-
-        template <Algorithm>
-        struct Types;
-
-        template <>
-        struct Types<AESNI_AES128>
-        {
-            typedef aesni::aes::Block BlockT;
-            typedef aesni::aes::Key128 KeyT;
-            typedef aesni::aes::RoundKeys128 RoundKeysT;
-        };
-
-        template <>
-        struct Types<AESNI_AES192>
-        {
-            typedef aesni::aes::Block BlockT;
-            typedef aesni::aes::Key192 KeyT;
-            typedef aesni::aes::RoundKeys192 RoundKeysT;
-        };
-
-        template <>
-        struct Types<AESNI_AES256>
-        {
-            typedef aesni::aes::Block BlockT;
-            typedef aesni::aes::Key256 KeyT;
-            typedef aesni::aes::RoundKeys256 RoundKeysT;
-        };
-
-        template <Algorithm algorithm, Mode mode>
-        struct Encrypt;
-
-        template <Algorithm algorithm>
-        struct Encrypt<algorithm, AESNI_ECB>
-        {
-            Encrypt(const typename Types<algorithm>::KeyT& key,
-                    const typename Types<algorithm>::BlockT& iv)
-            {
-                expand_key(key, encryption_keys);
-                derive_decryption_keys(encryption_keys, decryption_keys);
-            }
-
-            inline typename Types<algorithm>::BlockT encrypt(const typename Types<algorithm>::BlockT& plaintext)
-            {
-                return encrypt_ecb(plaintext, encryption_keys);
-            }
-
-            inline typename Types<algorithm>::BlockT decrypt(const typename Types<algorithm>::BlockT& ciphertext)
-            {
-                return decrypt_ecb(ciphertext, decryption_keys);
-            }
-
-            typename Types<algorithm>::RoundKeysT encryption_keys;
-            typename Types<algorithm>::RoundKeysT decryption_keys;
-        };
-
-        template <Algorithm algorithm>
-        struct Encrypt<algorithm, AESNI_CBC>
-        {
-            Encrypt(const typename Types<algorithm>::KeyT& key,
-                    const typename Types<algorithm>::BlockT& iv)
-                : iv(iv)
-            {
-                expand_key(key, encryption_keys);
-                derive_decryption_keys(encryption_keys, decryption_keys);
-            }
-
-            inline typename Types<algorithm>::BlockT encrypt(const typename Types<algorithm>::BlockT& plaintext)
-            {
-                return encrypt_cbc(plaintext, encryption_keys, iv, iv);
-            }
-
-            inline typename Types<algorithm>::BlockT decrypt(const typename Types<algorithm>::BlockT& ciphertext)
-            {
-                return decrypt_cbc(ciphertext, decryption_keys, iv, iv);
-            }
-
-            typename Types<algorithm>::BlockT iv;
-            typename Types<algorithm>::RoundKeysT encryption_keys;
-            typename Types<algorithm>::RoundKeysT decryption_keys;
-        };
-
-        template <Algorithm algorithm>
-        struct Encrypt<algorithm, AESNI_CFB>
-        {
-            Encrypt(const typename Types<algorithm>::KeyT& key,
-                    const typename Types<algorithm>::BlockT& iv)
-                : iv(iv)
-            {
-                expand_key(key, encryption_keys);
-            }
-
-            inline typename Types<algorithm>::BlockT encrypt(const typename Types<algorithm>::BlockT& plaintext)
-            {
-                return encrypt_cfb(plaintext, encryption_keys, iv, iv);
-            }
-
-            inline typename Types<algorithm>::BlockT decrypt(const typename Types<algorithm>::BlockT& ciphertext)
-            {
-                return decrypt_cfb(ciphertext, encryption_keys, iv, iv);
-            }
-
-            typename Types<algorithm>::BlockT iv;
-            typename Types<algorithm>::RoundKeysT encryption_keys;
-        };
-
-        template <Algorithm algorithm>
-        struct Encrypt<algorithm, AESNI_OFB>
-        {
-            Encrypt(const typename Types<algorithm>::KeyT& key,
-                    const typename Types<algorithm>::BlockT& iv)
-                : iv(iv)
-            {
-                expand_key(key, encryption_keys);
-            }
-
-            inline typename Types<algorithm>::BlockT encrypt(const typename Types<algorithm>::BlockT& plaintext)
-            {
-                return encrypt_ofb(plaintext, encryption_keys, iv, iv);
-            }
-
-            inline typename Types<algorithm>::BlockT decrypt(const typename Types<algorithm>::BlockT& ciphertext)
-            {
-                return decrypt_ofb(ciphertext, encryption_keys, iv, iv);
-            }
-
-            typename Types<algorithm>::BlockT iv;
-            typename Types<algorithm>::RoundKeysT encryption_keys;
-        };
-
-        template <Algorithm algorithm>
-        struct Encrypt<algorithm, AESNI_CTR>
-        {
-            Encrypt(const typename Types<algorithm>::KeyT& key,
-                    const typename Types<algorithm>::BlockT& iv)
-                : iv(iv)
-            {
-                expand_key(key, encryption_keys);
-            }
-
-            inline typename Types<algorithm>::BlockT encrypt(const typename Types<algorithm>::BlockT& plaintext)
-            {
-                return encrypt_ctr(plaintext, encryption_keys, iv, iv);
-            }
-
-            inline typename Types<algorithm>::BlockT decrypt(const typename Types<algorithm>::BlockT& ciphertext)
-            {
-                return decrypt_ctr(ciphertext, encryption_keys, iv, iv);
-            }
-
-            typename Types<algorithm>::RoundKeysT encryption_keys;
-            typename Types<algorithm>::BlockT iv;
-        };
+        typedef AesNI_AES128_Block Block;
+        typedef AesNI_AES128_RoundKeys RoundKeys;
+        typedef AesNI_AES128_Key Key;
     }
+
+    template <>
+    struct Types<AESNI_AES128>
+    {
+        typedef aes128::Block Block;
+        typedef aes128::RoundKeys RoundKeys;
+        typedef aes128::Key Key;
+    };
+
+    template <>
+    std::size_t get_number_of_rounds<AESNI_AES128>()
+    {
+        return 11;
+    }
+
+    template <>
+    void from_string<AESNI_AES128>(aes128::Block& dest, const char* src)
+    {
+        aesni_AES128_parse_block(&dest, src, ErrorDetailsThrowsInDestructor());
+    }
+
+    template <>
+    std::string to_string<AESNI_AES128>(const aes128::Block& src)
+    {
+        AesNI_AES128_BlockString str;
+        aesni_AES128_format_block(&str, &src, ErrorDetailsThrowsInDestructor());
+        return { str.str };
+    }
+
+    template <>
+    std::string to_matrix_string<AESNI_AES128>(const aes128::Block& src)
+    {
+        AesNI_AES128_BlockMatrixString str;
+        aesni_AES128_format_block_as_matrix(&str, &src, ErrorDetailsThrowsInDestructor());
+        return { str.str };
+    }
+
+    template <>
+    void from_string<AESNI_AES128>(aes128::Key& dest, const char* src)
+    {
+        aesni_AES128_parse_key(&dest, src, ErrorDetailsThrowsInDestructor());
+    }
+
+    template <>
+    std::string to_string<AESNI_AES128>(const aes128::Key& src)
+    {
+        AesNI_AES128_KeyString str;
+        aesni_AES128_format_key(&str, &src, ErrorDetailsThrowsInDestructor());
+        return { str.str };
+    }
+
+    template <>
+    inline void expand_key<AESNI_AES128>(
+        const aes128::Key& key,
+        aes128::RoundKeys& encryption_keys)
+    {
+        aesni_AES128_expand_key(&key, &encryption_keys);
+    }
+
+    template <>
+    inline void derive_decryption_keys<AESNI_AES128>(
+        const aes128::RoundKeys& encryption_keys,
+        aes128::RoundKeys& decryption_keys)
+    {
+        aesni_AES128_derive_decryption_keys(
+            &encryption_keys, &decryption_keys);
+    }
+
+    AESNIXX_ENCRYPT_BLOCK_ECB(AES128);
+    AESNIXX_DECRYPT_BLOCK_ECB(AES128);
+    AESNIXX_ENCRYPT_BLOCK_CBC(AES128);
+    AESNIXX_DECRYPT_BLOCK_CBC(AES128);
+    AESNIXX_ENCRYPT_BLOCK_CFB(AES128);
+    AESNIXX_DECRYPT_BLOCK_CFB(AES128);
+    AESNIXX_ENCRYPT_BLOCK_OFB(AES128);
+    AESNIXX_DECRYPT_BLOCK_OFB(AES128);
+    AESNIXX_ENCRYPT_BLOCK_CTR(AES128);
+    AESNIXX_DECRYPT_BLOCK_CTR(AES128);
+
+    namespace aes192
+    {
+        typedef AesNI_AES192_Block Block;
+        typedef AesNI_AES192_RoundKeys RoundKeys;
+        typedef AesNI_AES192_Key Key;
+    }
+
+    template <>
+    struct Types<AESNI_AES192>
+    {
+        typedef aes192::Block Block;
+        typedef aes192::RoundKeys RoundKeys;
+        typedef aes192::Key Key;
+    };
+
+    template <>
+    std::size_t get_number_of_rounds<AESNI_AES192>()
+    {
+        return 13;
+    }
+
+    template <>
+    void from_string<AESNI_AES192>(aes192::Block& dest, const char* src)
+    {
+        aesni_AES192_parse_block(&dest, src, ErrorDetailsThrowsInDestructor());
+    }
+
+    template <>
+    std::string to_string<AESNI_AES192>(const aes192::Block& src)
+    {
+        AesNI_AES192_BlockString str;
+        aesni_AES192_format_block(&str, &src, ErrorDetailsThrowsInDestructor());
+        return { str.str };
+    }
+
+    template <>
+    std::string to_matrix_string<AESNI_AES192>(const aes192::Block& src)
+    {
+        AesNI_AES192_BlockMatrixString str;
+        aesni_AES192_format_block_as_matrix(&str, &src, ErrorDetailsThrowsInDestructor());
+        return { str.str };
+    }
+
+    template <>
+    void from_string<AESNI_AES192>(aes192::Key& dest, const char* src)
+    {
+        aesni_AES192_parse_key(&dest, src, ErrorDetailsThrowsInDestructor());
+    }
+
+    template <>
+    std::string to_string<AESNI_AES192>(const aes192::Key& src)
+    {
+        AesNI_AES192_KeyString str;
+        aesni_AES192_format_key(&str, &src, ErrorDetailsThrowsInDestructor());
+        return { str.str };
+    }
+
+    template <>
+    inline void expand_key<AESNI_AES192>(
+        const aes192::Key& key,
+        aes192::RoundKeys& encryption_keys)
+    {
+        aesni_AES192_expand_key(&key, &encryption_keys);
+    }
+
+    template <>
+    inline void derive_decryption_keys<AESNI_AES192>(
+        const aes192::RoundKeys& encryption_keys,
+        aes192::RoundKeys& decryption_keys)
+    {
+        aesni_AES192_derive_decryption_keys(
+            &encryption_keys, &decryption_keys);
+    }
+
+    AESNIXX_ENCRYPT_BLOCK_ECB(AES192);
+    AESNIXX_DECRYPT_BLOCK_ECB(AES192);
+    AESNIXX_ENCRYPT_BLOCK_CBC(AES192);
+    AESNIXX_DECRYPT_BLOCK_CBC(AES192);
+    AESNIXX_ENCRYPT_BLOCK_CFB(AES192);
+    AESNIXX_DECRYPT_BLOCK_CFB(AES192);
+    AESNIXX_ENCRYPT_BLOCK_OFB(AES192);
+    AESNIXX_DECRYPT_BLOCK_OFB(AES192);
+    AESNIXX_ENCRYPT_BLOCK_CTR(AES192);
+    AESNIXX_DECRYPT_BLOCK_CTR(AES192);
+
+    namespace aes256
+    {
+        typedef AesNI_AES256_Block Block;
+        typedef AesNI_AES256_RoundKeys RoundKeys;
+        typedef AesNI_AES256_Key Key;
+    }
+
+    template <>
+    struct Types<AESNI_AES256>
+    {
+        typedef aes256::Block Block;
+        typedef aes256::RoundKeys RoundKeys;
+        typedef aes256::Key Key;
+    };
+
+    template <>
+    std::size_t get_number_of_rounds<AESNI_AES256>()
+    {
+        return 15;
+    }
+
+    template <>
+    void from_string<AESNI_AES256>(aes256::Block& dest, const char* src)
+    {
+        aesni_AES256_parse_block(&dest, src, ErrorDetailsThrowsInDestructor());
+    }
+
+    template <>
+    std::string to_string<AESNI_AES256>(const aes256::Block& src)
+    {
+        AesNI_AES256_BlockString str;
+        aesni_AES256_format_block(&str, &src, ErrorDetailsThrowsInDestructor());
+        return { str.str };
+    }
+
+    template <>
+    std::string to_matrix_string<AESNI_AES256>(const aes256::Block& src)
+    {
+        AesNI_AES256_BlockMatrixString str;
+        aesni_AES256_format_block_as_matrix(&str, &src, ErrorDetailsThrowsInDestructor());
+        return { str.str };
+    }
+
+    template <>
+    void from_string<AESNI_AES256>(aes256::Key& dest, const char* src)
+    {
+        aesni_AES256_parse_key(&dest, src, ErrorDetailsThrowsInDestructor());
+    }
+
+    template <>
+    std::string to_string<AESNI_AES256>(const aes256::Key& src)
+    {
+        AesNI_AES256_KeyString str;
+        aesni_AES256_format_key(&str, &src, ErrorDetailsThrowsInDestructor());
+        return { str.str };
+    }
+
+    template <>
+    inline void expand_key<AESNI_AES256>(
+        const aes256::Key& key,
+        aes256::RoundKeys& encryption_keys)
+    {
+        aesni_AES256_expand_key(&key, &encryption_keys);
+    }
+
+    template <>
+    inline void derive_decryption_keys<AESNI_AES256>(
+        const aes256::RoundKeys& encryption_keys,
+        aes256::RoundKeys& decryption_keys)
+    {
+        aesni_AES256_derive_decryption_keys(
+            &encryption_keys, &decryption_keys);
+    }
+
+    AESNIXX_ENCRYPT_BLOCK_ECB(AES256);
+    AESNIXX_DECRYPT_BLOCK_ECB(AES256);
+    AESNIXX_ENCRYPT_BLOCK_CBC(AES256);
+    AESNIXX_DECRYPT_BLOCK_CBC(AES256);
+    AESNIXX_ENCRYPT_BLOCK_CFB(AES256);
+    AESNIXX_DECRYPT_BLOCK_CFB(AES256);
+    AESNIXX_ENCRYPT_BLOCK_OFB(AES256);
+    AESNIXX_DECRYPT_BLOCK_OFB(AES256);
+    AESNIXX_ENCRYPT_BLOCK_CTR(AES256);
+    AESNIXX_DECRYPT_BLOCK_CTR(AES256);
 }

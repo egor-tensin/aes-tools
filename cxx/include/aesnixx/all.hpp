@@ -10,6 +10,7 @@
 
 #include "aes.hpp"
 #include "algorithm.hpp"
+#include "api.hpp"
 #include "data.hpp"
 #include "debug.hpp"
 #include "error.hpp"

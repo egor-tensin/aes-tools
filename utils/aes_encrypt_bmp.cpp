@@ -17,6 +17,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <deque>
 #include <exception>
 #include <fstream>
 #include <iostream>
@@ -58,72 +59,28 @@ namespace
         ofs.open(path, std::ofstream::binary);
         ofs.write(src.data(), src.size());
     }
-}
 
-int main(int argc, char** argv)
-{
-    try
+    template <aesni::Algorithm algorithm>
+    bool encrypt_bmp_with_algorithm(
+        const AesNI_BoxAlgorithmParams& algorithm_params,
+        aesni::Mode mode,
+        std::deque<std::string>& args)
     {
-        CommandLineParser cmd_parser("aes_encrypt_bmp.exe");
-
-        if (!cmd_parser.parse_options(argc, argv))
-            return 0;
-
-        auto args = cmd_parser.get_args();
-
-        if (args.empty())
-        {
-            cmd_parser.print_usage();
-            return 1;
-        }
-
-        AesNI_BoxAlgorithmParams algorithm_params;
-
-        switch (cmd_parser.get_algorithm())
-        {
-            case AESNI_AES128:
-                aesni::aes::from_string(algorithm_params.aes128_key, args.front());
-                break;
-
-            case AESNI_AES192:
-                aesni::aes::from_string(algorithm_params.aes192_key, args.front());
-                break;
-
-            case AESNI_AES256:
-                aesni::aes::from_string(algorithm_params.aes256_key, args.front());
-                break;
-        }
-
-        args.pop_front();
-
         AesNI_BoxBlock iv;
         AesNI_BoxBlock* iv_ptr = nullptr;
 
-        switch (cmd_parser.get_mode())
+        if (aesni::mode_requires_initialization_vector(mode))
         {
-            case AESNI_ECB:
-                break;
+            if (args.empty())
+                return false;
 
-            case AESNI_CBC:
-            case AESNI_CFB:
-            case AESNI_OFB:
-            case AESNI_CTR:
-                if (args.empty())
-                {
-                    cmd_parser.print_usage();
-                    return 1;
-                }
-                aesni::aes::from_string(iv.aes_block, args.front());
-                iv_ptr = &iv;
-                args.pop_front();
-                break;
+            aesni::from_string<algorithm>(iv.aes_block, args.front());
+            iv_ptr = &iv;
+            args.pop_front();
         }
 
         if (args.size() != 2)
-        {
-            cmd_parser.print_usage();
-            return 1;
-        }
+            return false;
 
         const auto src_path = args[0];
         const auto dest_path = args[1];
@@ -140,9 +97,9 @@ int main(int argc, char** argv)
 
         aesni_box_init(
             &box,
-            cmd_parser.get_algorithm(),
+            algorithm,
             &algorithm_params,
-            cmd_parser.get_mode(),
+            mode,
             iv_ptr,
             aesni::ErrorDetailsThrowsInDestructor());
 
@@ -169,6 +126,63 @@ int main(int argc, char** argv)
             aesni::ErrorDetailsThrowsInDestructor());
 
         write_file(dest_path, dest_buf);
+
+        return true;
+    }
+
+    bool encrypt_bmp(
+        aesni::Algorithm algorithm,
+        aesni::Mode mode,
+        std::deque<std::string>& args)
+    {
+        if (args.empty())
+            return false;
+
+        AesNI_BoxAlgorithmParams algorithm_params;
+
+        switch (algorithm)
+        {
+            case AESNI_AES128:
+                aesni::from_string<AESNI_AES128>(
+                    algorithm_params.aes128_key, args.front());
+                args.pop_front();
+                return encrypt_bmp_with_algorithm<AESNI_AES128>(
+                    algorithm_params, mode, args);
+
+            case AESNI_AES192:
+                aesni::from_string<AESNI_AES192>(
+                    algorithm_params.aes192_key, args.front());
+                args.pop_front();
+                return encrypt_bmp_with_algorithm<AESNI_AES192>(
+                    algorithm_params, mode, args);
+
+            case AESNI_AES256:
+                aesni::from_string<AESNI_AES256>(
+                    algorithm_params.aes256_key, args.front());
+                args.pop_front();
+                return encrypt_bmp_with_algorithm<AESNI_AES256>(
+                    algorithm_params, mode, args);
+
+            default:
+                return false;
+        }
+    }
+}
+
+int main(int argc, char** argv)
+{
+    try
+    {
+        CommandLineParser cmd_parser("aes_encrypt_bmp.exe");
+
+        if (!cmd_parser.parse_options(argc, argv))
+            return 0;
+
+        if (!encrypt_bmp(cmd_parser.get_algorithm(), cmd_parser.get_mode(), cmd_parser.get_args()))
+        {
+            cmd_parser.print_usage();
+            return 1;
+        }
 
         return 0;
     }
