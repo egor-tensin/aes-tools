@@ -6,7 +6,7 @@
  *            See LICENSE.txt for details.
  */
 
-#include "aes_file_common.hpp"
+#include "file_common.hpp"
 
 #include <aesni/all.h>
 
@@ -15,6 +15,7 @@
 #include <boost/program_options.hpp>
 
 #include <cstdlib>
+#include <cstring>
 
 #include <deque>
 #include <exception>
@@ -23,6 +24,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#include <Windows.h>
 
 namespace
 {
@@ -58,7 +61,7 @@ namespace
     }
 
     template <aesni::Algorithm algorithm>
-    bool decrypt_file_with_algorithm(
+    bool encrypt_bmp_with_algorithm(
         const AesNI_BoxAlgorithmParams& algorithm_params,
         aesni::Mode mode,
         std::deque<std::string>& args)
@@ -84,6 +87,12 @@ namespace
 
         const auto src_buf = read_file(src_path);
 
+        const auto bmp_header = reinterpret_cast<const BITMAPFILEHEADER*>(src_buf.data());
+
+        const auto header_size = bmp_header->bfOffBits;
+        const auto pixels = src_buf.data() + header_size;
+        const auto pixels_size = src_buf.size() - header_size;
+
         AesNI_Box box;
 
         aesni_box_init(
@@ -94,34 +103,34 @@ namespace
             iv_ptr,
             aesni::ErrorDetailsThrowsInDestructor());
 
-        std::size_t dest_size;
+        std::size_t cipherpixels_size;
 
-        aesni_box_decrypt_buffer(
+        aesni_box_encrypt_buffer(
             &box,
-            src_buf.data(),
-            src_buf.size(),
+            pixels,
+            pixels_size,
             nullptr,
-            &dest_size,
+            &cipherpixels_size,
             aesni::ErrorDetailsThrowsInDestructor());
 
         std::vector<char> dest_buf;
-        dest_buf.resize(dest_size);
+        dest_buf.resize(header_size + cipherpixels_size);
+        std::memcpy(dest_buf.data(), src_buf.data(), header_size);
 
-        aesni_box_decrypt_buffer(
+        aesni_box_encrypt_buffer(
             &box,
-            src_buf.data(),
-            src_buf.size(),
-            dest_buf.data(),
-            &dest_size,
+            pixels,
+            pixels_size,
+            dest_buf.data() + header_size,
+            &cipherpixels_size,
             aesni::ErrorDetailsThrowsInDestructor());
 
-        dest_buf.resize(dest_size);
         write_file(dest_path, dest_buf);
 
         return true;
     }
 
-    bool decrypt_file(
+    bool encrypt_bmp(
         aesni::Algorithm algorithm,
         aesni::Mode mode,
         std::deque<std::string>& args)
@@ -137,21 +146,21 @@ namespace
                 aesni::from_string<AESNI_AES128>(
                     algorithm_params.aes128_key, args.front());
                 args.pop_front();
-                return decrypt_file_with_algorithm<AESNI_AES128>(
+                return encrypt_bmp_with_algorithm<AESNI_AES128>(
                     algorithm_params, mode, args);
 
             case AESNI_AES192:
                 aesni::from_string<AESNI_AES192>(
                     algorithm_params.aes192_key, args.front());
                 args.pop_front();
-                return decrypt_file_with_algorithm<AESNI_AES192>(
+                return encrypt_bmp_with_algorithm<AESNI_AES192>(
                     algorithm_params, mode, args);
 
             case AESNI_AES256:
                 aesni::from_string<AESNI_AES256>(
                     algorithm_params.aes256_key, args.front());
                 args.pop_front();
-                return decrypt_file_with_algorithm<AESNI_AES256>(
+                return encrypt_bmp_with_algorithm<AESNI_AES256>(
                     algorithm_params, mode, args);
 
             default:
@@ -164,12 +173,12 @@ int main(int argc, char** argv)
 {
     try
     {
-        CommandLineParser cmd_parser("aes_encrypt_file.exe");
+        CommandLineParser cmd_parser("encrypt_bmp.exe");
 
         if (!cmd_parser.parse_options(argc, argv))
             return 0;
 
-        if (!decrypt_file(cmd_parser.get_algorithm(), cmd_parser.get_mode(), cmd_parser.get_args()))
+        if (!encrypt_bmp(cmd_parser.get_algorithm(), cmd_parser.get_mode(), cmd_parser.get_args()))
         {
             cmd_parser.print_usage();
             return 1;

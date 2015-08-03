@@ -6,7 +6,7 @@
  *            See LICENSE.txt for details.
  */
 
-#include "aes_file_common.hpp"
+#include "file_common.hpp"
 
 #include <aesni/all.h>
 
@@ -58,7 +58,7 @@ namespace
     }
 
     template <aesni::Algorithm algorithm>
-    bool encrypt_file_with_algorithm(
+    bool decrypt_file_with_algorithm(
         const AesNI_BoxAlgorithmParams& algorithm_params,
         aesni::Mode mode,
         std::deque<std::string>& args)
@@ -77,7 +77,7 @@ namespace
         }
 
         if (args.size() != 2)
-            return true;
+            return false;
 
         const auto src_path = args[0];
         const auto dest_path = args[1];
@@ -96,7 +96,7 @@ namespace
 
         std::size_t dest_size;
 
-        aesni_box_encrypt_buffer(
+        aesni_box_decrypt_buffer(
             &box,
             src_buf.data(),
             src_buf.size(),
@@ -107,7 +107,7 @@ namespace
         std::vector<char> dest_buf;
         dest_buf.resize(dest_size);
 
-        aesni_box_encrypt_buffer(
+        aesni_box_decrypt_buffer(
             &box,
             src_buf.data(),
             src_buf.size(),
@@ -121,7 +121,7 @@ namespace
         return true;
     }
 
-    bool encrypt_file(
+    bool decrypt_file(
         aesni::Algorithm algorithm,
         aesni::Mode mode,
         std::deque<std::string>& args)
@@ -137,21 +137,21 @@ namespace
                 aesni::from_string<AESNI_AES128>(
                     algorithm_params.aes128_key, args.front());
                 args.pop_front();
-                return encrypt_file_with_algorithm<AESNI_AES128>(
+                return decrypt_file_with_algorithm<AESNI_AES128>(
                     algorithm_params, mode, args);
 
             case AESNI_AES192:
                 aesni::from_string<AESNI_AES192>(
                     algorithm_params.aes192_key, args.front());
                 args.pop_front();
-                return encrypt_file_with_algorithm<AESNI_AES192>(
+                return decrypt_file_with_algorithm<AESNI_AES192>(
                     algorithm_params, mode, args);
 
             case AESNI_AES256:
                 aesni::from_string<AESNI_AES256>(
                     algorithm_params.aes256_key, args.front());
                 args.pop_front();
-                return encrypt_file_with_algorithm<AESNI_AES256>(
+                return decrypt_file_with_algorithm<AESNI_AES256>(
                     algorithm_params, mode, args);
 
             default:
@@ -164,12 +164,12 @@ int main(int argc, char** argv)
 {
     try
     {
-        CommandLineParser cmd_parser("aes_encrypt_file.exe");
+        CommandLineParser cmd_parser("decrypt_file.exe");
 
         if (!cmd_parser.parse_options(argc, argv))
             return 0;
 
-        if (!encrypt_file(cmd_parser.get_algorithm(), cmd_parser.get_mode(), cmd_parser.get_args()))
+        if (!decrypt_file(cmd_parser.get_algorithm(), cmd_parser.get_mode(), cmd_parser.get_args()))
         {
             cmd_parser.print_usage();
             return 1;

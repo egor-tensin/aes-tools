@@ -6,7 +6,7 @@
  *            See LICENSE.txt for details.
  */
 
-#include "aes_block_common.hpp"
+#include "block_common.hpp"
 
 #include <aesni/all.h>
 
@@ -211,7 +211,7 @@ int main(int argc, char** argv)
 {
     try
     {
-        CommandLineParser cmd_parser("aes_decrypt_block.exe");
+        CommandLineParser cmd_parser("decrypt_block.exe");
 
         if (!cmd_parser.parse_options(argc, argv))
             return 0;

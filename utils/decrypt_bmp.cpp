@@ -6,7 +6,7 @@
  *            See LICENSE.txt for details.
  */
 
-#include "aes_file_common.hpp"
+#include "file_common.hpp"
 
 #include <aesni/all.h>
 
@@ -61,7 +61,7 @@ namespace
     }
 
     template <aesni::Algorithm algorithm>
-    bool encrypt_bmp_with_algorithm(
+    bool decrypt_bmp_with_algorithm(
         const AesNI_BoxAlgorithmParams& algorithm_params,
         aesni::Mode mode,
         std::deque<std::string>& args)
@@ -90,8 +90,8 @@ namespace
         const auto bmp_header = reinterpret_cast<const BITMAPFILEHEADER*>(src_buf.data());
 
         const auto header_size = bmp_header->bfOffBits;
-        const auto pixels = src_buf.data() + header_size;
-        const auto pixels_size = src_buf.size() - header_size;
+        const auto cipherpixels = src_buf.data() + header_size;
+        const auto cipherpixels_size = src_buf.size() - header_size;
 
         AesNI_Box box;
 
@@ -103,34 +103,35 @@ namespace
             iv_ptr,
             aesni::ErrorDetailsThrowsInDestructor());
 
-        std::size_t cipherpixels_size;
+        std::size_t pixels_size;
 
-        aesni_box_encrypt_buffer(
+        aesni_box_decrypt_buffer(
             &box,
-            pixels,
-            pixels_size,
+            cipherpixels,
+            cipherpixels_size,
             nullptr,
-            &cipherpixels_size,
+            &pixels_size,
             aesni::ErrorDetailsThrowsInDestructor());
 
         std::vector<char> dest_buf;
-        dest_buf.resize(header_size + cipherpixels_size);
+        dest_buf.resize(header_size + pixels_size);
         std::memcpy(dest_buf.data(), src_buf.data(), header_size);
 
-        aesni_box_encrypt_buffer(
+        aesni_box_decrypt_buffer(
             &box,
-            pixels,
-            pixels_size,
+            cipherpixels,
+            cipherpixels_size,
             dest_buf.data() + header_size,
-            &cipherpixels_size,
+            &pixels_size,
             aesni::ErrorDetailsThrowsInDestructor());
 
+        dest_buf.resize(header_size + pixels_size);
         write_file(dest_path, dest_buf);
 
         return true;
     }
 
-    bool encrypt_bmp(
+    bool decrypt_bmp(
         aesni::Algorithm algorithm,
         aesni::Mode mode,
         std::deque<std::string>& args)
@@ -146,21 +147,21 @@ namespace
                 aesni::from_string<AESNI_AES128>(
                     algorithm_params.aes128_key, args.front());
                 args.pop_front();
-                return encrypt_bmp_with_algorithm<AESNI_AES128>(
+                return decrypt_bmp_with_algorithm<AESNI_AES128>(
                     algorithm_params, mode, args);
 
             case AESNI_AES192:
                 aesni::from_string<AESNI_AES192>(
                     algorithm_params.aes192_key, args.front());
                 args.pop_front();
-                return encrypt_bmp_with_algorithm<AESNI_AES192>(
+                return decrypt_bmp_with_algorithm<AESNI_AES192>(
                     algorithm_params, mode, args);
 
             case AESNI_AES256:
                 aesni::from_string<AESNI_AES256>(
                     algorithm_params.aes256_key, args.front());
                 args.pop_front();
-                return encrypt_bmp_with_algorithm<AESNI_AES256>(
+                return decrypt_bmp_with_algorithm<AESNI_AES256>(
                     algorithm_params, mode, args);
 
             default:
@@ -173,12 +174,12 @@ int main(int argc, char** argv)
 {
     try
     {
-        CommandLineParser cmd_parser("aes_encrypt_bmp.exe");
+        CommandLineParser cmd_parser("decrypt_bmp.exe");
 
         if (!cmd_parser.parse_options(argc, argv))
             return 0;
 
-        if (!encrypt_bmp(cmd_parser.get_algorithm(), cmd_parser.get_mode(), cmd_parser.get_args()))
+        if (!decrypt_bmp(cmd_parser.get_algorithm(), cmd_parser.get_mode(), cmd_parser.get_args()))
         {
             cmd_parser.print_usage();
             return 1;

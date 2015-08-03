@@ -22,7 +22,7 @@ Enable verbose output by passing the `--verbose` flag to the utilities.
 Please note that verbose output can only be produced when *not* using "boxes"
 (the `--boxes` flag).
 
-### aes_encrypt_block.exe
+### encrypt_block.exe
 
 Encrypts 16-byte blocks using AES-128/192/256 in the specified mode of
 operation.
@@ -37,7 +37,7 @@ For example, to encrypt
 
 run:
 
-    aes_encrypt_block.exe -a aes128 -m ecb 000102030405060708090a0b0c0d0e0f 00112233445566778899aabbccddeeff
+    encrypt_block.exe -a aes128 -m ecb 000102030405060708090a0b0c0d0e0f 00112233445566778899aabbccddeeff
 
 To encrypt
 
@@ -48,9 +48,9 @@ To encrypt
 
 run:
 
-    aes_encrypt_block.exe -a aes192 -m ofb 000102030405060708090a0b0c0d0e0f101112131415161718 22222222222222222222222222222222 00112233445566778899aabbccddeeff
+    encrypt_block.exe -a aes192 -m ofb 000102030405060708090a0b0c0d0e0f101112131415161718 22222222222222222222222222222222 00112233445566778899aabbccddeeff
 
-### aes_decrypt_block.exe
+### decrypt_block.exe
 
 Decrypts 16-byte blocks using AES-128/192/256 in the specified mode of
 operation.
@@ -65,7 +65,7 @@ For example, to decrypt
 
 run:
 
-    aes_decrypt_block.exe -a aes128 -m ecb 000102030405060708090a0b0c0d0e0f 69c4e0d86a7b0430d8cdb78070b4c55a
+    decrypt_block.exe -a aes128 -m ecb 000102030405060708090a0b0c0d0e0f 69c4e0d86a7b0430d8cdb78070b4c55a
 
 To decrypt
 
@@ -76,11 +76,11 @@ To decrypt
 
 run:
 
-    aes_decrypt_block.exe -a aes192 -m ofb 000102030405060708090a0b0c0d0e0f101112131415161718 22222222222222222222222222222222 bda298884f5c3a9eb7068aa7063a3b75
+    decrypt_block.exe -a aes192 -m ofb 000102030405060708090a0b0c0d0e0f101112131415161718 22222222222222222222222222222222 bda298884f5c3a9eb7068aa7063a3b75
 
 ## File encryption
 
-### aes_encrypt_file.exe
+### encrypt_file.exe
 
 Encrypts a file using AES-128/192/256 in the specified mode of operation.
 
@@ -94,7 +94,7 @@ For example, to encrypt the plaintext `input.txt`
 
 run:
 
-    aes_encrypt_file.exe -a aes128 -m ecb 11111111111111111111111111111111 input.txt output.txt
+    encrypt_file.exe -a aes128 -m ecb 11111111111111111111111111111111 input.txt output.txt
 
 To encrypt the plaintext from `input.txt`
 
@@ -105,9 +105,9 @@ To encrypt the plaintext from `input.txt`
 
 run
 
-    aes_encrypt_file.exe -a aes192 -m ofb 111111111111111111111111111111111111111111111111 22222222222222222222222222222222 input.txt output.txt
+    encrypt_file.exe -a aes192 -m ofb 111111111111111111111111111111111111111111111111 22222222222222222222222222222222 input.txt output.txt
 
-### aes_decrypt_file.exe
+### decrypt_file.exe
 
 Decrypts a file using AES-128/192/256 in the specified mode of operation.
 
@@ -121,7 +121,7 @@ To decrypt the ciphertext from `input.txt`
 
 run
 
-    aes_decrypt_file.exe -a aes128 -m ecb 11111111111111111111111111111111 input.txt output.txt
+    decrypt_file.exe -a aes128 -m ecb 11111111111111111111111111111111 input.txt output.txt
 
 To decrypt the ciphertext from `input.txt`
 
@@ -132,7 +132,7 @@ To decrypt the ciphertext from `input.txt`
 
 run
 
-    aes_decrypt_file.exe -a aes192 -m ofb 111111111111111111111111111111111111111111111111 22222222222222222222222222222222 input.txt output.txt
+    decrypt_file.exe -a aes192 -m ofb 111111111111111111111111111111111111111111111111 22222222222222222222222222222222 input.txt output.txt
 
 ## Bitmap encryption
 
@@ -145,12 +145,12 @@ Plaintext BMP | Encrypted in ECB mode | Encrypted in CBC mode
 ------------- | --------------------- | ---------------------
 ![Plaintext butterfly](bmp/butterfly.bmp?raw=true) | ![Ciphertext butterfly in ECB mode](bmp/cipherfly_ecb.bmp?raw=true) | ![Ciphertext butterfly in CBC mode](bmp/cipherfly_cbc.bmp?raw=true)
 
-### aes_encrypt_bmp.exe
+### encrypt_bmp.exe
 
 Encrypts the pixels in a BMP image file, preserving the header.
-The usage is the same as for [aes_encrypt_file.exe](#aes_encrypt_fileexe).
+The usage is the same as for [encrypt_file.exe](#encrypt_fileexe).
 
-### aes_decrypt_bmp.exe
+### decrypt_bmp.exe
 
 Decrypts the pixels in a BMP image file, preserving the header.
-The usage is the same as for [aes_decrypt_file.exe](#aes_decrypt_fileexe).
+The usage is the same as for [decrypt_file.exe](#decrypt_fileexe).
