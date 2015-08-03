@@ -79,8 +79,8 @@ class Tools:
         self._use_boxes = use_boxes
         self._logger = logging.getLogger(__name__)
 
-    _ENCRYPT_BLOCK = 'aes_encrypt_block.exe'
-    _DECRYPT_BLOCK = 'aes_decrypt_block.exe'
+    _ENCRYPT_BLOCK = 'encrypt_block.exe'
+    _DECRYPT_BLOCK = 'decrypt_block.exe'
 
     def run(self, tool_path, algo, mode, args):
         cmd_list = ['sde', '--', tool_path] if self._use_sde else [tool_path]
