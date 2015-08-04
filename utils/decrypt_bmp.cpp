@@ -6,7 +6,7 @@
  *            See LICENSE.txt for details.
  */
 
-#include "file_common.hpp"
+#include "file_cmd_parser.hpp"
 
 #include <aesni/all.h>
 
@@ -21,8 +21,8 @@
 #include <exception>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include <Windows.h>
@@ -175,13 +175,20 @@ int main(int argc, char** argv)
     try
     {
         CommandLineParser cmd_parser("decrypt_bmp.exe");
+        cmd_parser.parse(argc, argv);
 
-        if (!cmd_parser.parse_options(argc, argv))
-            return 0;
-
-        if (!decrypt_bmp(cmd_parser.get_algorithm(), cmd_parser.get_mode(), cmd_parser.get_args()))
+        if (cmd_parser.requested_help())
         {
-            cmd_parser.print_usage();
+            std::cout << cmd_parser;
+            return 0;
+        }
+
+        std::deque<std::string> args{ std::make_move_iterator(cmd_parser.args.begin()),
+                                      std::make_move_iterator(cmd_parser.args.end()) };
+
+        if (!decrypt_bmp(cmd_parser.algorithm, cmd_parser.mode, args))
+        {
+            std::cout << cmd_parser;
             return 1;
         }
 

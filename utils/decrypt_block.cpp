@@ -6,15 +6,19 @@
  *            See LICENSE.txt for details.
  */
 
-#include "block_common.hpp"
+#include "block_cmd_parser.hpp"
+#include "block_dumper.hpp"
 
 #include <aesni/all.h>
 
 #include <aesnixx/all.hpp>
 
+#include <boost/program_options.hpp>
+
 #include <deque>
 #include <exception>
 #include <iostream>
+#include <iterator>
 #include <string>
 
 namespace
@@ -212,14 +216,16 @@ int main(int argc, char** argv)
     try
     {
         CommandLineParser cmd_parser("decrypt_block.exe");
+        cmd_parser.parse(argc, argv);
 
-        if (!cmd_parser.parse_options(argc, argv))
+        if (cmd_parser.requested_help())
+        {
+            std::cout << cmd_parser;
             return 0;
+        }
 
-        const auto algorithm = cmd_parser.get_algorithm();
-        const auto mode = cmd_parser.get_mode();
-
-        auto args = cmd_parser.get_args();
+        std::deque<std::string> args{ std::make_move_iterator(cmd_parser.args.begin()),
+                                      std::make_move_iterator(cmd_parser.args.end()) };
 
         while (!args.empty())
         {
@@ -240,13 +246,13 @@ int main(int argc, char** argv)
                 args.pop_front();
             }
 
-            const auto success = cmd_parser.use_boxes()
-                ? decrypt_using_boxes(algorithm, mode, key, ciphertexts)
-                : decrypt_using_cxx_api(algorithm, mode, key, ciphertexts, cmd_parser.verbose());
+            const auto success = cmd_parser.use_boxes
+                ? decrypt_using_boxes(cmd_parser.algorithm, cmd_parser.mode, key, ciphertexts)
+                : decrypt_using_cxx_api(cmd_parser.algorithm, cmd_parser.mode, key, ciphertexts, cmd_parser.verbose);
 
             if (!success)
             {
-                cmd_parser.print_usage();
+                std::cout << cmd_parser;
                 return 1;
             }
         }

@@ -6,7 +6,7 @@
  *            See LICENSE.txt for details.
  */
 
-#include "file_common.hpp"
+#include "file_cmd_parser.hpp"
 
 #include <aesni/all.h>
 
@@ -20,8 +20,8 @@
 #include <exception>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <string>
-#include <utility>
 #include <vector>
 
 namespace
@@ -77,7 +77,7 @@ namespace
         }
 
         if (args.size() != 2)
-            return true;
+            return false;
 
         const auto src_path = args[0];
         const auto dest_path = args[1];
@@ -165,13 +165,20 @@ int main(int argc, char** argv)
     try
     {
         CommandLineParser cmd_parser("encrypt_file.exe");
+        cmd_parser.parse(argc, argv);
 
-        if (!cmd_parser.parse_options(argc, argv))
-            return 0;
-
-        if (!encrypt_file(cmd_parser.get_algorithm(), cmd_parser.get_mode(), cmd_parser.get_args()))
+        if (cmd_parser.requested_help())
         {
-            cmd_parser.print_usage();
+            std::cout << cmd_parser;
+            return 0;
+        }
+
+        std::deque<std::string> args{ std::make_move_iterator(cmd_parser.args.begin()),
+                                      std::make_move_iterator(cmd_parser.args.end()) };
+
+        if (!encrypt_file(cmd_parser.algorithm, cmd_parser.mode, args))
+        {
+            std::cout << cmd_parser;
             return 1;
         }
 
