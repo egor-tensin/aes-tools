@@ -12,6 +12,8 @@
 
 #include <aesni/all.h>
 
+#include <boost/config.hpp>
+
 #include <cstdlib>
 #include <cstring>
 
@@ -80,11 +82,7 @@ namespace aesni
             aesni_success(get());
         }
 
-        #if defined(_MSC_VER) && _MSC_VER < 1900
-        ~ErrorDetailsThrowsInDestructor()
-        #else
-        ~ErrorDetailsThrowsInDestructor() noexcept(false)
-        #endif
+        ~ErrorDetailsThrowsInDestructor() BOOST_NOEXCEPT_IF(false)
         {
             if (aesni_is_error(aesni_get_error_code(get())))
                 throw Error(impl);
