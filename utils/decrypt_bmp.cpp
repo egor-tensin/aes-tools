@@ -62,7 +62,7 @@ namespace
 
     template <aesni::Algorithm algorithm>
     bool decrypt_bmp_with_algorithm(
-        const AesNI_BoxAlgorithmParams& algorithm_params,
+        const AesNI_BoxKey& box_key,
         aesni::Mode mode,
         std::deque<std::string>& args)
     {
@@ -98,7 +98,7 @@ namespace
         aesni_box_init(
             &box,
             algorithm,
-            &algorithm_params,
+            &box_key,
             mode,
             iv_ptr,
             aesni::ErrorDetailsThrowsInDestructor());
@@ -139,30 +139,30 @@ namespace
         if (args.empty())
             return false;
 
-        AesNI_BoxAlgorithmParams algorithm_params;
+        AesNI_BoxKey box_key;
 
         switch (algorithm)
         {
             case AESNI_AES128:
                 aesni::from_string<AESNI_AES128>(
-                    algorithm_params.aes128_key, args.front());
+                    box_key.aes128_key, args.front());
                 args.pop_front();
                 return decrypt_bmp_with_algorithm<AESNI_AES128>(
-                    algorithm_params, mode, args);
+                    box_key, mode, args);
 
             case AESNI_AES192:
                 aesni::from_string<AESNI_AES192>(
-                    algorithm_params.aes192_key, args.front());
+                    box_key.aes192_key, args.front());
                 args.pop_front();
                 return decrypt_bmp_with_algorithm<AESNI_AES192>(
-                    algorithm_params, mode, args);
+                    box_key, mode, args);
 
             case AESNI_AES256:
                 aesni::from_string<AESNI_AES256>(
-                    algorithm_params.aes256_key, args.front());
+                    box_key.aes256_key, args.front());
                 args.pop_front();
                 return decrypt_bmp_with_algorithm<AESNI_AES256>(
-                    algorithm_params, mode, args);
+                    box_key, mode, args);
 
             default:
                 return false;

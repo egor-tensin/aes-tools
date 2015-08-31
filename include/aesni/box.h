@@ -22,7 +22,7 @@ extern "C"
 AesNI_StatusCode aesni_box_init(
     AesNI_Box* box,
     AesNI_Algorithm algorithm,
-    const AesNI_BoxAlgorithmParams* algorithm_params,
+    const AesNI_BoxKey* box_key,
     AesNI_Mode mode,
     const AesNI_BoxBlock* iv,
     AesNI_ErrorDetails* err_details);

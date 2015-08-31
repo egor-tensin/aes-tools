@@ -25,7 +25,7 @@ typedef union
     AesNI_AES192_Key aes192_key;
     AesNI_AES256_Key aes256_key;
 }
-AesNI_BoxAlgorithmParams;
+AesNI_BoxKey;
 
 typedef union
 {
@@ -33,7 +33,7 @@ typedef union
     AesNI_AES192_RoundKeys aes192_encryption_keys;
     AesNI_AES256_RoundKeys aes256_encryption_keys;
 }
-AesNI_BoxEncryptionParams;
+AesNI_BoxEncryptionRoundKeys;
 
 typedef union
 {
@@ -41,7 +41,7 @@ typedef union
     AesNI_AES192_RoundKeys aes192_decryption_keys;
     AesNI_AES256_RoundKeys aes256_decryption_keys;
 }
-AesNI_BoxDecryptionParams;
+AesNI_BoxDecryptionRoundKeys;
 
 typedef union
 {
@@ -49,21 +49,26 @@ typedef union
 }
 AesNI_BoxBlock;
 
-typedef AesNI_StatusCode (*AesNI_BoxDeriveParams)(
-    const AesNI_BoxAlgorithmParams* params,
-    AesNI_BoxEncryptionParams*,
-    AesNI_BoxDecryptionParams*,
+typedef AesNI_StatusCode (*AesNI_BoxCalculateRoundKeys)(
+    const AesNI_BoxKey* params,
+    AesNI_BoxEncryptionRoundKeys*,
+    AesNI_BoxDecryptionRoundKeys*,
     AesNI_ErrorDetails* err_details);
+
+/* typedef AesNI_StatusCode (*AesNI_BoxParseBlock)(
+    AesNI_BoxBlock* dest,
+    const char* src,
+    AesNI_ErrorDetails* err_details); */
 
 typedef AesNI_StatusCode (*AesNI_BoxEncryptBlock)(
     const AesNI_BoxBlock* plaintext,
-    const AesNI_BoxEncryptionParams* params,
+    const AesNI_BoxEncryptionRoundKeys* params,
     AesNI_BoxBlock* ciphertext,
     AesNI_ErrorDetails* err_details);
 
 typedef AesNI_StatusCode (*AesNI_BoxDecryptBlock)(
     const AesNI_BoxBlock* ciphertext,
-    const AesNI_BoxDecryptionParams* params,
+    const AesNI_BoxDecryptionRoundKeys* params,
     AesNI_BoxBlock* plaintext,
     AesNI_ErrorDetails* err_details);
 
@@ -92,7 +97,9 @@ typedef AesNI_StatusCode (*AesNI_BoxLoadBlock)(
 
 typedef struct
 {
-    AesNI_BoxDeriveParams derive_params;
+    AesNI_BoxCalculateRoundKeys calc_round_keys;
+    //AesNI_BoxParseBlock parse_block;
+    //AesNI_BoxParseKey parse_key;
     AesNI_BoxEncryptBlock encrypt_block;
     AesNI_BoxDecryptBlock decrypt_block;
     AesNI_BoxXorBlock xor_block;
@@ -106,8 +113,8 @@ AesNI_BoxAlgorithmInterface;
 typedef struct
 {
     const AesNI_BoxAlgorithmInterface* algorithm;
-    AesNI_BoxEncryptionParams encrypt_params;
-    AesNI_BoxDecryptionParams decrypt_params;
+    AesNI_BoxEncryptionRoundKeys encryption_keys;
+    AesNI_BoxDecryptionRoundKeys decryption_keys;
     AesNI_Mode mode;
     AesNI_BoxBlock iv;
 }

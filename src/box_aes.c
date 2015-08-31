@@ -12,49 +12,49 @@
 #include <string.h>
 
 static AesNI_StatusCode aesni_box_derive_params_aes128(
-    const AesNI_BoxAlgorithmParams* algorithm_params,
-    AesNI_BoxEncryptionParams* encrypt_params,
-    AesNI_BoxDecryptionParams* decrypt_params,
+    const AesNI_BoxKey* box_key,
+    AesNI_BoxEncryptionRoundKeys* encryption_keys,
+    AesNI_BoxDecryptionRoundKeys* decryption_keys,
     AesNI_ErrorDetails* err_details)
 {
     aesni_AES128_expand_key_(
-        algorithm_params->aes128_key.key,
-        &encrypt_params->aes128_encryption_keys);
+        box_key->aes128_key.key,
+        &encryption_keys->aes128_encryption_keys);
     aesni_AES128_derive_decryption_keys_(
-        &encrypt_params->aes128_encryption_keys,
-        &decrypt_params->aes128_decryption_keys);
+        &encryption_keys->aes128_encryption_keys,
+        &decryption_keys->aes128_decryption_keys);
     return AESNI_SUCCESS;
 }
 
 static AesNI_StatusCode aesni_box_derive_params_aes192(
-    const AesNI_BoxAlgorithmParams* algorithm_params,
-    AesNI_BoxEncryptionParams* encrypt_params,
-    AesNI_BoxDecryptionParams* decrypt_params,
+    const AesNI_BoxKey* box_key,
+    AesNI_BoxEncryptionRoundKeys* encryption_keys,
+    AesNI_BoxDecryptionRoundKeys* decryption_keys,
     AesNI_ErrorDetails* err_details)
 {
     aesni_AES192_expand_key_(
-        algorithm_params->aes192_key.lo,
-        algorithm_params->aes192_key.hi,
-        &encrypt_params->aes192_encryption_keys);
+        box_key->aes192_key.lo,
+        box_key->aes192_key.hi,
+        &encryption_keys->aes192_encryption_keys);
     aesni_AES192_derive_decryption_keys_(
-        &encrypt_params->aes192_encryption_keys,
-        &decrypt_params->aes192_decryption_keys);
+        &encryption_keys->aes192_encryption_keys,
+        &decryption_keys->aes192_decryption_keys);
     return AESNI_SUCCESS;
 }
 
 static AesNI_StatusCode aesni_box_derive_params_aes256(
-    const AesNI_BoxAlgorithmParams* algorithm_params,
-    AesNI_BoxEncryptionParams* encrypt_params,
-    AesNI_BoxDecryptionParams* decrypt_params,
+    const AesNI_BoxKey* box_key,
+    AesNI_BoxEncryptionRoundKeys* encryption_keys,
+    AesNI_BoxDecryptionRoundKeys* decryption_keys,
     AesNI_ErrorDetails* err_details)
 {
     aesni_AES256_expand_key_(
-        algorithm_params->aes256_key.lo,
-        algorithm_params->aes256_key.hi,
-        &encrypt_params->aes256_encryption_keys);
+        box_key->aes256_key.lo,
+        box_key->aes256_key.hi,
+        &encryption_keys->aes256_encryption_keys);
     aesni_AES256_derive_decryption_keys_(
-        &encrypt_params->aes256_encryption_keys,
-        &decrypt_params->aes256_decryption_keys);
+        &encryption_keys->aes256_encryption_keys,
+        &decryption_keys->aes256_decryption_keys);
     return AESNI_SUCCESS;
 }
 
@@ -103,7 +103,7 @@ static AesNI_StatusCode aesni_box_load_block_aes(
 
 static AesNI_StatusCode aesni_box_encrypt_block_aes128(
     const AesNI_BoxBlock* input,
-    const AesNI_BoxEncryptionParams* params,
+    const AesNI_BoxEncryptionRoundKeys* params,
     AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
@@ -115,7 +115,7 @@ static AesNI_StatusCode aesni_box_encrypt_block_aes128(
 
 static AesNI_StatusCode aesni_box_decrypt_block_aes128(
     const AesNI_BoxBlock* input,
-    const AesNI_BoxDecryptionParams* params,
+    const AesNI_BoxDecryptionRoundKeys* params,
     AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
@@ -127,7 +127,7 @@ static AesNI_StatusCode aesni_box_decrypt_block_aes128(
 
 static AesNI_StatusCode aesni_box_encrypt_block_aes192(
     const AesNI_BoxBlock* input,
-    const AesNI_BoxEncryptionParams* params,
+    const AesNI_BoxEncryptionRoundKeys* params,
     AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
@@ -139,7 +139,7 @@ static AesNI_StatusCode aesni_box_encrypt_block_aes192(
 
 static AesNI_StatusCode aesni_box_decrypt_block_aes192(
     const AesNI_BoxBlock* input,
-    const AesNI_BoxDecryptionParams* params,
+    const AesNI_BoxDecryptionRoundKeys* params,
     AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
@@ -151,7 +151,7 @@ static AesNI_StatusCode aesni_box_decrypt_block_aes192(
 
 static AesNI_StatusCode aesni_box_encrypt_block_aes256(
     const AesNI_BoxBlock* input,
-    const AesNI_BoxEncryptionParams* params,
+    const AesNI_BoxEncryptionRoundKeys* params,
     AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {
@@ -163,7 +163,7 @@ static AesNI_StatusCode aesni_box_encrypt_block_aes256(
 
 static AesNI_StatusCode aesni_box_decrypt_block_aes256(
     const AesNI_BoxBlock* input,
-    const AesNI_BoxDecryptionParams* params,
+    const AesNI_BoxDecryptionRoundKeys* params,
     AesNI_BoxBlock* output,
     AesNI_ErrorDetails* err_details)
 {

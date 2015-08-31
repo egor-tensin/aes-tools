@@ -130,7 +130,7 @@ namespace
 
     template <aesni::Algorithm algorithm>
     bool encrypt_using_boxes_with_algorithm(
-        const AesNI_BoxAlgorithmParams& algorithm_params,
+        const AesNI_BoxKey& box_key,
         aesni::Mode mode,
         const std::string& key,
         std::deque<std::string> plaintexts)
@@ -152,7 +152,7 @@ namespace
         aesni_box_init(
             &box,
             algorithm,
-            &algorithm_params,
+            &box_key,
             mode,
             iv_ptr,
             aesni::ErrorDetailsThrowsInDestructor());
@@ -182,27 +182,27 @@ namespace
         const std::string& key,
         std::deque<std::string> plaintexts)
     {
-        AesNI_BoxAlgorithmParams algorithm_params;
+        AesNI_BoxKey box_key;
 
         switch (algorithm)
         {
             case AESNI_AES128:
                 aesni::from_string<AESNI_AES128>(
-                    algorithm_params.aes128_key, key);
+                    box_key.aes128_key, key);
                 return encrypt_using_boxes_with_algorithm<AESNI_AES128>(
-                    algorithm_params, mode, key, plaintexts);
+                    box_key, mode, key, plaintexts);
 
             case AESNI_AES192:
                 aesni::from_string<AESNI_AES192>(
-                    algorithm_params.aes192_key, key);
+                    box_key.aes192_key, key);
                 return encrypt_using_boxes_with_algorithm<AESNI_AES192>(
-                    algorithm_params, mode, key, plaintexts);
+                    box_key, mode, key, plaintexts);
 
             case AESNI_AES256:
                 aesni::from_string<AESNI_AES256>(
-                    algorithm_params.aes256_key, key);
+                    box_key.aes256_key, key);
                 return encrypt_using_boxes_with_algorithm<AESNI_AES256>(
-                    algorithm_params, mode, key, plaintexts);
+                    box_key, mode, key, plaintexts);
 
             default:
                 return false;

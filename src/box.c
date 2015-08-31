@@ -21,7 +21,7 @@ static const AesNI_BoxAlgorithmInterface* aesni_box_algorithms[] =
 AesNI_StatusCode aesni_box_init(
     AesNI_Box* box,
     AesNI_Algorithm algorithm,
-    const AesNI_BoxAlgorithmParams* algorithm_params,
+    const AesNI_BoxKey* box_key,
     AesNI_Mode mode,
     const AesNI_BoxBlock* iv,
     AesNI_ErrorDetails* err_details)
@@ -30,10 +30,10 @@ AesNI_StatusCode aesni_box_init(
 
     box->algorithm = aesni_box_algorithms[algorithm];
 
-    if (aesni_is_error(status = box->algorithm->derive_params(
-            algorithm_params,
-            &box->encrypt_params,
-            &box->decrypt_params,
+    if (aesni_is_error(status = box->algorithm->calc_round_keys(
+            box_key,
+            &box->encryption_keys,
+            &box->decryption_keys,
             err_details)))
         return status;
 
@@ -51,7 +51,7 @@ static AesNI_StatusCode aesni_box_encrypt_block_ecb(
     AesNI_ErrorDetails* err_details)
 {
     return box->algorithm->encrypt_block(
-        input, &box->encrypt_params, output, err_details);
+        input, &box->encryption_keys, output, err_details);
 }
 
 static AesNI_StatusCode aesni_box_encrypt_block_cbc(
@@ -68,7 +68,7 @@ static AesNI_StatusCode aesni_box_encrypt_block_cbc(
         return status;
 
     if (aesni_is_error(status = box->algorithm->encrypt_block(
-            &xored_input, &box->encrypt_params, output, err_details)))
+            &xored_input, &box->encryption_keys, output, err_details)))
         return status;
 
     box->iv = *output;
@@ -84,7 +84,7 @@ static AesNI_StatusCode aesni_box_encrypt_block_cfb(
     AesNI_StatusCode status = AESNI_SUCCESS;
 
     if (aesni_is_error(status = box->algorithm->encrypt_block(
-            &box->iv, &box->encrypt_params, output, err_details)))
+            &box->iv, &box->encryption_keys, output, err_details)))
         return status;
 
     if (aesni_is_error(status = box->algorithm->xor_block(
@@ -104,7 +104,7 @@ static AesNI_StatusCode aesni_box_encrypt_block_ofb(
     AesNI_StatusCode status = AESNI_SUCCESS;
 
     if (aesni_is_error(status = box->algorithm->encrypt_block(
-            &box->iv, &box->encrypt_params, &box->iv, err_details)))
+            &box->iv, &box->encryption_keys, &box->iv, err_details)))
         return status;
 
     *output = box->iv;
@@ -125,7 +125,7 @@ static AesNI_StatusCode aesni_box_encrypt_block_ctr(
     AesNI_StatusCode status = AESNI_SUCCESS;
 
     if (aesni_is_error(status = box->algorithm->encrypt_block(
-            &box->iv, &box->encrypt_params, output, err_details)))
+            &box->iv, &box->encryption_keys, output, err_details)))
         return status;
 
     if (aesni_is_error(status = box->algorithm->xor_block(
@@ -171,7 +171,7 @@ static AesNI_StatusCode aesni_box_decrypt_block_ecb(
     AesNI_ErrorDetails* err_details)
 {
     return box->algorithm->decrypt_block(
-        input, &box->decrypt_params, output, err_details);
+        input, &box->decryption_keys, output, err_details);
 }
 
 static AesNI_StatusCode aesni_box_decrypt_block_cbc(
@@ -183,7 +183,7 @@ static AesNI_StatusCode aesni_box_decrypt_block_cbc(
     AesNI_StatusCode status = AESNI_SUCCESS;
 
     if (aesni_is_error(status = box->algorithm->decrypt_block(
-            input, &box->decrypt_params, output, err_details)))
+            input, &box->decryption_keys, output, err_details)))
         return status;
 
     if (aesni_is_error(status = box->algorithm->xor_block(
@@ -203,7 +203,7 @@ static AesNI_StatusCode aesni_box_decrypt_block_cfb(
     AesNI_StatusCode status = AESNI_SUCCESS;
 
     if (aesni_is_error(status = box->algorithm->encrypt_block(
-            &box->iv, &box->encrypt_params, output, err_details)))
+            &box->iv, &box->encryption_keys, output, err_details)))
         return status;
 
     if (aesni_is_error(status = box->algorithm->xor_block(
