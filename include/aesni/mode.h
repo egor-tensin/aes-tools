@@ -127,6 +127,9 @@ static __inline AesNI_## prefix ##_Block __fastcall aesni_## prefix ##_decrypt_b
     AesNI_## prefix ##_Block init_vector, \
     AesNI_## prefix ##_Block* next_init_vector) \
 { \
+    assert(encryption_keys); \
+    assert(next_init_vector); \
+\
     return aesni_## prefix ##_encrypt_block_OFB( \
         ciphertext, encryption_keys, init_vector, next_init_vector); \
 }
@@ -154,6 +157,9 @@ static __inline AesNI_## prefix ##_Block __fastcall aesni_## prefix ##_decrypt_b
     AesNI_## prefix ##_Block init_vector, \
     AesNI_## prefix ##_Block* next_init_vector) \
 { \
+    assert(encryption_keys); \
+    assert(next_init_vector); \
+\
     return aesni_## prefix ##_encrypt_block_CTR( \
         ciphertext, encryption_keys, init_vector, next_init_vector); \
 }
