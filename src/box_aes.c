@@ -58,11 +58,108 @@ static AesNI_StatusCode aesni_box_derive_params_aes256(
     return AESNI_SUCCESS;
 }
 
+static AesNI_StatusCode aesni_box_parse_block_aes(
+    AesNI_BoxBlock* dest,
+    const char* src,
+    AesNI_ErrorDetails* err_details)
+{
+    if (dest == NULL)
+        return aesni_error_null_argument(err_details, "dest");
+
+    return aesni_AES_parse_block(&dest->aes_block, src, err_details);
+}
+
+static AesNI_StatusCode aesni_box_parse_key_aes128(
+    AesNI_BoxKey* dest,
+    const char* src,
+    AesNI_ErrorDetails* err_details)
+{
+    if (dest == NULL)
+        return aesni_error_null_argument(err_details, "dest");
+
+    return aesni_AES128_parse_key(&dest->aes128_key, src, err_details);
+}
+
+static AesNI_StatusCode aesni_box_parse_key_aes192(
+    AesNI_BoxKey* dest,
+    const char* src,
+    AesNI_ErrorDetails* err_details)
+{
+    if (dest == NULL)
+        return aesni_error_null_argument(err_details, "dest");
+
+    return aesni_AES192_parse_key(&dest->aes192_key, src, err_details);
+}
+
+static AesNI_StatusCode aesni_box_parse_key_aes256(
+    AesNI_BoxKey* dest,
+    const char* src,
+    AesNI_ErrorDetails* err_details)
+{
+    if (dest == NULL)
+        return aesni_error_null_argument(err_details, "dest");
+
+    return aesni_AES256_parse_key(&dest->aes256_key, src, err_details);
+}
+
+static AesNI_StatusCode aesni_box_format_block_aes(
+    AesNI_BoxBlockString* dest,
+    const AesNI_BoxBlock* src,
+    AesNI_ErrorDetails* err_details)
+{
+    if (dest == NULL)
+        return aesni_error_null_argument(err_details, "dest");
+    if (src == NULL)
+        return aesni_error_null_argument(err_details, "src");
+
+    return aesni_AES128_format_block(&dest->aes, &src->aes_block, err_details);
+}
+
+static AesNI_StatusCode aesni_box_format_key_aes128(
+    AesNI_BoxKeyString* dest,
+    const AesNI_BoxKey* src,
+    AesNI_ErrorDetails* err_details)
+{
+    if (dest == NULL)
+        return aesni_error_null_argument(err_details, "dest");
+    if (src == NULL)
+        return aesni_error_null_argument(err_details, "src");
+
+    return aesni_AES128_format_key(&dest->aes128, &src->aes128_key, err_details);
+}
+
+static AesNI_StatusCode aesni_box_format_key_aes192(
+    AesNI_BoxKeyString* dest,
+    const AesNI_BoxKey* src,
+    AesNI_ErrorDetails* err_details)
+{
+    if (dest == NULL)
+        return aesni_error_null_argument(err_details, "dest");
+    if (src == NULL)
+        return aesni_error_null_argument(err_details, "src");
+
+    return aesni_AES192_format_key(&dest->aes192, &src->aes192_key, err_details);
+}
+
+static AesNI_StatusCode aesni_box_format_key_aes256(
+    AesNI_BoxKeyString* dest,
+    const AesNI_BoxKey* src,
+    AesNI_ErrorDetails* err_details)
+{
+    if (dest == NULL)
+        return aesni_error_null_argument(err_details, "dest");
+    if (src == NULL)
+        return aesni_error_null_argument(err_details, "src");
+
+    return aesni_AES256_format_key(&dest->aes256, &src->aes256_key, err_details);
+}
+
 static AesNI_StatusCode aesni_box_xor_block_aes(
     AesNI_BoxBlock* dest,
     const AesNI_BoxBlock* src,
     AesNI_ErrorDetails* err_details)
 {
+
     dest->aes_block = aesni_AES_xor_blocks(dest->aes_block, src->aes_block);
     return AESNI_SUCCESS;
 }
@@ -176,6 +273,10 @@ static AesNI_StatusCode aesni_box_decrypt_block_aes256(
 AesNI_BoxAlgorithmInterface aesni_box_algorithm_aes128 =
 {
     &aesni_box_derive_params_aes128,
+    &aesni_box_parse_block_aes,
+    &aesni_box_parse_key_aes128,
+    &aesni_box_format_block_aes,
+    &aesni_box_format_key_aes128,
     &aesni_box_encrypt_block_aes128,
     &aesni_box_decrypt_block_aes128,
     &aesni_box_xor_block_aes,
@@ -188,6 +289,10 @@ AesNI_BoxAlgorithmInterface aesni_box_algorithm_aes128 =
 AesNI_BoxAlgorithmInterface aesni_box_algorithm_aes192 =
 {
     &aesni_box_derive_params_aes192,
+    &aesni_box_parse_block_aes,
+    &aesni_box_parse_key_aes192,
+    &aesni_box_format_block_aes,
+    &aesni_box_format_key_aes192,
     &aesni_box_encrypt_block_aes192,
     &aesni_box_decrypt_block_aes192,
     &aesni_box_xor_block_aes,
@@ -200,6 +305,10 @@ AesNI_BoxAlgorithmInterface aesni_box_algorithm_aes192 =
 AesNI_BoxAlgorithmInterface aesni_box_algorithm_aes256 =
 {
     &aesni_box_derive_params_aes256,
+    &aesni_box_parse_block_aes,
+    &aesni_box_parse_key_aes256,
+    &aesni_box_format_block_aes,
+    &aesni_box_format_key_aes256,
     &aesni_box_encrypt_block_aes256,
     &aesni_box_decrypt_block_aes256,
     &aesni_box_xor_block_aes,

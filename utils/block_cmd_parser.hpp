@@ -12,6 +12,7 @@
 
 #include <aesnixx/all.hpp>
 
+#include <boost/config.hpp>
 #include <boost/program_options.hpp>
 
 #include <ostream>
@@ -20,6 +21,24 @@
 
 namespace
 {
+    BOOST_NORETURN inline void throw_iv_required()
+    {
+        throw boost::program_options::error(
+            "initialization vector is required for the selected mode of operation");
+    }
+
+    BOOST_NORETURN inline void throw_not_implemented(aesni::Algorithm algorithm)
+    {
+        throw boost::program_options::error(
+            "the selected algorithm is not implemented");
+    }
+
+    BOOST_NORETURN inline void throw_not_implemented(aesni::Mode mode)
+    {
+        throw boost::program_options::error(
+            "the selected mode of operation is not implemented");
+    }
+
     class CommandLineParser
     {
     public:

@@ -45,9 +45,23 @@ AesNI_BoxDecryptionRoundKeys;
 
 typedef union
 {
+    AesNI_AES128_KeyString aes128;
+    AesNI_AES192_KeyString aes192;
+    AesNI_AES256_KeyString aes256;
+}
+AesNI_BoxKeyString;
+
+typedef union
+{
     AesNI_AES_Block aes_block;
 }
 AesNI_BoxBlock;
+
+typedef union
+{
+    AesNI_AES_BlockString aes;
+}
+AesNI_BoxBlockString;
 
 typedef AesNI_StatusCode (*AesNI_BoxCalculateRoundKeys)(
     const AesNI_BoxKey* params,
@@ -55,10 +69,25 @@ typedef AesNI_StatusCode (*AesNI_BoxCalculateRoundKeys)(
     AesNI_BoxDecryptionRoundKeys*,
     AesNI_ErrorDetails* err_details);
 
-/* typedef AesNI_StatusCode (*AesNI_BoxParseBlock)(
+typedef AesNI_StatusCode (*AesNI_BoxParseBlock)(
     AesNI_BoxBlock* dest,
     const char* src,
-    AesNI_ErrorDetails* err_details); */
+    AesNI_ErrorDetails* err_details);
+
+typedef AesNI_StatusCode (*AesNI_BoxParseKey)(
+    AesNI_BoxKey* dest,
+    const char* src,
+    AesNI_ErrorDetails* err_details);
+
+typedef AesNI_StatusCode (*AesNI_BoxFormatBlock)(
+    AesNI_BoxBlockString* dest,
+    const AesNI_BoxBlock* src,
+    AesNI_ErrorDetails* err_details);
+
+typedef AesNI_StatusCode (*AesNI_BoxFormatKey)(
+    AesNI_BoxKeyString* dest,
+    const AesNI_BoxKey* src,
+    AesNI_ErrorDetails* err_details);
 
 typedef AesNI_StatusCode (*AesNI_BoxEncryptBlock)(
     const AesNI_BoxBlock* plaintext,
@@ -98,8 +127,10 @@ typedef AesNI_StatusCode (*AesNI_BoxLoadBlock)(
 typedef struct
 {
     AesNI_BoxCalculateRoundKeys calc_round_keys;
-    //AesNI_BoxParseBlock parse_block;
-    //AesNI_BoxParseKey parse_key;
+    AesNI_BoxParseBlock parse_block;
+    AesNI_BoxParseKey parse_key;
+    AesNI_BoxFormatBlock format_block;
+    AesNI_BoxFormatKey format_key;
     AesNI_BoxEncryptBlock encrypt_block;
     AesNI_BoxDecryptBlock decrypt_block;
     AesNI_BoxXorBlock xor_block;

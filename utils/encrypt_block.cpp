@@ -9,8 +9,6 @@
 #include "block_cmd_parser.hpp"
 #include "block_dumper.hpp"
 
-#include <aesni/all.h>
-
 #include <aesnixx/all.hpp>
 
 #include <boost/program_options.hpp>
@@ -24,7 +22,7 @@
 namespace
 {
     template <aesni::Algorithm algorithm, aesni::Mode mode>
-    bool encrypt_with_mode(
+    void encrypt_with_mode(
         const std::string& key_str,
         std::deque<std::string>& plaintexts,
         bool verbose = false)
@@ -34,7 +32,7 @@ namespace
         if (aesni::ModeRequiresInitializationVector<mode>::value)
         {
             if (plaintexts.empty())
-                return false;
+                throw_iv_required();
 
             aesni::from_string<algorithm>(iv, plaintexts.front());
             plaintexts.pop_front();
@@ -72,12 +70,10 @@ namespace
                 std::cout << aesni::to_string<algorithm>(ciphertext) << "\n";
             }
         }
-
-        return true;
     }
 
     template <aesni::Algorithm algorithm>
-    bool encrypt_with_algorithm(
+    void encrypt_with_algorithm(
         aesni::Mode mode,
         const std::string& key_str,
         std::deque<std::string>& plaintexts,
@@ -86,26 +82,32 @@ namespace
         switch (mode)
         {
             case AESNI_ECB:
-                return encrypt_with_mode<algorithm, AESNI_ECB>(key_str, plaintexts, verbose);
+                encrypt_with_mode<algorithm, AESNI_ECB>(key_str, plaintexts, verbose);
+                break;
 
             case AESNI_CBC:
-                return encrypt_with_mode<algorithm, AESNI_CBC>(key_str, plaintexts, verbose);
+                encrypt_with_mode<algorithm, AESNI_CBC>(key_str, plaintexts, verbose);
+                break;
 
             case AESNI_CFB:
-                return encrypt_with_mode<algorithm, AESNI_CFB>(key_str, plaintexts, verbose);
+                encrypt_with_mode<algorithm, AESNI_CFB>(key_str, plaintexts, verbose);
+                break;
 
             case AESNI_OFB:
-                return encrypt_with_mode<algorithm, AESNI_OFB>(key_str, plaintexts, verbose);
+                encrypt_with_mode<algorithm, AESNI_OFB>(key_str, plaintexts, verbose);
+                break;
 
             case AESNI_CTR:
-                return encrypt_with_mode<algorithm, AESNI_CTR>(key_str, plaintexts, verbose);
+                encrypt_with_mode<algorithm, AESNI_CTR>(key_str, plaintexts, verbose);
+                break;
 
             default:
-                return false;
+                throw_not_implemented(mode);
+                break;
         }
     }
 
-    bool encrypt_using_cxx_api(
+    void encrypt_using_cxx_api(
         aesni::Algorithm algorithm,
         aesni::Mode mode,
         const std::string& key_str,
@@ -115,97 +117,66 @@ namespace
         switch (algorithm)
         {
             case AESNI_AES128:
-                return encrypt_with_algorithm<AESNI_AES128>(mode, key_str, plaintexts, verbose);
+                encrypt_with_algorithm<AESNI_AES128>(mode, key_str, plaintexts, verbose);
+                break;
 
             case AESNI_AES192:
-                return encrypt_with_algorithm<AESNI_AES192>(mode, key_str, plaintexts, verbose);
+                encrypt_with_algorithm<AESNI_AES192>(mode, key_str, plaintexts, verbose);
+                break;
 
             case AESNI_AES256:
-                return encrypt_with_algorithm<AESNI_AES256>(mode, key_str, plaintexts, verbose);
+                encrypt_with_algorithm<AESNI_AES256>(mode, key_str, plaintexts, verbose);
+                break;
 
             default:
-                return false;
+                throw_not_implemented(algorithm);
+                break;
         }
     }
 
-    template <aesni::Algorithm algorithm>
-    bool encrypt_using_boxes_with_algorithm(
-        const AesNI_BoxKey& box_key,
-        aesni::Mode mode,
-        const std::string& key,
-        std::deque<std::string> plaintexts)
+    void encrypt_using_particular_box(
+        aesni::Box& box,
+        std::deque<std::string>& plaintexts)
     {
-        AesNI_BoxBlock iv;
-        AesNI_BoxBlock* iv_ptr = nullptr;
+        while (!plaintexts.empty())
+        {
+            aesni::Box::Block plaintext;
+            box.parse_block(
+                plaintext, plaintexts.front());
+            plaintexts.pop_front();
+
+            aesni::Box::Block ciphertext;
+            box.encrypt_block(plaintext, ciphertext);
+
+            std::cout << box.format_block(ciphertext) << "\n";
+        }
+    }
+
+    void encrypt_using_boxes(
+        aesni::Algorithm algorithm,
+        aesni::Mode mode,
+        const std::string& key_str,
+        std::deque<std::string>& plaintexts)
+    {
+        aesni::Box::Key key;
+        aesni::Box::parse_key(key, algorithm, key_str);
 
         if (aesni::mode_requires_initialization_vector(mode))
         {
             if (plaintexts.empty())
-                return false;
+                throw_iv_required();
 
-            aesni::from_string<AESNI_AES128>(iv.aes_block, plaintexts.front());
-            iv_ptr = &iv;
-            plaintexts.pop_front();
-        }
-
-        AesNI_Box box;
-        aesni_box_init(
-            &box,
-            algorithm,
-            &box_key,
-            mode,
-            iv_ptr,
-            aesni::ErrorDetailsThrowsInDestructor());
-
-        while (!plaintexts.empty())
-        {
-            AesNI_BoxBlock plaintext;
-            aesni::from_string<algorithm>(plaintext.aes_block, plaintexts.front());
+            aesni::Box::Block iv;
+            aesni::Box::parse_block(iv, algorithm, plaintexts.front());
             plaintexts.pop_front();
 
-            AesNI_BoxBlock ciphertext;
-            aesni_box_encrypt_block(
-                &box,
-                &plaintext,
-                &ciphertext,
-                aesni::ErrorDetailsThrowsInDestructor());
-
-            std::cout << aesni::to_string<algorithm>(ciphertext.aes_block) << "\n";
+            encrypt_using_particular_box(
+                aesni::Box(algorithm, key, mode, iv), plaintexts);
         }
-
-        return true;
-    }
-
-    bool encrypt_using_boxes(
-        aesni::Algorithm algorithm,
-        aesni::Mode mode,
-        const std::string& key,
-        std::deque<std::string> plaintexts)
-    {
-        AesNI_BoxKey box_key;
-
-        switch (algorithm)
+        else
         {
-            case AESNI_AES128:
-                aesni::from_string<AESNI_AES128>(
-                    box_key.aes128_key, key);
-                return encrypt_using_boxes_with_algorithm<AESNI_AES128>(
-                    box_key, mode, key, plaintexts);
-
-            case AESNI_AES192:
-                aesni::from_string<AESNI_AES192>(
-                    box_key.aes192_key, key);
-                return encrypt_using_boxes_with_algorithm<AESNI_AES192>(
-                    box_key, mode, key, plaintexts);
-
-            case AESNI_AES256:
-                aesni::from_string<AESNI_AES256>(
-                    box_key.aes256_key, key);
-                return encrypt_using_boxes_with_algorithm<AESNI_AES256>(
-                    box_key, mode, key, plaintexts);
-
-            default:
-                return false;
+            encrypt_using_particular_box(
+                aesni::Box(algorithm, key), plaintexts);
         }
     }
 }
@@ -215,62 +186,76 @@ int main(int argc, char** argv)
     try
     {
         CommandLineParser cmd_parser("encrypt_block.exe");
-        cmd_parser.parse(argc, argv);
-
-        if (cmd_parser.requested_help())
+        try
         {
-            std::cout << cmd_parser;
-            return 0;
-        }
+            cmd_parser.parse(argc, argv);
 
-        std::deque<std::string> args{ std::make_move_iterator(cmd_parser.args.begin()),
-                                      std::make_move_iterator(cmd_parser.args.end()) };
+            if (cmd_parser.requested_help())
+            {
+                std::cout << cmd_parser;
+                return 0;
+            }
 
-        while (!args.empty())
-        {
-            const auto key = args.front();
-            args.pop_front();
-
-            std::deque<std::string> plaintexts;
+            std::deque<std::string> args(
+                std::make_move_iterator(cmd_parser.args.begin()),
+                std::make_move_iterator(cmd_parser.args.end()));
 
             while (!args.empty())
             {
-                if (args.front() == "--")
+                const auto key = args.front();
+                args.pop_front();
+
+                std::deque<std::string> plaintexts;
+
+                while (!args.empty())
                 {
+                    if (args.front() == "--")
+                    {
+                        args.pop_front();
+                        break;
+                    }
+
+                    plaintexts.push_back(args.front());
                     args.pop_front();
-                    break;
                 }
 
-                plaintexts.push_back(args.front());
-                args.pop_front();
+                if (cmd_parser.use_boxes)
+                {
+                    encrypt_using_boxes(
+                        cmd_parser.algorithm,
+                        cmd_parser.mode,
+                        key,
+                        plaintexts);
+                }
+                else
+                {
+                    encrypt_using_cxx_api(
+                        cmd_parser.algorithm,
+                        cmd_parser.mode,
+                        key,
+                        plaintexts,
+                        cmd_parser.verbose);
+                }
             }
 
-            const auto success = cmd_parser.use_boxes
-                ? encrypt_using_boxes(cmd_parser.algorithm, cmd_parser.mode, key, plaintexts)
-                : encrypt_using_cxx_api(cmd_parser.algorithm, cmd_parser.mode, key, plaintexts, cmd_parser.verbose);
-
-            if (!success)
-            {
-                std::cout << cmd_parser;
-                return 1;
-            }
+            return 0;
         }
-
-        return 0;
-    }
-    catch (const boost::program_options::error& e)
-    {
-        std::cerr << "Usage error: " << e.what() << "\n";
-        return 1;
-    }
-    catch (const aesni::Error& e)
-    {
-        std::cerr << e;
-        return 1;
+        catch (const boost::program_options::error& e)
+        {
+            std::cerr << "Usage error: " << e.what() << "\n";
+            std::cerr << cmd_parser;
+            return 1;
+        }
+        catch (const aesni::Error& e)
+        {
+            std::cerr << e;
+            return 1;
+        }
     }
     catch (const std::exception& e)
     {
         std::cerr << e.what() << "\n";
         return 1;
     }
+    return 0;
 }

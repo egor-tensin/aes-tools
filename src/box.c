@@ -620,3 +620,63 @@ AesNI_StatusCode aesni_box_decrypt_buffer(
         return status;
     }
 }
+
+AesNI_StatusCode aesni_box_parse_block(
+    AesNI_BoxBlock* dest,
+    AesNI_Algorithm algorithm,
+    const char* src,
+    AesNI_ErrorDetails* err_details)
+{
+    if (dest == NULL)
+        return aesni_error_null_argument(err_details, "dest");
+    if (src == NULL)
+        return aesni_error_null_argument(err_details, "src");
+
+    return aesni_box_algorithms[algorithm]->parse_block(
+        dest, src, err_details);
+}
+
+AesNI_StatusCode aesni_box_parse_key(
+    AesNI_BoxKey* dest,
+    AesNI_Algorithm algorithm,
+    const char* src,
+    AesNI_ErrorDetails* err_details)
+{
+    if (dest == NULL)
+        return aesni_error_null_argument(err_details, "dest");
+    if (src == NULL)
+        return aesni_error_null_argument(err_details, "src");
+
+    return aesni_box_algorithms[algorithm]->parse_key(
+        dest, src, err_details);
+}
+
+AesNI_StatusCode aesni_box_format_block(
+    AesNI_BoxBlockString* dest,
+    AesNI_Algorithm algorithm,
+    const AesNI_BoxBlock* src,
+    AesNI_ErrorDetails* err_details)
+{
+    if (dest == NULL)
+        return aesni_error_null_argument(err_details, "dest");
+    if (src == NULL)
+        return aesni_error_null_argument(err_details, "src");
+
+    return aesni_box_algorithms[algorithm]->format_block(
+        dest, src, err_details);
+}
+
+AesNI_StatusCode aesni_box_format_key(
+    AesNI_BoxKeyString* dest,
+    AesNI_Algorithm algorithm,
+    const AesNI_BoxKey* src,
+    AesNI_ErrorDetails* err_details)
+{
+    if (dest == NULL)
+        return aesni_error_null_argument(err_details, "dest");
+    if (src == NULL)
+        return aesni_error_null_argument(err_details, "src");
+
+    return aesni_box_algorithms[algorithm]->format_key(
+        dest, src, err_details);
+}

@@ -12,6 +12,7 @@
 
 #include <aesnixx/all.hpp>
 
+#include <boost/config.hpp>
 #include <boost/program_options.hpp>
 
 #include <ostream>
@@ -20,6 +21,30 @@
 
 namespace
 {
+    BOOST_NORETURN inline void throw_key_required()
+    {
+        throw boost::program_options::error(
+            "a key is required but not specified");
+    }
+
+    BOOST_NORETURN inline void throw_iv_required()
+    {
+        throw boost::program_options::error(
+            "initialization vector is required for the selected mode of operation");
+    }
+
+    BOOST_NORETURN inline void throw_src_path_required()
+    {
+        throw boost::program_options::error(
+            "please, specify source file path");
+    }
+
+    BOOST_NORETURN inline void throw_dest_path_required()
+    {
+        throw boost::program_options::error(
+            "please, specify destination file path");
+    }
+
     class CommandLineParser
     {
     public:

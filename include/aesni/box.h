@@ -27,6 +27,30 @@ AesNI_StatusCode aesni_box_init(
     const AesNI_BoxBlock* iv,
     AesNI_ErrorDetails* err_details);
 
+AesNI_StatusCode aesni_box_parse_key(
+    AesNI_BoxKey* dest,
+    AesNI_Algorithm algorithm,
+    const char* src,
+    AesNI_ErrorDetails* err_details);
+
+AesNI_StatusCode aesni_box_parse_block(
+    AesNI_BoxBlock* dest,
+    AesNI_Algorithm algorithm,
+    const char* src,
+    AesNI_ErrorDetails* err_details);
+
+AesNI_StatusCode aesni_box_format_key(
+    AesNI_BoxKeyString* dest,
+    AesNI_Algorithm algorithm,
+    const AesNI_BoxKey* src,
+    AesNI_ErrorDetails* err_details);
+
+AesNI_StatusCode aesni_box_format_block(
+    AesNI_BoxBlockString* dest,
+    AesNI_Algorithm algorithm,
+    const AesNI_BoxBlock* src,
+    AesNI_ErrorDetails* err_details);
+
 AesNI_StatusCode aesni_box_encrypt_block(
     AesNI_Box* box,
     const AesNI_BoxBlock* plaintext,
