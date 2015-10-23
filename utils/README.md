@@ -24,7 +24,7 @@ Please note that verbose output can only be produced when *not* using "boxes"
 
 ### encrypt_block.exe
 
-Encrypts 16-byte blocks using AES-128/192/256 in the specified mode of
+Encrypts blocks using the selected algorithm in the specified mode of
 operation.
 
 #### Usage examples
@@ -52,7 +52,7 @@ run:
 
 ### decrypt_block.exe
 
-Decrypts 16-byte blocks using AES-128/192/256 in the specified mode of
+Decrypts blocks using the selected algorithm in the specified mode of
 operation.
 
 #### Usage examples
@@ -82,7 +82,8 @@ run:
 
 ### encrypt_file.exe
 
-Encrypts a file using AES-128/192/256 in the specified mode of operation.
+Encrypts a file using the selected algorithm in the specified mode of
+operation.
 
 #### Usage examples
 
@@ -109,7 +110,8 @@ run
 
 ### decrypt_file.exe
 
-Decrypts a file using AES-128/192/256 in the specified mode of operation.
+Decrypts a file using the selected algorithm in the specified mode of
+operation.
 
 #### Usage examples
 
