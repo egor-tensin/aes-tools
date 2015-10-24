@@ -1,14 +1,19 @@
 # Testing
 
-After you've [built](../#building) the block encryption/decryption utilities,
-you can verify the implementation either [manually](#manually) or
+After you've [built](../README.md#building) the utilities, you can verify the
+implementation either [manually](#manually) or
 [automatically](#using-test-vectors) using test vectors.
+
+Using the built utilities, you can also test
+[file encryption](#file-encryption).
 
 ## Manually
 
-You can test the AES implementation using the block encryption/decryption
-utilities `encrypt_block.exe` and `decrypt_block.exe`.
+You can test the implementation using the block encryption/decryption utilities
+`encrypt_block.exe` and `decrypt_block.exe`.
 Use the `--help` option to examine the usage info of a utility.
+
+File encryption
 
 For example, for AES-128 in ECB mode:
 
@@ -60,3 +65,12 @@ To test the implementation against the vectors from
 The AES Known Answer Test (KAT) Vectors are used and read from `KAT_AES.zip`.
 
     python cavp.py -p C:\build\utils\Debug
+
+## File encryption
+
+You can also test file encryption using `file.py`.
+Its interface and output is similar to the
+[block encryption](#using-test-vectors) test scripts.
+The expected ciphertexts (for encryption) and plaintexts (for decryption),
+along with the keys and initialization vectors, are stored in the files under
+a separate directory (`file/` by default).

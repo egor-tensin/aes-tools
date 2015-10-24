@@ -29,9 +29,9 @@ def _run_encryption_test(tools, tmp_dir, algo, mode, key, plain_path, cipher_pat
     logging.info('\tEncrypted file path: ' + tmp_path)
     tools.run_encrypt_file(algo, mode, key, plain_path, tmp_path, iv)
     if force:
-        logging.info('Overwriting expected ciphertext file')
+        logging.warn('Overwriting expected ciphertext file')
         shutil.copy(tmp_path, cipher_path)
-        return _TestExitCode.SUCCESS
+        return _TestExitCode.SKIPPED
     if filecmp.cmp(cipher_path, tmp_path):
         return _TestExitCode.SUCCESS
     else:
@@ -70,7 +70,7 @@ def _read_key(key_path):
     return _read_line(key_path)
 
 def _read_iv(iv_path):
-    return _read_line(key_path)
+    return _read_line(iv_path)
 
 def _extract_test_name(key_path):
     return os.path.splitext(os.path.basename(key_path))[0]
@@ -121,7 +121,7 @@ def _run_tests(tools, suite_dir, force=False):
                         iv = _read_iv(iv_path)
                     plain_path = _build_plain_path(key_path)
                     cipher_path = _build_cipher_path(key_path)
-                    os.makedirs(os.path.join(tmp_dir, algo, mode))
+                    os.makedirs(os.path.join(tmp_dir, algo, mode), 0o777, True)
                     try:
                         exit_codes.append(_run_encryption_test(
                             tools, os.path.join(tmp_dir, algo, mode),
@@ -164,8 +164,9 @@ if __name__ == '__main__':
                         help='set test suite directory path')
     args = parser.parse_args()
 
-    logging_options = {'format': '%(asctime)s | %(module)s | %(levelname)s | %(message)s',
-                       'level': logging.DEBUG}
+    logging_options = {
+        'format': '%(asctime)s | %(module)s | %(levelname)s | %(message)s',
+        'level': logging.DEBUG }
     if args.log is None:
         logging_options['filename'] = datetime.now().strftime('file_%Y-%m-%d_%H-%M-%S.log')
     else:
