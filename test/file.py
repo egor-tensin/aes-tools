@@ -33,10 +33,9 @@ def _run_encryption_test(tools, tmp_dir, algo, mode, key, plain_path, cipher_pat
         shutil.copy(tmp_path, cipher_path)
         return _TestExitCode.SUCCESS
     if filecmp.cmp(cipher_path, tmp_path):
-        logging.info('The encrypted file matches the ciphertext file')
         return _TestExitCode.SUCCESS
     else:
-        logging.info('The encrypted file doesn\'t match the ciphertext file')
+        logging.error('The encrypted file doesn\'t match the ciphertext file')
         return _TestExitCode.FAILURE
 
 def _run_decryption_test(tools, tmp_dir, algo, mode, key, cipher_path, plain_path, iv=None):
@@ -47,10 +46,9 @@ def _run_decryption_test(tools, tmp_dir, algo, mode, key, cipher_path, plain_pat
     logging.info('\tDecrypted file path: ' + tmp_path)
     tools.run_decrypt_file(algo, mode, key, cipher_path, tmp_path, iv)
     if filecmp.cmp(tmp_path, plain_path):
-        logging.info('The decrypted file matches the plaintext file')
         return _TestExitCode.SUCCESS
     else:
-        logging.info('The decrypted file doesn\'t match the plaintext file')
+        logging.error('The decrypted file doesn\'t match the plaintext file')
         return _TestExitCode.FAILURE
 
 def _list_dirs(root_path):
@@ -96,11 +94,21 @@ def _run_tests(tools, suite_dir, force=False):
     with TemporaryDirectory() as tmp_dir:
         for algo_dir in _list_dirs(suite_dir):
             algo = os.path.basename(algo_dir)
-            algo = toolkit.to_supported_algorithm(algo)
+            maybe_algo = toolkit.is_algorithm_supported(algo)
+            if maybe_algo is None:
+                logging.warn('Unknown or unsupported algorithm: ' + algo)
+                exit_codes.append(_TestExitCode.SKIPPED)
+                continue
+            algo = maybe_algo
             logging.info('Algorithm: ' + algo)
             for mode_dir in _list_dirs(algo_dir):
                 mode = os.path.basename(mode_dir)
-                mode = toolkit.to_supported_mode(mode)
+                maybe_mode = toolkit.is_mode_supported(mode)
+                if maybe_mode is None:
+                    logging.warn('Unknown or unsupported mode: ' + mode)
+                    exit_codes.append(_TestExitCode.SKIPPED)
+                    continue
+                mode = maybe_mode
                 logging.info('Mode: ' + mode)
                 for key_path in _list_keys(mode_dir):
                     key = _read_key(key_path)
@@ -114,13 +122,23 @@ def _run_tests(tools, suite_dir, force=False):
                     plain_path = _build_plain_path(key_path)
                     cipher_path = _build_cipher_path(key_path)
                     os.makedirs(os.path.join(tmp_dir, algo, mode))
-                    exit_codes.append(_run_encryption_test(
-                        tools, os.path.join(tmp_dir, algo, mode),
-                        algo, mode, key, plain_path, cipher_path, iv, force))
-                    if not force:
-                        exit_codes.append(_run_decryption_test(
+                    try:
+                        exit_codes.append(_run_encryption_test(
                             tools, os.path.join(tmp_dir, algo, mode),
-                            algo, mode, key, cipher_path, plain_path, iv))
+                            algo, mode, key, plain_path, cipher_path, iv, force))
+                    except Exception as e:
+                        logging.error('Encountered an exception!')
+                        logging.exception(e)
+                        exit_codes.append(_TestExitCode.ERROR)
+                    if not force:
+                        try:
+                            exit_codes.append(_run_decryption_test(
+                                tools, os.path.join(tmp_dir, algo, mode),
+                                algo, mode, key, cipher_path, plain_path, iv))
+                        except Exception as e:
+                            logging.error('Encountered an exception!')
+                            logging.exception(e)
+                            exit_codes.append(_TestExitCode.ERROR)
     logging.info('Test exit codes:')
     logging.info('\tSkipped:   {0}'.format(exit_codes.count(_TestExitCode.SKIPPED)))
     logging.info('\tError(s):  {0}'.format(exit_codes.count(_TestExitCode.ERROR)))

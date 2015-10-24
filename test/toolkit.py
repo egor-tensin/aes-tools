@@ -25,18 +25,30 @@ def mode_requires_init_vector(mode):
     return mode != ECB
 
 def to_supported_algorithm(s):
+    algo = is_algorithm_supported(s)
+    if algo is None:
+        raise NotImplementedError('unsupported algorithm ' + s)
+    return algo
+
+def is_algorithm_supported(s):
     s = s.lower()
     if s in _SUPPORTED_ALGORITHMS:
         return s
-    raise NotImplementedError('unsupported algorithm ' + s)
+    return None
 
 def to_supported_mode(s):
+    mode = is_mode_supported(s)
+    if mode is None:
+        raise NotImplementedError('unsupported mode ' + s)
+    return mode
+
+def is_mode_supported(s):
     s = s.lower()
     if s in _SUPPORTED_MODES:
         return s
     if s == CFB + '128':
         return CFB
-    raise NotImplementedError('unsupported algorithm ' + s)
+    return None
 
 class EncryptionInput:
     def __init__(self, key, plaintexts, iv=None):
@@ -64,9 +76,6 @@ class DecryptionInput:
         args.extend(self.ciphertexts)
         return args
 
-class ToolkitError(RuntimeError):
-    pass
-
 class Tools:
     def __init__(self, search_dirs, use_sde=False, use_boxes=False):
         if search_dirs:
@@ -91,14 +100,14 @@ class Tools:
             cmd_list.append('-b')
         cmd_list.extend(('-a', algo, '-m', mode))
         cmd_list.extend(args)
-        logging.info('Trying to execute: {0}'.format(subprocess.list2cmdline(cmd_list)))
+        logging.info('Trying to execute: {0}'.format(
+            subprocess.list2cmdline(cmd_list)))
         try:
-            output = subprocess.check_output(cmd_list, universal_newlines=True,
-                                             stderr=subprocess.STDOUT)
+            output = subprocess.check_output(
+                cmd_list, universal_newlines=True, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            logging.exception(e)
             logging.error('Output:\n' + e.output)
-            raise ToolkitError() from e
+            raise
         logging.info('Output:\n' + output)
         return output.split()
 
@@ -134,19 +143,15 @@ class Tools:
     def run_encrypt_file(self, algo, mode, key, input_path, output_path, iv=None):
         if mode_requires_init_vector(mode):
             if not iv:
-                raise ToolkitError('mode \'{}\' requires init vector'.format(mode))
-            return self.run(self._ENCRYPT_FILE, algo, mode,
-                            (key, iv, input_path, output_path))
+                raise ValueError('mode \'{}\' requires init vector'.format(mode))
+            return self.run(self._ENCRYPT_FILE, algo, mode, (key, iv, input_path, output_path))
         else:
-            return self.run(self._ENCRYPT_FILE, algo, mode,
-                            (key, input_path, output_path))
+            return self.run(self._ENCRYPT_FILE, algo, mode, (key, input_path, output_path))
 
     def run_decrypt_file(self, algo, mode, key, input_path, output_path, iv=None):
         if mode_requires_init_vector(mode):
             if not iv:
-                raise ToolkitError('mode \'{}\' requires init vector'.format(mode))
-            return self.run(self._DECRYPT_FILE, algo, mode,
-                            (key, iv, input_path, output_path))
+                raise ValueError('mode \'{}\' requires init vector'.format(mode))
+            return self.run(self._DECRYPT_FILE, algo, mode, (key, iv, input_path, output_path))
         else:
-            return self.run(self._DECRYPT_FILE, algo, mode,
-                            (key, input_path, output_path))
+            return self.run(self._DECRYPT_FILE, algo, mode, (key, input_path, output_path))

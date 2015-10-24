@@ -51,11 +51,11 @@ class _TestVectorsFile:
         self._archive = archive
         self._path = path
         self._fn = os.path.split(path)[1]
-        self._valid = False
+        self._recognized = False
         self._parse()
 
-    def valid(self):
-        return self._valid
+    def recognized(self):
+        return self._recognized
 
     def algorithm(self):
         return self._algo
@@ -64,10 +64,11 @@ class _TestVectorsFile:
         return self._mode
 
     def parse(self):
-        self._parser = configparser.ConfigParser(dict_type=_MultiOrderedDict,
-                                                 strict=False,
-                                                 interpolation=None,
-                                                 empty_lines_in_values=False)
+        self._parser = configparser.ConfigParser(
+            dict_type=_MultiOrderedDict,
+            strict=False,
+            interpolation=None,
+            empty_lines_in_values=False)
         self._parser.read_string(self._archive.read(self._path).decode('utf-8'))
 
     def _extract_test_data(self, section):
@@ -80,16 +81,11 @@ class _TestVectorsFile:
         return keys, plaintexts, ciphertexts, init_vectors
 
     def _run_tests(self, tool, inputs, expected_output):
-        try:
-            for expected_output_chunk, input_chunk in _split_into_chunks(expected_output, list(inputs)):
-                actual_output = tool(self.algorithm(), self.mode(), input_chunk)
-                if not _assert_output(actual_output, expected_output_chunk):
-                    return _TestExitCode.FAILURE
-            return _TestExitCode.SUCCESS
-        except toolkit.ToolkitError as e:
-            logging.error('Encountered an exception, skipping...')
-            logging.exception(e)
-            return _TestExitCode.ERROR
+        for expected_output_chunk, input_chunk in _split_into_chunks(expected_output, list(inputs)):
+            actual_output = tool(self.algorithm(), self.mode(), input_chunk)
+            if not _assert_output(actual_output, expected_output_chunk):
+                return _TestExitCode.FAILURE
+        return _TestExitCode.SUCCESS
 
     def run_encryption_tests(self, tools):
         logging.info('Running encryption tests...')
@@ -113,7 +109,7 @@ class _TestVectorsFile:
         if not stub: return
         stub = self._strip_mode(stub)
         if not stub: return
-        self._valid = True
+        self._recognized = True
 
     def _strip_extension(self, stub):
         stub, ext = os.path.splitext(stub)
@@ -125,12 +121,12 @@ class _TestVectorsFile:
     def _strip_algorithm(self, stub):
         algo_size = stub[-3:]
         maybe_algo = 'aes{0}'.format(algo_size)
-        self._algo = toolkit.to_supported_algorithm(maybe_algo)
+        self._algo = toolkit.is_algorithm_supported(maybe_algo)
         if self._algo:
             logging.info('\tAlgorithm: {0}'.format(self._algo))
             return stub[0:-3]
         else:
-            logging.warn('Unknown or unsupported algorithm \'{0}\''.format(self._fn))
+            logging.warn('Unknown or unsupported algorithm: ' + self._fn)
             return None
 
     def _strip_method(self, stub):
@@ -138,26 +134,36 @@ class _TestVectorsFile:
             if stub.endswith(method):
                 logging.info('\tMethod: {0}'.format(method))
                 return stub[0:len(stub) - len(method)]
-        logging.warn('Unknown or unsupported method \'{0}\''.format(self._fn))
+        logging.warn('Unknown or unsupported method: ' + self._fn)
 
     def _strip_mode(self, stub):
-        self._mode = toolkit.to_supported_mode(stub)
+        self._mode = toolkit.is_mode_supported(stub)
         if self._mode:
             logging.info('\tMode: {0}'.format(self._mode))
             return self._mode
         else:
-            logging.warn('Unknown or unsupported mode \'{0}\''.format(self._fn))
+            logging.warn('Unknown or unsupported mode: ' + self._fn)
             return None
 
-def _parse_test_vectors_archive(tools, archive_path='KAT_AES.zip'):
+def _parse_archive_and_run_tests(tools, archive_path):
     archive = zipfile.ZipFile(archive_path)
     exit_codes = []
     for fn in archive.namelist():
         member = _TestVectorsFile(fn, archive)
-        if member.valid():
+        if member.recognized():
             member.parse()
-            exit_codes.append(member.run_encryption_tests(tools))
-            exit_codes.append(member.run_decryption_tests(tools))
+            try:
+                exit_codes.append(member.run_encryption_tests(tools))
+            except Exception as e:
+                logging.error('Encountered an exception!')
+                logging.exception(e)
+                exit_codes.append(_TestExitCode.ERROR)
+            try:
+                exit_codes.append(member.run_decryption_tests(tools))
+            except Exception as e:
+                logging.error('Encountered an exception!')
+                logging.exception(e)
+                exit_codes.append(_TestExitCode.ERROR)
         else:
             exit_codes.append(_TestExitCode.SKIPPED)
     logging.info('Test exit codes:')
@@ -180,11 +186,15 @@ if __name__ == '__main__':
                         help='use Intel SDE to run *.exe files')
     parser.add_argument('--box', '-b', action='store_true',
                         help='use the "boxes" interface')
+    parser.add_argument('--archive', '-a', default='KAT_AES.zip',
+                        help='set path of the archive with the test vectors')
     parser.add_argument('--log', '-l', help='set log file path')
     args = parser.parse_args()
 
-    logging_options = {'format': '%(asctime)s | %(module)s | %(levelname)s | %(message)s',
-                       'level': logging.DEBUG}
+    logging_options = {
+        'format': '%(asctime)s | %(module)s | %(levelname)s | %(message)s',
+        'level': logging.DEBUG }
+
     if args.log is None:
         logging_options['filename'] = datetime.now().strftime('cavp_%Y-%m-%d_%H-%M-%S.log')
     else:
@@ -192,4 +202,4 @@ if __name__ == '__main__':
     logging.basicConfig(**logging_options)
 
     tools = toolkit.Tools(args.path, use_sde=args.sde, use_boxes=args.box)
-    _parse_test_vectors_archive(tools)
+    _parse_archive_and_run_tests(tools, args.archive)
