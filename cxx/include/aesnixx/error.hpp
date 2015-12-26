@@ -40,7 +40,7 @@ namespace aesni
             aux::CallStackFormatter formatter;
             std::for_each(call_stack, call_stack + call_stack_size, [&formatter, &callback] (void* addr)
             {
-                callback(addr, formatter.format(addr));
+                callback(addr, formatter.format_address(addr));
             });
         }
 
