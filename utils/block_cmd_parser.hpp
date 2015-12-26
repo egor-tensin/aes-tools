@@ -13,6 +13,7 @@
 #include <aesnixx/all.hpp>
 
 #include <boost/config.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
 #include <ostream>
@@ -42,8 +43,8 @@ namespace
     class CommandLineParser
     {
     public:
-        CommandLineParser(const char* prog_name)
-            : prog_name(prog_name)
+        CommandLineParser(const std::string& argv0)
+            : prog_name(boost::filesystem::path(argv0).filename().string())
             , options("Options")
         {
             namespace po = boost::program_options;

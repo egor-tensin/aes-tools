@@ -1,4 +1,4 @@
-find_package(Boost REQUIRED COMPONENTS program_options)
+find_package(Boost REQUIRED COMPONENTS filesystem program_options system)
 
 add_executable(util_encrypt_block encrypt_block.cpp block_cmd_parser.hpp block_dumper.hpp data_parsers.hpp)
 target_include_directories(util_encrypt_block PRIVATE ${Boost_INCLUDE_DIRS})

@@ -114,7 +114,7 @@ int main(int argc, char** argv)
 {
     try
     {
-        CommandLineParser cmd_parser("decrypt_file.exe");
+        CommandLineParser cmd_parser(argv[0]);
         try
         {
             cmd_parser.parse(argc, argv);
