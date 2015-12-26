@@ -18,6 +18,8 @@
 
 static std::istream& operator>>(std::istream& is, aesni::Mode& dest)
 {
+    static const char* const argument_name = "mode";
+
     std::string src;
     is >> src;
 
@@ -32,13 +34,19 @@ static std::istream& operator>>(std::istream& is, aesni::Mode& dest)
     else if (boost::iequals(src, "ctr"))
         dest = AESNI_CTR;
     else
-        throw boost::program_options::validation_error(boost::program_options::validation_error::invalid_option_value, "mode", src);
+    {
+        throw boost::program_options::validation_error(
+            boost::program_options::validation_error::invalid_option_value,
+            argument_name, src);
+    }
 
     return is;
 }
 
 static std::istream& operator>>(std::istream& is, aesni::Algorithm& dest)
 {
+    static const char* const argument_name = "algorithm";
+
     std::string src;
     is >> src;
 
@@ -49,7 +57,11 @@ static std::istream& operator>>(std::istream& is, aesni::Algorithm& dest)
     else if (boost::iequals(src, "aes256"))
         dest = AESNI_AES256;
     else
-        throw boost::program_options::validation_error(boost::program_options::validation_error::invalid_option_value, "algorithm", src);
+    {
+        throw boost::program_options::validation_error(
+            boost::program_options::validation_error::invalid_option_value,
+            argument_name, src);
+    }
 
     return is;
 }

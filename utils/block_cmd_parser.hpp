@@ -71,7 +71,10 @@ namespace
             positional_options.add("positional", -1);
 
             po::variables_map vm;
-            po::store(po::command_line_parser(argc, argv).options(all_options).positional(positional_options).run(), vm);
+            po::store(po::command_line_parser(argc, argv)
+                .options(all_options)
+                .positional(positional_options)
+                .run(), vm);
 
             if (vm.count("help"))
             {
