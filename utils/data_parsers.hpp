@@ -14,6 +14,7 @@
 #include <boost/program_options.hpp>
 
 #include <istream>
+#include <map>
 #include <string>
 
 static std::istream& operator>>(std::istream& is, aesni::Mode& dest)
@@ -23,23 +24,21 @@ static std::istream& operator>>(std::istream& is, aesni::Mode& dest)
     std::string src;
     is >> src;
 
-    if (boost::iequals(src, "ecb"))
-        dest = AESNI_ECB;
-    else if (boost::iequals(src, "cbc"))
-        dest = AESNI_CBC;
-    else if (boost::iequals(src, "cfb"))
-        dest = AESNI_CFB;
-    else if (boost::iequals(src, "ofb"))
-        dest = AESNI_OFB;
-    else if (boost::iequals(src, "ctr"))
-        dest = AESNI_CTR;
-    else
+    static std::map<std::string, aesni::Mode> lookup_table =
     {
-        throw boost::program_options::validation_error(
-            boost::program_options::validation_error::invalid_option_value,
-            argument_name, src);
-    }
+        { "ecb", AESNI_ECB },
+        { "cbc", AESNI_CBC },
+        { "cfb", AESNI_CFB },
+        { "ofb", AESNI_OFB },
+        { "ctr", AESNI_CTR },
+    };
 
+    const auto it = lookup_table.find(boost::algorithm::to_lower_copy(src));
+
+    if (it == lookup_table.cend())
+        throw boost::program_options::invalid_option_value(src);
+
+    dest = it->second;
     return is;
 }
 
@@ -50,18 +49,18 @@ static std::istream& operator>>(std::istream& is, aesni::Algorithm& dest)
     std::string src;
     is >> src;
 
-    if (boost::iequals(src, "aes128"))
-        dest = AESNI_AES128;
-    else if (boost::iequals(src, "aes192"))
-        dest = AESNI_AES192;
-    else if (boost::iequals(src, "aes256"))
-        dest = AESNI_AES256;
-    else
+    static std::map<std::string, aesni::Algorithm> lookup_table =
     {
-        throw boost::program_options::validation_error(
-            boost::program_options::validation_error::invalid_option_value,
-            argument_name, src);
-    }
+        { "aes128", AESNI_AES128 },
+        { "aes192", AESNI_AES192 },
+        { "aes256", AESNI_AES256 },
+    };
 
+    const auto it = lookup_table.find(boost::algorithm::to_lower_copy(src));
+
+    if (it == lookup_table.cend())
+        throw boost::program_options::invalid_option_value(src);
+
+    dest = it->second;
     return is;
 }
