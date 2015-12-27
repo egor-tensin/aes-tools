@@ -20,7 +20,7 @@ including round keys, intermediate initialization vector values, etc.
 This is primarily intended for debugging purposes.
 Enable verbose output by passing the `--verbose` flag to the utilities.
 Please note that verbose output can only be produced when *not* using "boxes"
-(the `--boxes` flag).
+(the `--box` flag).
 
 ### encrypt_block.exe
 
@@ -95,7 +95,7 @@ For example, to encrypt the plaintext `input.txt`
 
 run:
 
-    encrypt_file.exe -a aes128 -m ecb 11111111111111111111111111111111 input.txt output.txt
+    encrypt_file.exe -a aes128 -m ecb -k 11111111111111111111111111111111 -i input.txt -o output.txt
 
 To encrypt the plaintext from `input.txt`
 
@@ -106,7 +106,7 @@ To encrypt the plaintext from `input.txt`
 
 run
 
-    encrypt_file.exe -a aes192 -m ofb 111111111111111111111111111111111111111111111111 22222222222222222222222222222222 input.txt output.txt
+    encrypt_file.exe -a aes192 -m ofb -k 111111111111111111111111111111111111111111111111 -v 22222222222222222222222222222222 -i input.txt -o output.txt
 
 ### decrypt_file.exe
 
@@ -123,7 +123,7 @@ To decrypt the ciphertext from `input.txt`
 
 run
 
-    decrypt_file.exe -a aes128 -m ecb 11111111111111111111111111111111 input.txt output.txt
+    decrypt_file.exe -a aes128 -m ecb -k 11111111111111111111111111111111 -i input.txt -o output.txt
 
 To decrypt the ciphertext from `input.txt`
 
@@ -134,7 +134,7 @@ To decrypt the ciphertext from `input.txt`
 
 run
 
-    decrypt_file.exe -a aes192 -m ofb 111111111111111111111111111111111111111111111111 22222222222222222222222222222222 input.txt output.txt
+    decrypt_file.exe -a aes192 -m ofb -k 111111111111111111111111111111111111111111111111 -v 22222222222222222222222222222222 -i input.txt -o output.txt
 
 ## Bitmap encryption
 
