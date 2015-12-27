@@ -25,10 +25,10 @@ def mode_requires_init_vector(mode):
     return mode != ECB
 
 def to_supported_algorithm(s):
-    algo = is_algorithm_supported(s)
-    if algo is None:
+    algorithm = is_algorithm_supported(s)
+    if algorithm is None:
         raise NotImplementedError('unsupported algorithm ' + s)
-    return algo
+    return algorithm
 
 def is_algorithm_supported(s):
     s = s.lower()
@@ -77,7 +77,7 @@ class DecryptionInput:
         return args
 
 class Tools:
-    def __init__(self, search_dirs, use_sde=False, use_boxes=False):
+    def __init__(self, search_dirs, use_sde=False):
         if search_dirs:
             if isinstance(search_dirs, str):
                 os.environ['PATH'] += os.pathsep + search_dirs
@@ -86,7 +86,6 @@ class Tools:
             else:
                 os.environ['PATH'] += os.pathsep + str(search_dirs)
         self._use_sde = use_sde
-        self._use_boxes = use_boxes
         self._logger = logging.getLogger(__name__)
 
     _ENCRYPT_BLOCK = 'encrypt_block.exe'
@@ -94,11 +93,8 @@ class Tools:
     _ENCRYPT_FILE = 'encrypt_file.exe'
     _DECRYPT_FILE = 'decrypt_file.exe'
 
-    def run(self, tool_path, algo, mode, args):
+    def run(self, tool_path, args):
         cmd_list = ['sde', '--', tool_path] if self._use_sde else [tool_path]
-        if self._use_boxes:
-            cmd_list.append('-b')
-        cmd_list.extend(('-a', algo, '-m', mode))
         cmd_list.extend(args)
         logging.info('Trying to execute: {0}'.format(
             subprocess.list2cmdline(cmd_list)))
@@ -126,32 +122,54 @@ class Tools:
             args.extend(tail.to_args())
         return args
 
-    def run_encrypt_block(self, algo, mode, inputs):
+    def run_encrypt_block(self, algorithm, mode, inputs, use_boxes=False):
+        args = [
+            '--algorithm', algorithm,
+            '--mode', mode,
+        ]
+        if use_boxes:
+            args.append('--box')
         if isinstance(inputs, collections.Iterable):
-            args = self._block_inputs_to_args(iter(inputs))
+            args.extend(self._block_inputs_to_args(iter(inputs)))
         else:
-            args = inputs.to_args()
-        return self.run(self._ENCRYPT_BLOCK, algo, mode, args)
+            args.extend(inputs.to_args())
+        return self.run(self._ENCRYPT_BLOCK, args)
 
-    def run_decrypt_block(self, algo, mode, inputs):
+    def run_decrypt_block(self, algorithm, mode, inputs, use_boxes=False):
+        args = [
+            '--algorithm', algorithm,
+            '--mode', mode,
+        ]
+        if use_boxes:
+            args.append('--box')
         if isinstance(inputs, collections.Iterable):
-            args = self._block_inputs_to_args(iter(inputs))
+            args.extend(self._block_inputs_to_args(iter(inputs)))
         else:
-            args = inputs.to_args()
-        return self.run(self._DECRYPT_BLOCK, algo, mode, args)
+            args.extend(inputs.to_args())
+        return self.run(self._DECRYPT_BLOCK, args)
 
-    def run_encrypt_file(self, algo, mode, key, input_path, output_path, iv=None):
+    def run_encrypt_file(self, algorithm, mode, key, input_path, output_path, iv=None):
+        args = [
+            '--algorithm', algorithm,
+            '--mode', mode,
+            '--key', key,
+            '--input-path', input_path,
+            '--output-path', output_path]
         if mode_requires_init_vector(mode):
             if not iv:
-                raise ValueError('mode \'{}\' requires init vector'.format(mode))
-            return self.run(self._ENCRYPT_FILE, algo, mode, (key, iv, input_path, output_path))
-        else:
-            return self.run(self._ENCRYPT_FILE, algo, mode, (key, input_path, output_path))
+                raise ValueError('mode \'{}\' requires initialization vector'.format(mode))
+            args.extend(('--iv', iv))
+        return self.run(self._ENCRYPT_FILE, args)
 
-    def run_decrypt_file(self, algo, mode, key, input_path, output_path, iv=None):
+    def run_decrypt_file(self, algorithm, mode, key, input_path, output_path, iv=None):
+        args = [
+            '--algorithm', algorithm,
+            '--mode', mode,
+            '--key', key,
+            '--input-path', input_path,
+            '--output-path', output_path]
         if mode_requires_init_vector(mode):
             if not iv:
-                raise ValueError('mode \'{}\' requires init vector'.format(mode))
-            return self.run(self._DECRYPT_FILE, algo, mode, (key, iv, input_path, output_path))
-        else:
-            return self.run(self._DECRYPT_FILE, algo, mode, (key, input_path, output_path))
+                raise ValueError('mode \'{}\' requires initialization vector'.format(mode))
+            args.extend(('--iv', iv))
+        return self.run(self._DECRYPT_FILE, args)

@@ -14,7 +14,6 @@
 
 #include <cstdlib>
 
-#include <deque>
 #include <exception>
 #include <fstream>
 #include <iostream>
@@ -40,12 +39,12 @@ namespace
         ifs.exceptions(std::ifstream::badbit | std::ifstream::failbit);
         ifs.open(path, std::ifstream::binary);
 
-        std::vector<char> src_buf;
-        src_buf.reserve(size);
-        src_buf.assign(
+        std::vector<char> plaintext_buf;
+        plaintext_buf.reserve(size);
+        plaintext_buf.assign(
             std::istreambuf_iterator<char>(ifs),
             std::istreambuf_iterator<char>());
-        return src_buf;
+        return plaintext_buf;
     }
 
     void write_file(
@@ -60,52 +59,42 @@ namespace
 
     void encrypt_file(
         aesni::Box& box,
-        std::deque<std::string>& args)
+        const std::string& plaintext_path,
+        const std::string& ciphertext_path)
     {
-        if (args.empty())
-            throw_src_path_required();
-        const auto src_path = args.front();
-        args.pop_front();
-
-        if (args.empty())
-            throw_dest_path_required();
-        const auto dest_path = args.front();
-        args.pop_front();
-
-        const auto src_buf = read_file(src_path);
-        const auto dest_buf = box.encrypt_buffer(
-            src_buf.data(), src_buf.size());
-        write_file(dest_path, dest_buf);
+        const auto plaintext_buf = read_file(plaintext_path);
+        const auto ciphertext_buf = box.encrypt_buffer(
+            plaintext_buf.data(), plaintext_buf.size());
+        write_file(ciphertext_path, ciphertext_buf);
     }
 
-    void encrypt_file(
-        aesni::Algorithm algorithm,
-        aesni::Mode mode,
-        std::deque<std::string>& args)
+    void encrypt_file(const Settings& settings)
     {
-        if (args.empty())
-            throw_key_required();
+        const auto algorithm = settings.get_algorithm();
+        const auto mode = settings.get_mode();
+
+        const auto plaintext_path = settings.get_input_path();
+        const auto ciphertext_path = settings.get_output_path();
 
         aesni::Box::Key key;
-        aesni::Box::parse_key(key, algorithm, args.front());
-        args.pop_front();
+        aesni::Box::parse_key(key, algorithm, settings.get_key_string());
 
         if (aesni::mode_requires_initialization_vector(mode))
         {
-            if (args.empty())
-                throw_iv_required();
-
             aesni::Box::Block iv;
-            aesni::Box::parse_block(iv, algorithm, args.front());
-            args.pop_front();
+            aesni::Box::parse_block(iv, algorithm, settings.get_iv_string());
 
             encrypt_file(
-                aesni::Box(algorithm, key, mode, iv), args);
+                aesni::Box(algorithm, key, mode, iv),
+                plaintext_path,
+                ciphertext_path);
         }
         else
         {
             encrypt_file(
-                aesni::Box(algorithm, key), args);
+                aesni::Box(algorithm, key),
+                plaintext_path,
+                ciphertext_path);
         }
     }
 }
@@ -117,19 +106,16 @@ int main(int argc, char** argv)
         CommandLineParser cmd_parser(argv[0]);
         try
         {
-            cmd_parser.parse(argc, argv);
+            Settings settings;
+            cmd_parser.parse(settings, argc, argv);
 
-            if (cmd_parser.requested_help())
+            if (cmd_parser.exit_with_usage())
             {
                 std::cout << cmd_parser;
                 return 0;
             }
 
-            std::deque<std::string> args(
-                std::make_move_iterator(cmd_parser.args.begin()),
-                std::make_move_iterator(cmd_parser.args.end()));
-
-            encrypt_file(cmd_parser.algorithm, cmd_parser.mode, args);
+            encrypt_file(settings);
         }
         catch (const boost::program_options::error& e)
         {

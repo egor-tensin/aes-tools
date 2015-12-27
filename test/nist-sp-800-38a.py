@@ -146,7 +146,7 @@ def _assert_output(actual, expected):
 class _TestExitCode:
     SUCCESS, FAILURE, ERROR, SKIPPED = range(4)
 
-def _run_encryption_tests(tools, algo, mode):
+def _run_encryption_tests(tools, algo, mode, use_boxes=False):
     logging.info('Running encryption tests...')
     key = _keys[algo]
     iv = None
@@ -154,13 +154,13 @@ def _run_encryption_tests(tools, algo, mode):
         iv = _init_vectors[algo][mode]
     ciphertexts = _ciphertexts[algo][mode]
     _input = toolkit.EncryptionInput(key, _plaintexts, iv=iv)
-    actual_output = tools.run_encrypt_block(algo, mode, _input)
+    actual_output = tools.run_encrypt_block(algo, mode, _input, use_boxes)
     if _assert_output(actual_output, ciphertexts):
         return _TestExitCode.SUCCESS
     else:
         return _TestExitCode.FAILURE
 
-def _run_decryption_tests(tools, algo, mode):
+def _run_decryption_tests(tools, algo, mode, use_boxes=False):
     logging.info('Running decryption tests...')
     key = _keys[algo]
     iv = None
@@ -168,7 +168,7 @@ def _run_decryption_tests(tools, algo, mode):
         iv = _init_vectors[algo][mode]
     ciphertexts = _ciphertexts[algo][mode]
     _input = toolkit.DecryptionInput(key, ciphertexts, iv=iv)
-    actual_output = tools.run_decrypt_block(algo, mode, _input)
+    actual_output = tools.run_decrypt_block(algo, mode, _input, use_boxes)
     if _assert_output(actual_output, _plaintexts):
         return _TestExitCode.SUCCESS
     else:
@@ -186,7 +186,7 @@ if __name__ == '__main__':
     parser.add_argument('--log', '-l', help='set log file path')
     args = parser.parse_args()
 
-    tools = toolkit.Tools(args.path, use_sde=args.sde, use_boxes=args.box)
+    tools = toolkit.Tools(args.path, use_sde=args.sde)
 
     logging_options = {
         'format': '%(asctime)s | %(module)s | %(levelname)s | %(message)s',
@@ -216,13 +216,13 @@ if __name__ == '__main__':
             mode = maybe_mode
             logging.info('Mode: ' + mode)
             try:
-                exit_codes.append(_run_encryption_tests(tools, algo, mode))
+                exit_codes.append(_run_encryption_tests(tools, algo, mode, use_boxes=args.box))
             except Exception as e:
                 logging.error('Encountered an exception!')
                 logging.exception(e)
                 exit_codes.append(_TestExitCode.ERROR)
             try:
-                exit_codes.append(_run_decryption_tests(tools, algo, mode))
+                exit_codes.append(_run_decryption_tests(tools, algo, mode, use_boxes=args.box))
             except Exception as e:
                 logging.error('Encountered an exception!')
                 logging.exception(e)

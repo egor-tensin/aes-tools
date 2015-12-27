@@ -80,24 +80,24 @@ class _TestVectorsFile:
             init_vectors = self._parser.get(section, 'iv')
         return keys, plaintexts, ciphertexts, init_vectors
 
-    def _run_tests(self, tool, inputs, expected_output):
+    def _run_tests(self, tool, inputs, expected_output, use_boxes=False):
         for expected_output_chunk, input_chunk in _split_into_chunks(expected_output, list(inputs)):
-            actual_output = tool(self.algorithm(), self.mode(), input_chunk)
+            actual_output = tool(self.algorithm(), self.mode(), input_chunk, use_boxes=use_boxes)
             if not _assert_output(actual_output, expected_output_chunk):
                 return _TestExitCode.FAILURE
         return _TestExitCode.SUCCESS
 
-    def run_encryption_tests(self, tools):
+    def run_encryption_tests(self, tools, use_boxes=False):
         logging.info('Running encryption tests...')
         keys, plaintexts, ciphertexts, init_vectors = self._extract_test_data('ENCRYPT')
         inputs = _gen_encryption_inputs(keys, plaintexts, init_vectors)
-        return self._run_tests(tools.run_encrypt_block, inputs, ciphertexts)
+        return self._run_tests(tools.run_encrypt_block, inputs, ciphertexts, use_boxes)
 
-    def run_decryption_tests(self, tools):
+    def run_decryption_tests(self, tools, use_boxes=False):
         logging.info('Running decryption tests...')
         keys, plaintexts, ciphertexts, init_vectors = self._extract_test_data('DECRYPT')
         inputs = _gen_decryption_inputs(keys, ciphertexts, init_vectors)
-        return self._run_tests(tools.run_decrypt_block, inputs, plaintexts)
+        return self._run_tests(tools.run_decrypt_block, inputs, plaintexts, use_boxes)
 
     def _parse(self):
         logging.info('Trying to parse test vectors file name \'{0}\'...'.format(self._fn))
@@ -145,7 +145,7 @@ class _TestVectorsFile:
             logging.warn('Unknown or unsupported mode: ' + self._fn)
             return None
 
-def _parse_archive_and_run_tests(tools, archive_path):
+def _parse_archive_and_run_tests(tools, archive_path, use_boxes=False):
     archive = zipfile.ZipFile(archive_path)
     exit_codes = []
     for fn in archive.namelist():
@@ -153,13 +153,13 @@ def _parse_archive_and_run_tests(tools, archive_path):
         if member.recognized():
             member.parse()
             try:
-                exit_codes.append(member.run_encryption_tests(tools))
+                exit_codes.append(member.run_encryption_tests(tools, use_boxes))
             except Exception as e:
                 logging.error('Encountered an exception!')
                 logging.exception(e)
                 exit_codes.append(_TestExitCode.ERROR)
             try:
-                exit_codes.append(member.run_decryption_tests(tools))
+                exit_codes.append(member.run_decryption_tests(tools, use_boxes))
             except Exception as e:
                 logging.error('Encountered an exception!')
                 logging.exception(e)
@@ -201,5 +201,5 @@ if __name__ == '__main__':
         logging_options['filename'] = args.log
     logging.basicConfig(**logging_options)
 
-    tools = toolkit.Tools(args.path, use_sde=args.sde, use_boxes=args.box)
-    _parse_archive_and_run_tests(tools, args.archive)
+    tools = toolkit.Tools(args.path, use_sde=args.sde)
+    _parse_archive_and_run_tests(tools, args.archive, use_boxes=args.box)

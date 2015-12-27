@@ -12,39 +12,51 @@
 
 #include <aesnixx/all.hpp>
 
-#include <boost/config.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
 #include <ostream>
 #include <string>
-#include <vector>
+#include <utility>
 
 namespace
 {
-    BOOST_NORETURN inline void throw_key_required()
-    {
-        throw boost::program_options::error(
-            "a key is required but not specified");
-    }
+    class CommandLineParser;
 
-    BOOST_NORETURN inline void throw_iv_required()
+    class Settings
     {
-        throw boost::program_options::error(
-            "initialization vector is required for the selected mode of operation");
-    }
+    public:
+        Settings()
+            : iv(false, std::string())
+        { }
 
-    BOOST_NORETURN inline void throw_src_path_required()
-    {
-        throw boost::program_options::error(
-            "please, specify source file path");
-    }
+        aesni::Mode get_mode() const { return mode; }
+        aesni::Algorithm get_algorithm() const { return algorithm; }
 
-    BOOST_NORETURN inline void throw_dest_path_required()
-    {
-        throw boost::program_options::error(
-            "please, specify destination file path");
-    }
+        std::string get_input_path() const { return input_path; }
+        std::string get_output_path() const { return output_path; }
+
+        std::string get_key_string() const { return key; }
+
+        std::string get_iv_string() const
+        {
+            if (!iv.first)
+                throw boost::program_options::error("initialization vector is required for the selected mode of operation");
+            return iv.second;
+        }
+
+    private:
+        aesni::Mode mode;
+        aesni::Algorithm algorithm;
+
+        std::string input_path;
+        std::string output_path;
+        std::string key;
+
+        std::pair<bool, std::string> iv;
+
+        friend class CommandLineParser;
+    };
 
     class CommandLineParser
     {
@@ -52,34 +64,23 @@ namespace
         CommandLineParser(const std::string& argv0)
             : prog_name(boost::filesystem::path(argv0).filename().string())
             , options("Options")
+        { }
+
+        void parse(Settings& settings, int argc, char** argv)
         {
             namespace po = boost::program_options;
 
             options.add_options()
                 ("help,h", "show this message and exit")
-                ("mode,m", po::value<aesni::Mode>(&mode)->required(), "set mode of operation")
-                ("algorithm,a", po::value<aesni::Algorithm>(&algorithm)->required(), "set algorithm");
-        }
-
-        void parse(int argc, char** argv)
-        {
-            namespace po = boost::program_options;
-
-            po::options_description hidden_options;
-            hidden_options.add_options()
-                ("positional", po::value<std::vector<std::string>>(&args));
-
-            po::options_description all_options;
-            all_options.add(options).add(hidden_options);
-
-            po::positional_options_description positional_options;
-            positional_options.add("positional", -1);
+                ("mode,m", po::value<aesni::Mode>(&settings.mode)->required(), "set mode of operation")
+                ("algorithm,a", po::value<aesni::Algorithm>(&settings.algorithm)->required(), "set algorithm")
+                ("input-path,i", po::value<std::string>(&settings.input_path)->required(), "set input file")
+                ("output-path,o", po::value<std::string>(&settings.output_path)->required(), "set output file")
+                ("key,k", po::value<std::string>(&settings.key)->required(), "set encryption key")
+                ("iv,v", po::value<std::string>(&settings.iv.second), "set initialization vector");
 
             po::variables_map vm;
-            po::store(po::command_line_parser(argc, argv)
-                .options(all_options)
-                .positional(positional_options)
-                .run(), vm);
+            po::store(po::parse_command_line(argc, argv, options), vm);
 
             if (vm.count("help"))
             {
@@ -87,14 +88,13 @@ namespace
                 return;
             }
 
+            if (vm.count("iv"))
+                settings.iv.first = true;
+
             po::notify(vm);
         }
 
-        bool requested_help() const { return help_flag; }
-
-        aesni::Mode mode;
-        aesni::Algorithm algorithm;
-        std::vector<std::string> args;
+        bool exit_with_usage() const { return help_flag; }
 
     private:
         const std::string prog_name;
@@ -107,7 +107,7 @@ namespace
 
     std::ostream& operator<<(std::ostream& os, const CommandLineParser& cmd_parser)
     {
-        return os << "Usage: " << cmd_parser.prog_name << " [OPTIONS...] KEY [IV] SRC_PATH DEST_PATH\n"
+        return os << "Usage: " << cmd_parser.prog_name << " [OPTION...]\n"
                   << cmd_parser.options << "\n";
     }
 }

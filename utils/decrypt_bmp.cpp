@@ -15,7 +15,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#include <deque>
 #include <exception>
 #include <fstream>
 #include <iostream>
@@ -43,12 +42,12 @@ namespace
         ifs.exceptions(std::ifstream::badbit | std::ifstream::failbit);
         ifs.open(path, std::ifstream::binary);
 
-        std::vector<char> src_buf;
-        src_buf.reserve(size);
-        src_buf.assign(
+        std::vector<char> ciphertext_buf;
+        ciphertext_buf.reserve(size);
+        ciphertext_buf.assign(
             std::istreambuf_iterator<char>(ifs),
             std::istreambuf_iterator<char>());
-        return src_buf;
+        return ciphertext_buf;
     }
 
     void write_file(
@@ -63,64 +62,54 @@ namespace
 
     void decrypt_bmp(
         aesni::Box& box,
-        std::deque<std::string>& args)
+        const std::string& ciphertext_path,
+        const std::string& plaintext_path)
     {
-        if (args.empty())
-            throw_src_path_required();
-        const auto src_path = args.front();
-        args.pop_front();
+        const auto ciphertext_buf = read_file(ciphertext_path);
 
-        if (args.empty())
-            throw_dest_path_required();
-        const auto dest_path = args.front();
-        args.pop_front();
-
-        const auto src_buf = read_file(src_path);
-
-        const auto bmp_header = reinterpret_cast<const BITMAPFILEHEADER*>(src_buf.data());
+        const auto bmp_header = reinterpret_cast<const BITMAPFILEHEADER*>(ciphertext_buf.data());
 
         const auto header_size = bmp_header->bfOffBits;
-        const auto cipherpixels = src_buf.data() + header_size;
-        const auto cipherpixels_size = src_buf.size() - header_size;
+        const auto cipherpixels = ciphertext_buf.data() + header_size;
+        const auto cipherpixels_size = ciphertext_buf.size() - header_size;
 
         const auto pixels = box.decrypt_buffer(
             cipherpixels, cipherpixels_size);
 
-        std::vector<unsigned char> dest_buf(header_size + pixels.size());
-        std::memcpy(&dest_buf[0], bmp_header, header_size);
-        std::memcpy(&dest_buf[0] + header_size, pixels.data(), pixels.size());
+        std::vector<unsigned char> plaintext_buf(header_size + pixels.size());
+        std::memcpy(plaintext_buf.data(), bmp_header, header_size);
+        std::memcpy(plaintext_buf.data() + header_size, pixels.data(), pixels.size());
 
-        write_file(dest_path, dest_buf);
+        write_file(plaintext_path, plaintext_buf);
     }
 
-    void decrypt_bmp(
-        aesni::Algorithm algorithm,
-        aesni::Mode mode,
-        std::deque<std::string>& args)
+    void decrypt_bmp(const Settings& settings)
     {
-        if (args.empty())
-            throw_key_required();
+        const auto algorithm = settings.get_algorithm();
+        const auto mode = settings.get_mode();
+
+        const auto ciphertext_path = settings.get_input_path();
+        const auto plaintext_path = settings.get_output_path();
 
         aesni::Box::Key key;
-        aesni::Box::parse_key(key, algorithm, args.front());
-        args.pop_front();
+        aesni::Box::parse_key(key, algorithm, settings.get_key_string());
 
         if (aesni::mode_requires_initialization_vector(mode))
         {
-            if (args.empty())
-                throw_iv_required();
-
             aesni::Box::Block iv;
-            aesni::Box::parse_block(iv, algorithm, args.front());
-            args.pop_front();
+            aesni::Box::parse_block(iv, algorithm, settings.get_iv_string());
 
             decrypt_bmp(
-                aesni::Box(algorithm, key, mode, iv), args);
+                aesni::Box(algorithm, key, mode, iv),
+                ciphertext_path,
+                plaintext_path);
         }
         else
         {
             decrypt_bmp(
-                aesni::Box(algorithm, key), args);
+                aesni::Box(algorithm, key),
+                ciphertext_path,
+                plaintext_path);
         }
     }
 }
@@ -132,19 +121,16 @@ int main(int argc, char** argv)
         CommandLineParser cmd_parser(argv[0]);
         try
         {
-            cmd_parser.parse(argc, argv);
+            Settings settings;
+            cmd_parser.parse(settings, argc, argv);
 
-            if (cmd_parser.requested_help())
+            if (cmd_parser.exit_with_usage())
             {
                 std::cout << cmd_parser;
                 return 0;
             }
 
-            std::deque<std::string> args(
-                std::make_move_iterator(cmd_parser.args.begin()),
-                std::make_move_iterator(cmd_parser.args.end()));
-
-            decrypt_bmp(cmd_parser.algorithm, cmd_parser.mode, args);
+            decrypt_bmp(settings);
         }
         catch (const boost::program_options::error& e)
         {
