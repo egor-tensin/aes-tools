@@ -11,7 +11,7 @@ I've used the compiler and the assembler shipped with Visual Studio Express
 You can generate the solution using CMake and build it using Visual Studio.
 
 Some of the utilities also depend on a few Boost libraries.
-In particular, Boost.Filesystem, Boost.ProgramOptions, and Boost.System has to
+In particular, Boost.Filesystem, Boost.Program_options, and Boost.System has to
 be built prior to building these utilities.
 To enable CMake to find Boost libraries, pass the path to the root Boost
 directory like this:
