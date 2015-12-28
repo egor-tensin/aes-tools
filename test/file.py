@@ -42,7 +42,7 @@ def _run_decryption_test(tools, tmp_dir, algorithm, mode, key, cipher_path, plai
     logging.info('Running decryption test...')
     logging.info('\tCiphertext file path: ' + cipher_path)
     logging.info('\tExpected plaintext file path: ' + plain_path)
-    tmp_path = os.path.join(tmp_dir, os.path.basename(cipher_path))
+    tmp_path = os.path.join(tmp_dir, os.path.basename(plain_path))
     logging.info('\tDecrypted file path: ' + tmp_path)
     tools.run_decrypt_file(algorithm, mode, key, cipher_path, tmp_path, iv)
     if filecmp.cmp(tmp_path, plain_path):
