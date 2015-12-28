@@ -52,7 +52,7 @@ class _TestVectorsFile:
         return self._recognized
 
     def algorithm(self):
-        return self._algo
+        return self._algorithm
 
     def mode(self):
         return self._mode
@@ -113,11 +113,11 @@ class _TestVectorsFile:
         return stub
 
     def _strip_algorithm(self, stub):
-        algo_size = stub[-3:]
-        maybe_algo = 'aes{0}'.format(algo_size)
-        self._algo = toolkit.is_algorithm_supported(maybe_algo)
-        if self._algo:
-            logging.info('\tAlgorithm: {0}'.format(self._algo))
+        key_size = stub[-3:]
+        maybe_algorithm = 'aes{0}'.format(key_size)
+        self._algorithm = toolkit.is_algorithm_supported(maybe_algorithm)
+        if self._algorithm:
+            logging.info('\tAlgorithm: {0}'.format(self._algorithm))
             return stub[0:-3]
         else:
             logging.warn('Unknown or unsupported algorithm: ' + self._fn)
