@@ -88,8 +88,8 @@ namespace
         const auto algorithm = settings.get_algorithm();
         const auto mode = settings.get_mode();
 
-        const auto ciphertext_path = settings.get_input_path();
-        const auto plaintext_path = settings.get_output_path();
+        const auto& ciphertext_path = settings.get_input_path();
+        const auto& plaintext_path = settings.get_output_path();
 
         aesni::Box::Key key;
         aesni::Box::parse_key(key, algorithm, settings.get_key_string());

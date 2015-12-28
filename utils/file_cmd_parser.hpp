@@ -65,8 +65,8 @@ namespace
                 ("help,h", "show this message and exit")
                 ("mode,m", po::value<aesni::Mode>(&settings.mode)->required(), "set mode of operation")
                 ("algorithm,a", po::value<aesni::Algorithm>(&settings.algorithm)->required(), "set algorithm")
-                ("input-path,i", po::value<std::string>(&settings.input_path)->required(), "set input file")
-                ("output-path,o", po::value<std::string>(&settings.output_path)->required(), "set output file")
+                ("input-path,i", po::value<std::string>(&settings.input_path)->required(), "set input file path")
+                ("output-path,o", po::value<std::string>(&settings.output_path)->required(), "set output file path")
                 ("key,k", po::value<std::string>(&settings.key)->required(), "set encryption key")
                 ("iv,v", po::value<std::string>(&settings.iv), "set initialization vector");
 
