@@ -16,16 +16,18 @@ namespace
     class Input
     {
     public:
-        Input(const std::string& key_string,
-                   const std::string& iv_string,
-                   const std::vector<std::string>& input_block_strings)
+        Input(
+            const std::string& key_string,
+            const std::string& iv_string,
+            const std::vector<std::string>& input_block_strings)
             : key_string(key_string)
             , iv_string(iv_string)
             , input_block_strings(input_block_strings)
         { }
 
-        Input(const std::string& key_string,
-                   const std::vector<std::string>& input_block_strings)
+        Input(
+            const std::string& key_string,
+            const std::vector<std::string>& input_block_strings)
             : key_string(key_string)
             , input_block_strings(input_block_strings)
         { }
