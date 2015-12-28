@@ -173,5 +173,5 @@ if __name__ == '__main__':
         logging_options['filename'] = args.log
     logging.basicConfig(**logging_options)
 
-    tools = toolkit.Tools(args.path, use_sde=args.sde, use_boxes=False)
+    tools = toolkit.Tools(args.path, use_sde=args.sde)
     _run_tests(tools, args.suite, args.force)

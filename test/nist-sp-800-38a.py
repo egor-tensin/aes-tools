@@ -153,7 +153,7 @@ def _run_encryption_tests(tools, algo, mode, use_boxes=False):
     if algo in _init_vectors and mode in _init_vectors[algo]:
         iv = _init_vectors[algo][mode]
     ciphertexts = _ciphertexts[algo][mode]
-    _input = toolkit.EncryptionInput(key, _plaintexts, iv=iv)
+    _input = toolkit.BlockInput(key, _plaintexts, iv=iv)
     actual_output = tools.run_encrypt_block(algo, mode, _input, use_boxes)
     if _assert_output(actual_output, ciphertexts):
         return _TestExitCode.SUCCESS
@@ -167,7 +167,7 @@ def _run_decryption_tests(tools, algo, mode, use_boxes=False):
     if algo in _init_vectors and mode in _init_vectors[algo]:
         iv = _init_vectors[algo][mode]
     ciphertexts = _ciphertexts[algo][mode]
-    _input = toolkit.DecryptionInput(key, ciphertexts, iv=iv)
+    _input = toolkit.BlockInput(key, ciphertexts, iv=iv)
     actual_output = tools.run_decrypt_block(algo, mode, _input, use_boxes)
     if _assert_output(actual_output, _plaintexts):
         return _TestExitCode.SUCCESS

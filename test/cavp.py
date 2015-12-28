@@ -18,17 +18,11 @@ class _MultiOrderedDict(OrderedDict):
         else:
             super(OrderedDict, self).__setitem__(key, value)
 
-def _gen_inputs(cls, keys, plaintexts, init_vectors):
+def _gen_inputs(keys, plaintexts, init_vectors):
     if init_vectors is None:
         init_vectors = [None for key in keys]
     for key, plaintext, iv in zip(keys, plaintexts, init_vectors):
-        yield cls(key, [plaintext], iv)
-
-def _gen_encryption_inputs(keys, plaintexts, init_vectors):
-    return _gen_inputs(toolkit.EncryptionInput, keys, plaintexts, init_vectors)
-
-def _gen_decryption_inputs(keys, ciphertexts, init_vectors):
-    return _gen_inputs(toolkit.DecryptionInput, keys, ciphertexts, init_vectors)
+        yield toolkit.BlockInput(key, [plaintext], iv)
 
 def _split_into_chunks(expected_output, inputs, max_len=100):
     for i in range(0, len(inputs), max_len):
@@ -90,13 +84,13 @@ class _TestVectorsFile:
     def run_encryption_tests(self, tools, use_boxes=False):
         logging.info('Running encryption tests...')
         keys, plaintexts, ciphertexts, init_vectors = self._extract_test_data('ENCRYPT')
-        inputs = _gen_encryption_inputs(keys, plaintexts, init_vectors)
+        inputs = _gen_inputs(keys, plaintexts, init_vectors)
         return self._run_tests(tools.run_encrypt_block, inputs, ciphertexts, use_boxes)
 
     def run_decryption_tests(self, tools, use_boxes=False):
         logging.info('Running decryption tests...')
         keys, plaintexts, ciphertexts, init_vectors = self._extract_test_data('DECRYPT')
-        inputs = _gen_decryption_inputs(keys, ciphertexts, init_vectors)
+        inputs = _gen_inputs(keys, ciphertexts, init_vectors)
         return self._run_tests(tools.run_decrypt_block, inputs, plaintexts, use_boxes)
 
     def _parse(self):
