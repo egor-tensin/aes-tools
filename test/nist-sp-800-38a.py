@@ -181,7 +181,7 @@ if __name__ == '__main__':
                         help='set path to block encryption utilities')
     parser.add_argument('--sde', '-e', action='store_true',
                         help='use Intel SDE to run *.exe files')
-    parser.add_argument('--box', '-b', action='store_true',
+    parser.add_argument('--use-boxes', '-b', action='store_true',
                         help='use the "boxes" interface')
     parser.add_argument('--log', '-l', help='set log file path')
     args = parser.parse_args()
@@ -216,13 +216,13 @@ if __name__ == '__main__':
             mode = maybe_mode
             logging.info('Mode: ' + mode)
             try:
-                exit_codes.append(_run_encryption_tests(tools, algo, mode, use_boxes=args.box))
+                exit_codes.append(_run_encryption_tests(tools, algo, mode, use_boxes=args.use_boxes))
             except Exception as e:
                 logging.error('Encountered an exception!')
                 logging.exception(e)
                 exit_codes.append(_TestExitCode.ERROR)
             try:
-                exit_codes.append(_run_decryption_tests(tools, algo, mode, use_boxes=args.box))
+                exit_codes.append(_run_decryption_tests(tools, algo, mode, use_boxes=args.use_boxes))
             except Exception as e:
                 logging.error('Encountered an exception!')
                 logging.exception(e)

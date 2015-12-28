@@ -8,11 +8,11 @@
 
 #pragma once
 
+#include "block_input.hpp"
 #include "data_parsers.hpp"
 
 #include <aesnixx/all.hpp>
 
-#include <boost/config.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
@@ -25,65 +25,7 @@
 
 namespace
 {
-    BOOST_NORETURN inline void throw_iv_required()
-    {
-        throw boost::program_options::error(
-            "initialization vector is required for the selected mode of operation");
-    }
-
-    BOOST_NORETURN inline void throw_not_implemented(aesni::Algorithm algorithm)
-    {
-        throw boost::program_options::error(
-            "the selected algorithm is not implemented");
-    }
-
-    BOOST_NORETURN inline void throw_not_implemented(aesni::Mode mode)
-    {
-        throw boost::program_options::error(
-            "the selected mode of operation is not implemented");
-    }
-
     class CommandLineParser;
-
-    class Input
-    {
-    public:
-        Input(
-            std::string&& key_string,
-            std::string&& iv_string,
-            std::vector<std::string>&& input_block_strings)
-            : key_string(std::move(key_string))
-            , iv_string(std::make_pair<bool, std::string>(true, std::move(iv_string)))
-            , input_block_strings(input_block_strings)
-        { }
-
-        Input(
-            std::string&& key_string,
-            std::vector<std::string>&& input_block_strings)
-            : key_string(std::move(key_string))
-            , iv_string(std::make_pair<bool, std::string>(false, std::string()))
-            , input_block_strings(std::move(input_block_strings))
-        { }
-
-        const std::string& get_key_string() const { return key_string; }
-
-        const std::string& get_iv_string() const
-        {
-            if (!iv_string.first)
-                throw_iv_required();
-            return iv_string.second;
-        }
-
-        const std::vector<std::string>& get_input_block_strings() const
-        {
-            return input_block_strings;
-        }
-
-    private:
-        const std::string key_string;
-        const std::pair<bool, std::string> iv_string;
-        const std::vector<std::string> input_block_strings;
-    };
 
     class Settings
     {
@@ -118,7 +60,7 @@ namespace
 
             options.add_options()
                 ("help,h", "show this message and exit")
-                ("box,b", po::bool_switch(&settings.use_boxes_flag)->default_value(false), "use the \"boxes\" interface")
+                ("use-boxes,b", po::bool_switch(&settings.use_boxes_flag)->default_value(false), "use the \"boxes\" interface")
                 ("mode,m", po::value<aesni::Mode>(&settings.mode)->required(), "set mode of operation")
                 ("algorithm,a", po::value<aesni::Algorithm>(&settings.algorithm)->required(), "set algorithm")
                 ("verbose,v", po::bool_switch(&settings.verbose_flag)->default_value(false), "enable verbose output");
@@ -173,7 +115,10 @@ namespace
                 if (aesni::mode_requires_initialization_vector(settings.get_mode()))
                 {
                     if (args.empty())
-                        throw_iv_required();
+                    {
+                        throw boost::program_options::error(
+                            "an initialization vector is required for the selected mode of operation");
+                    }
                     iv_string = std::move(args.front());
                     args.pop_front();
                 }

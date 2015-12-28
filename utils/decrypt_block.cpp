@@ -8,6 +8,7 @@
 
 #include "block_cmd_parser.hpp"
 #include "block_dumper.hpp"
+#include "block_input.hpp"
 
 #include <aesnixx/all.hpp>
 
@@ -15,7 +16,7 @@
 
 #include <exception>
 #include <iostream>
-#include <iterator>
+#include <stdexcept>
 #include <string>
 
 namespace
@@ -92,7 +93,7 @@ namespace
                 break;
 
             default:
-                throw_not_implemented(mode);
+                throw std::runtime_error("the selected mode of operation is not implemented");
                 break;
         }
     }
@@ -118,7 +119,7 @@ namespace
                 break;
 
             default:
-                throw_not_implemented(algorithm);
+                throw std::runtime_error("the selected algorithm is not implemented");
                 break;
         }
     }

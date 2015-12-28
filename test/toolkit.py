@@ -128,7 +128,7 @@ class Tools:
             '--mode', mode,
         ]
         if use_boxes:
-            args.append('--box')
+            args.append('--use-boxes')
         if isinstance(inputs, collections.Iterable):
             args.extend(self._block_inputs_to_args(iter(inputs)))
         else:
@@ -141,7 +141,7 @@ class Tools:
             '--mode', mode,
         ]
         if use_boxes:
-            args.append('--box')
+            args.append('--use-boxes')
         if isinstance(inputs, collections.Iterable):
             args.extend(self._block_inputs_to_args(iter(inputs)))
         else:

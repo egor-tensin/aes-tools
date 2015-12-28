@@ -26,24 +26,16 @@ namespace
     class Settings
     {
     public:
-        Settings()
-            : iv(false, std::string())
-        { }
+        Settings() = default;
 
         aesni::Mode get_mode() const { return mode; }
         aesni::Algorithm get_algorithm() const { return algorithm; }
 
-        std::string get_input_path() const { return input_path; }
-        std::string get_output_path() const { return output_path; }
+        const std::string& get_input_path() const { return input_path; }
+        const std::string& get_output_path() const { return output_path; }
 
-        std::string get_key_string() const { return key; }
-
-        std::string get_iv_string() const
-        {
-            if (!iv.first)
-                throw boost::program_options::error("initialization vector is required for the selected mode of operation");
-            return iv.second;
-        }
+        const std::string& get_key_string() const { return key; }
+        const std::string& get_iv_string() const { return iv; }
 
     private:
         aesni::Mode mode;
@@ -52,8 +44,7 @@ namespace
         std::string input_path;
         std::string output_path;
         std::string key;
-
-        std::pair<bool, std::string> iv;
+        std::string iv;
 
         friend class CommandLineParser;
     };
@@ -77,7 +68,7 @@ namespace
                 ("input-path,i", po::value<std::string>(&settings.input_path)->required(), "set input file")
                 ("output-path,o", po::value<std::string>(&settings.output_path)->required(), "set output file")
                 ("key,k", po::value<std::string>(&settings.key)->required(), "set encryption key")
-                ("iv,v", po::value<std::string>(&settings.iv.second), "set initialization vector");
+                ("iv,v", po::value<std::string>(&settings.iv), "set initialization vector");
 
             po::variables_map vm;
             po::store(po::parse_command_line(argc, argv, options), vm);
@@ -88,10 +79,16 @@ namespace
                 return;
             }
 
-            if (vm.count("iv"))
-                settings.iv.first = true;
-
             po::notify(vm);
+
+            if (aesni::mode_requires_initialization_vector(settings.get_mode()))
+            {
+                if (!vm.count("iv"))
+                {
+                    throw boost::program_options::error(
+                        "an initialization vector is required for the selected mode of operation");
+                }
+            }
         }
 
         bool exit_with_usage() const { return help_flag; }

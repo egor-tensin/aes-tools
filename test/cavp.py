@@ -184,7 +184,7 @@ if __name__ == '__main__':
                         help='set path to block encryption utilities')
     parser.add_argument('--sde', '-e', action='store_true',
                         help='use Intel SDE to run *.exe files')
-    parser.add_argument('--box', '-b', action='store_true',
+    parser.add_argument('--use-boxes', '-b', action='store_true',
                         help='use the "boxes" interface')
     parser.add_argument('--archive', '-a', default='KAT_AES.zip',
                         help='set path of the archive with the test vectors')
@@ -202,4 +202,4 @@ if __name__ == '__main__':
     logging.basicConfig(**logging_options)
 
     tools = toolkit.Tools(args.path, use_sde=args.sde)
-    _parse_archive_and_run_tests(tools, args.archive, use_boxes=args.box)
+    _parse_archive_and_run_tests(tools, args.archive, use_boxes=args.use_boxes)
