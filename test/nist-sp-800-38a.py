@@ -3,6 +3,7 @@
 # See LICENSE.txt for details.
 
 from datetime import datetime
+from enum import Enum
 import logging
 import os.path
 import sys
@@ -22,15 +23,15 @@ _TEST_KEYS = {
     toolkit.AES256: '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4'
 }
 
-_TEST_IV = '000102030405060708090a0b0c0d0e0f'
-_TEST_IV_CTR = 'f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff'
+_TEST_INIT_VECTOR = '000102030405060708090a0b0c0d0e0f'
+_TEST_INIT_VECTOR_CTR = 'f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff'
 
 _TEST_INIT_VECTORS = {
     toolkit.AES128: {
-        toolkit.CBC: _TEST_IV,
-        toolkit.CFB: _TEST_IV,
-        toolkit.OFB: _TEST_IV,
-        toolkit.CTR: _TEST_IV_CTR
+        toolkit.CBC: _TEST_INIT_VECTOR,
+        toolkit.CFB: _TEST_INIT_VECTOR,
+        toolkit.OFB: _TEST_INIT_VECTOR,
+        toolkit.CTR: _TEST_INIT_VECTOR_CTR
     }
 }
 
@@ -164,8 +165,8 @@ def verify_test_output(actual, expected):
         return False
     return True
 
-class TestExitCode:
-    SUCCESS, FAILURE, ERROR, SKIPPED = range(4)
+class TestExitCode(Enum):
+    SUCCESS, FAILURE, ERROR, SKIPPED = range(1, 5)
 
 def run_encryption_test(tools, algorithm, mode, use_boxes=False):
     logging.info('Running encryption test...')
@@ -244,8 +245,7 @@ if __name__ == '__main__':
 
     logging.basicConfig(filename=args.log,
                         format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
-                        level=logging.DEBUG,
-                        datefmt='%Y-%m-%d %H:%M:%S')
+                        level=logging.DEBUG)
 
     exit_codes = []
     for algorithm, mode in get_tested_algorithms_and_modes():
