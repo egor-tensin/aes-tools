@@ -3,52 +3,51 @@
 # See LICENSE.txt for details.
 
 import collections
+from enum import Enum
 import logging
 import os.path
 import subprocess
 
-AES128, AES192, AES256 = 'aes128', 'aes192', 'aes256'
-ECB, CBC, CFB, OFB, CTR = 'ecb', 'cbc', 'cfb', 'ofb', 'ctr'
+class Algorithm(Enum):
+    @staticmethod
+    def parse(s):
+        return Algorithm(s.lower())
 
-_SUPPORTED_ALGORITHMS = AES128, AES192, AES256
-_SUPPORTED_MODES = ECB, CBC, CFB, OFB, CTR
+    @staticmethod
+    def try_parse(s):
+        try:
+            return Algorithm.parse(s)
+        except ValueError:
+            return None
 
-def get_supported_algorithms():
-    return _SUPPORTED_ALGORITHMS
+    AES128, AES192, AES256 = 'aes128', 'aes192', 'aes256'
 
-def get_supported_modes():
-    return _SUPPORTED_MODES
+    def __str__(self):
+        return self.value
 
-def mode_requires_init_vector(mode):
-    if mode not in _SUPPORTED_MODES:
-        raise NotImplementedError('unsupported mode of operation ' + s)
-    return mode != ECB
 
-def to_supported_algorithm(s):
-    algorithm = is_algorithm_supported(s)
-    if algorithm is None:
-        raise NotImplementedError('unsupported algorithm ' + s)
-    return algorithm
+class Mode(Enum):
+    @staticmethod
+    def parse(s):
+        s = s.lower()
+        if '{}128'.format(Mode.CFB) == s:
+            return Mode.CFB
+        return Mode(s)
 
-def is_algorithm_supported(s):
-    s = s.lower()
-    if s in _SUPPORTED_ALGORITHMS:
-        return s
-    return None
+    @staticmethod
+    def try_parse(s):
+        try:
+            return Mode.parse(s)
+        except ValueError:
+            return None
 
-def to_supported_mode(s):
-    mode = is_mode_supported(s)
-    if mode is None:
-        raise NotImplementedError('unsupported mode ' + s)
-    return mode
+    ECB, CBC, CFB, OFB, CTR = 'ecb', 'cbc', 'cfb', 'ofb', 'ctr'
 
-def is_mode_supported(s):
-    s = s.lower()
-    if s in _SUPPORTED_MODES:
-        return s
-    if s == CFB + '128':
-        return CFB
-    return None
+    def requires_init_vector(self):
+        return self != Mode.ECB
+
+    def __str__(self):
+        return self.value
 
 class BlockInput:
     def __init__(self, key, plaintexts, iv=None):
@@ -108,8 +107,8 @@ class Tools:
     @staticmethod
     def _block_settings_to_args(algorithm, mode, use_boxes=False):
         args = [
-            '--algorithm', algorithm,
-            '--mode', mode,
+            '--algorithm', str(algorithm),
+            '--mode', str(mode),
         ]
         if use_boxes:
             args.append('--use-boxes')
@@ -135,15 +134,13 @@ class Tools:
     @staticmethod
     def _file_settings_to_args(algorithm, mode, key, input_path, output_path, iv=None):
         args = [
-            '--algorithm', algorithm,
-            '--mode', mode,
+            '--algorithm', str(algorithm),
+            '--mode', str(mode),
             '--key', key,
             '--input-path', input_path,
             '--output-path', output_path
         ]
-        if mode_requires_init_vector(mode):
-            if not iv:
-                raise ValueError('mode \'{}\' requires initialization vector'.format(mode))
+        if iv is not None:
             args.extend(('--iv', iv))
         return args
 

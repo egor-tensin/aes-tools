@@ -8,7 +8,7 @@ import logging
 import os.path
 import sys
 
-import toolkit
+from toolkit import *
 
 _TEST_PLAINTEXTS = [
     '6bc1bee22e409f96e93d7e117393172a',
@@ -18,117 +18,117 @@ _TEST_PLAINTEXTS = [
 ]
 
 _TEST_KEYS = {
-    toolkit.AES128: '2b7e151628aed2a6abf7158809cf4f3c',
-    toolkit.AES192: '8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b',
-    toolkit.AES256: '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4'
+    Algorithm.AES128: '2b7e151628aed2a6abf7158809cf4f3c',
+    Algorithm.AES192: '8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b',
+    Algorithm.AES256: '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4'
 }
 
 _TEST_INIT_VECTOR = '000102030405060708090a0b0c0d0e0f'
 _TEST_INIT_VECTOR_CTR = 'f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff'
 
 _TEST_INIT_VECTORS = {
-    toolkit.AES128: {
-        toolkit.CBC: _TEST_INIT_VECTOR,
-        toolkit.CFB: _TEST_INIT_VECTOR,
-        toolkit.OFB: _TEST_INIT_VECTOR,
-        toolkit.CTR: _TEST_INIT_VECTOR_CTR
+    Algorithm.AES128: {
+        Mode.CBC: _TEST_INIT_VECTOR,
+        Mode.CFB: _TEST_INIT_VECTOR,
+        Mode.OFB: _TEST_INIT_VECTOR,
+        Mode.CTR: _TEST_INIT_VECTOR_CTR
     }
 }
 
-_TEST_INIT_VECTORS[toolkit.AES192] = _TEST_INIT_VECTORS[toolkit.AES128]
-_TEST_INIT_VECTORS[toolkit.AES256] = _TEST_INIT_VECTORS[toolkit.AES128]
+_TEST_INIT_VECTORS[Algorithm.AES192] = _TEST_INIT_VECTORS[Algorithm.AES128]
+_TEST_INIT_VECTORS[Algorithm.AES256] = _TEST_INIT_VECTORS[Algorithm.AES128]
 
 _TEST_CIPHERTEXTS = {
-    toolkit.AES128: {
-        toolkit.ECB: [
+    Algorithm.AES128: {
+        Mode.ECB: [
             '3ad77bb40d7a3660a89ecaf32466ef97',
             'f5d3d58503b9699de785895a96fdbaaf',
             '43b1cd7f598ece23881b00e3ed030688',
             '7b0c785e27e8ad3f8223207104725dd4'
         ],
-        toolkit.CBC: [
+        Mode.CBC: [
             '7649abac8119b246cee98e9b12e9197d',
             '5086cb9b507219ee95db113a917678b2',
             '73bed6b8e3c1743b7116e69e22229516',
             '3ff1caa1681fac09120eca307586e1a7'
         ],
-        toolkit.CFB: [
+        Mode.CFB: [
             '3b3fd92eb72dad20333449f8e83cfb4a',
             'c8a64537a0b3a93fcde3cdad9f1ce58b',
             '26751f67a3cbb140b1808cf187a4f4df',
             'c04b05357c5d1c0eeac4c66f9ff7f2e6'
         ],
-        toolkit.OFB: [
+        Mode.OFB: [
             '3b3fd92eb72dad20333449f8e83cfb4a',
             '7789508d16918f03f53c52dac54ed825',
             '9740051e9c5fecf64344f7a82260edcc',
             '304c6528f659c77866a510d9c1d6ae5e'
         ],
-        toolkit.CTR: [
+        Mode.CTR: [
             '874d6191b620e3261bef6864990db6ce',
             '9806f66b7970fdff8617187bb9fffdff',
             '5ae4df3edbd5d35e5b4f09020db03eab',
             '1e031dda2fbe03d1792170a0f3009cee'
         ]
     },
-    toolkit.AES192: {
-        toolkit.ECB: [
+    Algorithm.AES192: {
+        Mode.ECB: [
             'bd334f1d6e45f25ff712a214571fa5cc',
             '974104846d0ad3ad7734ecb3ecee4eef',
             'ef7afd2270e2e60adce0ba2face6444e',
             '9a4b41ba738d6c72fb16691603c18e0e'
         ],
-        toolkit.CBC: [
+        Mode.CBC: [
             '4f021db243bc633d7178183a9fa071e8',
             'b4d9ada9ad7dedf4e5e738763f69145a',
             '571b242012fb7ae07fa9baac3df102e0',
             '08b0e27988598881d920a9e64f5615cd'
         ],
-        toolkit.CFB: [
+        Mode.CFB: [
             'cdc80d6fddf18cab34c25909c99a4174',
             '67ce7f7f81173621961a2b70171d3d7a',
             '2e1e8a1dd59b88b1c8e60fed1efac4c9',
             'c05f9f9ca9834fa042ae8fba584b09ff'
         ],
-        toolkit.OFB: [
+        Mode.OFB: [
             'cdc80d6fddf18cab34c25909c99a4174',
             'fcc28b8d4c63837c09e81700c1100401',
             '8d9a9aeac0f6596f559c6d4daf59a5f2',
             '6d9f200857ca6c3e9cac524bd9acc92a'
         ],
-        toolkit.CTR: [
+        Mode.CTR: [
             '1abc932417521ca24f2b0459fe7e6e0b',
             '090339ec0aa6faefd5ccc2c6f4ce8e94',
             '1e36b26bd1ebc670d1bd1d665620abf7',
             '4f78a7f6d29809585a97daec58c6b050'
         ]
     },
-    toolkit.AES256: {
-        toolkit.ECB: [
+    Algorithm.AES256: {
+        Mode.ECB: [
             'f3eed1bdb5d2a03c064b5a7e3db181f8',
             '591ccb10d410ed26dc5ba74a31362870',
             'b6ed21b99ca6f4f9f153e7b1beafed1d',
             '23304b7a39f9f3ff067d8d8f9e24ecc7'
         ],
-        toolkit.CBC: [
+        Mode.CBC: [
             'f58c4c04d6e5f1ba779eabfb5f7bfbd6',
             '9cfc4e967edb808d679f777bc6702c7d',
             '39f23369a9d9bacfa530e26304231461',
             'b2eb05e2c39be9fcda6c19078c6a9d1b'
         ],
-        toolkit.CFB: [
+        Mode.CFB: [
             'dc7e84bfda79164b7ecd8486985d3860',
             '39ffed143b28b1c832113c6331e5407b',
             'df10132415e54b92a13ed0a8267ae2f9',
             '75a385741ab9cef82031623d55b1e471'
         ],
-        toolkit.OFB: [
+        Mode.OFB: [
             'dc7e84bfda79164b7ecd8486985d3860',
             '4febdc6740d20b3ac88f6ad82a4fb08d',
             '71ab47a086e86eedf39d1c5bba97c408',
             '0126141d67f37be8538f5a8be740e484'
         ],
-        toolkit.CTR: [
+        Mode.CTR: [
             '601ec313775789a5b7a7f504bbf3d228',
             'f443e3ca4d62b59aca84e990cacaf5c5',
             '2b0930daa23de94ce87017ba2d84988d',
@@ -144,7 +144,7 @@ def get_test_key(algorithm, mode=None):
     return _TEST_KEYS[algorithm]
 
 def get_test_iv(algorithm, mode):
-    if not toolkit.mode_requires_init_vector(mode):
+    if not mode.requires_init_vector():
         return None
     return _TEST_INIT_VECTORS[algorithm][mode]
 
@@ -176,7 +176,7 @@ def run_encryption_test(tools, algorithm, mode, use_boxes=False):
     key = get_test_key(algorithm, mode)
     iv = get_test_iv(algorithm, mode)
     expected_ciphertexts = get_test_ciphertexts(algorithm, mode)
-    input_ = toolkit.BlockInput(key, plaintexts, iv=iv)
+    input_ = BlockInput(key, plaintexts, iv=iv)
     actual_ciphertexts = tools.run_encrypt_block(algorithm, mode, input_, use_boxes)
     if verify_test_output(actual_ciphertexts, expected_ciphertexts):
         return TestExitCode.SUCCESS
@@ -191,7 +191,7 @@ def run_decryption_test(tools, algorithm, mode, use_boxes=False):
     key = get_test_key(algorithm, mode)
     iv = get_test_iv(algorithm, mode)
     expected_plaintexts = get_test_plaintexts(algorithm, mode)
-    input_ = toolkit.BlockInput(key, ciphertexts, iv=iv)
+    input_ = BlockInput(key, ciphertexts, iv=iv)
     actual_plaintexts = tools.run_decrypt_block(algorithm, mode, input_, use_boxes)
     if verify_test_output(actual_plaintexts, expected_plaintexts):
         return TestExitCode.SUCCESS
@@ -199,18 +199,6 @@ def run_decryption_test(tools, algorithm, mode, use_boxes=False):
         return TestExitCode.FAILURE
 
 def _run_tests(tools, algorithm, mode, use_boxes=False):
-    maybe_algorithm = toolkit.is_algorithm_supported(algorithm)
-    if maybe_algorithm is None:
-        logging.warn('Unknown or unsupported algorithm: {}'.format(maybe_algorithm))
-        yield TestExitCode.SKIPPED
-        raise StopIteration
-    algorithm = maybe_algorithm
-    maybe_mode = toolkit.is_mode_supported(mode)
-    if maybe_mode is None:
-        logging.warn('Unknown or unsupported node: {}'.format(maybe_mode))
-        yield TestExitCode.SKIPPED
-        raise StopIteration
-    mode = maybe_mode
     try:
         yield run_encryption_test(tools, algorithm, mode, use_boxes=args.use_boxes)
     except Exception as e:
@@ -241,7 +229,7 @@ if __name__ == '__main__':
                         help='set log file path')
     args = parser.parse_args()
 
-    tools = toolkit.Tools(args.path, use_sde=args.sde)
+    tools = Tools(args.path, use_sde=args.sde)
 
     logging.basicConfig(filename=args.log,
                         format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',

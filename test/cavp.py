@@ -8,8 +8,9 @@ from datetime import datetime
 import logging
 import os.path
 import sys
-import toolkit
 import zipfile
+
+from toolkit import *
 
 class _MultiOrderedDict(OrderedDict):
     def __setitem__(self, key, value):
@@ -22,7 +23,7 @@ def _gen_inputs(keys, plaintexts, init_vectors):
     if init_vectors is None:
         init_vectors = [None for key in keys]
     for key, plaintext, iv in zip(keys, plaintexts, init_vectors):
-        yield toolkit.BlockInput(key, [plaintext], iv)
+        yield BlockInput(key, [plaintext], iv)
 
 def _split_into_chunks(expected_output, inputs, max_len=100):
     for i in range(0, len(inputs), max_len):
@@ -70,7 +71,7 @@ class _TestVectorsFile:
         plaintexts = self._parser.get(section, 'plaintext')
         ciphertexts = self._parser.get(section, 'ciphertext')
         init_vectors = None
-        if toolkit.mode_requires_init_vector(self.mode()):
+        if self.mode().requires_init_vector():
             init_vectors = self._parser.get(section, 'iv')
         return keys, plaintexts, ciphertexts, init_vectors
 
@@ -115,7 +116,7 @@ class _TestVectorsFile:
     def _strip_algorithm(self, stub):
         key_size = stub[-3:]
         maybe_algorithm = 'aes{0}'.format(key_size)
-        self._algorithm = toolkit.is_algorithm_supported(maybe_algorithm)
+        self._algorithm = Algorithm.try_parse(maybe_algorithm)
         if self._algorithm:
             logging.info('\tAlgorithm: {0}'.format(self._algorithm))
             return stub[0:-3]
@@ -131,7 +132,7 @@ class _TestVectorsFile:
         logging.warn('Unknown or unsupported method: ' + self._fn)
 
     def _strip_mode(self, stub):
-        self._mode = toolkit.is_mode_supported(stub)
+        self._mode = Mode.try_parse(stub)
         if self._mode:
             logging.info('\tMode: {0}'.format(self._mode))
             return self._mode
@@ -195,5 +196,5 @@ if __name__ == '__main__':
         logging_options['filename'] = args.log
     logging.basicConfig(**logging_options)
 
-    tools = toolkit.Tools(args.path, use_sde=args.sde)
+    tools = Tools(args.path, use_sde=args.sde)
     _parse_archive_and_run_tests(tools, args.archive, use_boxes=args.use_boxes)

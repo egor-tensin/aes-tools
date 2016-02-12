@@ -2,8 +2,6 @@
 # This file is licensed under the terms of the MIT License.
 # See LICENSE.txt for details.
 
-import toolkit
-
 from datetime import datetime
 from glob import iglob as glob
 import filecmp
@@ -12,6 +10,8 @@ import os
 import shutil
 import sys
 from tempfile import TemporaryDirectory
+
+from toolkit import *
 
 class _TestExitCode:
     SUCCESS, FAILURE, ERROR, SKIPPED = range(4)
@@ -94,37 +94,37 @@ def _run_tests(tools, suite_dir, force=False):
     with TemporaryDirectory() as tmp_dir:
         for algorithm_dir in _list_dirs(suite_dir):
             algorithm = os.path.basename(algorithm_dir)
-            maybe_algorithm = toolkit.is_algorithm_supported(algorithm)
+            maybe_algorithm = Algorithm.try_parse(algorithm)
             if maybe_algorithm is None:
                 logging.warn('Unknown or unsupported algorithm: ' + algorithm)
                 exit_codes.append(_TestExitCode.SKIPPED)
                 continue
             algorithm = maybe_algorithm
-            logging.info('Algorithm: ' + algorithm)
+            logging.info('Algorithm: {}'.format(algorithm))
             for mode_dir in _list_dirs(algorithm_dir):
                 mode = os.path.basename(mode_dir)
-                maybe_mode = toolkit.is_mode_supported(mode)
+                maybe_mode = Mode.try_parse(mode)
                 if maybe_mode is None:
                     logging.warn('Unknown or unsupported mode: ' + mode)
                     exit_codes.append(_TestExitCode.SKIPPED)
                     continue
                 mode = maybe_mode
-                logging.info('Mode: ' + mode)
+                logging.info('Mode: {}'.format(mode))
                 for key_path in _list_keys(mode_dir):
                     key = _read_key(key_path)
                     logging.info('Key: ' + key)
                     test_name = _extract_test_name(key_path)
                     logging.info('Test name: ' + test_name)
                     iv = None
-                    if toolkit.mode_requires_init_vector(mode):
+                    if mode.requires_init_vector():
                         iv_path = _build_iv_path(key_path)
                         iv = _read_iv(iv_path)
                     plain_path = _build_plain_path(key_path)
                     cipher_path = _build_cipher_path(key_path)
-                    os.makedirs(os.path.join(tmp_dir, algorithm, mode), 0o777, True)
+                    os.makedirs(os.path.join(tmp_dir, str(algorithm), str(mode)), 0o777, True)
                     try:
                         exit_codes.append(_run_encryption_test(
-                            tools, os.path.join(tmp_dir, algorithm, mode),
+                            tools, os.path.join(tmp_dir, str(algorithm), str(mode)),
                             algorithm, mode, key, plain_path, cipher_path, iv, force))
                     except Exception as e:
                         logging.error('Encountered an exception!')
@@ -133,7 +133,7 @@ def _run_tests(tools, suite_dir, force=False):
                     if not force:
                         try:
                             exit_codes.append(_run_decryption_test(
-                                tools, os.path.join(tmp_dir, algorithm, mode),
+                                tools, os.path.join(tmp_dir, str(algorithm), str(mode)),
                                 algorithm, mode, key, cipher_path, plain_path, iv))
                         except Exception as e:
                             logging.error('Encountered an exception!')
@@ -173,5 +173,5 @@ if __name__ == '__main__':
         logging_options['filename'] = args.log
     logging.basicConfig(**logging_options)
 
-    tools = toolkit.Tools(args.path, use_sde=args.sde)
+    tools = Tools(args.path, use_sde=args.sde)
     _run_tests(tools, args.suite, args.force)
