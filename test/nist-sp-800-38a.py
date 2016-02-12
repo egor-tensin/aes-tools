@@ -4,38 +4,40 @@
 
 from datetime import datetime
 import logging
-import toolkit
+import os.path
 import sys
 
-_plaintexts = [
+import toolkit
+
+_TEST_PLAINTEXTS = [
     '6bc1bee22e409f96e93d7e117393172a',
     'ae2d8a571e03ac9c9eb76fac45af8e51',
     '30c81c46a35ce411e5fbc1191a0a52ef',
     'f69f2445df4f9b17ad2b417be66c3710'
 ]
 
-_keys = {
+_TEST_KEYS = {
     toolkit.AES128: '2b7e151628aed2a6abf7158809cf4f3c',
     toolkit.AES192: '8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b',
     toolkit.AES256: '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4'
 }
 
-_default_iv = '000102030405060708090a0b0c0d0e0f'
-_ctr_iv = 'f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff'
+_TEST_IV = '000102030405060708090a0b0c0d0e0f'
+_TEST_IV_CTR = 'f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff'
 
-_init_vectors = {
+_TEST_INIT_VECTORS = {
     toolkit.AES128: {
-        toolkit.CBC: _default_iv,
-        toolkit.CFB: _default_iv,
-        toolkit.OFB: _default_iv,
-        toolkit.CTR: _ctr_iv
+        toolkit.CBC: _TEST_IV,
+        toolkit.CFB: _TEST_IV,
+        toolkit.OFB: _TEST_IV,
+        toolkit.CTR: _TEST_IV_CTR
     }
 }
 
-_init_vectors[toolkit.AES192] = _init_vectors[toolkit.AES128]
-_init_vectors[toolkit.AES256] = _init_vectors[toolkit.AES128]
+_TEST_INIT_VECTORS[toolkit.AES192] = _TEST_INIT_VECTORS[toolkit.AES128]
+_TEST_INIT_VECTORS[toolkit.AES256] = _TEST_INIT_VECTORS[toolkit.AES128]
 
-_ciphertexts = {
+_TEST_CIPHERTEXTS = {
     toolkit.AES128: {
         toolkit.ECB: [
             '3ad77bb40d7a3660a89ecaf32466ef97',
@@ -134,7 +136,26 @@ _ciphertexts = {
     }
 }
 
-def _assert_output(actual, expected):
+def get_test_plaintexts(algorithm=None, mode=None):
+    return _TEST_PLAINTEXTS
+
+def get_test_key(algorithm, mode=None):
+    return _TEST_KEYS[algorithm]
+
+def get_test_iv(algorithm, mode):
+    if not toolkit.mode_requires_init_vector(mode):
+        return None
+    return _TEST_INIT_VECTORS[algorithm][mode]
+
+def get_test_ciphertexts(algorithm, mode):
+    return _TEST_CIPHERTEXTS[algorithm][mode]
+
+def get_tested_algorithms_and_modes():
+    for algorithm in _TEST_CIPHERTEXTS:
+        for mode in _TEST_CIPHERTEXTS[algorithm]:
+            yield algorithm, mode
+
+def verify_test_output(actual, expected):
     if len(actual) != len(expected):
         logging.error('Unexpected output length {0} (expected {1})'.format(len(actual), len(expected)))
         return False
@@ -143,36 +164,68 @@ def _assert_output(actual, expected):
         return False
     return True
 
-class _TestExitCode:
+class TestExitCode:
     SUCCESS, FAILURE, ERROR, SKIPPED = range(4)
 
-def _run_encryption_tests(tools, algorithm, mode, use_boxes=False):
-    logging.info('Running encryption tests...')
-    key = _keys[algorithm]
-    iv = None
-    if algorithm in _init_vectors and mode in _init_vectors[algorithm]:
-        iv = _init_vectors[algorithm][mode]
-    ciphertexts = _ciphertexts[algorithm][mode]
-    _input = toolkit.BlockInput(key, _plaintexts, iv=iv)
-    actual_output = tools.run_encrypt_block(algorithm, mode, _input, use_boxes)
-    if _assert_output(actual_output, ciphertexts):
-        return _TestExitCode.SUCCESS
+def run_encryption_test(tools, algorithm, mode, use_boxes=False):
+    logging.info('Running encryption test...')
+    logging.info('Algorithm: {}'.format(algorithm))
+    logging.info('Mode: {}'.format(mode))
+    plaintexts = get_test_plaintexts(algorithm, mode)
+    key = get_test_key(algorithm, mode)
+    iv = get_test_iv(algorithm, mode)
+    expected_ciphertexts = get_test_ciphertexts(algorithm, mode)
+    input_ = toolkit.BlockInput(key, plaintexts, iv=iv)
+    actual_ciphertexts = tools.run_encrypt_block(algorithm, mode, input_, use_boxes)
+    if verify_test_output(actual_ciphertexts, expected_ciphertexts):
+        return TestExitCode.SUCCESS
     else:
-        return _TestExitCode.FAILURE
+        return TestExitCode.FAILURE
 
-def _run_decryption_tests(tools, algorithm, mode, use_boxes=False):
-    logging.info('Running decryption tests...')
-    key = _keys[algorithm]
-    iv = None
-    if algorithm in _init_vectors and mode in _init_vectors[algorithm]:
-        iv = _init_vectors[algorithm][mode]
-    ciphertexts = _ciphertexts[algorithm][mode]
-    _input = toolkit.BlockInput(key, ciphertexts, iv=iv)
-    actual_output = tools.run_decrypt_block(algorithm, mode, _input, use_boxes)
-    if _assert_output(actual_output, _plaintexts):
-        return _TestExitCode.SUCCESS
+def run_decryption_test(tools, algorithm, mode, use_boxes=False):
+    logging.info('Running decryption test...')
+    logging.info('Algorithm: {}'.format(algorithm))
+    logging.info('Mode: {}'.format(mode))
+    ciphertexts = get_test_ciphertexts(algorithm, mode)
+    key = get_test_key(algorithm, mode)
+    iv = get_test_iv(algorithm, mode)
+    expected_plaintexts = get_test_plaintexts(algorithm, mode)
+    input_ = toolkit.BlockInput(key, ciphertexts, iv=iv)
+    actual_plaintexts = tools.run_decrypt_block(algorithm, mode, input_, use_boxes)
+    if verify_test_output(actual_plaintexts, expected_plaintexts):
+        return TestExitCode.SUCCESS
     else:
-        return _TestExitCode.FAILURE
+        return TestExitCode.FAILURE
+
+def _run_tests(tools, algorithm, mode, use_boxes=False):
+    maybe_algorithm = toolkit.is_algorithm_supported(algorithm)
+    if maybe_algorithm is None:
+        logging.warn('Unknown or unsupported algorithm: {}'.format(maybe_algorithm))
+        yield TestExitCode.SKIPPED
+        raise StopIteration
+    algorithm = maybe_algorithm
+    maybe_mode = toolkit.is_mode_supported(mode)
+    if maybe_mode is None:
+        logging.warn('Unknown or unsupported node: {}'.format(maybe_mode))
+        yield TestExitCode.SKIPPED
+        raise StopIteration
+    mode = maybe_mode
+    try:
+        yield run_encryption_test(tools, algorithm, mode, use_boxes=args.use_boxes)
+    except Exception as e:
+        logging.error('Encountered an exception!')
+        logging.exception(e)
+        yield TestExitCode.ERROR
+    try:
+        yield run_decryption_test(tools, algorithm, mode, use_boxes=args.use_boxes)
+    except Exception as e:
+        logging.error('Encountered an exception!')
+        logging.exception(e)
+        yield TestExitCode.ERROR
+
+def _build_default_log_path():
+    return datetime.now().strftime('{}_%Y-%m-%d_%H-%M-%S.log').format(
+        os.path.splitext(os.path.basename(__file__))[0])
 
 if __name__ == '__main__':
     import argparse
@@ -183,57 +236,28 @@ if __name__ == '__main__':
                         help='use Intel SDE to run *.exe files')
     parser.add_argument('--use-boxes', '-b', action='store_true',
                         help='use the "boxes" interface')
-    parser.add_argument('--log', '-l', help='set log file path')
+    parser.add_argument('--log', '-l', default=_build_default_log_path(),
+                        help='set log file path')
     args = parser.parse_args()
 
     tools = toolkit.Tools(args.path, use_sde=args.sde)
 
-    logging_options = {
-        'format': '%(asctime)s | %(module)s | %(levelname)s | %(message)s',
-        'level': logging.DEBUG }
-
-    if args.log is None:
-        logging_options['filename'] = datetime.now().strftime('nist-sp-800-38a_%Y-%m-%d_%H-%M-%S.log')
-    else:
-        logging_options['filename'] = args.log
-    logging.basicConfig(**logging_options)
+    logging.basicConfig(filename=args.log,
+                        format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
+                        level=logging.DEBUG,
+                        datefmt='%Y-%m-%d %H:%M:%S')
 
     exit_codes = []
-    for algorithm in _ciphertexts:
-        maybe_algorithm = toolkit.is_algorithm_supported(algorithm)
-        if maybe_algorithm is None:
-            logging.warn('Unknown or unsupported algorithm: ' + algorithm)
-            exit_codes.append(_TestExitCode.SKIPPED)
-            continue
-        algorithm = maybe_algorithm
-        logging.info('Algorithm: ' + algorithm)
-        for mode in _ciphertexts[algorithm]:
-            maybe_mode = toolkit.is_mode_supported(mode)
-            if maybe_mode is None:
-                logging.warn('Unknown or unsupported mode: ' + mode)
-                exit_codes.append(_TestExitCode.SKIPPED)
-                continue
-            mode = maybe_mode
-            logging.info('Mode: ' + mode)
-            try:
-                exit_codes.append(_run_encryption_tests(tools, algorithm, mode, use_boxes=args.use_boxes))
-            except Exception as e:
-                logging.error('Encountered an exception!')
-                logging.exception(e)
-                exit_codes.append(_TestExitCode.ERROR)
-            try:
-                exit_codes.append(_run_decryption_tests(tools, algorithm, mode, use_boxes=args.use_boxes))
-            except Exception as e:
-                logging.error('Encountered an exception!')
-                logging.exception(e)
-                exit_codes.append(_TestExitCode.ERROR)
+    for algorithm, mode in get_tested_algorithms_and_modes():
+        exit_codes.extend(_run_tests(tools, algorithm, mode, use_boxes=args.use_boxes))
+
     logging.info('Test exit codes:')
-    logging.info('\tSkipped:   {0}'.format(exit_codes.count(_TestExitCode.SKIPPED)))
-    logging.info('\tError(s):  {0}'.format(exit_codes.count(_TestExitCode.ERROR)))
-    logging.info('\tSucceeded: {0}'.format(exit_codes.count(_TestExitCode.SUCCESS)))
-    logging.info('\tFailed:    {0}'.format(exit_codes.count(_TestExitCode.FAILURE)))
-    if (exit_codes.count(_TestExitCode.ERROR) == 0 and
-            exit_codes.count(_TestExitCode.FAILURE) == 0):
+    logging.info('\tSkipped:   {0}'.format(exit_codes.count(TestExitCode.SKIPPED)))
+    logging.info('\tError(s):  {0}'.format(exit_codes.count(TestExitCode.ERROR)))
+    logging.info('\tSucceeded: {0}'.format(exit_codes.count(TestExitCode.SUCCESS)))
+    logging.info('\tFailed:    {0}'.format(exit_codes.count(TestExitCode.FAILURE)))
+    if (exit_codes.count(TestExitCode.ERROR) == 0 and
+            exit_codes.count(TestExitCode.FAILURE) == 0):
         sys.exit()
     else:
         sys.exit(1)
