@@ -5,6 +5,7 @@
 from collections import OrderedDict
 import configparser
 from datetime import datetime
+from enum import Enum
 import logging
 import os.path
 import sys
@@ -29,7 +30,7 @@ def _split_into_chunks(expected_output, inputs, max_len=100):
     for i in range(0, len(inputs), max_len):
         yield expected_output[i:i+max_len], inputs[i:i+max_len]
 
-def _assert_output(actual, expected):
+def verify_test_output(actual, expected):
     if len(actual) != len(expected):
         logging.error('Unexpected output length {0} (expected {1})'.format(len(actual), len(expected)))
         return False
@@ -38,8 +39,8 @@ def _assert_output(actual, expected):
         return False
     return True
 
-class _TestExitCode:
-    SUCCESS, FAILURE, ERROR, SKIPPED = range(4)
+class TestExitCode(Enum):
+    SUCCESS, FAILURE, ERROR, SKIPPED = range(1, 5)
 
 class _TestVectorsFile:
     def __init__(self, path, archive):
@@ -78,9 +79,9 @@ class _TestVectorsFile:
     def _run_tests(self, tool, inputs, expected_output, use_boxes=False):
         for expected_output_chunk, input_chunk in _split_into_chunks(expected_output, list(inputs)):
             actual_output = tool(self.algorithm(), self.mode(), input_chunk, use_boxes=use_boxes)
-            if not _assert_output(actual_output, expected_output_chunk):
-                return _TestExitCode.FAILURE
-        return _TestExitCode.SUCCESS
+            if not verify_test_output(actual_output, expected_output_chunk):
+                return TestExitCode.FAILURE
+        return TestExitCode.SUCCESS
 
     def run_encryption_tests(self, tools, use_boxes=False):
         logging.info('Running encryption tests...')
@@ -152,25 +153,29 @@ def _parse_archive_and_run_tests(tools, archive_path, use_boxes=False):
             except Exception as e:
                 logging.error('Encountered an exception!')
                 logging.exception(e)
-                exit_codes.append(_TestExitCode.ERROR)
+                exit_codes.append(TestExitCode.ERROR)
             try:
                 exit_codes.append(member.run_decryption_tests(tools, use_boxes))
             except Exception as e:
                 logging.error('Encountered an exception!')
                 logging.exception(e)
-                exit_codes.append(_TestExitCode.ERROR)
+                exit_codes.append(TestExitCode.ERROR)
         else:
-            exit_codes.append(_TestExitCode.SKIPPED)
+            exit_codes.append(TestExitCode.SKIPPED)
     logging.info('Test exit codes:')
-    logging.info('\tSkipped:   {0}'.format(exit_codes.count(_TestExitCode.SKIPPED)))
-    logging.info('\tError(s):  {0}'.format(exit_codes.count(_TestExitCode.ERROR)))
-    logging.info('\tSucceeded: {0}'.format(exit_codes.count(_TestExitCode.SUCCESS)))
-    logging.info('\tFailed:    {0}'.format(exit_codes.count(_TestExitCode.FAILURE)))
-    if (exit_codes.count(_TestExitCode.ERROR) == 0 and
-            exit_codes.count(_TestExitCode.FAILURE) == 0):
+    logging.info('\tSkipped:   {}'.format(exit_codes.count(TestExitCode.SKIPPED)))
+    logging.info('\tError(s):  {}'.format(exit_codes.count(TestExitCode.ERROR)))
+    logging.info('\tSucceeded: {}'.format(exit_codes.count(TestExitCode.SUCCESS)))
+    logging.info('\tFailed:    {}'.format(exit_codes.count(TestExitCode.FAILURE)))
+    if (exit_codes.count(TestExitCode.ERROR) == 0 and
+            exit_codes.count(TestExitCode.FAILURE) == 0):
         sys.exit()
     else:
         sys.exit(1)
+
+def _build_default_log_path():
+    return datetime.now().strftime('{}_%Y-%m-%d_%H-%M-%S.log').format(
+        os.path.splitext(os.path.basename(__file__))[0])
 
 if __name__ == '__main__':
     import argparse
@@ -183,18 +188,13 @@ if __name__ == '__main__':
                         help='use the "boxes" interface')
     parser.add_argument('--archive', '-a', default='KAT_AES.zip',
                         help='set path of the archive with the test vectors')
-    parser.add_argument('--log', '-l', help='set log file path')
+    parser.add_argument('--log', '-l', default=_build_default_log_path(),
+                        help='set log file path')
     args = parser.parse_args()
 
-    logging_options = {
-        'format': '%(asctime)s | %(module)s | %(levelname)s | %(message)s',
-        'level': logging.DEBUG }
-
-    if args.log is None:
-        logging_options['filename'] = datetime.now().strftime('cavp_%Y-%m-%d_%H-%M-%S.log')
-    else:
-        logging_options['filename'] = args.log
-    logging.basicConfig(**logging_options)
+    logging.basicConfig(filename=args.log,
+                        format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
+                        level=logging.DEBUG)
 
     tools = Tools(args.path, use_sde=args.sde)
     _parse_archive_and_run_tests(tools, args.archive, use_boxes=args.use_boxes)

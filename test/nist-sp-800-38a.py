@@ -240,10 +240,10 @@ if __name__ == '__main__':
         exit_codes.extend(_run_tests(tools, algorithm, mode, use_boxes=args.use_boxes))
 
     logging.info('Test exit codes:')
-    logging.info('\tSkipped:   {0}'.format(exit_codes.count(TestExitCode.SKIPPED)))
-    logging.info('\tError(s):  {0}'.format(exit_codes.count(TestExitCode.ERROR)))
-    logging.info('\tSucceeded: {0}'.format(exit_codes.count(TestExitCode.SUCCESS)))
-    logging.info('\tFailed:    {0}'.format(exit_codes.count(TestExitCode.FAILURE)))
+    logging.info('\tSkipped:   {}'.format(exit_codes.count(TestExitCode.SKIPPED)))
+    logging.info('\tError(s):  {}'.format(exit_codes.count(TestExitCode.ERROR)))
+    logging.info('\tSucceeded: {}'.format(exit_codes.count(TestExitCode.SUCCESS)))
+    logging.info('\tFailed:    {}'.format(exit_codes.count(TestExitCode.FAILURE)))
     if (exit_codes.count(TestExitCode.ERROR) == 0 and
             exit_codes.count(TestExitCode.FAILURE) == 0):
         sys.exit()

@@ -3,6 +3,7 @@
 # See LICENSE.txt for details.
 
 from datetime import datetime
+from enum import Enum
 from glob import iglob as glob
 import filecmp
 import logging
@@ -13,8 +14,8 @@ from tempfile import TemporaryDirectory
 
 from toolkit import *
 
-class _TestExitCode:
-    SUCCESS, FAILURE, ERROR, SKIPPED = range(4)
+class TestExitCode(Enum):
+    SUCCESS, FAILURE, ERROR, SKIPPED = range(1, 5)
 
 _KEY_EXT = 'key'
 _IV_EXT = 'iv'
@@ -31,12 +32,12 @@ def _run_encryption_test(tools, tmp_dir, algorithm, mode, key, plain_path, ciphe
     if force:
         logging.warn('Overwriting expected ciphertext file')
         shutil.copy(tmp_path, cipher_path)
-        return _TestExitCode.SKIPPED
+        return TestExitCode.SKIPPED
     if filecmp.cmp(cipher_path, tmp_path):
-        return _TestExitCode.SUCCESS
+        return TestExitCode.SUCCESS
     else:
         logging.error('The encrypted file doesn\'t match the ciphertext file')
-        return _TestExitCode.FAILURE
+        return TestExitCode.FAILURE
 
 def _run_decryption_test(tools, tmp_dir, algorithm, mode, key, cipher_path, plain_path, iv=None):
     logging.info('Running decryption test...')
@@ -46,10 +47,10 @@ def _run_decryption_test(tools, tmp_dir, algorithm, mode, key, cipher_path, plai
     logging.info('\tDecrypted file path: ' + tmp_path)
     tools.run_decrypt_file(algorithm, mode, key, cipher_path, tmp_path, iv)
     if filecmp.cmp(tmp_path, plain_path):
-        return _TestExitCode.SUCCESS
+        return TestExitCode.SUCCESS
     else:
         logging.error('The decrypted file doesn\'t match the plaintext file')
-        return _TestExitCode.FAILURE
+        return TestExitCode.FAILURE
 
 def _list_dirs(root_path):
     xs = map(lambda x: os.path.join(root_path, x), os.listdir(root_path))
@@ -97,7 +98,7 @@ def _run_tests(tools, suite_dir, force=False):
             maybe_algorithm = Algorithm.try_parse(algorithm)
             if maybe_algorithm is None:
                 logging.warn('Unknown or unsupported algorithm: ' + algorithm)
-                exit_codes.append(_TestExitCode.SKIPPED)
+                exit_codes.append(TestExitCode.SKIPPED)
                 continue
             algorithm = maybe_algorithm
             logging.info('Algorithm: {}'.format(algorithm))
@@ -106,7 +107,7 @@ def _run_tests(tools, suite_dir, force=False):
                 maybe_mode = Mode.try_parse(mode)
                 if maybe_mode is None:
                     logging.warn('Unknown or unsupported mode: ' + mode)
-                    exit_codes.append(_TestExitCode.SKIPPED)
+                    exit_codes.append(TestExitCode.SKIPPED)
                     continue
                 mode = maybe_mode
                 logging.info('Mode: {}'.format(mode))
@@ -129,7 +130,7 @@ def _run_tests(tools, suite_dir, force=False):
                     except Exception as e:
                         logging.error('Encountered an exception!')
                         logging.exception(e)
-                        exit_codes.append(_TestExitCode.ERROR)
+                        exit_codes.append(TestExitCode.ERROR)
                     if not force:
                         try:
                             exit_codes.append(_run_decryption_test(
@@ -138,17 +139,21 @@ def _run_tests(tools, suite_dir, force=False):
                         except Exception as e:
                             logging.error('Encountered an exception!')
                             logging.exception(e)
-                            exit_codes.append(_TestExitCode.ERROR)
+                            exit_codes.append(TestExitCode.ERROR)
     logging.info('Test exit codes:')
-    logging.info('\tSkipped:   {0}'.format(exit_codes.count(_TestExitCode.SKIPPED)))
-    logging.info('\tError(s):  {0}'.format(exit_codes.count(_TestExitCode.ERROR)))
-    logging.info('\tSucceeded: {0}'.format(exit_codes.count(_TestExitCode.SUCCESS)))
-    logging.info('\tFailed:    {0}'.format(exit_codes.count(_TestExitCode.FAILURE)))
-    if (exit_codes.count(_TestExitCode.ERROR) == 0 and
-            exit_codes.count(_TestExitCode.FAILURE) == 0):
+    logging.info('\tSkipped:   {}'.format(exit_codes.count(TestExitCode.SKIPPED)))
+    logging.info('\tError(s):  {}'.format(exit_codes.count(TestExitCode.ERROR)))
+    logging.info('\tSucceeded: {}'.format(exit_codes.count(TestExitCode.SUCCESS)))
+    logging.info('\tFailed:    {}'.format(exit_codes.count(TestExitCode.FAILURE)))
+    if (exit_codes.count(TestExitCode.ERROR) == 0 and
+            exit_codes.count(TestExitCode.FAILURE) == 0):
         sys.exit()
     else:
         sys.exit(1)
+
+def _build_default_log_path():
+    return datetime.now().strftime('{}_%Y-%m-%d_%H-%M-%S.log').format(
+        os.path.splitext(os.path.basename(__file__))[0])
 
 if __name__ == '__main__':
     import argparse
@@ -157,21 +162,17 @@ if __name__ == '__main__':
                         help='set path to file encryption utilities')
     parser.add_argument('--sde', '-e', action='store_true',
                         help='use Intel SDE to run *.exe files')
-    parser.add_argument('--log', '-l', help='set log file path')
+    parser.add_argument('--log', '-l', default=_build_default_log_path(),
+                        help='set log file path')
     parser.add_argument('--force', '-f', action='store_true',
                         help='overwrite ciphertext files')
     parser.add_argument('--suite', '-s', default='file',
                         help='set test suite directory path')
     args = parser.parse_args()
 
-    logging_options = {
-        'format': '%(asctime)s | %(module)s | %(levelname)s | %(message)s',
-        'level': logging.DEBUG }
-    if args.log is None:
-        logging_options['filename'] = datetime.now().strftime('file_%Y-%m-%d_%H-%M-%S.log')
-    else:
-        logging_options['filename'] = args.log
-    logging.basicConfig(**logging_options)
+    logging.basicConfig(filename=args.log,
+                        format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
+                        level=logging.DEBUG)
 
     tools = Tools(args.path, use_sde=args.sde)
     _run_tests(tools, args.suite, args.force)
