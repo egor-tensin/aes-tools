@@ -172,6 +172,7 @@ def run_encryption_test(tools, algorithm, mode, use_boxes=False):
     logging.info('Running encryption test...')
     logging.info('Algorithm: {}'.format(algorithm))
     logging.info('Mode: {}'.format(mode))
+
     plaintexts = get_test_plaintexts(algorithm, mode)
     key = get_test_key(algorithm, mode)
     iv = get_test_iv(algorithm, mode)
@@ -187,6 +188,7 @@ def run_decryption_test(tools, algorithm, mode, use_boxes=False):
     logging.info('Running decryption test...')
     logging.info('Algorithm: {}'.format(algorithm))
     logging.info('Mode: {}'.format(mode))
+
     ciphertexts = get_test_ciphertexts(algorithm, mode)
     key = get_test_key(algorithm, mode)
     iv = get_test_iv(algorithm, mode)

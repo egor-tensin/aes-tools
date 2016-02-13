@@ -22,36 +22,6 @@ _IV_EXT = 'iv'
 _PLAIN_EXT = 'plain'
 _CIPHER_EXT = 'cipher'
 
-def _run_encryption_test(tools, tmp_dir, algorithm, mode, key, plain_path, cipher_path, iv=None, force=False):
-    logging.info('Running encryption test...')
-    logging.info('\tPlaintext file path: ' + plain_path)
-    logging.info('\tExpected ciphertext file path: ' + cipher_path)
-    tmp_path = os.path.join(tmp_dir, os.path.basename(cipher_path))
-    logging.info('\tEncrypted file path: ' + tmp_path)
-    tools.run_encrypt_file(algorithm, mode, key, plain_path, tmp_path, iv)
-    if force:
-        logging.warn('Overwriting expected ciphertext file')
-        shutil.copy(tmp_path, cipher_path)
-        return TestExitCode.SKIPPED
-    if filecmp.cmp(cipher_path, tmp_path):
-        return TestExitCode.SUCCESS
-    else:
-        logging.error('The encrypted file doesn\'t match the ciphertext file')
-        return TestExitCode.FAILURE
-
-def _run_decryption_test(tools, tmp_dir, algorithm, mode, key, cipher_path, plain_path, iv=None):
-    logging.info('Running decryption test...')
-    logging.info('\tCiphertext file path: ' + cipher_path)
-    logging.info('\tExpected plaintext file path: ' + plain_path)
-    tmp_path = os.path.join(tmp_dir, os.path.basename(plain_path))
-    logging.info('\tDecrypted file path: ' + tmp_path)
-    tools.run_decrypt_file(algorithm, mode, key, cipher_path, tmp_path, iv)
-    if filecmp.cmp(tmp_path, plain_path):
-        return TestExitCode.SUCCESS
-    else:
-        logging.error('The decrypted file doesn\'t match the plaintext file')
-        return TestExitCode.FAILURE
-
 def _list_dirs(root_path):
     xs = map(lambda x: os.path.join(root_path, x), os.listdir(root_path))
     return filter(os.path.isdir, xs)
@@ -79,77 +49,97 @@ def _extract_test_name(key_path):
 def _replace_ext(path, new_ext):
     return '{}.{}'.format(os.path.splitext(path)[0], new_ext)
 
-def _build_iv_path(key_path):
+def _extract_iv_path(key_path):
     return _replace_ext(key_path, _IV_EXT)
 
-def _build_plain_path(key_path):
+def _extract_plain_path(key_path):
     return _replace_ext(key_path, _PLAIN_EXT)
 
-def _build_cipher_path(key_path):
+def _extract_cipher_path(key_path):
     return _replace_ext(key_path, _CIPHER_EXT)
 
-def _run_tests(tools, suite_dir, force=False):
-    exit_codes = []
+class TestCase:
+    def __init__(self, algorithm, mode, key, plain_path, cipher_path, iv=None):
+        self.algorithm = algorithm
+        self.mode = mode
+        self.key = key
+        self.plain_path = plain_path
+        self.cipher_path = cipher_path
+        self.iv = iv
+
+    def run_encryption_test(self, tools, tmp_dir, force=False):
+        tmp_dir = os.path.join(tmp_dir, str(self.algorithm), str(self.mode))
+        os.makedirs(tmp_dir, 0o777, True)
+
+        logging.info('Running encryption test...')
+        logging.info('\tPlaintext file path: ' + self.plain_path)
+        logging.info('\tExpected ciphertext file path: ' + self.cipher_path)
+        tmp_path = os.path.join(tmp_dir, os.path.basename(self.cipher_path))
+        logging.info('\tEncrypted file path: ' + tmp_path)
+        logging.info('\tAlgorithm: {}'.format(self.algorithm))
+        logging.info('\tMode: {}'.format(self.mode))
+
+        tools.run_encrypt_file(self.algorithm, self.mode, self.key,
+                               self.plain_path, tmp_path, self.iv)
+        if force:
+            logging.warn('Overwriting expected ciphertext file')
+            shutil.copy(tmp_path, self.cipher_path)
+            return TestExitCode.SKIPPED
+        if filecmp.cmp(self.cipher_path, tmp_path):
+            return TestExitCode.SUCCESS
+        else:
+            logging.error('The encrypted file doesn\'t match the ciphertext file')
+            return TestExitCode.FAILURE
+
+    def run_decryption_test(self, tools, tmp_dir):
+        tmp_dir = os.path.join(tmp_dir, str(self.algorithm), str(self.mode))
+        os.makedirs(tmp_dir, 0o777, True)
+
+        logging.info('Running decryption test...')
+        logging.info('\tCiphertext file path: ' + self.cipher_path)
+        logging.info('\tExpected plaintext file path: ' + self.plain_path)
+        tmp_path = os.path.join(tmp_dir, os.path.basename(self.plain_path))
+        logging.info('\tDecrypted file path: ' + tmp_path)
+        logging.info('\tAlgorithm: {}'.format(self.algorithm))
+        logging.info('\tMode: {}'.format(self.mode))
+
+        tools.run_decrypt_file(self.algorithm, self.mode, self.key,
+                               self.cipher_path, tmp_path, self.iv)
+        if filecmp.cmp(tmp_path, self.plain_path):
+            return TestExitCode.SUCCESS
+        else:
+            logging.error('The decrypted file doesn\'t match the plaintext file')
+            return TestExitCode.FAILURE
+
+def list_test_cases(suite_dir):
     suite_dir = os.path.abspath(suite_dir)
     logging.info('Suite directory path: ' + suite_dir)
-    with TemporaryDirectory() as tmp_dir:
-        for algorithm_dir in _list_dirs(suite_dir):
-            algorithm = os.path.basename(algorithm_dir)
-            maybe_algorithm = Algorithm.try_parse(algorithm)
-            if maybe_algorithm is None:
-                logging.warn('Unknown or unsupported algorithm: ' + algorithm)
-                exit_codes.append(TestExitCode.SKIPPED)
+    for algorithm_dir in _list_dirs(suite_dir):
+        algorithm = os.path.basename(algorithm_dir)
+        maybe_algorithm = Algorithm.try_parse(algorithm)
+        if maybe_algorithm is None:
+            logging.warn('Unknown or unsupported algorithm: ' + algorithm)
+            continue
+        algorithm = maybe_algorithm
+        for mode_dir in _list_dirs(algorithm_dir):
+            mode = os.path.basename(mode_dir)
+            maybe_mode = Mode.try_parse(mode)
+            if maybe_mode is None:
+                logging.warn('Unknown or unsupported mode: ' + mode)
                 continue
-            algorithm = maybe_algorithm
-            logging.info('Algorithm: {}'.format(algorithm))
-            for mode_dir in _list_dirs(algorithm_dir):
-                mode = os.path.basename(mode_dir)
-                maybe_mode = Mode.try_parse(mode)
-                if maybe_mode is None:
-                    logging.warn('Unknown or unsupported mode: ' + mode)
-                    exit_codes.append(TestExitCode.SKIPPED)
-                    continue
-                mode = maybe_mode
-                logging.info('Mode: {}'.format(mode))
-                for key_path in _list_keys(mode_dir):
-                    key = _read_key(key_path)
-                    logging.info('Key: ' + key)
-                    test_name = _extract_test_name(key_path)
-                    logging.info('Test name: ' + test_name)
-                    iv = None
-                    if mode.requires_init_vector():
-                        iv_path = _build_iv_path(key_path)
-                        iv = _read_iv(iv_path)
-                    plain_path = _build_plain_path(key_path)
-                    cipher_path = _build_cipher_path(key_path)
-                    os.makedirs(os.path.join(tmp_dir, str(algorithm), str(mode)), 0o777, True)
-                    try:
-                        exit_codes.append(_run_encryption_test(
-                            tools, os.path.join(tmp_dir, str(algorithm), str(mode)),
-                            algorithm, mode, key, plain_path, cipher_path, iv, force))
-                    except Exception as e:
-                        logging.error('Encountered an exception!')
-                        logging.exception(e)
-                        exit_codes.append(TestExitCode.ERROR)
-                    if not force:
-                        try:
-                            exit_codes.append(_run_decryption_test(
-                                tools, os.path.join(tmp_dir, str(algorithm), str(mode)),
-                                algorithm, mode, key, cipher_path, plain_path, iv))
-                        except Exception as e:
-                            logging.error('Encountered an exception!')
-                            logging.exception(e)
-                            exit_codes.append(TestExitCode.ERROR)
-    logging.info('Test exit codes:')
-    logging.info('\tSkipped:   {}'.format(exit_codes.count(TestExitCode.SKIPPED)))
-    logging.info('\tError(s):  {}'.format(exit_codes.count(TestExitCode.ERROR)))
-    logging.info('\tSucceeded: {}'.format(exit_codes.count(TestExitCode.SUCCESS)))
-    logging.info('\tFailed:    {}'.format(exit_codes.count(TestExitCode.FAILURE)))
-    if (exit_codes.count(TestExitCode.ERROR) == 0 and
-            exit_codes.count(TestExitCode.FAILURE) == 0):
-        sys.exit()
-    else:
-        sys.exit(1)
+            mode = maybe_mode
+            for key_path in _list_keys(mode_dir):
+                key = _read_key(key_path)
+                logging.info('Key: ' + key)
+                test_name = _extract_test_name(key_path)
+                logging.info('Test name: ' + test_name)
+                iv = None
+                if mode.requires_init_vector():
+                    iv_path = _extract_iv_path(key_path)
+                    iv = _read_iv(iv_path)
+                plain_path = _extract_plain_path(key_path)
+                cipher_path = _extract_cipher_path(key_path)
+                yield TestCase(algorithm, mode, key, plain_path, cipher_path, iv)
 
 def _build_default_log_path():
     return datetime.now().strftime('{}_%Y-%m-%d_%H-%M-%S.log').format(
@@ -175,4 +165,20 @@ if __name__ == '__main__':
                         level=logging.DEBUG)
 
     tools = Tools(args.path, use_sde=args.sde)
-    _run_tests(tools, args.suite, args.force)
+
+    exit_codes = []
+    with TemporaryDirectory() as tmp_dir:
+        for test_case in list_test_cases(args.suite):
+            exit_codes.append(test_case.run_encryption_test(tools, tmp_dir, args.force))
+            exit_codes.append(test_case.run_decryption_test(tools, tmp_dir))
+
+    logging.info('Test exit codes:')
+    logging.info('\tSkipped:   {}'.format(exit_codes.count(TestExitCode.SKIPPED)))
+    logging.info('\tError(s):  {}'.format(exit_codes.count(TestExitCode.ERROR)))
+    logging.info('\tSucceeded: {}'.format(exit_codes.count(TestExitCode.SUCCESS)))
+    logging.info('\tFailed:    {}'.format(exit_codes.count(TestExitCode.FAILURE)))
+    if (exit_codes.count(TestExitCode.ERROR) == 0 and
+            exit_codes.count(TestExitCode.FAILURE) == 0):
+        sys.exit()
+    else:
+        sys.exit(1)
