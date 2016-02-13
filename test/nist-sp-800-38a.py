@@ -173,46 +173,42 @@ def run_encryption_test(tools, algorithm, mode, use_boxes=False):
     logging.info('Algorithm: {}'.format(algorithm))
     logging.info('Mode: {}'.format(mode))
 
-    plaintexts = get_test_plaintexts(algorithm, mode)
-    key = get_test_key(algorithm, mode)
-    iv = get_test_iv(algorithm, mode)
-    expected_ciphertexts = get_test_ciphertexts(algorithm, mode)
-    input_ = BlockInput(key, plaintexts, iv=iv)
-    actual_ciphertexts = tools.run_encrypt_block(algorithm, mode, input_, use_boxes)
-    if verify_test_output(actual_ciphertexts, expected_ciphertexts):
-        return TestExitCode.SUCCESS
-    else:
-        return TestExitCode.FAILURE
+    try:
+        plaintexts = get_test_plaintexts(algorithm, mode)
+        key = get_test_key(algorithm, mode)
+        iv = get_test_iv(algorithm, mode)
+        expected_ciphertexts = get_test_ciphertexts(algorithm, mode)
+        input_ = BlockInput(key, plaintexts, iv=iv)
+        actual_ciphertexts = tools.run_encrypt_block(algorithm, mode, input_, use_boxes)
+        if verify_test_output(actual_ciphertexts, expected_ciphertexts):
+            return TestExitCode.SUCCESS
+        else:
+            return TestExitCode.FAILURE
+    except Exception as e:
+        logging.error('Encountered an exception!')
+        logging.exception(e)
+        return TestExitCode.ERROR
 
 def run_decryption_test(tools, algorithm, mode, use_boxes=False):
     logging.info('Running decryption test...')
     logging.info('Algorithm: {}'.format(algorithm))
     logging.info('Mode: {}'.format(mode))
 
-    ciphertexts = get_test_ciphertexts(algorithm, mode)
-    key = get_test_key(algorithm, mode)
-    iv = get_test_iv(algorithm, mode)
-    expected_plaintexts = get_test_plaintexts(algorithm, mode)
-    input_ = BlockInput(key, ciphertexts, iv=iv)
-    actual_plaintexts = tools.run_decrypt_block(algorithm, mode, input_, use_boxes)
-    if verify_test_output(actual_plaintexts, expected_plaintexts):
-        return TestExitCode.SUCCESS
-    else:
-        return TestExitCode.FAILURE
-
-def _run_tests(tools, algorithm, mode, use_boxes=False):
     try:
-        yield run_encryption_test(tools, algorithm, mode, use_boxes=args.use_boxes)
+        ciphertexts = get_test_ciphertexts(algorithm, mode)
+        key = get_test_key(algorithm, mode)
+        iv = get_test_iv(algorithm, mode)
+        expected_plaintexts = get_test_plaintexts(algorithm, mode)
+        input_ = BlockInput(key, ciphertexts, iv=iv)
+        actual_plaintexts = tools.run_decrypt_block(algorithm, mode, input_, use_boxes)
+        if verify_test_output(actual_plaintexts, expected_plaintexts):
+            return TestExitCode.SUCCESS
+        else:
+            return TestExitCode.FAILURE
     except Exception as e:
         logging.error('Encountered an exception!')
         logging.exception(e)
-        yield TestExitCode.ERROR
-    try:
-        yield run_decryption_test(tools, algorithm, mode, use_boxes=args.use_boxes)
-    except Exception as e:
-        logging.error('Encountered an exception!')
-        logging.exception(e)
-        yield TestExitCode.ERROR
+        return TestExitCode.ERROR
 
 def _build_default_log_path():
     return datetime.now().strftime('{}_%Y-%m-%d_%H-%M-%S.log').format(
@@ -239,7 +235,8 @@ if __name__ == '__main__':
 
     exit_codes = []
     for algorithm, mode in get_tested_algorithms_and_modes():
-        exit_codes.extend(_run_tests(tools, algorithm, mode, use_boxes=args.use_boxes))
+        exit_codes.append(run_encryption_test(tools, algorithm, mode, use_boxes=args.use_boxes))
+        exit_codes.append(run_decryption_test(tools, algorithm, mode, use_boxes=args.use_boxes))
 
     logging.info('Test exit codes:')
     logging.info('\tSkipped:   {}'.format(exit_codes.count(TestExitCode.SKIPPED)))

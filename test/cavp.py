@@ -174,7 +174,7 @@ class TestArchive(zipfile.ZipFile):
     def __init__(self, path):
         super().__init__(path)
 
-    def list_test_files(self):
+    def enum_test_files(self):
         with TemporaryDirectory() as tmp_dir:
             for p in self.namelist():
                 yield TestFile(self.extract(p, tmp_dir))
@@ -202,7 +202,7 @@ if __name__ == '__main__':
     archive = TestArchive(args.archive)
     exit_codes = []
 
-    for test_file in archive.list_test_files():
+    for test_file in archive.enum_test_files():
         exit_codes.append(test_file.run_encryption_tests(tools, args.use_boxes))
         exit_codes.append(test_file.run_decryption_tests(tools, args.use_boxes))
 
