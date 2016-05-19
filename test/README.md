@@ -56,7 +56,7 @@ To test the implementation against the vectors from
 [NIST SP 800-38A](http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf),
 use `nist-sp-800-32a.py`.
 
-    python nist-sp-800-38a.py -p C:\build\utils\Debug
+    > nist-sp-800-38a.py -p C:\build\utils\Debug
 
 ### Cryptographic Algorithm Validation Program
 
@@ -64,7 +64,7 @@ To test the implementation against the vectors from
 [CAVP](http://csrc.nist.gov/groups/STM/cavp/), use `cavp.py`.
 The AES Known Answer Test (KAT) Vectors are used and read from `KAT_AES.zip`.
 
-    python cavp.py -p C:\build\utils\Debug
+    > cavp.py -p C:\build\utils\Debug
 
 ## File encryption
 
