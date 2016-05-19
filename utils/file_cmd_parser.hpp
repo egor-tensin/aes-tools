@@ -28,8 +28,8 @@ namespace
     public:
         Settings() = default;
 
-        aesni::Mode get_mode() const { return mode; }
-        aesni::Algorithm get_algorithm() const { return algorithm; }
+        aes::Mode get_mode() const { return mode; }
+        aes::Algorithm get_algorithm() const { return algorithm; }
 
         const std::string& get_input_path() const { return input_path; }
         const std::string& get_output_path() const { return output_path; }
@@ -38,8 +38,8 @@ namespace
         const std::string& get_iv_string() const { return iv; }
 
     private:
-        aesni::Mode mode;
-        aesni::Algorithm algorithm;
+        aes::Mode mode;
+        aes::Algorithm algorithm;
 
         std::string input_path;
         std::string output_path;
@@ -63,8 +63,8 @@ namespace
 
             options.add_options()
                 ("help,h", "show this message and exit")
-                ("mode,m", po::value<aesni::Mode>(&settings.mode)->required(), "set mode of operation")
-                ("algorithm,a", po::value<aesni::Algorithm>(&settings.algorithm)->required(), "set algorithm")
+                ("mode,m", po::value<aes::Mode>(&settings.mode)->required(), "set mode of operation")
+                ("algorithm,a", po::value<aes::Algorithm>(&settings.algorithm)->required(), "set algorithm")
                 ("input-path,i", po::value<std::string>(&settings.input_path)->required(), "set input file path")
                 ("output-path,o", po::value<std::string>(&settings.output_path)->required(), "set output file path")
                 ("key,k", po::value<std::string>(&settings.key)->required(), "set encryption key")
@@ -81,7 +81,7 @@ namespace
 
             po::notify(vm);
 
-            if (aesni::mode_requires_initialization_vector(settings.get_mode()))
+            if (aes::mode_requires_initialization_vector(settings.get_mode()))
             {
                 if (!vm.count("iv"))
                 {

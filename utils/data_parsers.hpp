@@ -17,20 +17,20 @@
 #include <map>
 #include <string>
 
-static std::istream& operator>>(std::istream& is, aesni::Mode& dest)
+static std::istream& operator>>(std::istream& is, aes::Mode& dest)
 {
     static const char* const argument_name = "mode";
 
     std::string src;
     is >> src;
 
-    static std::map<std::string, aesni::Mode> lookup_table =
+    static std::map<std::string, aes::Mode> lookup_table =
     {
-        { "ecb", AESNI_ECB },
-        { "cbc", AESNI_CBC },
-        { "cfb", AESNI_CFB },
-        { "ofb", AESNI_OFB },
-        { "ctr", AESNI_CTR },
+        { "ecb", AES_ECB },
+        { "cbc", AES_CBC },
+        { "cfb", AES_CFB },
+        { "ofb", AES_OFB },
+        { "ctr", AES_CTR },
     };
 
     const auto it = lookup_table.find(boost::algorithm::to_lower_copy(src));
@@ -42,18 +42,18 @@ static std::istream& operator>>(std::istream& is, aesni::Mode& dest)
     return is;
 }
 
-static std::istream& operator>>(std::istream& is, aesni::Algorithm& dest)
+static std::istream& operator>>(std::istream& is, aes::Algorithm& dest)
 {
     static const char* const argument_name = "algorithm";
 
     std::string src;
     is >> src;
 
-    static std::map<std::string, aesni::Algorithm> lookup_table =
+    static std::map<std::string, aes::Algorithm> lookup_table =
     {
-        { "aes128", AESNI_AES128 },
-        { "aes192", AESNI_AES192 },
-        { "aes256", AESNI_AES256 },
+        { "aes128", AES_AES128 },
+        { "aes192", AES_AES192 },
+        { "aes256", AES_AES256 },
     };
 
     const auto it = lookup_table.find(boost::algorithm::to_lower_copy(src));

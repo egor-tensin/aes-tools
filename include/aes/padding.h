@@ -19,22 +19,22 @@ extern "C"
 
 typedef enum
 {
-    AESNI_PADDING_PKCS7,
+    AES_PADDING_PKCS7,
 }
-AesNI_PaddingMethod;
+AES_PaddingMethod;
 
-AesNI_StatusCode aesni_extract_padding_size(
-    AesNI_PaddingMethod,
+AES_StatusCode aes_extract_padding_size(
+    AES_PaddingMethod,
     const void* src,
     size_t src_size,
     size_t* padding_size,
-    AesNI_ErrorDetails*);
+    AES_ErrorDetails*);
 
-AesNI_StatusCode aesni_fill_with_padding(
-    AesNI_PaddingMethod,
+AES_StatusCode aes_fill_with_padding(
+    AES_PaddingMethod,
     void* dest,
     size_t padding_size,
-    AesNI_ErrorDetails*);
+    AES_ErrorDetails*);
 
 #ifdef __cplusplus
 }

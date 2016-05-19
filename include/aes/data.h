@@ -19,7 +19,7 @@ extern "C"
 /**
  * \brief Represents a 128-bit block.
  */
-typedef __m128i AesNI_Block128;
+typedef __m128i AES_Block128;
 
 /**
  * \brief Loads a 128-bit block from a memory location.
@@ -28,9 +28,9 @@ typedef __m128i AesNI_Block128;
  *
  * \return The loaded 128-bit block.
  */
-static __inline AesNI_Block128 aesni_load_block128(const void* src)
+static __inline AES_Block128 aes_load_block128(const void* src)
 {
-    return _mm_loadu_si128((AesNI_Block128*) src);
+    return _mm_loadu_si128((AES_Block128*) src);
 }
 
 /**
@@ -40,9 +40,9 @@ static __inline AesNI_Block128 aesni_load_block128(const void* src)
  *
  * \return The loaded 128-bit block.
  */
-static __inline AesNI_Block128 aesni_load_block128_aligned(const void* src)
+static __inline AES_Block128 aes_load_block128_aligned(const void* src)
 {
-    return _mm_load_si128((AesNI_Block128*) src);
+    return _mm_load_si128((AES_Block128*) src);
 }
 
 /**
@@ -52,11 +52,11 @@ static __inline AesNI_Block128 aesni_load_block128_aligned(const void* src)
  *
  * \param[in] block The block to be stored.
  */
-static __inline void __fastcall aesni_store_block128(
+static __inline void __fastcall aes_store_block128(
     void* dest,
-    AesNI_Block128 block)
+    AES_Block128 block)
 {
-    _mm_storeu_si128((AesNI_Block128*) dest, block);
+    _mm_storeu_si128((AES_Block128*) dest, block);
 }
 
 /**
@@ -66,11 +66,11 @@ static __inline void __fastcall aesni_store_block128(
  *
  * \param[in] block The block to be stored.
  */
-static __inline void __fastcall aesni_store_block128_aligned(
+static __inline void __fastcall aes_store_block128_aligned(
     void* dest,
-    AesNI_Block128 block)
+    AES_Block128 block)
 {
-    _mm_store_si128((AesNI_Block128*) dest, block);
+    _mm_store_si128((AES_Block128*) dest, block);
 }
 
 /**
@@ -81,9 +81,9 @@ static __inline void __fastcall aesni_store_block128_aligned(
  *
  * \return `a^b`.
  */
-static __inline AesNI_Block128 __fastcall aesni_xor_block128(
-    AesNI_Block128 a,
-    AesNI_Block128 b)
+static __inline AES_Block128 __fastcall aes_xor_block128(
+    AES_Block128 a,
+    AES_Block128 b)
 {
     return _mm_xor_si128(a, b);
 }
@@ -105,19 +105,19 @@ static __inline AesNI_Block128 __fastcall aesni_xor_block128(
  *
  * \return The built 128-bit block.
  */
-static __inline AesNI_Block128 __fastcall aesni_make_block128(int hi3, int hi2, int lo1, int lo0)
+static __inline AES_Block128 __fastcall aes_make_block128(int hi3, int hi2, int lo1, int lo0)
 {
     return _mm_set_epi32(hi3, hi2, lo1, lo0);
 }
 
-static __inline AesNI_Block128 __fastcall aesni_reverse_byte_order_block128(AesNI_Block128 block)
+static __inline AES_Block128 __fastcall aes_reverse_byte_order_block128(AES_Block128 block)
 {
-    return _mm_shuffle_epi8(block, aesni_make_block128(0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f));
+    return _mm_shuffle_epi8(block, aes_make_block128(0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f));
 }
 
-static __inline AesNI_Block128 __fastcall aesni_inc_block128(AesNI_Block128 x)
+static __inline AES_Block128 __fastcall aes_inc_block128(AES_Block128 x)
 {
-    return _mm_add_epi32(x, aesni_make_block128(0, 0, 0, 1));
+    return _mm_add_epi32(x, aes_make_block128(0, 0, 0, 1));
 }
 
 #ifdef __cplusplus

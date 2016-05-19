@@ -30,15 +30,15 @@ namespace
     class Settings
     {
     public:
-        aesni::Algorithm get_algorithm() const { return algorithm; }
-        aesni::Mode get_mode() const { return mode; }
+        aes::Algorithm get_algorithm() const { return algorithm; }
+        aes::Mode get_mode() const { return mode; }
 
         bool use_boxes() const { return use_boxes_flag; }
         bool verbose() const { return verbose_flag; }
 
     private:
-        aesni::Algorithm algorithm;
-        aesni::Mode mode;
+        aes::Algorithm algorithm;
+        aes::Mode mode;
 
         bool use_boxes_flag = false;
         bool verbose_flag = false;
@@ -61,8 +61,8 @@ namespace
             options.add_options()
                 ("help,h", "show this message and exit")
                 ("use-boxes,b", po::bool_switch(&settings.use_boxes_flag)->default_value(false), "use the \"boxes\" interface")
-                ("mode,m", po::value<aesni::Mode>(&settings.mode)->required(), "set mode of operation")
-                ("algorithm,a", po::value<aesni::Algorithm>(&settings.algorithm)->required(), "set algorithm")
+                ("mode,m", po::value<aes::Mode>(&settings.mode)->required(), "set mode of operation")
+                ("algorithm,a", po::value<aes::Algorithm>(&settings.algorithm)->required(), "set algorithm")
                 ("verbose,v", po::bool_switch(&settings.verbose_flag)->default_value(false), "enable verbose output");
 
             std::vector<std::string> args;
@@ -112,7 +112,7 @@ namespace
 
                 std::string iv_string;
 
-                if (aesni::mode_requires_initialization_vector(settings.get_mode()))
+                if (aes::mode_requires_initialization_vector(settings.get_mode()))
                 {
                     if (args.empty())
                     {
@@ -137,7 +137,7 @@ namespace
                     args.pop_front();
                 }
 
-                if (aesni::mode_requires_initialization_vector(settings.get_mode()))
+                if (aes::mode_requires_initialization_vector(settings.get_mode()))
                 {
                     inputs.emplace_back(
                         std::move(key_string),

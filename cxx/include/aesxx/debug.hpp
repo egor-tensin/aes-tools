@@ -19,7 +19,7 @@
 #include <sstream>
 #include <string>
 
-namespace aesni
+namespace aes
 {
     namespace aux
     {

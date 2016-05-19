@@ -21,33 +21,33 @@
 
 namespace
 {
-    template <aesni::Algorithm algorithm, aesni::Mode mode>
+    template <aes::Algorithm algorithm, aes::Mode mode>
     void encrypt_with_mode(
         const Input& input,
         bool verbose = false)
     {
-        typename aesni::Types<algorithm>::Block iv;
+        typename aes::Types<algorithm>::Block iv;
 
-        if (aesni::ModeRequiresInitializationVector<mode>::value)
+        if (aes::ModeRequiresInitializationVector<mode>::value)
         {
-            aesni::from_string<algorithm>(iv, input.get_iv_string());
+            aes::from_string<algorithm>(iv, input.get_iv_string());
             if (verbose)
                 dump_iv<algorithm>(iv);
         }
 
-        typename aesni::Types<algorithm>::Key key;
-        aesni::from_string<algorithm>(key, input.get_key_string());
+        typename aes::Types<algorithm>::Key key;
+        aes::from_string<algorithm>(key, input.get_key_string());
         if (verbose)
             dump_key<algorithm>(key);
 
-        aesni::EncryptWrapper<algorithm, mode> encrypt(key, iv);
+        aes::EncryptWrapper<algorithm, mode> encrypt(key, iv);
         if (verbose)
             dump_wrapper<algorithm, mode>(encrypt);
 
         for (const auto& input_block_string : input.get_input_block_strings())
         {
-            typename aesni::Types<algorithm>::Block plaintext, ciphertext;
-            aesni::from_string<algorithm>(plaintext, input_block_string);
+            typename aes::Types<algorithm>::Block plaintext, ciphertext;
+            aes::from_string<algorithm>(plaintext, input_block_string);
 
             encrypt.encrypt_block(plaintext, ciphertext);
 
@@ -59,37 +59,37 @@ namespace
             }
             else
             {
-                std::cout << aesni::to_string<algorithm>(ciphertext) << '\n';
+                std::cout << aes::to_string<algorithm>(ciphertext) << '\n';
             }
         }
     }
 
-    template <aesni::Algorithm algorithm>
+    template <aes::Algorithm algorithm>
     void encrypt_with_algorithm(
-        aesni::Mode mode,
+        aes::Mode mode,
         const Input& input,
         bool verbose = false)
     {
         switch (mode)
         {
-            case AESNI_ECB:
-                encrypt_with_mode<algorithm, AESNI_ECB>(input, verbose);
+            case AES_ECB:
+                encrypt_with_mode<algorithm, AES_ECB>(input, verbose);
                 break;
 
-            case AESNI_CBC:
-                encrypt_with_mode<algorithm, AESNI_CBC>(input, verbose);
+            case AES_CBC:
+                encrypt_with_mode<algorithm, AES_CBC>(input, verbose);
                 break;
 
-            case AESNI_CFB:
-                encrypt_with_mode<algorithm, AESNI_CFB>(input, verbose);
+            case AES_CFB:
+                encrypt_with_mode<algorithm, AES_CFB>(input, verbose);
                 break;
 
-            case AESNI_OFB:
-                encrypt_with_mode<algorithm, AESNI_OFB>(input, verbose);
+            case AES_OFB:
+                encrypt_with_mode<algorithm, AES_OFB>(input, verbose);
                 break;
 
-            case AESNI_CTR:
-                encrypt_with_mode<algorithm, AESNI_CTR>(input, verbose);
+            case AES_CTR:
+                encrypt_with_mode<algorithm, AES_CTR>(input, verbose);
                 break;
 
             default:
@@ -99,23 +99,23 @@ namespace
     }
 
     void encrypt_using_cxx_api(
-        aesni::Algorithm algorithm,
-        aesni::Mode mode,
+        aes::Algorithm algorithm,
+        aes::Mode mode,
         const Input& input,
         bool verbose = false)
     {
         switch (algorithm)
         {
-            case AESNI_AES128:
-                encrypt_with_algorithm<AESNI_AES128>(mode, input, verbose);
+            case AES_AES128:
+                encrypt_with_algorithm<AES_AES128>(mode, input, verbose);
                 break;
 
-            case AESNI_AES192:
-                encrypt_with_algorithm<AESNI_AES192>(mode, input, verbose);
+            case AES_AES192:
+                encrypt_with_algorithm<AES_AES192>(mode, input, verbose);
                 break;
 
-            case AESNI_AES256:
-                encrypt_with_algorithm<AESNI_AES256>(mode, input, verbose);
+            case AES_AES256:
+                encrypt_with_algorithm<AES_AES256>(mode, input, verbose);
                 break;
 
             default:
@@ -125,40 +125,40 @@ namespace
     }
 
     void encrypt_using_particular_box(
-        aesni::Box& box,
+        aes::Box& box,
         const std::vector<std::string>& input_block_strings)
     {
         for (const auto& input_block_string : input_block_strings)
         {
-            aesni::Box::Block plaintext;
+            aes::Box::Block plaintext;
             box.parse_block(plaintext, input_block_string);
 
-            aesni::Box::Block ciphertext;
+            aes::Box::Block ciphertext;
             box.encrypt_block(plaintext, ciphertext);
             std::cout << box.format_block(ciphertext) << '\n';
         }
     }
 
     void encrypt_using_boxes(
-        aesni::Algorithm algorithm,
-        aesni::Mode mode,
+        aes::Algorithm algorithm,
+        aes::Mode mode,
         const Input& input)
     {
-        aesni::Box::Key key;
-        aesni::Box::parse_key(key, algorithm, input.get_key_string());
+        aes::Box::Key key;
+        aes::Box::parse_key(key, algorithm, input.get_key_string());
 
-        if (aesni::mode_requires_initialization_vector(mode))
+        if (aes::mode_requires_initialization_vector(mode))
         {
-            aesni::Box::Block iv;
-            aesni::Box::parse_block(iv, algorithm, input.get_iv_string());
+            aes::Box::Block iv;
+            aes::Box::parse_block(iv, algorithm, input.get_iv_string());
 
             encrypt_using_particular_box(
-                aesni::Box(algorithm, key, mode, iv), input.get_input_block_strings());
+                aes::Box(algorithm, key, mode, iv), input.get_input_block_strings());
         }
         else
         {
             encrypt_using_particular_box(
-                aesni::Box(algorithm, key), input.get_input_block_strings());
+                aes::Box(algorithm, key), input.get_input_block_strings());
         }
     }
 }
@@ -207,7 +207,7 @@ int main(int argc, char** argv)
             std::cerr << cmd_parser;
             return 1;
         }
-        catch (const aesni::Error& e)
+        catch (const aes::Error& e)
         {
             std::cerr << e;
             return 1;

@@ -21,26 +21,26 @@
 #include <string>
 #include <vector>
 
-namespace aesni
+namespace aes
 {
     class Box
     {
     public:
-        typedef AesNI_BoxBlock Block;
-        typedef AesNI_BoxKey Key;
+        typedef AES_BoxBlock Block;
+        typedef AES_BoxKey Key;
 
         static std::string format_key(const Key& src, Algorithm algorithm)
         {
-            AesNI_BoxKeyString str;
-            aesni_box_format_key(
+            AES_BoxKeyString str;
+            aes_box_format_key(
                 &str, algorithm, &src, ErrorDetailsThrowsInDestructor());
             return reinterpret_cast<const char*>(&str);
         }
 
         static std::string format_block(const Block& src, Algorithm algorithm)
         {
-            AesNI_BoxBlockString str;
-            aesni_box_format_block(
+            AES_BoxBlockString str;
+            aes_box_format_block(
                 &str, algorithm, &src, ErrorDetailsThrowsInDestructor());
             return reinterpret_cast<const char*>(&str);
         }
@@ -50,7 +50,7 @@ namespace aesni
             Algorithm algorithm,
             const char* src)
         {
-            aesni_box_parse_block(&dest, algorithm, src,
+            aes_box_parse_block(&dest, algorithm, src,
                 ErrorDetailsThrowsInDestructor());
         }
 
@@ -67,7 +67,7 @@ namespace aesni
             Algorithm algorithm,
             const char* src)
         {
-            aesni_box_parse_key(&dest, algorithm, src,
+            aes_box_parse_key(&dest, algorithm, src,
                 ErrorDetailsThrowsInDestructor());
         }
 
@@ -81,9 +81,9 @@ namespace aesni
 
         Box(Algorithm algorithm, const Key& key)
             : algorithm(algorithm)
-            , mode(AESNI_ECB)
+            , mode(AES_ECB)
         {
-            aesni_box_init(&impl, algorithm, &key, mode, nullptr,
+            aes_box_init(&impl, algorithm, &key, mode, nullptr,
                 ErrorDetailsThrowsInDestructor());
         }
 
@@ -91,20 +91,20 @@ namespace aesni
             : algorithm(algorithm)
             , mode(mode)
         {
-            aesni_box_init(&impl, algorithm, &key, mode, &iv,
+            aes_box_init(&impl, algorithm, &key, mode, &iv,
                 ErrorDetailsThrowsInDestructor());
         }
 
         void encrypt_block(const Block& plaintext, Block& ciphertext)
         {
-            aesni_box_encrypt_block(
+            aes_box_encrypt_block(
                 &impl, &plaintext, &ciphertext,
                 ErrorDetailsThrowsInDestructor());
         }
 
         void decrypt_block(const Block& ciphertext, Block& plaintext)
         {
-            aesni_box_decrypt_block(
+            aes_box_decrypt_block(
                 &impl, &ciphertext, &plaintext,
                 ErrorDetailsThrowsInDestructor());
         }
@@ -115,24 +115,24 @@ namespace aesni
         {
             std::size_t dest_size;
 
-            aesni_box_encrypt_buffer(
+            aes_box_encrypt_buffer(
                 &impl,
                 src_buf,
                 src_size,
                 nullptr,
                 &dest_size,
-                aesni::ErrorDetailsThrowsInDestructor());
+                aes::ErrorDetailsThrowsInDestructor());
 
             std::vector<unsigned char> dest_buf;
             dest_buf.resize(dest_size);
 
-            aesni_box_encrypt_buffer(
+            aes_box_encrypt_buffer(
                 &impl,
                 src_buf,
                 src_size,
                 dest_buf.data(),
                 &dest_size,
-                aesni::ErrorDetailsThrowsInDestructor());
+                aes::ErrorDetailsThrowsInDestructor());
 
             dest_buf.resize(dest_size);
             return dest_buf;
@@ -144,24 +144,24 @@ namespace aesni
         {
             std::size_t dest_size;
 
-            aesni_box_decrypt_buffer(
+            aes_box_decrypt_buffer(
                 &impl,
                 src_buf,
                 src_size,
                 nullptr,
                 &dest_size,
-                aesni::ErrorDetailsThrowsInDestructor());
+                aes::ErrorDetailsThrowsInDestructor());
 
             std::vector<unsigned char> dest_buf;
             dest_buf.resize(dest_size);
 
-            aesni_box_decrypt_buffer(
+            aes_box_decrypt_buffer(
                 &impl,
                 src_buf,
                 src_size,
                 dest_buf.data(),
                 &dest_size,
-                aesni::ErrorDetailsThrowsInDestructor());
+                aes::ErrorDetailsThrowsInDestructor());
 
             dest_buf.resize(dest_size);
             return dest_buf;
@@ -207,6 +207,6 @@ namespace aesni
         Algorithm algorithm;
         Mode mode;
 
-        AesNI_Box impl;
+        AES_Box impl;
     };
 }

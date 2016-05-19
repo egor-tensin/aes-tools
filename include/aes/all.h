@@ -12,7 +12,7 @@
 #pragma once
 
 /**
- * \defgroup aesni AesNI
+ * \defgroup aes AES
  */
 
 #include "aes.h"

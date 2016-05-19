@@ -19,65 +19,65 @@ extern "C"
 {
 #endif
 
-AesNI_StatusCode aesni_box_init(
-    AesNI_Box* box,
-    AesNI_Algorithm algorithm,
-    const AesNI_BoxKey* box_key,
-    AesNI_Mode mode,
-    const AesNI_BoxBlock* iv,
-    AesNI_ErrorDetails* err_details);
+AES_StatusCode aes_box_init(
+    AES_Box* box,
+    AES_Algorithm algorithm,
+    const AES_BoxKey* box_key,
+    AES_Mode mode,
+    const AES_BoxBlock* iv,
+    AES_ErrorDetails* err_details);
 
-AesNI_StatusCode aesni_box_parse_key(
-    AesNI_BoxKey* dest,
-    AesNI_Algorithm algorithm,
+AES_StatusCode aes_box_parse_key(
+    AES_BoxKey* dest,
+    AES_Algorithm algorithm,
     const char* src,
-    AesNI_ErrorDetails* err_details);
+    AES_ErrorDetails* err_details);
 
-AesNI_StatusCode aesni_box_parse_block(
-    AesNI_BoxBlock* dest,
-    AesNI_Algorithm algorithm,
+AES_StatusCode aes_box_parse_block(
+    AES_BoxBlock* dest,
+    AES_Algorithm algorithm,
     const char* src,
-    AesNI_ErrorDetails* err_details);
+    AES_ErrorDetails* err_details);
 
-AesNI_StatusCode aesni_box_format_key(
-    AesNI_BoxKeyString* dest,
-    AesNI_Algorithm algorithm,
-    const AesNI_BoxKey* src,
-    AesNI_ErrorDetails* err_details);
+AES_StatusCode aes_box_format_key(
+    AES_BoxKeyString* dest,
+    AES_Algorithm algorithm,
+    const AES_BoxKey* src,
+    AES_ErrorDetails* err_details);
 
-AesNI_StatusCode aesni_box_format_block(
-    AesNI_BoxBlockString* dest,
-    AesNI_Algorithm algorithm,
-    const AesNI_BoxBlock* src,
-    AesNI_ErrorDetails* err_details);
+AES_StatusCode aes_box_format_block(
+    AES_BoxBlockString* dest,
+    AES_Algorithm algorithm,
+    const AES_BoxBlock* src,
+    AES_ErrorDetails* err_details);
 
-AesNI_StatusCode aesni_box_encrypt_block(
-    AesNI_Box* box,
-    const AesNI_BoxBlock* plaintext,
-    AesNI_BoxBlock* ciphertext,
-    AesNI_ErrorDetails* err_details);
+AES_StatusCode aes_box_encrypt_block(
+    AES_Box* box,
+    const AES_BoxBlock* plaintext,
+    AES_BoxBlock* ciphertext,
+    AES_ErrorDetails* err_details);
 
-AesNI_StatusCode aesni_box_decrypt_block(
-    AesNI_Box* box,
-    const AesNI_BoxBlock* ciphertext,
-    AesNI_BoxBlock* plaintext,
-    AesNI_ErrorDetails* err_details);
+AES_StatusCode aes_box_decrypt_block(
+    AES_Box* box,
+    const AES_BoxBlock* ciphertext,
+    AES_BoxBlock* plaintext,
+    AES_ErrorDetails* err_details);
 
-AesNI_StatusCode aesni_box_encrypt_buffer(
-    AesNI_Box* box,
+AES_StatusCode aes_box_encrypt_buffer(
+    AES_Box* box,
     const void* src,
     size_t src_size,
     void* dest,
     size_t* dest_size,
-    AesNI_ErrorDetails* err_details);
+    AES_ErrorDetails* err_details);
 
-AesNI_StatusCode aesni_box_decrypt_buffer(
-    AesNI_Box* box,
+AES_StatusCode aes_box_decrypt_buffer(
+    AES_Box* box,
     const void* src,
     size_t src_size,
     void* dest,
     size_t* dest_size,
-    AesNI_ErrorDetails* err_details);
+    AES_ErrorDetails* err_details);
 
 #ifdef __cplusplus
 }

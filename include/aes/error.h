@@ -9,14 +9,14 @@
 #pragma once
 
 /**
- * \defgroup aesni_error_handling Error handling
- * \ingroup aesni
+ * \defgroup aes_error_handling Error handling
+ * \ingroup aes
  * \brief Error data structures and formatting functions.
  *
  * Some library functions cannot fail, which is simple.
  * Other functions return an error code.
  * You can check if a function exited with an error by passing the returned
- * error code to aesni_is_error().
+ * error code to aes_is_error().
  *
  * Some possibly-may-fail functions accept a pointer to an "error details"
  * structure.
@@ -42,19 +42,19 @@ extern "C"
  */
 typedef enum
 {
-    AESNI_SUCCESS,                     ///< Everything went fine
-    AESNI_NULL_ARGUMENT_ERROR,         ///< Invalid argument value NULL
-    AESNI_PARSE_ERROR,                 ///< Couldn't parse
-    AESNI_INVALID_PKCS7_PADDING_ERROR, ///< Invalid PKCS7 padding while decrypting
-    AESNI_NOT_IMPLEMENTED_ERROR,       ///< Not implemented
-    AESNI_MISSING_PADDING_ERROR,
-    AESNI_MEMORY_ALLOCATION_ERROR,
+    AES_SUCCESS,                     ///< Everything went fine
+    AES_NULL_ARGUMENT_ERROR,         ///< Invalid argument value NULL
+    AES_PARSE_ERROR,                 ///< Couldn't parse
+    AES_INVALID_PKCS7_PADDING_ERROR, ///< Invalid PKCS7 padding while decrypting
+    AES_NOT_IMPLEMENTED_ERROR,       ///< Not implemented
+    AES_MISSING_PADDING_ERROR,
+    AES_MEMORY_ALLOCATION_ERROR,
 }
-AesNI_StatusCode;
+AES_StatusCode;
 
-static __inline int aesni_is_error(AesNI_StatusCode ec)
+static __inline int aes_is_error(AES_StatusCode ec)
 {
-    return ec != AESNI_SUCCESS;
+    return ec != AES_SUCCESS;
 }
 
 /**
@@ -62,7 +62,7 @@ static __inline int aesni_is_error(AesNI_StatusCode ec)
  *
  * For example,
  * \code{.c}
- * printf("%s\n", aesni_strerror(AESNI_NULL_ARGUMENT_ERROR));
+ * printf("%s\n", aes_strerror(AES_NULL_ARGUMENT_ERROR));
  * \endcode
  * would print
  * \code
@@ -72,16 +72,16 @@ static __inline int aesni_is_error(AesNI_StatusCode ec)
  * \param[in] ec The error code.
  * \return A pointer to a statically-allocated C string.
  */
-const char* aesni_strerror(AesNI_StatusCode ec);
+const char* aes_strerror(AES_StatusCode ec);
 
-#define AESNI_MAX_CALL_STACK_LENGTH 32
+#define AES_MAX_CALL_STACK_LENGTH 32
 
 /**
  * \brief Stores error details: error code & possibly a few parameters.
  */
 typedef struct
 {
-    AesNI_StatusCode ec; ///< Error code
+    AES_StatusCode ec; ///< Error code
 
     union
     {
@@ -96,10 +96,10 @@ typedef struct
     }
     params;
 
-    void* call_stack[AESNI_MAX_CALL_STACK_LENGTH];
+    void* call_stack[AES_MAX_CALL_STACK_LENGTH];
     size_t call_stack_size;
 }
-AesNI_ErrorDetails;
+AES_ErrorDetails;
 
 /**
  * \brief Extracts an error code from error details.
@@ -107,8 +107,8 @@ AesNI_ErrorDetails;
  * \param[in] err_details The error details structure. Must not be `NULL`.
  * \return The error code stored in the error details.
  */
-static __inline AesNI_StatusCode aesni_get_error_code(
-    const AesNI_ErrorDetails* err_details)
+static __inline AES_StatusCode aes_get_error_code(
+    const AES_ErrorDetails* err_details)
 {
     return err_details->ec;
 }
@@ -123,8 +123,8 @@ static __inline AesNI_StatusCode aesni_get_error_code(
  * error message, and the number of characters written (excluding the
  * terminating '\0' character) otherwise.
  */
-size_t aesni_format_error(
-    const AesNI_ErrorDetails* err_details,
+size_t aes_format_error(
+    const AES_ErrorDetails* err_details,
     char* dest,
     size_t dest_size);
 
@@ -133,8 +133,8 @@ size_t aesni_format_error(
  *
  * \param[out] err_details The error details structure to fill.
  */
-AesNI_StatusCode aesni_success(
-    AesNI_ErrorDetails* err_details);
+AES_StatusCode aes_success(
+    AES_ErrorDetails* err_details);
 
 /**
  * \brief Builds error details from a `NULL` argument error.
@@ -142,8 +142,8 @@ AesNI_StatusCode aesni_success(
  * \param[out] err_details The error details structure to fill.
  * \param[in] param_name The parameter name. Must not be `NULL`.
  */
-AesNI_StatusCode aesni_error_null_argument(
-    AesNI_ErrorDetails* err_details,
+AES_StatusCode aes_error_null_argument(
+    AES_ErrorDetails* err_details,
     const char* param_name);
 
 /**
@@ -152,8 +152,8 @@ AesNI_StatusCode aesni_error_null_argument(
  * \param[out] err_details The error details structure to fill.
  * \param[in] src The string that failed to be parsed.
  */
-AesNI_StatusCode aesni_error_parse(
-    AesNI_ErrorDetails* err_details,
+AES_StatusCode aes_error_parse(
+    AES_ErrorDetails* err_details,
     const char* src,
     const char* what);
 
@@ -162,18 +162,18 @@ AesNI_StatusCode aesni_error_parse(
  *
  * \param[out] err_details The error details structure to fill.
  */
-AesNI_StatusCode aesni_error_invalid_pkcs7_padding(
-    AesNI_ErrorDetails* err_details);
+AES_StatusCode aes_error_invalid_pkcs7_padding(
+    AES_ErrorDetails* err_details);
 
-AesNI_StatusCode aesni_error_not_implemented(
-    AesNI_ErrorDetails* err_details,
+AES_StatusCode aes_error_not_implemented(
+    AES_ErrorDetails* err_details,
     const char* what);
 
-AesNI_StatusCode aesni_error_missing_padding(
-    AesNI_ErrorDetails* err_details);
+AES_StatusCode aes_error_missing_padding(
+    AES_ErrorDetails* err_details);
 
-AesNI_StatusCode aesni_error_memory_allocation(
-    AesNI_ErrorDetails* err_details);
+AES_StatusCode aes_error_memory_allocation(
+    AES_ErrorDetails* err_details);
 
 #ifdef __cplusplus
 }

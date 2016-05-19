@@ -1,7 +1,7 @@
 project(aes_tools C CXX ASM_MASM)
 
 file(GLOB_RECURSE libaes_headers "include/*.h")
-if(AESNI_USE_ASM)
+if(LIBAES_USE_ASM)
     file(GLOB libaes_c_sources "src/*.c")
     file(GLOB libaes_asm_sources "src/asm/*.asm")
     set(libaes_sources ${libaes_asm_sources} ${libaes_c_sources})

@@ -16,7 +16,7 @@
 #include <string>
 #include <type_traits>
 
-namespace aesni
+namespace aes
 {
     template <Algorithm algorithm>
     struct Types;
@@ -129,7 +129,7 @@ namespace aesni
             const typename Types<algorithm>::Block& plaintext,
             typename Types<algorithm>::Block& ciphertext)
         {
-            aesni::encrypt_block<algorithm, mode>(
+            aes::encrypt_block<algorithm, mode>(
                 plaintext, encryption_keys, iv, ciphertext);
         }
 
@@ -161,7 +161,7 @@ namespace aesni
             const typename Types<algorithm>::Block& ciphertext,
             typename Types<algorithm>::Block& plaintext)
         {
-            aesni::decrypt_block<algorithm, mode>(
+            aes::decrypt_block<algorithm, mode>(
                 ciphertext, decryption_keys, iv, plaintext);
         }
 

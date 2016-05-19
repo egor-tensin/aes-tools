@@ -10,7 +10,7 @@
 
 #include <aes/all.h>
 
-namespace aesni
+namespace aes
 {
-    typedef AesNI_Algorithm Algorithm;
+    typedef AES_Algorithm Algorithm;
 }

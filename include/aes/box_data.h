@@ -21,135 +21,135 @@ extern "C"
 
 typedef union
 {
-    AesNI_AES128_Key aes128_key;
-    AesNI_AES192_Key aes192_key;
-    AesNI_AES256_Key aes256_key;
+    AES_AES128_Key aes128_key;
+    AES_AES192_Key aes192_key;
+    AES_AES256_Key aes256_key;
 }
-AesNI_BoxKey;
+AES_BoxKey;
 
 typedef union
 {
-    AesNI_AES128_RoundKeys aes128_encryption_keys;
-    AesNI_AES192_RoundKeys aes192_encryption_keys;
-    AesNI_AES256_RoundKeys aes256_encryption_keys;
+    AES_AES128_RoundKeys aes128_encryption_keys;
+    AES_AES192_RoundKeys aes192_encryption_keys;
+    AES_AES256_RoundKeys aes256_encryption_keys;
 }
-AesNI_BoxEncryptionRoundKeys;
+AES_BoxEncryptionRoundKeys;
 
 typedef union
 {
-    AesNI_AES128_RoundKeys aes128_decryption_keys;
-    AesNI_AES192_RoundKeys aes192_decryption_keys;
-    AesNI_AES256_RoundKeys aes256_decryption_keys;
+    AES_AES128_RoundKeys aes128_decryption_keys;
+    AES_AES192_RoundKeys aes192_decryption_keys;
+    AES_AES256_RoundKeys aes256_decryption_keys;
 }
-AesNI_BoxDecryptionRoundKeys;
+AES_BoxDecryptionRoundKeys;
 
 typedef union
 {
-    AesNI_AES128_KeyString aes128;
-    AesNI_AES192_KeyString aes192;
-    AesNI_AES256_KeyString aes256;
+    AES_AES128_KeyString aes128;
+    AES_AES192_KeyString aes192;
+    AES_AES256_KeyString aes256;
 }
-AesNI_BoxKeyString;
+AES_BoxKeyString;
 
 typedef union
 {
-    AesNI_AES_Block aes_block;
+    AES_AES_Block aes_block;
 }
-AesNI_BoxBlock;
+AES_BoxBlock;
 
 typedef union
 {
-    AesNI_AES_BlockString aes;
+    AES_AES_BlockString aes;
 }
-AesNI_BoxBlockString;
+AES_BoxBlockString;
 
-typedef AesNI_StatusCode (*AesNI_BoxCalculateRoundKeys)(
-    const AesNI_BoxKey* params,
-    AesNI_BoxEncryptionRoundKeys*,
-    AesNI_BoxDecryptionRoundKeys*,
-    AesNI_ErrorDetails* err_details);
+typedef AES_StatusCode (*AES_BoxCalculateRoundKeys)(
+    const AES_BoxKey* params,
+    AES_BoxEncryptionRoundKeys*,
+    AES_BoxDecryptionRoundKeys*,
+    AES_ErrorDetails* err_details);
 
-typedef AesNI_StatusCode (*AesNI_BoxParseBlock)(
-    AesNI_BoxBlock* dest,
+typedef AES_StatusCode (*AES_BoxParseBlock)(
+    AES_BoxBlock* dest,
     const char* src,
-    AesNI_ErrorDetails* err_details);
+    AES_ErrorDetails* err_details);
 
-typedef AesNI_StatusCode (*AesNI_BoxParseKey)(
-    AesNI_BoxKey* dest,
+typedef AES_StatusCode (*AES_BoxParseKey)(
+    AES_BoxKey* dest,
     const char* src,
-    AesNI_ErrorDetails* err_details);
+    AES_ErrorDetails* err_details);
 
-typedef AesNI_StatusCode (*AesNI_BoxFormatBlock)(
-    AesNI_BoxBlockString* dest,
-    const AesNI_BoxBlock* src,
-    AesNI_ErrorDetails* err_details);
+typedef AES_StatusCode (*AES_BoxFormatBlock)(
+    AES_BoxBlockString* dest,
+    const AES_BoxBlock* src,
+    AES_ErrorDetails* err_details);
 
-typedef AesNI_StatusCode (*AesNI_BoxFormatKey)(
-    AesNI_BoxKeyString* dest,
-    const AesNI_BoxKey* src,
-    AesNI_ErrorDetails* err_details);
+typedef AES_StatusCode (*AES_BoxFormatKey)(
+    AES_BoxKeyString* dest,
+    const AES_BoxKey* src,
+    AES_ErrorDetails* err_details);
 
-typedef AesNI_StatusCode (*AesNI_BoxEncryptBlock)(
-    const AesNI_BoxBlock* plaintext,
-    const AesNI_BoxEncryptionRoundKeys* params,
-    AesNI_BoxBlock* ciphertext,
-    AesNI_ErrorDetails* err_details);
+typedef AES_StatusCode (*AES_BoxEncryptBlock)(
+    const AES_BoxBlock* plaintext,
+    const AES_BoxEncryptionRoundKeys* params,
+    AES_BoxBlock* ciphertext,
+    AES_ErrorDetails* err_details);
 
-typedef AesNI_StatusCode (*AesNI_BoxDecryptBlock)(
-    const AesNI_BoxBlock* ciphertext,
-    const AesNI_BoxDecryptionRoundKeys* params,
-    AesNI_BoxBlock* plaintext,
-    AesNI_ErrorDetails* err_details);
+typedef AES_StatusCode (*AES_BoxDecryptBlock)(
+    const AES_BoxBlock* ciphertext,
+    const AES_BoxDecryptionRoundKeys* params,
+    AES_BoxBlock* plaintext,
+    AES_ErrorDetails* err_details);
 
-typedef AesNI_StatusCode (*AesNI_BoxXorBlock)(
-    AesNI_BoxBlock*,
-    const AesNI_BoxBlock*,
-    AesNI_ErrorDetails*);
+typedef AES_StatusCode (*AES_BoxXorBlock)(
+    AES_BoxBlock*,
+    const AES_BoxBlock*,
+    AES_ErrorDetails*);
 
-typedef AesNI_StatusCode (*AesNI_BoxIncBlock)(
-    AesNI_BoxBlock*,
-    AesNI_ErrorDetails*);
+typedef AES_StatusCode (*AES_BoxIncBlock)(
+    AES_BoxBlock*,
+    AES_ErrorDetails*);
 
-typedef AesNI_StatusCode (*AesNI_BoxGetBlockSize)(
+typedef AES_StatusCode (*AES_BoxGetBlockSize)(
     size_t*,
-    AesNI_ErrorDetails*);
+    AES_ErrorDetails*);
 
-typedef AesNI_StatusCode (*AesNI_BoxStoreBlock)(
+typedef AES_StatusCode (*AES_BoxStoreBlock)(
     void*,
-    const AesNI_BoxBlock*,
-    AesNI_ErrorDetails*);
+    const AES_BoxBlock*,
+    AES_ErrorDetails*);
 
-typedef AesNI_StatusCode (*AesNI_BoxLoadBlock)(
-    AesNI_BoxBlock*,
+typedef AES_StatusCode (*AES_BoxLoadBlock)(
+    AES_BoxBlock*,
     const void*,
-    AesNI_ErrorDetails*);
+    AES_ErrorDetails*);
 
 typedef struct
 {
-    AesNI_BoxCalculateRoundKeys calc_round_keys;
-    AesNI_BoxParseBlock parse_block;
-    AesNI_BoxParseKey parse_key;
-    AesNI_BoxFormatBlock format_block;
-    AesNI_BoxFormatKey format_key;
-    AesNI_BoxEncryptBlock encrypt_block;
-    AesNI_BoxDecryptBlock decrypt_block;
-    AesNI_BoxXorBlock xor_block;
-    AesNI_BoxIncBlock inc_block;
-    AesNI_BoxGetBlockSize get_block_size;
-    AesNI_BoxStoreBlock store_block;
-    AesNI_BoxLoadBlock load_block;
+    AES_BoxCalculateRoundKeys calc_round_keys;
+    AES_BoxParseBlock parse_block;
+    AES_BoxParseKey parse_key;
+    AES_BoxFormatBlock format_block;
+    AES_BoxFormatKey format_key;
+    AES_BoxEncryptBlock encrypt_block;
+    AES_BoxDecryptBlock decrypt_block;
+    AES_BoxXorBlock xor_block;
+    AES_BoxIncBlock inc_block;
+    AES_BoxGetBlockSize get_block_size;
+    AES_BoxStoreBlock store_block;
+    AES_BoxLoadBlock load_block;
 }
-AesNI_BoxAlgorithmInterface;
+AES_BoxAlgorithmInterface;
 
 typedef struct
 {
-    const AesNI_BoxAlgorithmInterface* algorithm;
-    AesNI_BoxEncryptionRoundKeys encryption_keys;
-    AesNI_BoxDecryptionRoundKeys decryption_keys;
-    AesNI_Mode mode;
-    AesNI_BoxBlock iv;
+    const AES_BoxAlgorithmInterface* algorithm;
+    AES_BoxEncryptionRoundKeys encryption_keys;
+    AES_BoxDecryptionRoundKeys decryption_keys;
+    AES_Mode mode;
+    AES_BoxBlock iv;
 }
-AesNI_Box;
+AES_Box;
 
 #ifdef __cplusplus
 }

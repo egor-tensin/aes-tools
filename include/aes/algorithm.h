@@ -15,11 +15,11 @@ extern "C"
 
 typedef enum
 {
-    AESNI_AES128,
-    AESNI_AES192,
-    AESNI_AES256,
+    AES_AES128,
+    AES_AES192,
+    AES_AES256,
 }
-AesNI_Algorithm;
+AES_Algorithm;
 
 #ifdef __cplusplus
 }

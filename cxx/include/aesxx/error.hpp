@@ -24,12 +24,12 @@
 #include <string>
 #include <vector>
 
-namespace aesni
+namespace aes
 {
     class Error : public std::runtime_error
     {
     public:
-        Error(const AesNI_ErrorDetails& err_details)
+        Error(const AES_ErrorDetails& err_details)
             : std::runtime_error(format_error_message(err_details))
         {
             copy_call_stack(err_details);
@@ -45,27 +45,27 @@ namespace aesni
         }
 
     private:
-        static std::string format_error_message(const AesNI_ErrorDetails& err_details)
+        static std::string format_error_message(const AES_ErrorDetails& err_details)
         {
             std::vector<char> buf;
-            buf.resize(aesni_format_error(&err_details, NULL, 0));
-            aesni_format_error(&err_details, buf.data(), buf.size());
+            buf.resize(aes_format_error(&err_details, NULL, 0));
+            aes_format_error(&err_details, buf.data(), buf.size());
             return { buf.begin(), buf.end() };
         }
 
-        void copy_call_stack(const AesNI_ErrorDetails& err_details)
+        void copy_call_stack(const AES_ErrorDetails& err_details)
         {
             call_stack_size = err_details.call_stack_size;
             std::memcpy(call_stack, err_details.call_stack, call_stack_size * sizeof(void*));
         }
 
-        void* call_stack[AESNI_MAX_CALL_STACK_LENGTH];
+        void* call_stack[AES_MAX_CALL_STACK_LENGTH];
         std::size_t call_stack_size;
     };
 
     std::ostream& operator<<(std::ostream& os, const Error& e)
     {
-        os << "AesNI error: " << e.what() << '\n';
+        os << "AES error: " << e.what() << '\n';
         os << "Call stack:\n";
         e.for_each_in_call_stack([&os] (void* addr, const std::string& name)
         {
@@ -79,20 +79,20 @@ namespace aesni
     public:
         ErrorDetailsThrowsInDestructor()
         {
-            aesni_success(get());
+            aes_success(get());
         }
 
         ~ErrorDetailsThrowsInDestructor() BOOST_NOEXCEPT_IF(false)
         {
-            if (aesni_is_error(aesni_get_error_code(get())))
+            if (aes_is_error(aes_get_error_code(get())))
                 throw Error(impl);
         }
 
-        AesNI_ErrorDetails* get() { return &impl; }
+        AES_ErrorDetails* get() { return &impl; }
 
-        operator AesNI_ErrorDetails*() { return get(); }
+        operator AES_ErrorDetails*() { return get(); }
 
     private:
-        AesNI_ErrorDetails impl;
+        AES_ErrorDetails impl;
     };
 }

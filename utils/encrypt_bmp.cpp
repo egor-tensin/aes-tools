@@ -61,7 +61,7 @@ namespace
     }
 
     void encrypt_bmp(
-        aesni::Box& box,
+        aes::Box& box,
         const std::string& plaintext_path,
         const std::string& ciphertext_path)
     {
@@ -91,23 +91,23 @@ namespace
         const auto& plaintext_path = settings.get_input_path();
         const auto& ciphertext_path = settings.get_output_path();
 
-        aesni::Box::Key key;
-        aesni::Box::parse_key(key, algorithm, settings.get_key_string());
+        aes::Box::Key key;
+        aes::Box::parse_key(key, algorithm, settings.get_key_string());
 
-        if (aesni::mode_requires_initialization_vector(mode))
+        if (aes::mode_requires_initialization_vector(mode))
         {
-            aesni::Box::Block iv;
-            aesni::Box::parse_block(iv, algorithm, settings.get_iv_string());
+            aes::Box::Block iv;
+            aes::Box::parse_block(iv, algorithm, settings.get_iv_string());
 
             encrypt_bmp(
-                aesni::Box(algorithm, key, mode, iv),
+                aes::Box(algorithm, key, mode, iv),
                 plaintext_path,
                 ciphertext_path);
         }
         else
         {
             encrypt_bmp(
-                aesni::Box(algorithm, key),
+                aes::Box(algorithm, key),
                 plaintext_path,
                 ciphertext_path);
         }
@@ -138,7 +138,7 @@ int main(int argc, char** argv)
             std::cerr << cmd_parser;
             return 1;
         }
-        catch (const aesni::Error& e)
+        catch (const aes::Error& e)
         {
             std::cerr << e;
             return 1;
