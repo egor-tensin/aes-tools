@@ -6,7 +6,7 @@
  *            See LICENSE.txt for details.
  */
 
-#include <aesni/all.h>
+#include <aes/all.h>
 
 #include <emmintrin.h>
 #include <wmmintrin.h>

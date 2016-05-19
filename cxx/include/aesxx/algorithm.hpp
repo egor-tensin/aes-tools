@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <aesni/all.h>
+#include <aes/all.h>
 
 namespace aesni
 {

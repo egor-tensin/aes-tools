@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <aesnixx/all.hpp>
+#include <aesxx/all.hpp>
 
 #include <cstdlib>
 

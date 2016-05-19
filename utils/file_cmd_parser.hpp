@@ -10,7 +10,7 @@
 
 #include "data_parsers.hpp"
 
-#include <aesnixx/all.hpp>
+#include <aesxx/all.hpp>
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>

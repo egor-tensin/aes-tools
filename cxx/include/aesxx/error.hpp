@@ -10,7 +10,7 @@
 
 #include "debug.hpp"
 
-#include <aesni/all.h>
+#include <aes/all.h>
 
 #include <boost/config.hpp>
 

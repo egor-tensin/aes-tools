@@ -10,7 +10,7 @@
 
 #include "error.hpp"
 
-#include <aesni/all.h>
+#include <aes/all.h>
 
 namespace aesni
 {

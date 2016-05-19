@@ -12,7 +12,7 @@
 #include "error.hpp"
 #include "mode.hpp"
 
-#include <aesni/all.h>
+#include <aes/all.h>
 
 #include <cassert>
 #include <cstddef>

@@ -10,7 +10,7 @@
 #include "block_dumper.hpp"
 #include "block_input.hpp"
 
-#include <aesnixx/all.hpp>
+#include <aesxx/all.hpp>
 
 #include <boost/program_options.hpp>
 
