@@ -1,7 +1,6 @@
-# aesni
+# AES tools
 
-Simple AES encryption algorithm implementation using the AES-NI instruction
-set.
+Simple AES implementation and utilities.
 
 ## Building
 
@@ -11,12 +10,12 @@ I've used the compiler and the assembler shipped with Visual Studio Express
 You can generate the solution using CMake and build it using Visual Studio.
 
 Some of the utilities also depend on a few Boost libraries.
-In particular, Boost.Filesystem, Boost.Program_options, and Boost.System has to
-be built prior to building these utilities.
+In particular, Boost.Filesystem, Boost.Program\_options, and Boost.System has
+to be built prior to building these utilities.
 To enable CMake to find Boost libraries, pass the path to the root Boost
 directory like this:
 
-    cmake -D BOOST_ROOT=C:\workspace\third-party\boost_1_58_0 ...
+    > cmake -D BOOST_ROOT=C:\workspace\third-party\boost_1_58_0 ...
 
 Remember that in order to link to the static Boost libraries, you also have to
 pass `-D Boost_USE_STATIC_LIBS=ON` to CMake.
@@ -49,4 +48,4 @@ See [Testing](test#testing).
 
 This project, including all of the files and their contents, is licensed under
 the terms of the MIT License.
-See [LICENSE.txt](LICENSE.txt) for details.
+See LICENSE.txt for details.
