@@ -1,24 +1,21 @@
 # Utilities
 
-Here are a couple of useful utilities built on top of the library.
+A couple of useful utilities built on top of the library.
 Each of the utilities accepts the `--help` flag, which can be used to examine
-utility's usage info.
+the utility's usage info.
 
 The included utilities are:
 
-* [block encryption](#block-encryption) utilities,
-* [file encryption](#file-encryption) utilities,
-* and [bitmap encryption](#bitmap-encryption) utilities.
-
-On older CPUs, you can run the utilities
-[using Intel SDE](../README.md#running-on-older-cpus).
+* [block encryption] utilities,
+* [file encryption] utilities,
+* and [bitmap encryption] utilities.
 
 ## Block encryption
 
-The block encryption utilities can produce verbose human-readable output,
-including round keys, intermediate initialization vector values, etc.
-This is primarily intended for debugging purposes.
-Enable verbose output by passing the `--verbose` flag to the utilities.
+Block encryption utilities can produce verbose human-readable output, including
+round keys, intermediate initialization vector values, etc.
+Those are primarily intended for debugging purposes.
+Enable verbose output by passing the `--verbose` flag to a utilities.
 Please note that verbose output can only be produced when *not* using the
 "boxes" interface (the `--use-boxes` flag).
 
@@ -26,8 +23,6 @@ Please note that verbose output can only be produced when *not* using the
 
 Encrypts blocks using the selected algorithm in the specified mode of
 operation.
-
-#### Usage examples
 
 For example, to encrypt
 
@@ -54,8 +49,6 @@ run:
 
 Decrypts blocks using the selected algorithm in the specified mode of
 operation.
-
-#### Usage examples
 
 For example, to decrypt
 
@@ -85,9 +78,7 @@ run:
 Encrypts a file using the selected algorithm in the specified mode of
 operation.
 
-#### Usage examples
-
-For example, to encrypt the plaintext `input.txt`
+For example, to encrypt the plaintext from `input.txt`
 
 * using AES-128 in ECB mode
 * with key `0x11111111111111111111111111111111`
@@ -112,8 +103,6 @@ run
 
 Decrypts a file using the selected algorithm in the specified mode of
 operation.
-
-#### Usage examples
 
 To decrypt the ciphertext from `input.txt`
 
@@ -143,16 +132,34 @@ ECB mode (namely, the fact that identical plaintext blocks get mapped to
 identical ciphertext blocks).
 This can be explicitly shown using 8-bit-per-pixel bitmaps:
 
-Plaintext BMP | Encrypted in ECB mode | Encrypted in CBC mode
-------------- | --------------------- | ---------------------
-![Plaintext butterfly](bmp/butterfly.bmp?raw=true) | ![Ciphertext butterfly in ECB mode](bmp/cipherfly_ecb.bmp?raw=true) | ![Ciphertext butterfly in CBC mode](bmp/cipherfly_cbc.bmp?raw=true)
+Plaintext BMP    | Encrypted in ECB mode | Encrypted in CBC mode
+---------------- | --------------------- | ---------------------
+![butterfly.bmp] | ![cipherfly_ecb.bmp]  | ![cipherfly_cbc.bmp]
 
 ### encrypt_bmp.exe
 
 Encrypts the pixels in a BMP image file, preserving the header.
-The usage is the same as for [encrypt_file.exe](#encrypt_fileexe).
+The usage is the same as for [encrypt_file.exe].
 
 ### decrypt_bmp.exe
 
 Decrypts the pixels in a BMP image file, preserving the header.
-The usage is the same as for [decrypt_file.exe](#decrypt_fileexe).
+The usage is the same as for [decrypt_file.exe].
+
+## See also
+
+* [Building]
+* [License]
+
+
+
+[building]: ../README.md#building
+[license]: ../README.md#license
+[block encryption]: #block-encryption
+[file encryption]: #file-encryption
+[bitmap encryption]: #bitmap-encryption
+[encrypt_file.exe]: #encrypt_fileexe
+[decrypt_file.exe]: #decrypt_fileexe
+[butterfly.bmp]: bmp/butterfly.bmp?raw=true
+[cipherfly_ecb.bmp]: bmp/cipherfly_ecb.bmp?raw=true
+[cipherfly_cbc.bmp]: bmp/cipherfly_cbc.bmp?raw=true
