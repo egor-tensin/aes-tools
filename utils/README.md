@@ -1,21 +1,15 @@
 # Utilities
 
-A couple of useful utilities built on top of the library.
+A couple of useful utilities are built on top of the library.
 Each of the utilities accepts the `--help` flag, which can be used to examine
 the utility's usage info.
-
-The included utilities are:
-
-* [block encryption] utilities,
-* [file encryption] utilities,
-* and [bitmap encryption] utilities.
 
 ## Block encryption
 
 Block encryption utilities can produce verbose human-readable output, including
 round keys, intermediate initialization vector values, etc.
-Those are primarily intended for debugging purposes.
-Enable verbose output by passing the `--verbose` flag to a utilities.
+They are primarily intended for debugging purposes.
+Enable verbose output by passing the `--verbose` flag.
 Please note that verbose output can only be produced when *not* using the
 "boxes" interface (the `--use-boxes` flag).
 
@@ -136,30 +130,28 @@ Plaintext BMP    | Encrypted in ECB mode | Encrypted in CBC mode
 ---------------- | --------------------- | ---------------------
 ![butterfly.bmp] | ![cipherfly_ecb.bmp]  | ![cipherfly_cbc.bmp]
 
+[butterfly.bmp]: bmp/butterfly.bmp?raw=true
+[cipherfly_ecb.bmp]: bmp/cipherfly_ecb.bmp?raw=true
+[cipherfly_cbc.bmp]: bmp/cipherfly_cbc.bmp?raw=true
+
 ### encrypt_bmp.exe
 
 Encrypts the pixels in a BMP image file, preserving the header.
 The usage is the same as for [encrypt_file.exe].
+
+[encrypt_file.exe]: #encrypt_fileexe
 
 ### decrypt_bmp.exe
 
 Decrypts the pixels in a BMP image file, preserving the header.
 The usage is the same as for [decrypt_file.exe].
 
+[decrypt_file.exe]: #decrypt_fileexe
+
 ## See also
 
-* [Building]
+* [Building the utilities]
 * [License]
 
-
-
-[building]: ../README.md#building
-[license]: ../README.md#license
-[block encryption]: #block-encryption
-[file encryption]: #file-encryption
-[bitmap encryption]: #bitmap-encryption
-[encrypt_file.exe]: #encrypt_fileexe
-[decrypt_file.exe]: #decrypt_fileexe
-[butterfly.bmp]: bmp/butterfly.bmp?raw=true
-[cipherfly_ecb.bmp]: bmp/cipherfly_ecb.bmp?raw=true
-[cipherfly_cbc.bmp]: bmp/cipherfly_cbc.bmp?raw=true
+[Building the utilities]: ../README.md#building-the-utilities
+[License]: ../README.md#license

@@ -1,16 +1,21 @@
 # Testing
 
 Using the [utilities], you can validate the implementation either by providing
-an arbitrary set of inputs (see [manual testing]) or by using the test vectors
+an arbitrary set of inputs (see [Manual testing]) or by using the test vectors
 provided by various AES [validation programs].
 
 You can also test that [file encryption] works (at least to some extent).
+
+[utilities]: ../utils/README.md
+[Manual testing]: #manual-testing
+[Validation programs]: #validation-programs
+[File encryption]: #file-encryption
 
 ## Manual testing
 
 You can validate the implementation manually using the block
 encryption/decryption utilities `encrypt_block.exe` and `decrypt_block.exe`.
-Pass the `--help` parameter to examine the utility's usage info.
+Pass the `--help` flag to examine the utility's usage info.
 
     > encrypt_block.exe -a aes128 -m ecb -- 000102030405060708090a0b0c0d0e0f 00112233445566778899aabbccddeeff
     69c4e0d86a7b0430d8cdb78070b4c55a
@@ -26,7 +31,7 @@ Pass the `--help` parameter to examine the utility's usage info.
 A number of test vectors have been collected from various AES validation
 programs/reference implementations.
 
-The test scripts are written in Python 3 and are used in similar fashion:
+The test scripts are used in similar fashion:
 
 * they accept the path to the directory with the block encryption/decryption
   utilities,
@@ -46,6 +51,10 @@ To allow the utilities to be executed on older CPUs, pass the `--sde`
 parameter.
 Pass the `--help` parameter to see examine the script's usage info.
 
+### Prerequisites
+
+* Python (3.4 or higher)
+
 ### NIST Special Publication 800-38A
 
 To validate the implementation using the inputs from [NIST SP 800-38A], use
@@ -53,13 +62,17 @@ To validate the implementation using the inputs from [NIST SP 800-38A], use
 
     > nist-sp-800-38a.py -p C:\workspace\personal\build\aes-tools\utils\Debug
 
+[NIST SP 800-38A]: http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf
+
 ### Cryptographic Algorithm Validation Program
 
 To validate the implementation using the inputs from [CAVP], use `cavp.py`.
 
     > cavp.py -p C:\workspace\personal\build\aes-tools\utils\Debug
 
-The AES Known Answer Test (KAT) Vectors are used and read from `KAT_AES.zip`.
+The AES Known Answer Test (KAT) Vectors are used and read from "KAT_AES.zip".
+
+[CAVP]: http://csrc.nist.gov/groups/STM/cavp/
 
 ## File encryption
 
@@ -67,22 +80,14 @@ You can also test file encryption using `file.py`.
 Its interface and output is similar to the [validation programs] test scripts.
 The expected ciphertexts (for encryption) and plaintexts (for decryption),
 along with the keys and initialization vectors, are stored in the files under
-a separate directory (`file/` by default).
+a separate directory ("file/" by default).
 
 ## See also
 
-* [Building]
+* [Building the utilities]
 * [Usage on older CPUs]
 * [License]
 
-
-
-[building]: ../README.md#building
-[license]: ../README.md#license
-[usage on older cpus]: ../README.md#usage-on-older-cpus
-[utilities]: ../utils/README.md
-[manual testing]: #manual-testing
-[validation programs]: #validation-programs
-[file encryption]: #file-encryption
-[NIST SP 800-38A]: http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf
-[CAVP]: http://csrc.nist.gov/groups/STM/cavp/
+[Building the utilities]: ../README.md#building-the-utilities
+[Usage on older CPUs]: ../README.md#usage-on-older-cpus
+[License]: ../README.md#license
