@@ -1,17 +1,19 @@
-# Testing
+Testing
+=======
 
 Using the [utilities], you can validate the implementation either by providing
-an arbitrary set of inputs (see [Manual testing]) or by using the test vectors
-provided by various AES [validation programs].
+an arbitrary set of inputs of your choice (see [Manual testing]) or by using
+the test vectors provided by various AES [validation programs].
 
 You can also test that [file encryption] works (at least to some extent).
 
 [utilities]: ../utils/README.md
 [Manual testing]: #manual-testing
-[Validation programs]: #validation-programs
-[File encryption]: #file-encryption
+[validation programs]: #validation-programs
+[file encryption]: #file-encryption
 
-## Manual testing
+Manual testing
+--------------
 
 You can validate the implementation manually using the block
 encryption/decryption utilities `encrypt_block.exe` and `decrypt_block.exe`.
@@ -26,15 +28,16 @@ Pass the `--help` flag to examine the utility's usage info.
     30c81c46a35ce411e5fbc1191a0a52ef
     f69f2445df4f9b17ad2b417be66c3710
 
-## Validation programs
+Validation programs
+-------------------
 
 A number of test vectors have been collected from various AES validation
 programs/reference implementations.
 
-The test scripts are used in similar fashion:
+The test scripts are written in Python 3 and are used in similar fashion:
 
 * they accept the path to the directory with the block encryption/decryption
-  utilities,
+utilities,
 * they produce log files with short summaries at the end.
 
 In general, each of the scripts counts the number of tests that have failed,
@@ -47,13 +50,12 @@ You must therefore make sure that
 
 To pass the path of the directory with the required utilities, use the `--path`
 parameter.
-To allow the utilities to be executed on older CPUs, pass the `--sde`
-parameter.
-Pass the `--help` parameter to see examine the script's usage info.
+To allow the utilities to run on older CPUs, pass the `--sde` flag.
+Pass the `--help` flag to examine the script's usage info.
 
 ### Prerequisites
 
-* Python (3.4 or higher)
+To run the test scripts, Python 3.4 or higher is required.
 
 ### NIST Special Publication 800-38A
 
@@ -74,20 +76,21 @@ The AES Known Answer Test (KAT) Vectors are used and read from "KAT_AES.zip".
 
 [CAVP]: http://csrc.nist.gov/groups/STM/cavp/
 
-## File encryption
+File encryption
+---------------
 
 You can also test file encryption using `file.py`.
-Its interface and output is similar to the [validation programs] test scripts.
+Its interface and behaviour are similar to those of the [validation programs]
+test scripts.
 The expected ciphertexts (for encryption) and plaintexts (for decryption),
 along with the keys and initialization vectors, are stored in the files under
 a separate directory ("file/" by default).
 
-## See also
+See also
+--------
 
-* [Building the utilities]
 * [Usage on older CPUs]
 * [License]
 
-[Building the utilities]: ../README.md#building-the-utilities
 [Usage on older CPUs]: ../README.md#usage-on-older-cpus
 [License]: ../README.md#license

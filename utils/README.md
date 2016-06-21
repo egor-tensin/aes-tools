@@ -1,10 +1,12 @@
-# Utilities
+Utilities
+=========
 
 A couple of useful utilities are built on top of the library.
 Each of the utilities accepts the `--help` flag, which can be used to examine
 the utility's usage info.
 
-## Block encryption
+Block encryption
+----------------
 
 Block encryption utilities can produce verbose human-readable output, including
 round keys, intermediate initialization vector values, etc.
@@ -65,7 +67,8 @@ run:
 
     decrypt_block.exe -a aes192 -m ofb 000102030405060708090a0b0c0d0e0f101112131415161718 22222222222222222222222222222222 bda298884f5c3a9eb7068aa7063a3b75
 
-## File encryption
+File encryption
+---------------
 
 ### encrypt_file.exe
 
@@ -119,7 +122,8 @@ run
 
     decrypt_file.exe -a aes192 -m ofb -k 111111111111111111111111111111111111111111111111 -v 22222222222222222222222222222222 -i input.txt -o output.txt
 
-## Bitmap encryption
+Bitmap encryption
+-----------------
 
 These utilities were developed primarily to demonstrate the drawbacks of using
 ECB mode (namely, the fact that identical plaintext blocks get mapped to
@@ -130,9 +134,9 @@ Plaintext BMP    | Encrypted in ECB mode | Encrypted in CBC mode
 ---------------- | --------------------- | ---------------------
 ![butterfly.bmp] | ![cipherfly_ecb.bmp]  | ![cipherfly_cbc.bmp]
 
-[butterfly.bmp]: bmp/butterfly.bmp?raw=true
-[cipherfly_ecb.bmp]: bmp/cipherfly_ecb.bmp?raw=true
-[cipherfly_cbc.bmp]: bmp/cipherfly_cbc.bmp?raw=true
+[butterfly.bmp]: bmp/butterfly.bmp
+[cipherfly_ecb.bmp]: bmp/cipherfly_ecb.bmp
+[cipherfly_cbc.bmp]: bmp/cipherfly_cbc.bmp
 
 ### encrypt_bmp.exe
 
@@ -148,10 +152,11 @@ The usage is the same as for [decrypt_file.exe].
 
 [decrypt_file.exe]: #decrypt_fileexe
 
-## See also
+See also
+--------
 
-* [Building the utilities]
+* [Usage on older CPUs]
 * [License]
 
-[Building the utilities]: ../README.md#building-the-utilities
+[Usage on older CPUs]: ../README.md#usage-on-older-cpus
 [License]: ../README.md#license

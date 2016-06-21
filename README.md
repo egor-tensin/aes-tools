@@ -1,14 +1,22 @@
-# AES tools
+AES tools
+=========
 
 Simple AES implementation and utilities.
 
-## Development
+Development
+-----------
 
 ### Prerequisites
 
-* Boost.Filesystem, Boost.Program_options and Boost.System
+To build the whole solution, you first need to build a few of Boost's
+libraries.
+The complete list of Boost dependencies is:
 
-### Building the utilities
+* Boost.Filesystem,
+* Boost.Program_options,
+* Boost.System.
+
+### Building
 
 Create the build files using CMake and build using your native build tools
 (Visual Studio/make/etc.).
@@ -25,10 +33,11 @@ x86 and using static Boost libraries):
         C:\workspace\personal\aes-tools
     ...
 
-    > msbuild aes-tools.sln
+    > msbuild aes_tools.sln
     ...
 
-## Usage on older CPUs
+Usage on older CPUs
+-------------------
 
 To run the executables that are using the AES-NI instruction set on a CPU
 without the support for these instructions, you can use [Intel Software
@@ -40,26 +49,25 @@ After you install the emulator, you can run an executable like this:
 
 [Intel Software Development Emulator]: https://software.intel.com/en-us/articles/intel-software-development-emulator
 
-## Documentation
+Documentation
+-------------
 
 You can generate the docs using [Doxygen].
 The docs will be generated in the "doc/" directory under the project's root.
 
 [Doxygen]: http://www.stack.nl/~dimitri/doxygen/
 
-## Utilities
+See also
+--------
 
-See [Utilities].
+* [Utilities]
+* [Testing]
 
 [Utilities]: utils/README.md
-
-## Testing
-
-See [Testing].
-
 [Testing]: test/README.md
 
-## License
+License
+-------
 
 This project, including all of the files and their contents, is licensed under
 the terms of the MIT License.
