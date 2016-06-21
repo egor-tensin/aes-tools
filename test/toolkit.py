@@ -72,7 +72,6 @@ class Tools:
             else:
                 os.environ['PATH'] += os.pathsep + str(search_dirs)
         self._use_sde = use_sde
-        self._logger = logging.getLogger(__name__)
 
     _ENCRYPT_BLOCK = 'encrypt_block.exe'
     _DECRYPT_BLOCK = 'decrypt_block.exe'
@@ -82,8 +81,7 @@ class Tools:
     def run(self, tool_path, args):
         cmd_list = ['sde', '--', tool_path] if self._use_sde else [tool_path]
         cmd_list.extend(args)
-        logging.info('Trying to execute: {0}'.format(
-            subprocess.list2cmdline(cmd_list)))
+        logging.info('Trying to execute: ' + subprocess.list2cmdline(cmd_list))
         try:
             output = subprocess.check_output(
                 cmd_list, universal_newlines=True, stderr=subprocess.STDOUT)

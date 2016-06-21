@@ -2,6 +2,7 @@
 # This file is licensed under the terms of the MIT License.
 # See LICENSE.txt for details.
 
+import argparse
 from contextlib import contextmanager
 from datetime import datetime
 from enum import Enum
@@ -81,7 +82,7 @@ def run_encryption_test(tools, algorithm, mode, key, plaintext_path,
             tools.run_encrypt_file(algorithm, mode, key, plaintext_path,
                                    tmp_path, iv)
             if force:
-                logging.warn('Overwriting expected ciphertext file')
+                logging.warning('Overwriting expected ciphertext file')
                 shutil.copy(tmp_path, ciphertext_path)
                 return TestExitCode.SKIPPED
             if filecmp.cmp(ciphertext_path, tmp_path):
@@ -125,14 +126,14 @@ def enum_tests(suite_dir):
         algorithm = os.path.basename(algorithm_dir)
         maybe_algorithm = Algorithm.try_parse(algorithm)
         if maybe_algorithm is None:
-            logging.warn('Unknown or unsupported algorithm: ' + algorithm)
+            logging.warning('Unknown or unsupported algorithm: ' + algorithm)
             continue
         algorithm = maybe_algorithm
         for mode_dir in _list_dirs(algorithm_dir):
             mode = os.path.basename(mode_dir)
             maybe_mode = Mode.try_parse(mode)
             if maybe_mode is None:
-                logging.warn('Unknown or unsupported mode: ' + mode)
+                logging.warning('Unknown or unsupported mode: ' + mode)
                 continue
             mode = maybe_mode
             for key_path in _list_keys(mode_dir):
@@ -152,39 +153,53 @@ def _build_default_log_path():
     return datetime.now().strftime('{}_%Y-%m-%d_%H-%M-%S.log').format(
         os.path.splitext(os.path.basename(__file__))[0])
 
-if __name__ == '__main__':
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--path', '-p', nargs='*',
-                        help='set path to file encryption utilities')
-    parser.add_argument('--sde', '-e', action='store_true',
-                        help='use Intel SDE to run *.exe files')
-    parser.add_argument('--log', '-l', default=_build_default_log_path(),
-                        help='set log file path')
-    parser.add_argument('--force', '-f', action='store_true',
-                        help='overwrite ciphertext files')
-    parser.add_argument('--suite', '-s', default='file',
-                        help='set test suite directory path')
-    args = parser.parse_args()
+def run_tests(suite_path, tools_path=(), log_path=None, use_sde=False, force=False):
+    if log_path is None:
+        log_path = _build_default_log_path()
 
-    logging.basicConfig(filename=args.log,
-                        format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
-                        level=logging.DEBUG)
+    logging.basicConfig(
+        filename=log_path,
+        format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
+        level=logging.DEBUG)
 
-    tools = Tools(args.path, use_sde=args.sde)
+    tools = Tools(tools_path, use_sde=use_sde)
     exit_codes = []
 
-    for test in enum_tests(args.suite):
-        exit_codes.append(run_encryption_test(tools, *test, args.force))
+    for test in enum_tests(suite_path):
+        exit_codes.append(run_encryption_test(tools, *test, force))
         exit_codes.append(run_decryption_test(tools, *test))
 
     logging.info('Test exit codes:')
-    logging.info('\tSkipped:   {}'.format(exit_codes.count(TestExitCode.SKIPPED)))
-    logging.info('\tError(s):  {}'.format(exit_codes.count(TestExitCode.ERROR)))
-    logging.info('\tSucceeded: {}'.format(exit_codes.count(TestExitCode.SUCCESS)))
-    logging.info('\tFailed:    {}'.format(exit_codes.count(TestExitCode.FAILURE)))
+    logging.info('\tSkipped:   %d', exit_codes.count(TestExitCode.SKIPPED))
+    logging.info('\tError(s):  %d', exit_codes.count(TestExitCode.ERROR))
+    logging.info('\tSucceeded: %d', exit_codes.count(TestExitCode.SUCCESS))
+    logging.info('\tFailed:    %d', exit_codes.count(TestExitCode.FAILURE))
+
     if (exit_codes.count(TestExitCode.ERROR) == 0 and
             exit_codes.count(TestExitCode.FAILURE) == 0):
-        sys.exit()
+        return 0
     else:
-        sys.exit(1)
+        return 1
+
+def _parse_args(args=sys.argv):
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--path', '-p', dest='tools_path', metavar='PATH',
+                        nargs='*',
+                        help='set file encryption utilities directory path')
+    parser.add_argument('--sde', '-e', dest='use_sde', action='store_true',
+                        help='use Intel SDE to run the utilities')
+    parser.add_argument('--log', '-l', dest='log_path', metavar='PATH',
+                        help='set log file path')
+    parser.add_argument('--force', '-f', action='store_true',
+                        help='overwrite ciphertext files')
+    parser.add_argument('--suite', '-s', dest='suite_path', default='file/',
+                        help='set test suite directory path')
+
+    return parser.parse_args(args[1:])
+
+def main(args=sys.argv):
+    return run_tests(**vars(_parse_args(args)))
+
+if __name__ == '__main__':
+    sys.exit(main())

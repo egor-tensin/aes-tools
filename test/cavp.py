@@ -2,7 +2,9 @@
 # This file is licensed under the terms of the MIT License.
 # See LICENSE.txt for details.
 
+import argparse
 from collections import OrderedDict
+from collections.abc import MutableSequence
 import configparser
 from datetime import datetime
 from enum import Enum
@@ -16,14 +18,16 @@ from toolkit import *
 
 class _MultiOrderedDict(OrderedDict):
     def __setitem__(self, key, value):
-        if isinstance(value, list) and key in self:
+        if isinstance(value, MutableSequence) and key in self:
             self[key].extend(value)
         else:
             super(OrderedDict, self).__setitem__(key, value)
 
 def verify_test_output(actual, expected):
     if len(actual) != len(expected):
-        logging.error('Unexpected output length {0} (expected {1})'.format(len(actual), len(expected)))
+        logging.error('Unexpected output length!')
+        logging.error('\tExpected: %d', len(expected))
+        logging.error('\tActual: %d', len(actual))
         return False
     if actual != expected:
         logging.error('Expected output:\n' + '\n'.join(expected))
@@ -117,7 +121,7 @@ class TestFile:
             return TestExitCode.ERROR
 
     def _parse_path(self):
-        logging.info('Trying to parse test file path \'{0}\'...'.format(self._path))
+        logging.info('Trying to parse test file path \'%s\'...', self._path)
         stub = self._strip_extension(os.path.basename(self._path))
         if not stub: return
         stub = self._strip_algorithm(stub)
@@ -133,19 +137,19 @@ class TestFile:
     def _strip_extension(self, path):
         stub, ext = os.path.splitext(path)
         if ext != self._RECOGNIZED_EXT:
-            logging.warn('Unknown test vectors file extension \'{0}\'!'.format(self._path))
+            logging.warning('Unknown test vectors file extension \'%s\'!', self._path)
             return None
         return stub
 
     def _strip_algorithm(self, stub):
         key_size = stub[-3:]
-        maybe_algorithm = 'aes{0}'.format(key_size)
+        maybe_algorithm = 'aes{}'.format(key_size)
         self._algorithm = Algorithm.try_parse(maybe_algorithm)
         if self._algorithm is not None:
-            logging.info('\tAlgorithm: {0}'.format(self._algorithm))
+            logging.info('\tAlgorithm: %s', self._algorithm)
             return stub[0:-3]
         else:
-            logging.warn('Unknown or unsupported algorithm: ' + self._path)
+            logging.warning('Unknown or unsupported algorithm: ' + self._path)
             return None
 
     _RECOGNIZED_METHODS = ('GFSbox', 'KeySbox', 'VarKey', 'VarTxt')
@@ -153,22 +157,18 @@ class TestFile:
     def _strip_method(self, stub):
         for method in self._RECOGNIZED_METHODS:
             if stub.endswith(method):
-                logging.info('\tMethod: {0}'.format(method))
+                logging.info('\tMethod: %s', method)
                 return stub[0:len(stub) - len(method)]
-        logging.warn('Unknown or unsupported method: ' + self._path)
+        logging.warning('Unknown or unsupported method: ' + self._path)
 
     def _strip_mode(self, stub):
         self._mode = Mode.try_parse(stub)
         if self._mode is not None:
-            logging.info('\tMode: {0}'.format(self._mode))
+            logging.info('\tMode: %s', self._mode)
             return self._mode
         else:
-            logging.warn('Unknown or unsupported mode: ' + self._path)
+            logging.warning('Unknown or unsupported mode: ' + self._path)
             return None
-
-def _build_default_log_path():
-    return datetime.now().strftime('{}_%Y-%m-%d_%H-%M-%S.log').format(
-        os.path.splitext(os.path.basename(__file__))[0])
 
 class TestArchive(zipfile.ZipFile):
     def __init__(self, path):
@@ -179,40 +179,60 @@ class TestArchive(zipfile.ZipFile):
             for p in self.namelist():
                 yield TestFile(self.extract(p, tmp_dir))
 
-if __name__ == '__main__':
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--path', '-p', nargs='*',
-                        help='set path to block encryption utilities')
-    parser.add_argument('--sde', '-e', action='store_true',
-                        help='use Intel SDE to run *.exe files')
-    parser.add_argument('--use-boxes', '-b', action='store_true',
-                        help='use the "boxes" interface')
-    parser.add_argument('--archive', '-a', default='KAT_AES.zip',
-                        help='set path of the archive with the test vectors')
-    parser.add_argument('--log', '-l', default=_build_default_log_path(),
-                        help='set log file path')
-    args = parser.parse_args()
+def _build_default_log_path():
+    return datetime.now().strftime('{}_%Y-%m-%d_%H-%M-%S.log').format(
+        os.path.splitext(os.path.basename(__file__))[0])
 
-    logging.basicConfig(filename=args.log,
-                        format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
-                        level=logging.DEBUG)
+def run_tests(archive_path, tools_path=(), use_sde=False, use_boxes=False, log_path=None):
+    if log_path is None:
+        log_path = _build_default_log_path()
 
-    tools = Tools(args.path, use_sde=args.sde)
-    archive = TestArchive(args.archive)
+    logging.basicConfig(
+        filename=log_path,
+        format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
+        level=logging.DEBUG)
+
+    tools = Tools(tools_path, use_sde=use_sde)
+    archive = TestArchive(archive_path)
     exit_codes = []
 
     for test_file in archive.enum_test_files():
-        exit_codes.append(test_file.run_encryption_tests(tools, args.use_boxes))
-        exit_codes.append(test_file.run_decryption_tests(tools, args.use_boxes))
+        exit_codes.append(test_file.run_encryption_tests(tools, use_boxes))
+        exit_codes.append(test_file.run_decryption_tests(tools, use_boxes))
 
     logging.info('Test exit codes:')
-    logging.info('\tSkipped:   {}'.format(exit_codes.count(TestExitCode.SKIPPED)))
-    logging.info('\tError(s):  {}'.format(exit_codes.count(TestExitCode.ERROR)))
-    logging.info('\tSucceeded: {}'.format(exit_codes.count(TestExitCode.SUCCESS)))
-    logging.info('\tFailed:    {}'.format(exit_codes.count(TestExitCode.FAILURE)))
+    logging.info('\tSkipped:   %d', exit_codes.count(TestExitCode.SKIPPED))
+    logging.info('\tError(s):  %d', exit_codes.count(TestExitCode.ERROR))
+    logging.info('\tSucceeded: %d', exit_codes.count(TestExitCode.SUCCESS))
+    logging.info('\tFailed:    %d', exit_codes.count(TestExitCode.FAILURE))
+
     if (exit_codes.count(TestExitCode.ERROR) == 0 and
             exit_codes.count(TestExitCode.FAILURE) == 0):
-        sys.exit()
+        return 0
     else:
-        sys.exit(1)
+        return 1
+
+def _parse_args(args=sys.argv):
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--path', '-p', dest='tools_path', metavar='PATH',
+                        nargs='*',
+                        help='set block encryption utilities directory path')
+    parser.add_argument('--sde', '-e', action='store_true', dest='use_sde',
+                        help='use Intel SDE to run the utilities')
+    parser.add_argument('--boxes', '-b', action='store_true', dest='use_boxes',
+                        help='use the "boxes" interface')
+    parser.add_argument('--archive', '-a', dest='archive_path', metavar='PATH',
+                        default='KAT_AES.zip',
+                        help='set test vectors archive file path')
+    parser.add_argument('--log', '-l', dest='log_path', metavar='PATH',
+                        help='set log file path')
+
+    return parser.parse_args(args[1:])
+
+def main(args=sys.argv):
+    args = _parse_args(args)
+    return run_tests(**vars(args))
+
+if __name__ == '__main__':
+    sys.exit(main())

@@ -2,6 +2,7 @@
 # This file is licensed under the terms of the MIT License.
 # See LICENSE.txt for details.
 
+import argparse
 from datetime import datetime
 from enum import Enum
 import logging
@@ -137,10 +138,10 @@ _TEST_CIPHERTEXTS = {
     }
 }
 
-def get_test_plaintexts(algorithm=None, mode=None):
+def get_test_plaintexts(*_):
     return _TEST_PLAINTEXTS
 
-def get_test_key(algorithm, mode=None):
+def get_test_key(algorithm, *_):
     return _TEST_KEYS[algorithm]
 
 def get_test_iv(algorithm, mode):
@@ -158,7 +159,9 @@ def get_tested_algorithms_and_modes():
 
 def verify_test_output(actual, expected):
     if len(actual) != len(expected):
-        logging.error('Unexpected output length {0} (expected {1})'.format(len(actual), len(expected)))
+        logging.error('Unexpected output length!')
+        logging.error('\tExpected: %d', len(expected))
+        logging.error('\tActual: %d', len(actual))
         return False
     if actual != expected:
         logging.error('Expected output:\n' + '\n'.join(expected))
@@ -170,8 +173,8 @@ class TestExitCode(Enum):
 
 def run_encryption_test(tools, algorithm, mode, use_boxes=False):
     logging.info('Running encryption test...')
-    logging.info('Algorithm: {}'.format(algorithm))
-    logging.info('Mode: {}'.format(mode))
+    logging.info('Algorithm: %s', algorithm)
+    logging.info('Mode: %s', mode)
 
     try:
         plaintexts = get_test_plaintexts(algorithm, mode)
@@ -191,8 +194,8 @@ def run_encryption_test(tools, algorithm, mode, use_boxes=False):
 
 def run_decryption_test(tools, algorithm, mode, use_boxes=False):
     logging.info('Running decryption test...')
-    logging.info('Algorithm: {}'.format(algorithm))
-    logging.info('Mode: {}'.format(mode))
+    logging.info('Algorithm: %s', algorithm)
+    logging.info('Mode: %s', mode)
 
     try:
         ciphertexts = get_test_ciphertexts(algorithm, mode)
@@ -214,37 +217,52 @@ def _build_default_log_path():
     return datetime.now().strftime('{}_%Y-%m-%d_%H-%M-%S.log').format(
         os.path.splitext(os.path.basename(__file__))[0])
 
-if __name__ == '__main__':
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--path', '-p', nargs='*',
-                        help='set path to block encryption utilities')
-    parser.add_argument('--sde', '-e', action='store_true',
-                        help='use Intel SDE to run *.exe files')
-    parser.add_argument('--use-boxes', '-b', action='store_true',
-                        help='use the "boxes" interface')
-    parser.add_argument('--log', '-l', default=_build_default_log_path(),
-                        help='set log file path')
-    args = parser.parse_args()
+def run_tests(tools_path=(), use_sde=False, use_boxes=False, log_path=None):
+    if log_path is None:
+        log_path = _build_default_log_path()
 
-    tools = Tools(args.path, use_sde=args.sde)
+    logging.basicConfig(
+        filename=log_path,
+        format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
+        level=logging.DEBUG)
 
-    logging.basicConfig(filename=args.log,
-                        format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
-                        level=logging.DEBUG)
+    tools = Tools(tools_path, use_sde=use_sde)
 
     exit_codes = []
     for algorithm, mode in get_tested_algorithms_and_modes():
-        exit_codes.append(run_encryption_test(tools, algorithm, mode, use_boxes=args.use_boxes))
-        exit_codes.append(run_decryption_test(tools, algorithm, mode, use_boxes=args.use_boxes))
+        exit_codes.append(run_encryption_test(tools, algorithm, mode, use_boxes=use_boxes))
+        exit_codes.append(run_decryption_test(tools, algorithm, mode, use_boxes=use_boxes))
 
     logging.info('Test exit codes:')
-    logging.info('\tSkipped:   {}'.format(exit_codes.count(TestExitCode.SKIPPED)))
-    logging.info('\tError(s):  {}'.format(exit_codes.count(TestExitCode.ERROR)))
-    logging.info('\tSucceeded: {}'.format(exit_codes.count(TestExitCode.SUCCESS)))
-    logging.info('\tFailed:    {}'.format(exit_codes.count(TestExitCode.FAILURE)))
+    logging.info('\tSkipped:   %d', exit_codes.count(TestExitCode.SKIPPED))
+    logging.info('\tError(s):  %d', exit_codes.count(TestExitCode.ERROR))
+    logging.info('\tSucceeded: %d', exit_codes.count(TestExitCode.SUCCESS))
+    logging.info('\tFailed:    %d', exit_codes.count(TestExitCode.FAILURE))
+
     if (exit_codes.count(TestExitCode.ERROR) == 0 and
             exit_codes.count(TestExitCode.FAILURE) == 0):
-        sys.exit()
+        return 0
     else:
-        sys.exit(1)
+        return 1
+
+def _parse_args(args=sys.argv):
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--path', '-p', dest='tools_path', metavar='PATH',
+                        nargs='*',
+                        help='set block encryption utilities directory path')
+    parser.add_argument('--sde', '-e', action='store_true', dest='use_sde',
+                        help='use Intel SDE to run the utilities')
+    parser.add_argument('--boxes', '-b', action='store_true', dest='use_boxes',
+                        help='use the "boxes" interface')
+    parser.add_argument('--log', '-l', dest='log_path', metavar='PATH',
+                        help='set log file path')
+
+    return parser.parse_args(args[1:])
+
+def main(args=sys.argv):
+    args = _parse_args(args)
+    return run_tests(**vars(args))
+
+if __name__ == '__main__':
+    sys.exit(main())
