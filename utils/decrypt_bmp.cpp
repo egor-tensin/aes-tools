@@ -98,18 +98,14 @@ namespace
         {
             aes::Box::Block iv;
             aes::Box::parse_block(iv, algorithm, settings.get_iv_string());
+            aes::Box box{ algorithm, key, mode, iv };
 
-            decrypt_bmp(
-                aes::Box(algorithm, key, mode, iv),
-                ciphertext_path,
-                plaintext_path);
+            decrypt_bmp(box, ciphertext_path, plaintext_path);
         }
         else
         {
-            decrypt_bmp(
-                aes::Box(algorithm, key),
-                ciphertext_path,
-                plaintext_path);
+            aes::Box box{ algorithm, key };
+            decrypt_bmp(box, ciphertext_path, plaintext_path);
         }
     }
 }

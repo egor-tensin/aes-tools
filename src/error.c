@@ -13,6 +13,38 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(_MSC_VER) && _MSC_VER < 1900
+
+#include <stdarg.h>
+
+#define snprintf c99_snprintf
+#define vsnprintf c99_vsnprintf
+
+__inline int c99_vsnprintf(char *dest, size_t dest_size, const char *fmt, va_list ap)
+{
+    int dest_len = -1;
+
+    if (dest_size != 0)
+        dest_len = _vsnprintf_s(dest, dest_size, _TRUNCATE, fmt, ap);
+    if (dest_len == -1)
+        dest_len = _vscprintf(fmt, ap);
+
+    return dest_len;
+}
+
+__inline int c99_snprintf(char *dest, size_t dest_size, const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+
+    int dest_len = c99_vsnprintf(dest, dest_size, fmt, ap);
+
+    va_end(ap);
+    return dest_len;
+}
+
+#endif
+
 static void aes_fill_string(char* dest, size_t dest_size, const char* src)
 {
     strncpy(dest, src, dest_size);
@@ -59,9 +91,9 @@ static size_t aes_format_null_argument_error(
     const char* const param_name = err_details->params.null_arg.param_name;
 
     if (dest == NULL && dest_size == 0)
-        return _snprintf(NULL, 0, fmt, param_name) + 1;
+        return snprintf(NULL, 0, fmt, param_name) + 1;
 
-    _snprintf(dest, dest_size, fmt, param_name);
+    snprintf(dest, dest_size, fmt, param_name);
     return strlen(dest);
 }
 
@@ -75,9 +107,9 @@ static size_t aes_format_parse_error(
     const char* const what = err_details->params.parse_error.what;
 
     if (dest == NULL)
-        return _snprintf(NULL, 0, fmt, src, what) + 1;
+        return snprintf(NULL, 0, fmt, src, what) + 1;
 
-    _snprintf(dest, dest_size, fmt, src, what);
+    snprintf(dest, dest_size, fmt, src, what);
     return strlen(dest);
 }
 
@@ -90,9 +122,9 @@ static size_t aes_format_not_implemented_error(
     const char* const src = err_details->params.not_implemented.what;
 
     if (dest == NULL)
-        return _snprintf(NULL, 0, fmt, src) + 1;
+        return snprintf(NULL, 0, fmt, src) + 1;
 
-    _snprintf(dest, dest_size, fmt, src);
+    snprintf(dest, dest_size, fmt, src);
     return strlen(dest);
 }
 
@@ -124,7 +156,8 @@ size_t aes_format_error(
 
 static void aes_collect_call_stack(AES_ErrorDetails* err_details)
 {
-    err_details->call_stack_size = CaptureStackBackTrace(1, AES_MAX_CALL_STACK_LENGTH, err_details->call_stack, NULL);
+    err_details->call_stack_size = CaptureStackBackTrace(
+        1, AES_MAX_CALL_STACK_LENGTH, err_details->call_stack, NULL);
 }
 #else
 static void aes_collect_call_stack(AES_ErrorDetails* err_details)

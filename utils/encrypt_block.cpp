@@ -151,14 +151,14 @@ namespace
         {
             aes::Box::Block iv;
             aes::Box::parse_block(iv, algorithm, input.get_iv_string());
+            aes::Box box{ algorithm, key, mode, iv };
 
-            encrypt_using_particular_box(
-                aes::Box(algorithm, key, mode, iv), input.get_input_block_strings());
+            encrypt_using_particular_box(box, input.get_input_block_strings());
         }
         else
         {
-            encrypt_using_particular_box(
-                aes::Box(algorithm, key), input.get_input_block_strings());
+            aes::Box box{ algorithm, key };
+            encrypt_using_particular_box(box, input.get_input_block_strings());
         }
     }
 }

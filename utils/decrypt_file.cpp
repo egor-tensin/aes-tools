@@ -83,18 +83,14 @@ namespace
         {
             aes::Box::Block iv;
             aes::Box::parse_block(iv, algorithm, settings.get_iv_string());
+            aes::Box box{ algorithm, key, mode, iv };
 
-            decrypt_file(
-                aes::Box(algorithm, key, mode, iv),
-                ciphertext_path,
-                plaintext_path);
+            decrypt_file(box, ciphertext_path, plaintext_path);
         }
         else
         {
-            decrypt_file(
-                aes::Box(algorithm, key),
-                ciphertext_path,
-                plaintext_path);
+            aes::Box box{ algorithm, key };
+            decrypt_file(box, ciphertext_path, plaintext_path);
         }
     }
 }

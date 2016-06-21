@@ -429,7 +429,8 @@ AES_StatusCode aes_box_encrypt_buffer(
                 box, src, dest, err_details)))
             return status;
 
-        (char*) src += block_size, (char*) dest += block_size;
+        src = (char*) src + block_size;
+        dest = (char*) dest + block_size;
     }
 
     if (padding_size == 0)
@@ -596,7 +597,8 @@ AES_StatusCode aes_box_decrypt_buffer(
                 box, src, dest, err_details)))
             return status;
 
-        (char*) src += block_size, (char*) dest += block_size;
+        src = (char*) src + block_size;
+        dest = (char*) dest + block_size;
     }
 
     if (max_padding_size == 0)
