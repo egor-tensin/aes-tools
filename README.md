@@ -3,20 +3,18 @@ AES tools
 
 Simple AES implementation and utilities.
 
-Development
------------
+Prerequisites
+-------------
 
-### Prerequisites
-
-To build the whole solution, you first need to build a few of Boost's
-libraries.
+To build the solution, you first need to build a few of Boost's libraries.
 The complete list of Boost dependencies is:
 
 * Boost.Filesystem,
 * Boost.Program_options,
 * Boost.System.
 
-### Building
+Building
+--------
 
 Create the build files using CMake and build using your native build tools
 (Visual Studio/make/etc.).
