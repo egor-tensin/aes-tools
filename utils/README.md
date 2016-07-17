@@ -15,7 +15,7 @@ Enable verbose output by passing the `--verbose` flag.
 Please note that verbose output can only be produced when *not* using the
 "boxes" interface (the `--use-boxes` flag).
 
-### encrypt_block.exe
+### encrypt_block
 
 Encrypts blocks using the selected algorithm in the specified mode of
 operation.
@@ -28,7 +28,7 @@ For example, to encrypt
 
 run:
 
-    encrypt_block.exe -a aes128 -m ecb 000102030405060708090a0b0c0d0e0f 00112233445566778899aabbccddeeff
+    encrypt_block -a aes128 -m ecb 000102030405060708090a0b0c0d0e0f 00112233445566778899aabbccddeeff
 
 To encrypt
 
@@ -39,9 +39,9 @@ To encrypt
 
 run:
 
-    encrypt_block.exe -a aes192 -m ofb 000102030405060708090a0b0c0d0e0f101112131415161718 22222222222222222222222222222222 00112233445566778899aabbccddeeff
+    encrypt_block -a aes192 -m ofb 000102030405060708090a0b0c0d0e0f101112131415161718 22222222222222222222222222222222 00112233445566778899aabbccddeeff
 
-### decrypt_block.exe
+### decrypt_block
 
 Decrypts blocks using the selected algorithm in the specified mode of
 operation.
@@ -54,7 +54,7 @@ For example, to decrypt
 
 run:
 
-    decrypt_block.exe -a aes128 -m ecb 000102030405060708090a0b0c0d0e0f 69c4e0d86a7b0430d8cdb78070b4c55a
+    decrypt_block -a aes128 -m ecb 000102030405060708090a0b0c0d0e0f 69c4e0d86a7b0430d8cdb78070b4c55a
 
 To decrypt
 
@@ -65,62 +65,62 @@ To decrypt
 
 run:
 
-    decrypt_block.exe -a aes192 -m ofb 000102030405060708090a0b0c0d0e0f101112131415161718 22222222222222222222222222222222 bda298884f5c3a9eb7068aa7063a3b75
+    decrypt_block -a aes192 -m ofb 000102030405060708090a0b0c0d0e0f101112131415161718 22222222222222222222222222222222 bda298884f5c3a9eb7068aa7063a3b75
 
 File encryption
 ---------------
 
-### encrypt_file.exe
+### encrypt_file
 
 Encrypts a file using the selected algorithm in the specified mode of
 operation.
 
-For example, to encrypt the plaintext from `input.txt`
+For example, to encrypt the plaintext from "input.txt"
 
 * using AES-128 in ECB mode
 * with key `0x11111111111111111111111111111111`
-* and write the ciphertext to `output.txt`,
+* and write the ciphertext to "output.txt",
 
 run:
 
-    encrypt_file.exe -a aes128 -m ecb -k 11111111111111111111111111111111 -i input.txt -o output.txt
+    encrypt_file -a aes128 -m ecb -k 11111111111111111111111111111111 -i input.txt -o output.txt
 
-To encrypt the plaintext from `input.txt`
+To encrypt the plaintext from "input.txt"
 
 * using AES-192 in OFB mode
 * with key `0x111111111111111111111111111111111111111111111111`
 * and initialization vector `0x22222222222222222222222222222222`
-* and write the ciphertext to `output.txt`:
+* and write the ciphertext to "output.txt":
 
 run
 
-    encrypt_file.exe -a aes192 -m ofb -k 111111111111111111111111111111111111111111111111 -v 22222222222222222222222222222222 -i input.txt -o output.txt
+    encrypt_file -a aes192 -m ofb -k 111111111111111111111111111111111111111111111111 -v 22222222222222222222222222222222 -i input.txt -o output.txt
 
-### decrypt_file.exe
+### decrypt_file
 
 Decrypts a file using the selected algorithm in the specified mode of
 operation.
 
-To decrypt the ciphertext from `input.txt`
+To decrypt the ciphertext from "input.txt"
 
 * using AES-128 in ECB mode
 * with key `0x11111111111111111111111111111111`
-* and write the plaintext to `output.txt`,
+* and write the plaintext to "output.txt",
 
 run
 
-    decrypt_file.exe -a aes128 -m ecb -k 11111111111111111111111111111111 -i input.txt -o output.txt
+    decrypt_file -a aes128 -m ecb -k 11111111111111111111111111111111 -i input.txt -o output.txt
 
-To decrypt the ciphertext from `input.txt`
+To decrypt the ciphertext from "input.txt"
 
 * using AES-192 in OFB mode
 * with key `0x111111111111111111111111111111111111111111111111`
 * and initialization vector `0x22222222222222222222222222222222`
-* and write the plaintext to `output.txt`,
+* and write the plaintext to "output.txt",
 
 run
 
-    decrypt_file.exe -a aes192 -m ofb -k 111111111111111111111111111111111111111111111111 -v 22222222222222222222222222222222 -i input.txt -o output.txt
+    decrypt_file -a aes192 -m ofb -k 111111111111111111111111111111111111111111111111 -v 22222222222222222222222222222222 -i input.txt -o output.txt
 
 Bitmap encryption
 -----------------
@@ -138,19 +138,15 @@ Plaintext BMP    | Encrypted in ECB mode | Encrypted in CBC mode
 [cipherfly_ecb.bmp]: bmp/cipherfly_ecb.bmp
 [cipherfly_cbc.bmp]: bmp/cipherfly_cbc.bmp
 
-### encrypt_bmp.exe
+### encrypt_bmp
 
 Encrypts the pixels in a BMP image file, preserving the header.
-The usage is the same as for [encrypt_file.exe].
+The usage is the same as for [encrypt_file](#encrypt_file).
 
-[encrypt_file.exe]: #encrypt_fileexe
-
-### decrypt_bmp.exe
+### decrypt_bmp
 
 Decrypts the pixels in a BMP image file, preserving the header.
-The usage is the same as for [decrypt_file.exe].
-
-[decrypt_file.exe]: #decrypt_fileexe
+The usage is the same as for [decrypt_file](#decrypt_file).
 
 See also
 --------
