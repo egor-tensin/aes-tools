@@ -73,10 +73,10 @@ class Tools:
                 os.environ['PATH'] += os.pathsep + str(search_dirs)
         self._use_sde = use_sde
 
-    _ENCRYPT_BLOCK = 'encrypt_block.exe'
-    _DECRYPT_BLOCK = 'decrypt_block.exe'
-    _ENCRYPT_FILE = 'encrypt_file.exe'
-    _DECRYPT_FILE = 'decrypt_file.exe'
+    _ENCRYPT_BLOCK = 'encrypt_block'
+    _DECRYPT_BLOCK = 'decrypt_block'
+    _ENCRYPT_FILE = 'encrypt_file'
+    _DECRYPT_FILE = 'decrypt_file'
 
     def run(self, tool_path, args):
         cmd_list = ['sde', '--', tool_path] if self._use_sde else [tool_path]
