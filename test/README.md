@@ -60,7 +60,7 @@ Pass the `--help` flag to examine the script's usage info.
 ### Prerequisites
 
 To run the test scripts, Python 3.4 or higher is required.
-The author is using Python 3.5.1.
+Python 3.5.1 has been verified to work properly.
 
 ### NIST Special Publication 800-38A
 
