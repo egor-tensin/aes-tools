@@ -11,11 +11,12 @@ from datetime import datetime
 from enum import Enum
 import logging
 import os.path
+from subprocess import CalledProcessError
 import sys
 from tempfile import TemporaryDirectory
 import zipfile
 
-from toolkit import *
+from toolkit import Algorithm, BlockInput, Mode, Tools
 
 class _MultiOrderedDict(OrderedDict):
     def __setitem__(self, key, value):
@@ -41,6 +42,8 @@ class TestExitCode(Enum):
 class TestFile:
     def __init__(self, path):
         self._path = path
+        self._algorithm = None
+        self._mode = None
         self._recognized = False
         self._parse_path()
         if not self.recognized():
@@ -103,7 +106,7 @@ class TestFile:
             keys, plaintexts, ciphertexts, init_vectors = self._encryption_data
             inputs = self._gen_inputs(keys, plaintexts, init_vectors)
             return self._run_tests(tools.run_encrypt_block, inputs, ciphertexts, use_boxes)
-        except Exception as e:
+        except CalledProcessError as e:
             logging.error('Encountered an exception!')
             logging.exception(e)
             return TestExitCode.ERROR
@@ -116,7 +119,7 @@ class TestFile:
             keys, plaintexts, ciphertexts, init_vectors = self._decryption_data
             inputs = self._gen_inputs(keys, ciphertexts, init_vectors)
             return self._run_tests(tools.run_decrypt_block, inputs, plaintexts, use_boxes)
-        except Exception as e:
+        except CalledProcessError as e:
             logging.error('Encountered an exception!')
             logging.exception(e)
             return TestExitCode.ERROR
@@ -177,8 +180,8 @@ class TestArchive(zipfile.ZipFile):
 
     def enum_test_files(self):
         with TemporaryDirectory() as tmp_dir:
-            for p in self.namelist():
-                yield TestFile(self.extract(p, tmp_dir))
+            for fp in self.namelist():
+                yield TestFile(self.extract(fp, tmp_dir))
 
 def _build_default_log_path():
     return datetime.now().strftime('{}_%Y-%m-%d_%H-%M-%S.log').format(

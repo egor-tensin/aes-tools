@@ -8,9 +8,10 @@ from datetime import datetime
 from enum import Enum
 import logging
 import os.path
+from subprocess import CalledProcessError
 import sys
 
-from toolkit import *
+from toolkit import Algorithm, BlockInput, Mode, Tools
 
 _TEST_PLAINTEXTS = [
     '6bc1bee22e409f96e93d7e117393172a',
@@ -188,7 +189,7 @@ def run_encryption_test(tools, algorithm, mode, use_boxes=False):
             return TestExitCode.SUCCESS
         else:
             return TestExitCode.FAILURE
-    except Exception as e:
+    except CalledProcessError as e:
         logging.error('Encountered an exception!')
         logging.exception(e)
         return TestExitCode.ERROR
@@ -209,7 +210,7 @@ def run_decryption_test(tools, algorithm, mode, use_boxes=False):
             return TestExitCode.SUCCESS
         else:
             return TestExitCode.FAILURE
-    except Exception as e:
+    except CalledProcessError as e:
         logging.error('Encountered an exception!')
         logging.exception(e)
         return TestExitCode.ERROR

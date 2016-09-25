@@ -12,10 +12,11 @@ import filecmp
 import logging
 import os
 import shutil
+from subprocess import CalledProcessError
 import sys
 from tempfile import NamedTemporaryFile
 
-from toolkit import *
+from toolkit import Algorithm, Mode, Tools
 
 class TestExitCode(Enum):
     SUCCESS, FAILURE, ERROR, SKIPPED = range(1, 5)
@@ -26,19 +27,22 @@ _PLAIN_EXT = 'plain'
 _CIPHER_EXT = 'cipher'
 
 def _list_dirs(root_path):
-    xs = map(lambda x: os.path.join(root_path, x), os.listdir(root_path))
-    return filter(os.path.isdir, xs)
+    for fp in os.listdir(root_path):
+        fp = os.path.join(root_path, fp)
+        if os.path.isdir(fp):
+            yield fp
 
 def _list_files(root_path, ext):
-    xs = glob(os.path.join(root_path, '*.{}'.format(ext)))
-    return filter(os.path.isfile, xs)
+    for fp in glob(os.path.join(root_path, '*.{}'.format(ext))):
+        if os.path.isfile(fp):
+            yield fp
 
 def _list_keys(root_path):
     return _list_files(root_path, _KEY_EXT)
 
 def _read_first_line(path):
-    with open(path) as f:
-        return f.readline()
+    with open(path) as fd:
+        return fd.readline()
 
 def _read_key(key_path):
     return _read_first_line(key_path)
@@ -91,7 +95,7 @@ def run_encryption_test(tools, algorithm, mode, key, plaintext_path,
             else:
                 logging.error('The encrypted file doesn\'t match the ciphertext file')
                 return TestExitCode.FAILURE
-        except Exception as e:
+        except CalledProcessError as e:
             logging.error('Encountered an exception!')
             logging.exception(e)
             return TestExitCode.ERROR
@@ -115,7 +119,7 @@ def run_decryption_test(tools, algorithm, mode, key, plaintext_path,
             else:
                 logging.error('The decrypted file doesn\'t match the plaintext file')
                 return TestExitCode.FAILURE
-        except Exception as e:
+        except CalledProcessError as e:
             logging.error('Encountered an exception!')
             logging.exception(e)
             return TestExitCode.ERROR
