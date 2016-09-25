@@ -1,10 +1,7 @@
-/**
- * \file
- * \author Egor Tensin <Egor.Tensin@gmail.com>
- * \date 2015
- * \copyright This file is licensed under the terms of the MIT License.
- *            See LICENSE.txt for details.
- */
+// Copyright (c) 2015 Egor Tensin <Egor.Tensin@gmail.com>
+// This file is part of the "AES tools" project.
+// For details, see https://github.com/egor-tensin/aes-tools.
+// Distributed under the MIT License.
 
 #include <aes/all.h>
 

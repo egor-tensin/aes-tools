@@ -47,14 +47,6 @@ After you install the emulator, you can run an executable like this:
 
 [Intel Software Development Emulator]: https://software.intel.com/en-us/articles/intel-software-development-emulator
 
-Documentation
--------------
-
-You can generate the docs using [Doxygen].
-The docs will be generated in the "doc/" directory under the project's root.
-
-[Doxygen]: http://www.stack.nl/~dimitri/doxygen/
-
 See also
 --------
 
@@ -67,8 +59,7 @@ See also
 License
 -------
 
-This project, including all of the files and their contents, is licensed under
-the terms of the MIT License.
+Distributed under the MIT License.
 See [LICENSE.txt] for details.
 
 [LICENSE.txt]: LICENSE.txt
