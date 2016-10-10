@@ -27,15 +27,15 @@ _PLAIN_EXT = 'plain'
 _CIPHER_EXT = 'cipher'
 
 def _list_dirs(root_path):
-    for fp in os.listdir(root_path):
-        fp = os.path.join(root_path, fp)
-        if os.path.isdir(fp):
-            yield fp
+    for path in os.listdir(root_path):
+        path = os.path.join(root_path, path)
+        if os.path.isdir(path):
+            yield path
 
 def _list_files(root_path, ext):
-    for fp in glob(os.path.join(root_path, '*.{}'.format(ext))):
-        if os.path.isfile(fp):
-            yield fp
+    for path in glob(os.path.join(root_path, '*.{}'.format(ext))):
+        if os.path.isfile(path):
+            yield path
 
 def _list_keys(root_path):
     return _list_files(root_path, _KEY_EXT)

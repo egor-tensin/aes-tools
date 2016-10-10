@@ -180,8 +180,8 @@ class TestArchive(zipfile.ZipFile):
 
     def enum_test_files(self):
         with TemporaryDirectory() as tmp_dir:
-            for fp in self.namelist():
-                yield TestFile(self.extract(fp, tmp_dir))
+            for path in self.namelist():
+                yield TestFile(self.extract(path, tmp_dir))
 
 def _build_default_log_path():
     return datetime.now().strftime('{}_%Y-%m-%d_%H-%M-%S.log').format(
