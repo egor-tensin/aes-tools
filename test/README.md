@@ -17,7 +17,7 @@ Manual testing
 
 You can validate the implementation manually using the block
 encryption/decryption utilities `encrypt_block` and `decrypt_block`.
-Pass the `--help` flag to examine the utility's usage info.
+Pass the `--help` flag to an utility to examine its detailed usage information.
 
 ```
 > encrypt_block -a aes128 -m ecb -- 000102030405060708090a0b0c0d0e0f 00112233445566778899aabbccddeeff
@@ -55,12 +55,12 @@ You must therefore make sure that
 To pass the path of the directory with the required utilities, use the `--path`
 parameter.
 To allow the utilities to run on older CPUs, pass the `--sde` flag.
-Pass the `--help` flag to examine the script's usage info.
+Pass the `--help` flag to a script to examine its detailed usage information.
 
 ### Prerequisites
 
 To run the test scripts, Python 3.4 or higher is required.
-Python 3.5.1 has been verified to work properly.
+CPython 3.5.1 has been verified to work properly.
 
 ### NIST Special Publication 800-38A
 

@@ -3,7 +3,7 @@ Utilities
 
 A couple of useful utilities are built on top of the library.
 Each of the utilities accepts the `--help` flag, which can be used to examine
-the utility's usage info.
+utility's detailed usage information.
 
 Block encryption
 ----------------
@@ -141,12 +141,12 @@ Plaintext BMP    | Encrypted in ECB mode | Encrypted in CBC mode
 ### encrypt_bmp
 
 Encrypts the pixels in a BMP image file, preserving the header.
-The usage is the same as for [encrypt_file](#encrypt_file).
+Otherwise, it's used the same way [encrypt_file](#encrypt_file) is.
 
 ### decrypt_bmp
 
 Decrypts the pixels in a BMP image file, preserving the header.
-The usage is the same as for [decrypt_file](#decrypt_file).
+Otherwise, it's used the same way [decrypt_file](#decrypt_file) is.
 
 See also
 --------
