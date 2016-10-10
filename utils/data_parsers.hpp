@@ -16,8 +16,6 @@
 
 static std::istream& operator>>(std::istream& is, aes::Mode& dest)
 {
-    static const char* const argument_name = "mode";
-
     std::string src;
     is >> src;
 
@@ -41,8 +39,6 @@ static std::istream& operator>>(std::istream& is, aes::Mode& dest)
 
 static std::istream& operator>>(std::istream& is, aes::Algorithm& dest)
 {
-    static const char* const argument_name = "algorithm";
-
     std::string src;
     is >> src;
 
