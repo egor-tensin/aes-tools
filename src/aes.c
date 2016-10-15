@@ -26,7 +26,7 @@ AES_StatusCode aes_AES_format_block(
 
     char* cursor = str->str;
 
-    __declspec(align(16)) unsigned char bytes[16];
+    AES_ALIGN(unsigned char, 16) bytes[16];
     aes_store_block128_aligned(bytes, *block);
 
     for (int i = 0; i < 16; ++i, cursor += 2)
@@ -51,7 +51,7 @@ AES_StatusCode aes_AES_format_block_as_matrix(
 
     char* cursor = str->str;
 
-    __declspec(align(16)) unsigned char bytes[4][4];
+    AES_ALIGN(unsigned char, 16) bytes[4][4];
     aes_store_block128_aligned(bytes, *block);
 
     for (int i = 0; i < 4; ++i, cursor += 3)
@@ -118,7 +118,7 @@ AES_StatusCode aes_AES_parse_block(
 
     const char* cursor = src;
 
-    __declspec(align(16)) unsigned char bytes[16];
+    AES_ALIGN(unsigned char, 16) bytes[16];
 
     for (int i = 0; i < 16; ++i)
     {
@@ -149,7 +149,7 @@ AES_StatusCode aes_AES128_format_key(
 
     char* cursor = str->str;
 
-    __declspec(align(16)) unsigned char bytes[16];
+    AES_ALIGN(unsigned char, 16) bytes[16];
     aes_store_block128_aligned(bytes, key->key);
 
     for (int i = 0; i < 16; ++i, cursor += 2)
@@ -175,7 +175,7 @@ AES_StatusCode aes_AES192_format_key(
     char* cursor = str->str;
 
     {
-        __declspec(align(16)) unsigned char bytes[16];
+        AES_ALIGN(unsigned char, 16) bytes[16];
         aes_store_block128_aligned(bytes, key->lo);
 
         for (int i = 0; i < 16; ++i, cursor += 2)
@@ -183,7 +183,7 @@ AES_StatusCode aes_AES192_format_key(
     }
 
     {
-        __declspec(align(16)) unsigned char bytes[16];
+        AES_ALIGN(unsigned char, 16) bytes[16];
         aes_store_block128_aligned(bytes, key->hi);
 
         for (int i = 0; i < 8; ++i, cursor += 2)
@@ -210,7 +210,7 @@ AES_StatusCode aes_AES256_format_key(
     char* cursor = str->str;
 
     {
-        __declspec(align(16)) unsigned char bytes[16];
+        AES_ALIGN(unsigned char, 16) bytes[16];
         aes_store_block128_aligned(bytes, key->lo);
 
         for (int i = 0; i < 16; ++i, cursor += 2)
@@ -218,7 +218,7 @@ AES_StatusCode aes_AES256_format_key(
     }
 
     {
-        __declspec(align(16)) unsigned char bytes[16];
+        AES_ALIGN(unsigned char, 16) bytes[16];
         aes_store_block128_aligned(bytes, key->hi);
 
         for (int i = 0; i < 16; ++i, cursor += 2)
@@ -298,7 +298,7 @@ AES_StatusCode aes_AES192_parse_key(
     const char* cursor = src;
 
     {
-        __declspec(align(16)) unsigned char bytes[16];
+        AES_ALIGN(unsigned char, 16) bytes[16];
 
         for (int i = 0; i < 16; ++i)
         {
@@ -314,7 +314,7 @@ AES_StatusCode aes_AES192_parse_key(
     }
 
     {
-        __declspec(align(16)) unsigned char bytes[16];
+        AES_ALIGN(unsigned char, 16) bytes[16];
 
         for (int i = 0; i < 8; ++i)
         {
@@ -349,7 +349,7 @@ AES_StatusCode aes_AES256_parse_key(
     const char* cursor = src;
 
     {
-        __declspec(align(16)) unsigned char bytes[16];
+        AES_ALIGN(unsigned char, 16) bytes[16];
 
         for (int i = 0; i < 16; ++i)
         {
@@ -365,7 +365,7 @@ AES_StatusCode aes_AES256_parse_key(
     }
 
     {
-        __declspec(align(16)) unsigned char bytes[16];
+        AES_ALIGN(unsigned char, 16) bytes[16];
 
         for (int i = 0; i < 16; ++i)
         {

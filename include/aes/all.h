@@ -18,3 +18,4 @@
 #include "error.h"
 #include "mode.h"
 #include "padding.h"
+#include "workarounds.h"
