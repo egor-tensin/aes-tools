@@ -4,6 +4,6 @@ add_library(libaesxx INTERFACE)
 target_include_directories(libaesxx INTERFACE include/ ${Boost_INCLUDE_DIRS})
 target_link_libraries(libaesxx INTERFACE libaes)
 
-if(CMAKE_COMPILER_IS_GNUCXX)
+if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     target_compile_options(libaesxx INTERFACE -std=c++11)
 endif()

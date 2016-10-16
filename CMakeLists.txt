@@ -2,7 +2,7 @@ project(aes_tools)
 
 if(MSVC)
     add_compile_options(/MP /W4)
-elseif(CMAKE_COMPILER_IS_GNUCC)
+elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     add_compile_options(-Wall -Wextra)
 endif()
 
@@ -15,7 +15,7 @@ function(aes_tools_use_static_runtime target)
             target_compile_options(${target} PRIVATE
                 $<$<CONFIG:Release>:/MT>
                 $<$<CONFIG:Debug>:/MTd>)
-        elseif(CMAKE_COMPILER_IS_GNUCC)
+        elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
             get_target_property(type ${target} TYPE)
             if(type STREQUAL EXECUTABLE)
                 target_link_libraries(${target} PRIVATE
@@ -30,7 +30,7 @@ macro(add_executable target)
     _add_executable(${ARGV})
     if(TARGET ${target})
         aes_tools_use_static_runtime(${target})
-        if(CMAKE_COMPILER_IS_GNUCC)
+        if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
             target_link_libraries(${target} PRIVATE $<$<CONFIG:Release>:-s>)
         endif()
     endif()
@@ -55,7 +55,7 @@ aes_tools_use_static_runtime(libaes)
 
 if(MSVC)
     target_compile_definitions(libaes PRIVATE _CRT_SECURE_NO_WARNINGS)
-elseif(CMAKE_COMPILER_IS_GNUCC)
+elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     target_compile_options(libaes PUBLIC -mssse3 -maes)
 endif()
 
