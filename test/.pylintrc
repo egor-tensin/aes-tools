@@ -1,35 +1,34 @@
-[MESSAGES CONTROL]
+[MASTER]
 
-#disable=reload-builtin,next-method-called,old-division,unicode-builtin,basestring-builtin,delslice-method,getslice-method,old-octal-literal,standarderror-builtin,reduce-builtin,xrange-builtin,coerce-builtin,coerce-method,buffer-builtin,file-builtin,filter-builtin-not-iterating,raising-string,no-absolute-import,print-statement,range-builtin-not-iterating,using-cmp-argument,map-builtin-not-iterating,indexing-exception,long-builtin,input-builtin,import-star-module-level,hex-method,unichr-builtin,zip-builtin-not-iterating,dict-view-method,backtick,cmp-builtin,old-raise-syntax,long-suffix,raw_input-builtin,execfile-builtin,dict-iter-method,parameter-unpacking,suppressed-message,unpacking-in-except,cmp-method,intern-builtin,metaclass-assignment,old-ne-operator,apply-builtin,round-builtin,oct-method,useless-suppression,setslice-method,nonzero-method
-disable=missing-docstring
+#disable=coerce-method,import-star-module-level,basestring-builtin,old-ne-operator,raising-string,apply-builtin,unicode-builtin,buffer-builtin,delslice-method,input-builtin,xrange-builtin,round-builtin,hex-method,using-cmp-argument,standarderror-builtin,print-statement,unichr-builtin,cmp-builtin,map-builtin-not-iterating,oct-method,filter-builtin-not-iterating,parameter-unpacking,old-raise-syntax,backtick,old-octal-literal,suppressed-message,long-builtin,unpacking-in-except,metaclass-assignment,no-absolute-import,execfile-builtin,nonzero-method,missing-docstring,long-suffix,raw_input-builtin,old-division,getslice-method,indexing-exception,next-method-called,dict-iter-method,reload-builtin,coerce-builtin,dict-view-method,cmp-method,setslice-method,range-builtin-not-iterating,useless-suppression,zip-builtin-not-iterating,intern-builtin,file-builtin,reduce-builtin
+disable=invalid-name,missing-docstring
 
 [BASIC]
 
 #bad-functions=map,filter
 #good-names=i,j,k,ex,Run,_
-good-names=e,fd,i,iv
 #bad-names=foo,bar,baz,toto,tutu,tata
 #name-group=
 #include-naming-hint=no
-#variable-rgx=[a-z_][a-z0-9_]{2,30}$
-#variable-name-hint=[a-z_][a-z0-9_]{2,30}$
-#module-rgx=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
-#module-name-hint=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
-#class-rgx=[A-Z_][a-zA-Z0-9]+$
-#class-name-hint=[A-Z_][a-zA-Z0-9]+$
 #method-rgx=[a-z_][a-z0-9_]{2,30}$
 #method-name-hint=[a-z_][a-z0-9_]{2,30}$
-#class-attribute-rgx=([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$
-#class-attribute-name-hint=([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$
-#const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
-#const-name-hint=(([A-Z_][A-Z0-9_]*)|(__.*__))$
-#function-rgx=[a-z_][a-z0-9_]{2,30}$
-#function-name-hint=[a-z_][a-z0-9_]{2,30}$
 #attr-rgx=[a-z_][a-z0-9_]{2,30}$
 #attr-name-hint=[a-z_][a-z0-9_]{2,30}$
+#module-rgx=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
+#module-name-hint=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
 #argument-rgx=[a-z_][a-z0-9_]{2,30}$
 #argument-name-hint=[a-z_][a-z0-9_]{2,30}$
+#class-attribute-rgx=([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$
+#class-attribute-name-hint=([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$
+#class-rgx=[A-Z_][a-zA-Z0-9]+$
+#class-name-hint=[A-Z_][a-zA-Z0-9]+$
+#const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
+#const-name-hint=(([A-Z_][A-Z0-9_]*)|(__.*__))$
+#variable-rgx=[a-z_][a-z0-9_]{2,30}$
+#variable-name-hint=[a-z_][a-z0-9_]{2,30}$
 #inlinevar-rgx=[A-Za-z_][A-Za-z0-9_]*$
 #inlinevar-name-hint=[A-Za-z_][A-Za-z0-9_]*$
+#function-rgx=[a-z_][a-z0-9_]{2,30}$
+#function-name-hint=[a-z_][a-z0-9_]{2,30}$
 #no-docstring-rgx=^_
 #docstring-min-length=-1
