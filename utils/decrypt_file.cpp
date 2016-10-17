@@ -4,65 +4,28 @@
 // Distributed under the MIT License.
 
 #include "file_cmd_parser.hpp"
+#include "helpers/file.hpp"
 
 #include <aesxx/all.hpp>
 
 #include <boost/program_options.hpp>
 
-#include <cstdlib>
-
 #include <exception>
-#include <fstream>
 #include <iostream>
-#include <iterator>
 #include <string>
 #include <vector>
 
 namespace
 {
-    std::ifstream::pos_type get_file_size(const std::string& path)
-    {
-        std::ifstream ifs;
-        ifs.exceptions(std::ifstream::badbit | std::ifstream::failbit);
-        ifs.open(path, std::ifstream::binary | std::ifstream::ate);
-        return ifs.tellg();
-    }
-
-    std::vector<char> read_file(const std::string& path)
-    {
-        const auto size = static_cast<std::size_t>(get_file_size(path));
-
-        std::ifstream ifs;
-        ifs.exceptions(std::ifstream::badbit | std::ifstream::failbit);
-        ifs.open(path, std::ifstream::binary);
-
-        std::vector<char> src_buf;
-        src_buf.reserve(size);
-        src_buf.assign(
-            std::istreambuf_iterator<char>(ifs),
-            std::istreambuf_iterator<char>());
-        return src_buf;
-    }
-
-    void write_file(
-        const std::string& path,
-        const std::vector<unsigned char>& src)
-    {
-        std::ofstream ofs;
-        ofs.exceptions(std::ofstream::badbit | std::ofstream::failbit);
-        ofs.open(path, std::ofstream::binary);
-        ofs.write(reinterpret_cast<const char*>(src.data()), src.size());
-    }
-
     void decrypt_file(
         aes::Box& box,
         const std::string& ciphertext_path,
         const std::string& plaintext_path)
     {
-        const auto ciphertext_buf = read_file(ciphertext_path);
+        const auto ciphertext_buf = file::read_file(ciphertext_path);
         const auto plaintext_buf = box.decrypt_buffer(
             ciphertext_buf.data(), ciphertext_buf.size());
-        write_file(plaintext_path, plaintext_buf);
+        file::write_file(plaintext_path, plaintext_buf);
     }
 
     void decrypt_file(const Settings& settings)

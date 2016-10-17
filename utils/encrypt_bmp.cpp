@@ -4,65 +4,29 @@
 // Distributed under the MIT License.
 
 #include "file_cmd_parser.hpp"
+#include "helpers/file.hpp"
 
 #include <aesxx/all.hpp>
 
+#include <Windows.h>
+
 #include <boost/program_options.hpp>
 
-#include <cstdlib>
 #include <cstring>
 
 #include <exception>
-#include <fstream>
 #include <iostream>
-#include <iterator>
 #include <string>
 #include <vector>
 
-#include <Windows.h>
-
 namespace
 {
-    std::ifstream::pos_type get_file_size(const std::string& path)
-    {
-        std::ifstream ifs;
-        ifs.exceptions(std::ifstream::badbit | std::ifstream::failbit);
-        ifs.open(path, std::ifstream::binary | std::ifstream::ate);
-        return ifs.tellg();
-    }
-
-    std::vector<char> read_file(const std::string& path)
-    {
-        const auto size = static_cast<std::size_t>(get_file_size(path));
-
-        std::ifstream ifs;
-        ifs.exceptions(std::ifstream::badbit | std::ifstream::failbit);
-        ifs.open(path, std::ifstream::binary);
-
-        std::vector<char> plaintext_buf;
-        plaintext_buf.reserve(size);
-        plaintext_buf.assign(
-            std::istreambuf_iterator<char>(ifs),
-            std::istreambuf_iterator<char>());
-        return plaintext_buf;
-    }
-
-    void write_file(
-        const std::string& path,
-        const std::vector<unsigned char>& src)
-    {
-        std::ofstream ofs;
-        ofs.exceptions(std::ofstream::badbit | std::ofstream::failbit);
-        ofs.open(path, std::ofstream::binary);
-        ofs.write(reinterpret_cast<const char*>(src.data()), src.size());
-    }
-
     void encrypt_bmp(
         aes::Box& box,
         const std::string& plaintext_path,
         const std::string& ciphertext_path)
     {
-        const auto plaintext_buf = read_file(plaintext_path);
+        const auto plaintext_buf = file::read_file(plaintext_path);
 
         const auto bmp_header = reinterpret_cast<const BITMAPFILEHEADER*>(plaintext_buf.data());
 
@@ -77,7 +41,7 @@ namespace
         std::memcpy(ciphertext_buf.data(), bmp_header, header_size);
         std::memcpy(ciphertext_buf.data() + header_size, cipherpixels.data(), cipherpixels.size());
 
-        write_file(ciphertext_path, ciphertext_buf);
+        file::write_file(ciphertext_path, ciphertext_buf);
     }
 
     void encrypt_bmp(const Settings& settings)
