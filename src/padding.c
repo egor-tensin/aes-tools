@@ -60,7 +60,7 @@ static AES_StatusCode aes_fill_with_padding_pkcs7(
     AES_ErrorDetails* err_details)
 {
     AES_UNUSED_PARAMETER(err_details);
-    memset(dest, padding_size, padding_size);
+    memset(dest, (int) padding_size, padding_size);
     return AES_SUCCESS;
 }
 
