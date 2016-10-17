@@ -4,20 +4,16 @@
 // Distributed under the MIT License.
 
 #include "file_cmd_parser.hpp"
+#include "helpers/bmp.hpp"
 #include "helpers/file.hpp"
 
 #include <aesxx/all.hpp>
 
-#include <Windows.h>
-
 #include <boost/program_options.hpp>
-
-#include <cstring>
 
 #include <exception>
 #include <iostream>
 #include <string>
-#include <vector>
 
 namespace
 {
@@ -26,22 +22,11 @@ namespace
         const std::string& plaintext_path,
         const std::string& ciphertext_path)
     {
-        const auto plaintext_buf = file::read_file(plaintext_path);
-
-        const auto bmp_header = reinterpret_cast<const BITMAPFILEHEADER*>(plaintext_buf.data());
-
-        const auto header_size = bmp_header->bfOffBits;
-        const auto pixels = plaintext_buf.data() + header_size;
-        const auto pixels_size = plaintext_buf.size() - header_size;
-
-        const auto cipherpixels = box.encrypt_buffer(
-            pixels, pixels_size);
-
-        std::vector<unsigned char> ciphertext_buf(header_size + cipherpixels.size());
-        std::memcpy(ciphertext_buf.data(), bmp_header, header_size);
-        std::memcpy(ciphertext_buf.data() + header_size, cipherpixels.data(), cipherpixels.size());
-
-        file::write_file(ciphertext_path, ciphertext_buf);
+        bmp::BmpFile bmp{file::read_file(plaintext_path)};
+        bmp.replace_pixels(box.encrypt_buffer(
+            bmp.get_pixels(),
+            bmp.get_pixels_size()));
+        file::write_file(ciphertext_path, bmp.get_buffer(), bmp.get_size());
     }
 
     void encrypt_bmp(const Settings& settings)
