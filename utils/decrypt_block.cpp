@@ -195,8 +195,6 @@ int main(int argc, char** argv)
                         settings.verbose());
                 }
             }
-
-            return 0;
         }
         catch (const boost::program_options::error& e)
         {

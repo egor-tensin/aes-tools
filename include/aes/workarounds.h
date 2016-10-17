@@ -12,3 +12,5 @@
 #else
 #warning "couldn't determine alignment attribute"
 #endif
+
+#define AES_UNUSED_PARAMETER(...) (void) (__VA_ARGS__)
