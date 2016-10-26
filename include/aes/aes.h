@@ -41,41 +41,56 @@ typedef struct
 }
 AES_AES256_Key;
 
-static __inline void aes_AES_make_block(AES_AES_Block* dest, int hi3, int hi2, int lo1, int lo0)
+static __inline AES_AES_Block aes_AES_make_block(
+    int hi3, int hi2, int lo1, int lo0)
 {
-    *dest = aes_make_block128(hi3, hi2, lo1, lo0);
+    return aes_make_block128(hi3, hi2, lo1, lo0);
 }
 
-static __inline void aes_AES128_make_block(AES_AES128_Block* dest, int hi3, int hi2, int lo1, int lo0)
+static __inline AES_AES128_Block aes_AES128_make_block(
+    int hi3, int hi2, int lo1, int lo0)
 {
-    aes_AES_make_block(dest, hi3, hi2, lo1, lo0);
+    return aes_AES_make_block(hi3, hi2, lo1, lo0);
 }
 
-static __inline void aes_AES192_make_block(AES_AES192_Block* dest, int hi3, int hi2, int lo1, int lo0)
+static __inline AES_AES192_Block aes_AES192_make_block(
+    int hi3, int hi2, int lo1, int lo0)
 {
-    aes_AES_make_block(dest, hi3, hi2, lo1, lo0);
+    return aes_AES_make_block(hi3, hi2, lo1, lo0);
 }
 
-static __inline void aes_AES256_make_block(AES_AES256_Block* dest, int hi3, int hi2, int lo1, int lo0)
+static __inline AES_AES256_Block aes_AES256_make_block(
+    int hi3, int hi2, int lo1, int lo0)
 {
-    aes_AES_make_block(dest, hi3, hi2, lo1, lo0);
+    return aes_AES_make_block(hi3, hi2, lo1, lo0);
 }
 
-static __inline void aes_AES128_make_key(AES_AES128_Key* dest, int hi3, int hi2, int lo1, int lo0)
+static __inline AES_AES128_Key aes_AES128_make_key(
+    int hi3, int hi2, int lo1, int lo0)
 {
-    aes_AES_make_block(&dest->key, hi3, hi2, lo1, lo0);
+    AES_AES128_Key key;
+    key.key = aes_AES_make_block(hi3, hi2, lo1, lo0);
+    return key;
 }
 
-static __inline void aes_AES192_make_key(AES_AES192_Key* dest, int hi5, int hi4, int lo3, int lo2, int lo1, int lo0)
+static __inline AES_AES192_Key aes_AES192_make_key(
+    int hi5, int hi4,
+    int lo3, int lo2, int lo1, int lo0)
 {
-    aes_AES_make_block(&dest->hi, 0, 0, hi5, hi4);
-    aes_AES_make_block(&dest->lo, lo3, lo2, lo1, lo0);
+    AES_AES192_Key key;
+    key.hi = aes_AES_make_block(  0,   0, hi5, hi4);
+    key.lo = aes_AES_make_block(lo3, lo2, lo1, lo0);
+    return key;
 }
 
-static __inline void aes_AES256_make_key(AES_AES256_Key* dest, int hi7, int hi6, int hi5, int hi4, int lo3, int lo2, int lo1, int lo0)
+static __inline AES_AES256_Key aes_AES256_make_key(
+    int hi7, int hi6, int hi5, int hi4,
+    int lo3, int lo2, int lo1, int lo0)
 {
-    aes_AES_make_block(&dest->hi, hi7, hi6, hi5, hi4);
-    aes_AES_make_block(&dest->lo, lo3, lo2, lo1, lo0);
+    AES_AES256_Key key;
+    key.hi = aes_AES_make_block(hi7, hi6, hi5, hi4);
+    key.lo = aes_AES_make_block(lo3, lo2, lo1, lo0);
+    return key;
 }
 
 typedef struct { char str[33]; } AES_AES_BlockString;
