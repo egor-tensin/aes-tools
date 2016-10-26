@@ -6,11 +6,11 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     add_compile_options(-Wall -Wextra)
 endif()
 
-get_directory_property(AES_TOOLS_PARENT_DIRECTORY PARENT_DIRECTORY)
-set(AES_TOOLS_IS_ROOT $<NOT:AES_TOOLS_PARENT_DIRECTORY>)
+get_directory_property(parent_directory PARENT_DIRECTORY)
+set(is_root $<NOT:parent_directory>)
 
-function(aes_tools_use_static_runtime target)
-    if(TARGET ${target} AND AES_TOOLS_IS_ROOT)
+function(use_static_runtime target)
+    if(TARGET ${target} AND is_root)
         if(MSVC)
             target_compile_options(${target} PRIVATE
                 $<$<CONFIG:Release>:/MT>
@@ -29,7 +29,7 @@ endfunction()
 macro(add_executable target)
     _add_executable(${ARGV})
     if(TARGET ${target})
-        aes_tools_use_static_runtime(${target})
+        use_static_runtime(${target})
         if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
             target_link_libraries(${target} PRIVATE $<$<CONFIG:Release>:-s>)
         endif()
@@ -51,7 +51,7 @@ endif()
 
 add_library(libaes ${libaes_sources} ${libaes_headers})
 target_include_directories(libaes PUBLIC include/)
-aes_tools_use_static_runtime(libaes)
+use_static_runtime(libaes)
 
 if(MSVC)
     target_compile_definitions(libaes PRIVATE _CRT_SECURE_NO_WARNINGS)
