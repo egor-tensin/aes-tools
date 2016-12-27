@@ -18,9 +18,7 @@ function(use_static_runtime target)
         elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
             get_target_property(type ${target} TYPE)
             if(type STREQUAL EXECUTABLE)
-                target_link_libraries(${target} PRIVATE
-                    -static-libgcc
-                    -static-libstdc++)
+                target_link_libraries(${target} PRIVATE -static)
             endif()
         endif()
     endif()
