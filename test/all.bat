@@ -4,9 +4,9 @@
 
 @set utils_dir=%~1
 
-nist-sp-800-38a.py --path "%utils_dir%" || exit /b !errorlevel!
-cavp.py            --path "%utils_dir%" || exit /b !errorlevel!
-file.py            --path "%utils_dir%" || exit /b !errorlevel!
+nist.py --path "%utils_dir%" || exit /b !errorlevel!
+cavp.py --path "%utils_dir%" || exit /b !errorlevel!
+file.py --path "%utils_dir%" || exit /b !errorlevel!
 
 @goto :eof
 

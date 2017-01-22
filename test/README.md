@@ -65,10 +65,10 @@ CPython 3.5.1 has been verified to work properly.
 ### NIST Special Publication 800-38A
 
 To validate the implementation using the inputs from [NIST SP 800-38A], use
-`nist-sp-800-32a.py`:
+`nist.py`:
 
 ```
-> nist-sp-800-38a.py -p C:\workspace\personal\build\aes-tools\utils\Debug
+> nist.py -p C:\workspace\personal\build\aes-tools\utils\Debug
 ```
 
 [NIST SP 800-38A]: http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf
