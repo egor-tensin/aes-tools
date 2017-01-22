@@ -247,9 +247,10 @@ def run_tests(tools_path=(), use_sde=False, use_boxes=False, log_path=None):
     else:
         return 1
 
-def _parse_args(args=sys.argv):
+def _parse_args(args=None):
+    if args is None:
+        args = sys.argv[1:]
     parser = argparse.ArgumentParser()
-
     parser.add_argument('--path', '-p', dest='tools_path', metavar='PATH',
                         nargs='*',
                         help='set block encryption utilities directory path')
@@ -259,12 +260,10 @@ def _parse_args(args=sys.argv):
                         help='use the "boxes" interface')
     parser.add_argument('--log', '-l', dest='log_path', metavar='PATH',
                         help='set log file path')
+    return parser.parse_args(args)
 
-    return parser.parse_args(args[1:])
-
-def main(args=sys.argv):
-    args = _parse_args(args)
-    return run_tests(**vars(args))
+def main(args=None):
+    return run_tests(**vars(_parse_args(args)))
 
 if __name__ == '__main__':
     sys.exit(main())

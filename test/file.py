@@ -186,9 +186,10 @@ def run_tests(suite_path, tools_path=(), log_path=None, use_sde=False, force=Fal
     else:
         return 1
 
-def _parse_args(args=sys.argv):
+def _parse_args(args=None):
+    if args is None:
+        args = sys.argv[1:]
     parser = argparse.ArgumentParser()
-
     parser.add_argument('--path', '-p', dest='tools_path', metavar='PATH',
                         nargs='*',
                         help='set file encryption utilities directory path')
@@ -200,10 +201,9 @@ def _parse_args(args=sys.argv):
                         help='overwrite ciphertext files')
     parser.add_argument('--suite', '-s', dest='suite_path', default='file/',
                         help='set test suite directory path')
+    return parser.parse_args(args)
 
-    return parser.parse_args(args[1:])
-
-def main(args=sys.argv):
+def main(args=None):
     return run_tests(**vars(_parse_args(args)))
 
 if __name__ == '__main__':
