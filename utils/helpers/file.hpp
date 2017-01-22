@@ -10,18 +10,24 @@
 #include <iterator>
 #include <limits>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 namespace file
 {
+    inline std::size_t cast_to_size_t(std::streamoff size)
+    {
+        assert(size >= 0);
+        assert(static_cast<std::make_unsigned<std::streamoff>::type>(size) <= std::numeric_limits<std::size_t>::max());
+        return static_cast<std::size_t>(size);
+    }
+
     inline std::size_t get_file_size(const std::string& path)
     {
         std::ifstream ifs;
         ifs.exceptions(std::ifstream::badbit | std::ifstream::failbit);
         ifs.open(path, std::ifstream::binary | std::ifstream::ate);
-        const auto size = static_cast<std::streamoff>(ifs.tellg());
-        assert(size <= static_cast<std::streamoff>(std::numeric_limits<std::size_t>::max()));
-        return static_cast<std::size_t>(size);
+        return cast_to_size_t(ifs.tellg());
     }
 
     inline std::vector<char> read_file(const std::string& path)
