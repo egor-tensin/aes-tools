@@ -2,7 +2,7 @@
 
 @if [%1] == [] goto exit_with_usage
 
-set utils_dir=%~1
+@set utils_dir=%~1
 
 nist-sp-800-38a.py --path "%utils_dir%" || exit /b !errorlevel!
 cavp.py            --path "%utils_dir%" || exit /b !errorlevel!
