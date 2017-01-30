@@ -235,8 +235,7 @@ def _parse_args(args=None):
     return parser.parse_args(args)
 
 def main(args=None):
-    args = _parse_args(args)
-    return run_tests(**vars(args))
+    return run_tests(**vars(_parse_args(args)))
 
 if __name__ == '__main__':
     sys.exit(main())

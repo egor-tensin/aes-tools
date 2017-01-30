@@ -184,7 +184,8 @@ def run_encryption_test(tools, algorithm, mode, use_boxes=False):
         iv = get_test_iv(algorithm, mode)
         expected_ciphertexts = get_test_ciphertexts(algorithm, mode)
         input_ = BlockInput(key, plaintexts, iv=iv)
-        actual_ciphertexts = tools.run_encrypt_block(algorithm, mode, input_, use_boxes)
+        actual_ciphertexts = tools.run_encrypt_block(
+            algorithm, mode, input_, use_boxes)
         if verify_test_output(actual_ciphertexts, expected_ciphertexts):
             return TestExitCode.SUCCESS
         else:
@@ -205,7 +206,8 @@ def run_decryption_test(tools, algorithm, mode, use_boxes=False):
         iv = get_test_iv(algorithm, mode)
         expected_plaintexts = get_test_plaintexts(algorithm, mode)
         input_ = BlockInput(key, ciphertexts, iv=iv)
-        actual_plaintexts = tools.run_decrypt_block(algorithm, mode, input_, use_boxes)
+        actual_plaintexts = tools.run_decrypt_block(
+            algorithm, mode, input_, use_boxes)
         if verify_test_output(actual_plaintexts, expected_plaintexts):
             return TestExitCode.SUCCESS
         else:
@@ -232,8 +234,10 @@ def run_tests(tools_path=(), use_sde=False, use_boxes=False, log_path=None):
 
     exit_codes = []
     for algorithm, mode in get_tested_algorithms_and_modes():
-        exit_codes.append(run_encryption_test(tools, algorithm, mode, use_boxes=use_boxes))
-        exit_codes.append(run_decryption_test(tools, algorithm, mode, use_boxes=use_boxes))
+        exit_codes.append(run_encryption_test(
+            tools, algorithm, mode, use_boxes=use_boxes))
+        exit_codes.append(run_decryption_test(
+            tools, algorithm, mode, use_boxes=use_boxes))
 
     logging.info('Test exit codes:')
     logging.info('\tSkipped:   %d', exit_codes.count(TestExitCode.SKIPPED))

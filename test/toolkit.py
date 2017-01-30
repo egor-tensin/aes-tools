@@ -123,15 +123,17 @@ class Tools:
         return args
 
     def run_encrypt_block(self, algorithm, mode, inputs, use_boxes=False):
-        return self.run(self._ENCRYPT_BLOCK,
-                        self._build_block_args(algorithm, mode, inputs, use_boxes))
+        args = self._build_block_args(algorithm, mode, inputs, use_boxes)
+        return self.run(self._ENCRYPT_BLOCK, args)
 
     def run_decrypt_block(self, algorithm, mode, inputs, use_boxes=False):
-        return self.run(self._DECRYPT_BLOCK,
-                        self._build_block_args(algorithm, mode, inputs, use_boxes))
+        args = self._build_block_args(algorithm, mode, inputs, use_boxes)
+        return self.run(self._DECRYPT_BLOCK, args)
 
     @staticmethod
-    def _file_settings_to_args(algorithm, mode, key, input_path, output_path, iv=None):
+    def _build_file_args(
+            algorithm, mode, key, input_path, output_path, iv=None):
+
         args = [
             '--algorithm', str(algorithm),
             '--mode', str(mode),
@@ -143,10 +145,16 @@ class Tools:
             args.extend(('--iv', iv))
         return args
 
-    def run_encrypt_file(self, algorithm, mode, key, input_path, output_path, iv=None):
-        return self.run(self._ENCRYPT_FILE,
-                        self._file_settings_to_args(algorithm, mode, key, input_path, output_path, iv))
+    def run_encrypt_file(
+            self, algorithm, mode, key, input_path, output_path, iv=None):
 
-    def run_decrypt_file(self, algorithm, mode, key, input_path, output_path, iv=None):
-        return self.run(self._DECRYPT_FILE,
-                        self._file_settings_to_args(algorithm, mode, key, input_path, output_path, iv))
+        args = self._build_file_args(
+            algorithm, mode, key, input_path, output_path, iv)
+        return self.run(self._ENCRYPT_FILE, args)
+
+    def run_decrypt_file(
+            self, algorithm, mode, key, input_path, output_path, iv=None):
+
+        args = self._build_file_args(
+            algorithm, mode, key, input_path, output_path, iv)
+        return self.run(self._DECRYPT_FILE, args)
