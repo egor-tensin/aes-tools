@@ -27,7 +27,8 @@ x86 and using static Boost libraries):
 
     > cmake -G "Visual Studio 12 2013" ^
         -D BOOST_ROOT=C:\workspace\third-party\boost_1_58_0 ^
-        -D Boost_USE_STATIC_LIBS=ON ^
+        -D Boost_USE_STATIC_LIBS=ON    ^
+        -D Boost_USE_STATIC_RUNTIME=ON ^
         C:\workspace\personal\aes-tools
     ...
 
