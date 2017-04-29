@@ -130,9 +130,9 @@ ECB mode (namely, the fact that identical plaintext blocks get mapped to
 identical ciphertext blocks).
 This can be explicitly shown using 8-bit-per-pixel bitmaps:
 
-Plaintext BMP    | Encrypted in ECB mode | Encrypted in CBC mode
----------------- | --------------------- | ---------------------
-![butterfly.bmp] | ![cipherfly_ecb.bmp]  | ![cipherfly_cbc.bmp]
+| Plaintext BMP    | Encrypted in ECB mode | Encrypted in CBC mode
+| ---------------- | --------------------- | ---------------------
+| ![butterfly.bmp] | ![cipherfly_ecb.bmp]  | ![cipherfly_cbc.bmp]
 
 [butterfly.bmp]: bmp/butterfly.bmp
 [cipherfly_ecb.bmp]: bmp/cipherfly_ecb.bmp
