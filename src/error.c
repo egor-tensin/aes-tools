@@ -155,13 +155,13 @@ size_t aes_format_error(
 
 static void aes_collect_call_stack(AES_ErrorDetails* err_details)
 {
-    err_details->call_stack_size = CaptureStackBackTrace(
+    err_details->call_stack_len = CaptureStackBackTrace(
         1, AES_MAX_CALL_STACK_LENGTH, err_details->call_stack, NULL);
 }
 #else
 static void aes_collect_call_stack(AES_ErrorDetails* err_details)
 {
-    err_details->call_stack_size = 0;
+    err_details->call_stack_len = 0;
 }
 #endif
 

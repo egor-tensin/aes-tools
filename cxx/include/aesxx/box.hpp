@@ -30,7 +30,7 @@ namespace aes
         {
             AES_BoxKeyString str;
             aes_box_format_key(
-                &str, algorithm, &src, ErrorDetailsThrowsInDestructor());
+                &str, algorithm, &src, ErrorDetailsThrowsInDestructor{});
             return reinterpret_cast<const char*>(&str);
         }
 
@@ -38,7 +38,7 @@ namespace aes
         {
             AES_BoxBlockString str;
             aes_box_format_block(
-                &str, algorithm, &src, ErrorDetailsThrowsInDestructor());
+                &str, algorithm, &src, ErrorDetailsThrowsInDestructor{});
             return reinterpret_cast<const char*>(&str);
         }
 
@@ -48,7 +48,7 @@ namespace aes
             const char* src)
         {
             aes_box_parse_block(&dest, algorithm, src,
-                ErrorDetailsThrowsInDestructor());
+                ErrorDetailsThrowsInDestructor{});
         }
 
         static void parse_block(
@@ -65,7 +65,7 @@ namespace aes
             const char* src)
         {
             aes_box_parse_key(&dest, algorithm, src,
-                ErrorDetailsThrowsInDestructor());
+                ErrorDetailsThrowsInDestructor{});
         }
 
         static void parse_key(
@@ -81,7 +81,7 @@ namespace aes
             , mode(AES_ECB)
         {
             aes_box_init(&impl, algorithm, &key, mode, nullptr,
-                ErrorDetailsThrowsInDestructor());
+                ErrorDetailsThrowsInDestructor{});
         }
 
         Box(Algorithm algorithm, const Key& key, Mode mode, const Block& iv)
@@ -89,21 +89,21 @@ namespace aes
             , mode(mode)
         {
             aes_box_init(&impl, algorithm, &key, mode, &iv,
-                ErrorDetailsThrowsInDestructor());
+                ErrorDetailsThrowsInDestructor{});
         }
 
         void encrypt_block(const Block& plaintext, Block& ciphertext)
         {
             aes_box_encrypt_block(
                 &impl, &plaintext, &ciphertext,
-                ErrorDetailsThrowsInDestructor());
+                ErrorDetailsThrowsInDestructor{});
         }
 
         void decrypt_block(const Block& ciphertext, Block& plaintext)
         {
             aes_box_decrypt_block(
                 &impl, &ciphertext, &plaintext,
-                ErrorDetailsThrowsInDestructor());
+                ErrorDetailsThrowsInDestructor{});
         }
 
         std::vector<unsigned char> encrypt_buffer(
@@ -118,7 +118,7 @@ namespace aes
                 src_size,
                 nullptr,
                 &dest_size,
-                aes::ErrorDetailsThrowsInDestructor());
+                aes::ErrorDetailsThrowsInDestructor{});
 
             std::vector<unsigned char> dest_buf;
             dest_buf.resize(dest_size);
@@ -129,7 +129,7 @@ namespace aes
                 src_size,
                 dest_buf.data(),
                 &dest_size,
-                aes::ErrorDetailsThrowsInDestructor());
+                aes::ErrorDetailsThrowsInDestructor{});
 
             dest_buf.resize(dest_size);
             return dest_buf;
@@ -147,7 +147,7 @@ namespace aes
                 src_size,
                 nullptr,
                 &dest_size,
-                aes::ErrorDetailsThrowsInDestructor());
+                aes::ErrorDetailsThrowsInDestructor{});
 
             std::vector<unsigned char> dest_buf;
             dest_buf.resize(dest_size);
@@ -158,7 +158,7 @@ namespace aes
                 src_size,
                 dest_buf.data(),
                 &dest_size,
-                aes::ErrorDetailsThrowsInDestructor());
+                aes::ErrorDetailsThrowsInDestructor{});
 
             dest_buf.resize(dest_size);
             return dest_buf;

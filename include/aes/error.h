@@ -51,7 +51,7 @@ typedef struct
     params;
 
     void* call_stack[AES_MAX_CALL_STACK_LENGTH];
-    size_t call_stack_size;
+    size_t call_stack_len;
 }
 AES_ErrorDetails;
 

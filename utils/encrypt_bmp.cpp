@@ -44,13 +44,13 @@ namespace
         {
             aes::Box::Block iv;
             aes::Box::parse_block(iv, algorithm, settings.get_iv_string());
-            aes::Box box{ algorithm, key, mode, iv };
+            aes::Box box{algorithm, key, mode, iv};
 
             encrypt_bmp(box, plaintext_path, ciphertext_path);
         }
         else
         {
-            aes::Box box{ algorithm, key };
+            aes::Box box{algorithm, key};
             encrypt_bmp(box, plaintext_path, ciphertext_path);
         }
     }
