@@ -11,15 +11,15 @@
 #include <boost/program_options.hpp>
 
 #include <istream>
-#include <map>
 #include <string>
+#include <unordered_map>
 
 static std::istream& operator>>(std::istream& is, aes::Mode& dest)
 {
     std::string src;
     is >> src;
 
-    static std::map<std::string, aes::Mode> lookup_table =
+    static const std::unordered_map<std::string, aes::Mode> lookup_table =
     {
         {"ecb", AES_ECB},
         {"cbc", AES_CBC},
@@ -42,7 +42,7 @@ static std::istream& operator>>(std::istream& is, aes::Algorithm& dest)
     std::string src;
     is >> src;
 
-    static std::map<std::string, aes::Algorithm> lookup_table =
+    static const std::unordered_map<std::string, aes::Algorithm> lookup_table =
     {
         {"aes128", AES_AES128},
         {"aes192", AES_AES192},

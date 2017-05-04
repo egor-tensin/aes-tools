@@ -138,8 +138,8 @@ class Tools:
             '--algorithm', str(algorithm),
             '--mode', str(mode),
             '--key', key,
-            '--input-path', input_path,
-            '--output-path', output_path
+            '--input', input_path,
+            '--output', output_path
         ]
         if iv is not None:
             args.extend(('--iv', iv))

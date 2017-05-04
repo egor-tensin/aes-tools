@@ -13,8 +13,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
-#include <iterator>
 #include <deque>
+#include <iterator>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -86,9 +86,9 @@ namespace
 
             po::notify(vm);
 
-            parse_inputs(settings, inputs, std::deque<std::string>(
+            inputs = parse_inputs(settings, std::deque<std::string>{
                 std::make_move_iterator(args.begin()),
-                std::make_move_iterator(args.end())));
+                std::make_move_iterator(args.end())});
 
             return settings;
         }
@@ -96,57 +96,55 @@ namespace
         bool exit_with_usage() const { return help_flag; }
 
     private:
-        static void parse_inputs(
+        static std::vector<Input> parse_inputs(
             const Settings& settings,
-            std::vector<Input>& inputs,
             std::deque<std::string>&& args)
         {
+            std::vector<Input> inputs;
+            while (!args.empty())
+                inputs.emplace_back(parse_input(settings, args));
+            return inputs;
+        }
+
+        static Input parse_input(
+            const Settings& settings,
+            std::deque<std::string>& args)
+        {
+            std::string key{std::move(args.front())};
+            args.pop_front();
+
+            std::string iv;
+
+            if (aes::mode_requires_init_vector(settings.mode))
+            {
+                if (args.empty())
+                    throw boost::program_options::error{"an initialization vector is required for the selected mode of operation"};
+                iv = std::move(args.front());
+                args.pop_front();
+            }
+
+            auto blocks = parse_blocks(args);
+
+            if (aes::mode_requires_init_vector(settings.mode))
+                return {key, iv, std::move(blocks)};
+            else
+                return {key, std::move(blocks)};
+        }
+
+        static std::vector<std::string> parse_blocks(std::deque<std::string>& args)
+        {
+            std::vector<std::string> blocks;
+
             while (!args.empty())
             {
-                auto key_string = std::move(args.front());
+                std::string block{std::move(args.front())};
                 args.pop_front();
-
-                std::string iv_string;
-
-                if (aes::mode_requires_init_vector(settings.mode))
-                {
-                    if (args.empty())
-                    {
-                        throw boost::program_options::error(
-                            "an initialization vector is required for the selected mode of operation");
-                    }
-                    iv_string = std::move(args.front());
-                    args.pop_front();
-                }
-
-                std::vector<std::string> input_block_strings;
-
-                while (!args.empty())
-                {
-                    if (args.front() == "--")
-                    {
-                        args.pop_front();
-                        break;
-                    }
-
-                    input_block_strings.emplace_back(std::move(args.front()));
-                    args.pop_front();
-                }
-
-                if (aes::mode_requires_init_vector(settings.mode))
-                {
-                    inputs.emplace_back(
-                        std::move(key_string),
-                        std::move(iv_string),
-                        std::move(input_block_strings));
-                }
-                else
-                {
-                    inputs.emplace_back(
-                        std::move(key_string),
-                        std::move(input_block_strings));
-                }
+                if (block == "--")
+                    break;
+                blocks.emplace_back(std::move(block));
             }
+
+            return blocks;
         }
 
         const std::string prog_name;

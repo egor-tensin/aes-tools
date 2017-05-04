@@ -27,13 +27,13 @@ namespace
 
         if (aes::ModeRequiresInitVector<mode>())
         {
-            aes::from_string<algorithm>(iv, input.get_iv_string());
+            aes::from_string<algorithm>(iv, input.iv);
             if (verbose)
                 dump_iv<algorithm>(iv);
         }
 
         typename aes::Types<algorithm>::Key key;
-        aes::from_string<algorithm>(key, input.get_key_string());
+        aes::from_string<algorithm>(key, input.key);
         if (verbose)
             dump_key<algorithm>(key);
 
@@ -41,10 +41,10 @@ namespace
         if (verbose)
             dump_wrapper<algorithm, mode>(decrypt);
 
-        for (const auto& input_block_string : input.get_input_block_strings())
+        for (const auto& block : input.blocks)
         {
             typename aes::Types<algorithm>::Block ciphertext, plaintext;
-            aes::from_string<algorithm>(ciphertext, input_block_string);
+            aes::from_string<algorithm>(ciphertext, block);
 
             decrypt.decrypt_block(ciphertext, plaintext);
 
@@ -123,12 +123,12 @@ namespace
 
     void decrypt_using_particular_box(
         aes::Box& box,
-        const std::vector<std::string>& input_block_strings)
+        const std::vector<std::string>& blocks)
     {
-        for (const auto& input_block_string : input_block_strings)
+        for (const auto& block : blocks)
         {
             aes::Box::Block ciphertext;
-            box.parse_block(ciphertext, input_block_string);
+            box.parse_block(ciphertext, block);
 
             aes::Box::Block plaintext;
             box.decrypt_block(ciphertext, plaintext);
@@ -142,20 +142,20 @@ namespace
         const Input& input)
     {
         aes::Box::Key key;
-        aes::Box::parse_key(key, algorithm, input.get_key_string());
+        aes::Box::parse_key(key, algorithm, input.key);
 
         if (aes::mode_requires_init_vector(mode))
         {
             aes::Box::Block iv;
-            aes::Box::parse_block(iv, algorithm, input.get_iv_string());
+            aes::Box::parse_block(iv, algorithm, input.iv);
             aes::Box box{algorithm, key, mode, iv};
 
-            decrypt_using_particular_box(box, input.get_input_block_strings());
+            decrypt_using_particular_box(box, input.blocks);
         }
         else
         {
             aes::Box box{algorithm, key};
-            decrypt_using_particular_box(box, input.get_input_block_strings());
+            decrypt_using_particular_box(box, input.blocks);
         }
     }
 }

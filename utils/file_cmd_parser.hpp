@@ -52,13 +52,13 @@ namespace
             namespace po = boost::program_options;
 
             options.add_options()
-                ("help,h", "show this message and exit")
-                ("mode,m",        po::value<aes::Mode>(&settings.mode)->required(), "set mode of operation")
-                ("algorithm,a",   po::value<aes::Algorithm>(&settings.algorithm)->required(), "set algorithm")
-                ("input-path,i",  po::value<std::string>(&settings.input_path)->required(), "set input file path")
-                ("output-path,o", po::value<std::string>(&settings.output_path)->required(), "set output file path")
-                ("key,k",         po::value<std::string>(&settings.key)->required(), "set encryption key")
-                ("iv,v",          po::value<std::string>(&settings.iv), "set initialization vector");
+                ("help,h",     "show this message and exit")
+                ("mode,m",      po::value<aes::Mode>(&settings.mode)->required(), "set mode of operation")
+                ("algorithm,a", po::value<aes::Algorithm>(&settings.algorithm)->required(), "set algorithm")
+                ("input,i",     po::value<std::string>(&settings.input_path)->required(), "set input file path")
+                ("output,o",    po::value<std::string>(&settings.output_path)->required(), "set output file path")
+                ("key,k",       po::value<std::string>(&settings.key)->required(), "set encryption key")
+                ("iv,v",        po::value<std::string>(&settings.iv), "set initialization vector");
 
             po::variables_map vm;
             po::store(po::parse_command_line(argc, argv, options), vm);

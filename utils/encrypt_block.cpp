@@ -27,13 +27,13 @@ namespace
 
         if (aes::ModeRequiresInitVector<mode>::value)
         {
-            aes::from_string<algorithm>(iv, input.get_iv_string());
+            aes::from_string<algorithm>(iv, input.iv);
             if (verbose)
                 dump_iv<algorithm>(iv);
         }
 
         typename aes::Types<algorithm>::Key key;
-        aes::from_string<algorithm>(key, input.get_key_string());
+        aes::from_string<algorithm>(key, input.key);
         if (verbose)
             dump_key<algorithm>(key);
 
@@ -41,7 +41,7 @@ namespace
         if (verbose)
             dump_wrapper<algorithm, mode>(encrypt);
 
-        for (const auto& input_block_string : input.get_input_block_strings())
+        for (const auto& input_block_string : input.blocks)
         {
             typename aes::Types<algorithm>::Block plaintext, ciphertext;
             aes::from_string<algorithm>(plaintext, input_block_string);
@@ -142,20 +142,20 @@ namespace
         const Input& input)
     {
         aes::Box::Key key;
-        aes::Box::parse_key(key, algorithm, input.get_key_string());
+        aes::Box::parse_key(key, algorithm, input.key);
 
         if (aes::mode_requires_init_vector(mode))
         {
             aes::Box::Block iv;
-            aes::Box::parse_block(iv, algorithm, input.get_iv_string());
+            aes::Box::parse_block(iv, algorithm, input.iv);
             aes::Box box{algorithm, key, mode, iv};
 
-            encrypt_using_particular_box(box, input.get_input_block_strings());
+            encrypt_using_particular_box(box, input.blocks);
         }
         else
         {
             aes::Box box{algorithm, key};
-            encrypt_using_particular_box(box, input.get_input_block_strings());
+            encrypt_using_particular_box(box, input.blocks);
         }
     }
 }

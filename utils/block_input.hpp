@@ -6,6 +6,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace
@@ -13,34 +14,19 @@ namespace
     class Input
     {
     public:
-        Input(
-            const std::string& key_string,
-            const std::string& iv_string,
-            const std::vector<std::string>& input_block_strings)
-            : key_string(key_string)
-            , iv_string(iv_string)
-            , input_block_strings(input_block_strings)
+        Input(const std::string& key, const std::string& iv, std::vector<std::string>&& blocks)
+            : key{key}
+            , iv{iv}
+            , blocks{std::move(blocks)}
         { }
 
-        Input(
-            const std::string& key_string,
-            const std::vector<std::string>& input_block_strings)
-            : key_string(key_string)
-            , input_block_strings(input_block_strings)
+        Input(const std::string& key, std::vector<std::string>&& blocks)
+            : key{key}
+            , blocks{std::move(blocks)}
         { }
 
-        const std::string& get_key_string() const { return key_string; }
-
-        const std::string& get_iv_string() const { return iv_string; }
-
-        const std::vector<std::string>& get_input_block_strings() const
-        {
-            return input_block_strings;
-        }
-
-    private:
-        const std::string key_string;
-        const std::string iv_string;
-        const std::vector<std::string> input_block_strings;
+        const std::string key;
+        const std::string iv;
+        const std::vector<std::string> blocks;
     };
 }
