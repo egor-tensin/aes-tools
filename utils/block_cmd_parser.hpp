@@ -27,18 +27,14 @@ namespace
     class Settings
     {
     public:
-        aes::Algorithm get_algorithm() const { return algorithm; }
-        aes::Mode get_mode() const { return mode; }
+        aes::Algorithm algorithm = AES_AES128;
+        aes::Mode mode = AES_ECB;
 
-        bool use_boxes() const { return use_boxes_flag; }
-        bool verbose() const { return verbose_flag; }
+        bool use_boxes = false;
+        bool verbose = false;
 
     private:
-        aes::Algorithm algorithm;
-        aes::Mode mode;
-
-        bool use_boxes_flag = false;
-        bool verbose_flag = false;
+        Settings() = default;
 
         friend class CommandLineParser;
     };
@@ -46,21 +42,23 @@ namespace
     class CommandLineParser
     {
     public:
-        CommandLineParser(const std::string& argv0)
-            : prog_name(boost::filesystem::path(argv0).filename().string())
-            , options("Options")
+        explicit CommandLineParser(const std::string& argv0)
+            : prog_name{boost::filesystem::path{argv0}.filename().string()}
+            , options{"Options"}
         { }
 
-        void parse(Settings& settings, int argc, char** argv, std::vector<Input>& inputs)
+        Settings parse(int argc, char** argv, std::vector<Input>& inputs)
         {
+            Settings settings;
+
             namespace po = boost::program_options;
 
             options.add_options()
-                ("help,h", "show this message and exit")
-                ("use-boxes,b", po::bool_switch(&settings.use_boxes_flag)->default_value(false), "use the \"boxes\" interface")
-                ("mode,m", po::value<aes::Mode>(&settings.mode)->required(), "set mode of operation")
+                ("help,h",      "show this message and exit")
+                ("use-boxes,b", po::bool_switch(&settings.use_boxes)->default_value(false), "use the \"boxes\" interface")
+                ("mode,m",      po::value<aes::Mode>(&settings.mode)->required(), "set mode of operation")
                 ("algorithm,a", po::value<aes::Algorithm>(&settings.algorithm)->required(), "set algorithm")
-                ("verbose,v", po::bool_switch(&settings.verbose_flag)->default_value(false), "enable verbose output");
+                ("verbose,v",   po::bool_switch(&settings.verbose)->default_value(false), "enable verbose output");
 
             std::vector<std::string> args;
 
@@ -83,15 +81,16 @@ namespace
             if (vm.count("help"))
             {
                 help_flag = true;
-                return;
+                return settings;
             }
 
             po::notify(vm);
 
             parse_inputs(settings, inputs, std::deque<std::string>(
                 std::make_move_iterator(args.begin()),
-                std::make_move_iterator(args.end())
-            ));
+                std::make_move_iterator(args.end())));
+
+            return settings;
         }
 
         bool exit_with_usage() const { return help_flag; }
@@ -109,7 +108,7 @@ namespace
 
                 std::string iv_string;
 
-                if (aes::mode_requires_initialization_vector(settings.get_mode()))
+                if (aes::mode_requires_init_vector(settings.mode))
                 {
                     if (args.empty())
                     {
@@ -134,7 +133,7 @@ namespace
                     args.pop_front();
                 }
 
-                if (aes::mode_requires_initialization_vector(settings.get_mode()))
+                if (aes::mode_requires_init_vector(settings.mode))
                 {
                     inputs.emplace_back(
                         std::move(key_string),

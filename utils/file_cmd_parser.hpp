@@ -23,25 +23,16 @@ namespace
     class Settings
     {
     public:
-        Settings() = default;
-
-        aes::Mode get_mode() const { return mode; }
-        aes::Algorithm get_algorithm() const { return algorithm; }
-
-        const std::string& get_input_path() const { return input_path; }
-        const std::string& get_output_path() const { return output_path; }
-
-        const std::string& get_key_string() const { return key; }
-        const std::string& get_iv_string() const { return iv; }
-
-    private:
-        aes::Mode mode;
-        aes::Algorithm algorithm;
+        aes::Algorithm algorithm = AES_AES128;
+        aes::Mode mode = AES_ECB;
 
         std::string input_path;
         std::string output_path;
         std::string key;
         std::string iv;
+
+    private:
+        Settings() = default;
 
         friend class CommandLineParser;
     };
@@ -49,23 +40,25 @@ namespace
     class CommandLineParser
     {
     public:
-        CommandLineParser(const std::string& argv0)
-            : prog_name(boost::filesystem::path(argv0).filename().string())
-            , options("Options")
+        explicit CommandLineParser(const std::string& argv0)
+            : prog_name{boost::filesystem::path{argv0}.filename().string()}
+            , options{"Options"}
         { }
 
-        void parse(Settings& settings, int argc, char** argv)
+        Settings parse(int argc, char** argv)
         {
+            Settings settings;
+
             namespace po = boost::program_options;
 
             options.add_options()
                 ("help,h", "show this message and exit")
-                ("mode,m", po::value<aes::Mode>(&settings.mode)->required(), "set mode of operation")
-                ("algorithm,a", po::value<aes::Algorithm>(&settings.algorithm)->required(), "set algorithm")
-                ("input-path,i", po::value<std::string>(&settings.input_path)->required(), "set input file path")
+                ("mode,m",        po::value<aes::Mode>(&settings.mode)->required(), "set mode of operation")
+                ("algorithm,a",   po::value<aes::Algorithm>(&settings.algorithm)->required(), "set algorithm")
+                ("input-path,i",  po::value<std::string>(&settings.input_path)->required(), "set input file path")
                 ("output-path,o", po::value<std::string>(&settings.output_path)->required(), "set output file path")
-                ("key,k", po::value<std::string>(&settings.key)->required(), "set encryption key")
-                ("iv,v", po::value<std::string>(&settings.iv), "set initialization vector");
+                ("key,k",         po::value<std::string>(&settings.key)->required(), "set encryption key")
+                ("iv,v",          po::value<std::string>(&settings.iv), "set initialization vector");
 
             po::variables_map vm;
             po::store(po::parse_command_line(argc, argv, options), vm);
@@ -73,12 +66,12 @@ namespace
             if (vm.count("help"))
             {
                 help_flag = true;
-                return;
+                return settings;
             }
 
             po::notify(vm);
 
-            if (aes::mode_requires_initialization_vector(settings.get_mode()))
+            if (aes::mode_requires_init_vector(settings.mode))
             {
                 if (!vm.count("iv"))
                 {
@@ -86,6 +79,8 @@ namespace
                         "an initialization vector is required for the selected mode of operation");
                 }
             }
+
+            return settings;
         }
 
         bool exit_with_usage() const { return help_flag; }

@@ -30,27 +30,24 @@ namespace
 
     void decrypt_file(const Settings& settings)
     {
-        const auto algorithm = settings.get_algorithm();
-        const auto mode = settings.get_mode();
-
-        const auto& ciphertext_path = settings.get_input_path();
-        const auto& plaintext_path = settings.get_output_path();
+        const auto& algorithm = settings.algorithm;
+        const auto& mode = settings.mode;
 
         aes::Box::Key key;
-        aes::Box::parse_key(key, algorithm, settings.get_key_string());
+        aes::Box::parse_key(key, algorithm, settings.key);
 
-        if (aes::mode_requires_initialization_vector(mode))
+        if (aes::mode_requires_init_vector(mode))
         {
             aes::Box::Block iv;
-            aes::Box::parse_block(iv, algorithm, settings.get_iv_string());
-            aes::Box box{algorithm, key, mode, iv};
+            aes::Box::parse_block(iv, algorithm, settings.iv);
 
-            decrypt_file(box, ciphertext_path, plaintext_path);
+            aes::Box box{algorithm, key, mode, iv};
+            decrypt_file(box, settings.input_path, settings.output_path);
         }
         else
         {
             aes::Box box{algorithm, key};
-            decrypt_file(box, ciphertext_path, plaintext_path);
+            decrypt_file(box, settings.input_path, settings.output_path);
         }
     }
 }
@@ -59,11 +56,10 @@ int main(int argc, char** argv)
 {
     try
     {
-        CommandLineParser cmd_parser(argv[0]);
+        CommandLineParser cmd_parser{argv[0]};
         try
         {
-            Settings settings;
-            cmd_parser.parse(settings, argc, argv);
+            const auto settings = cmd_parser.parse(argc, argv);
 
             if (cmd_parser.exit_with_usage())
             {

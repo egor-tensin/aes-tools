@@ -14,18 +14,18 @@ namespace aes
     typedef AES_Mode Mode;
 
     template <Mode mode>
-    struct ModeRequiresInitializationVector : public std::true_type
+    struct ModeRequiresInitVector : public std::true_type
     { };
 
     template <>
-    struct ModeRequiresInitializationVector<AES_ECB> : public std::false_type
+    struct ModeRequiresInitVector<AES_ECB> : public std::false_type
     { };
 
     template <Mode mode>
     struct ModeUsesEncryptionKeysOnly : public std::true_type
     { };
 
-    inline bool mode_requires_initialization_vector(Mode mode)
+    inline bool mode_requires_init_vector(Mode mode)
     {
         return mode != AES_ECB;
     }

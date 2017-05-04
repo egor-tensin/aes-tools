@@ -25,7 +25,7 @@ namespace
     {
         typename aes::Types<algorithm>::Block iv;
 
-        if (aes::ModeRequiresInitializationVector<mode>())
+        if (aes::ModeRequiresInitVector<mode>())
         {
             aes::from_string<algorithm>(iv, input.get_iv_string());
             if (verbose)
@@ -144,7 +144,7 @@ namespace
         aes::Box::Key key;
         aes::Box::parse_key(key, algorithm, input.get_key_string());
 
-        if (aes::mode_requires_initialization_vector(mode))
+        if (aes::mode_requires_init_vector(mode))
         {
             aes::Box::Block iv;
             aes::Box::parse_block(iv, algorithm, input.get_iv_string());
@@ -164,12 +164,11 @@ int main(int argc, char** argv)
 {
     try
     {
-        CommandLineParser cmd_parser(argv[0]);
+        CommandLineParser cmd_parser{argv[0]};
         try
         {
-            Settings settings;
             std::vector<Input> inputs;
-            cmd_parser.parse(settings, argc, argv, inputs);
+            const auto settings = cmd_parser.parse(argc, argv, inputs);
 
             if (cmd_parser.exit_with_usage())
             {
@@ -179,20 +178,20 @@ int main(int argc, char** argv)
 
             for (const auto& input : inputs)
             {
-                if (settings.use_boxes())
+                if (settings.use_boxes)
                 {
                     decrypt_using_boxes(
-                        settings.get_algorithm(),
-                        settings.get_mode(),
+                        settings.algorithm,
+                        settings.mode,
                         input);
                 }
                 else
                 {
                     decrypt_using_cxx_api(
-                        settings.get_algorithm(),
-                        settings.get_mode(),
+                        settings.algorithm,
+                        settings.mode,
                         input,
-                        settings.verbose());
+                        settings.verbose);
                 }
             }
         }

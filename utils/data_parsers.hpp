@@ -21,11 +21,11 @@ static std::istream& operator>>(std::istream& is, aes::Mode& dest)
 
     static std::map<std::string, aes::Mode> lookup_table =
     {
-        { "ecb", AES_ECB },
-        { "cbc", AES_CBC },
-        { "cfb", AES_CFB },
-        { "ofb", AES_OFB },
-        { "ctr", AES_CTR },
+        {"ecb", AES_ECB},
+        {"cbc", AES_CBC},
+        {"cfb", AES_CFB},
+        {"ofb", AES_OFB},
+        {"ctr", AES_CTR},
     };
 
     const auto it = lookup_table.find(boost::algorithm::to_lower_copy(src));
@@ -44,9 +44,9 @@ static std::istream& operator>>(std::istream& is, aes::Algorithm& dest)
 
     static std::map<std::string, aes::Algorithm> lookup_table =
     {
-        { "aes128", AES_AES128 },
-        { "aes192", AES_AES192 },
-        { "aes256", AES_AES256 },
+        {"aes128", AES_AES128},
+        {"aes192", AES_AES192},
+        {"aes256", AES_AES256},
     };
 
     const auto it = lookup_table.find(boost::algorithm::to_lower_copy(src));
