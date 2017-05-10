@@ -3,12 +3,12 @@
 // For details, see https://github.com/egor-tensin/aes-tools.
 // Distributed under the MIT License.
 
-#include <cassert>
 #include <cstddef>
 
 #include <fstream>
 #include <iterator>
 #include <limits>
+#include <stdexcept>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -17,8 +17,11 @@ namespace file
 {
     inline std::size_t cast_to_size_t(std::streamoff size)
     {
-        assert(size >= 0);
-        assert(static_cast<std::make_unsigned<std::streamoff>::type>(size) <= std::numeric_limits<std::size_t>::max());
+        if (size < 0)
+            throw std::range_error{"file::cast_to_size_t: something went really wrong"};
+        typedef std::make_unsigned<std::streamoff>::type unsigned_streamoff;
+        if (static_cast<unsigned_streamoff>(size) > std::numeric_limits<std::size_t>::max())
+            throw std::range_error{"file::cast_to_size_t: this file is too large"};
         return static_cast<std::size_t>(size);
     }
 
@@ -41,8 +44,8 @@ namespace file
         std::vector<char> src_buf;
         src_buf.reserve(size);
         src_buf.assign(
-            std::istreambuf_iterator<char>(ifs),
-            std::istreambuf_iterator<char>());
+            std::istreambuf_iterator<char>{ifs},
+            std::istreambuf_iterator<char>{});
         return src_buf;
     }
 
