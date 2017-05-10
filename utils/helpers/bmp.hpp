@@ -28,9 +28,15 @@ namespace bmp
 
         std::size_t get_header_size() const { return header_size; }
 
-        const void* get_pixels() const { return buffer.data() + get_header_size(); }
+        const void* get_pixels() const
+        {
+            return buffer.data() + get_header_size();
+        }
 
-        std::size_t get_pixels_size() const { return get_size() - get_header_size(); }
+        std::size_t get_pixels_size() const
+        {
+            return get_size() - get_header_size();
+        }
 
         void replace_pixels(std::vector<unsigned char>&& pixels)
         {
