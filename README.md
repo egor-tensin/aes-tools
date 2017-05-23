@@ -3,37 +3,35 @@ AES tools
 
 Simple AES implementation and utilities.
 
-Prerequisites
--------------
-
-To build the solution, you first need to build a few of Boost's libraries.
-The complete list of Boost dependencies is:
-
-* Boost.Filesystem,
-* Boost.Program_options,
-* Boost.System.
-
 Building
 --------
 
 Create the build files using CMake and build using your native build tools
 (Visual Studio/make/etc.).
 
-For example, using Visual Studio 2013 Update 4 for Windows Desktop (targetting
-x86 and using static Boost libraries):
+* **Prerequisites.**
+The following Boost libraries are required to build the project: Filesystem,
+Program_options, System.
+* **Customization.**
+The runtime libraries are linked statically by default (when this project is
+the root CMake project).
+Therefore, the Boost dependencies must also link them statically.
+You can link the runtime dynamically by passing `-D USE_STATIC_RUNTIME=OFF` to
+`cmake`.
+* **Example.**
+In the example below, the project directory is
+"C:\workspace\personal\aes-tools", Boost can be found in
+"C:\workspace\third-party\boost_1_58_0" and Visual Studio 2013 is used,
+targeting x86.
 
-    > cd
-    C:\workspace\personal\build\aes-tools
+      > cmake -G "Visual Studio 12 2013"                      ^
+          -D BOOST_ROOT=C:\workspace\third-party\boost_1_58_0 ^
+          -D Boost_USE_STATIC_RUNTIME=ON                      ^
+          C:\workspace\personal\aes-tools
+      ...
 
-    > cmake -G "Visual Studio 12 2013" ^
-        -D BOOST_ROOT=C:\workspace\third-party\boost_1_58_0 ^
-        -D Boost_USE_STATIC_LIBS=ON    ^
-        -D Boost_USE_STATIC_RUNTIME=ON ^
-        C:\workspace\personal\aes-tools
-    ...
-
-    > msbuild aes_tools.sln
-    ...
+      > cmake --build . --config release -- /m
+      ...
 
 Usage on older CPUs
 -------------------
