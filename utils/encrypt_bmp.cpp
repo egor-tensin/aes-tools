@@ -29,7 +29,7 @@ namespace
         file::write_file(ciphertext_path, bmp.get_buffer(), bmp.get_size());
     }
 
-    void encrypt_bmp(const Settings& settings)
+    void encrypt_bmp(const FileSettings& settings)
     {
         const auto& algorithm = settings.algorithm;
         const auto& mode = settings.mode;
@@ -57,30 +57,30 @@ int main(int argc, char** argv)
 {
     try
     {
-        CommandLineParser cmd_parser{argv[0]};
+        FileSettings settings{argv[0]};
+
         try
         {
-            const auto settings = cmd_parser.parse(argc, argv);
-
-            if (cmd_parser.exit_with_usage())
-            {
-                std::cout << cmd_parser;
-                return 0;
-            }
-
-            encrypt_bmp(settings);
+            settings.parse(argc, argv);
         }
         catch (const boost::program_options::error& e)
         {
-            std::cerr << "Usage error: " << e.what() << "\n";
-            std::cerr << cmd_parser;
+            settings.usage_error(e);
             return 1;
         }
-        catch (const aes::Error& e)
+
+        if (settings.exit_with_usage)
         {
-            std::cerr << e;
-            return 1;
+            settings.usage();
+            return 0;
         }
+
+        encrypt_bmp(settings);
+    }
+    catch (const aes::Error& e)
+    {
+        std::cerr << e;
+        return 1;
     }
     catch (const std::exception& e)
     {

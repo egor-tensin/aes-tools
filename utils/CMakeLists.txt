@@ -4,7 +4,7 @@ endif()
 
 find_package(Boost REQUIRED COMPONENTS filesystem program_options system)
 
-set(block_util_headers block_cmd_parser.hpp block_dumper.hpp block_input.hpp data_parsers.hpp)
+set(block_util_headers block_cmd_parser.hpp block_dumper.hpp block_input.hpp data_parsers.hpp helpers/command_line.hpp)
 
 add_executable(util_encrypt_block encrypt_block.cpp ${block_util_headers})
 target_include_directories(util_encrypt_block SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
@@ -16,7 +16,7 @@ target_include_directories(util_decrypt_block SYSTEM PRIVATE ${Boost_INCLUDE_DIR
 target_link_libraries(util_decrypt_block PRIVATE aesxx ${Boost_LIBRARIES})
 set_target_properties(util_decrypt_block PROPERTIES OUTPUT_NAME decrypt_block)
 
-set(file_util_headers data_parsers.hpp file_cmd_parser.hpp helpers/file.hpp)
+set(file_util_headers data_parsers.hpp file_cmd_parser.hpp helpers/command_line.hpp helpers/file.hpp)
 
 add_executable(util_encrypt_file encrypt_file.cpp ${file_util_headers})
 target_include_directories(util_encrypt_file SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})

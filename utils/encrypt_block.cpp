@@ -164,48 +164,47 @@ int main(int argc, char** argv)
 {
     try
     {
-        CommandLineParser cmd_parser{argv[0]};
+        BlockSettings settings{argv[0]};
+
         try
         {
-            std::vector<Input> inputs;
-            const auto settings = cmd_parser.parse(argc, argv, inputs);
-
-            if (cmd_parser.exit_with_usage())
-            {
-                std::cout << cmd_parser;
-                return 0;
-            }
-
-            for (const auto& input : inputs)
-            {
-                if (settings.use_boxes)
-                {
-                    encrypt_using_boxes(
-                        settings.algorithm,
-                        settings.mode,
-                        input);
-                }
-                else
-                {
-                    encrypt_using_cxx_api(
-                        settings.algorithm,
-                        settings.mode,
-                        input,
-                        settings.verbose);
-                }
-            }
+            settings.parse(argc, argv);
         }
         catch (const boost::program_options::error& e)
         {
-            std::cerr << "Usage error: " << e.what() << "\n";
-            std::cerr << cmd_parser;
+            settings.usage_error(e);
             return 1;
         }
-        catch (const aes::Error& e)
+
+        if (settings.exit_with_usage)
         {
-            std::cerr << e;
-            return 1;
+            settings.usage();
+            return 0;
         }
+
+        for (const auto& input : settings.inputs)
+        {
+            if (settings.use_boxes)
+            {
+                encrypt_using_boxes(
+                    settings.algorithm,
+                    settings.mode,
+                    input);
+            }
+            else
+            {
+                encrypt_using_cxx_api(
+                    settings.algorithm,
+                    settings.mode,
+                    input,
+                    settings.verbose);
+            }
+        }
+    }
+    catch (const aes::Error& e)
+    {
+        std::cerr << e;
+        return 1;
     }
     catch (const std::exception& e)
     {
