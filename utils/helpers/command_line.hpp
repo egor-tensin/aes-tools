@@ -68,6 +68,7 @@ namespace command_line
         boost::program_options::options_description visible;
         boost::program_options::positional_options_description positional;
 
+    private:
         static std::string extract_filename(const std::string& path)
         {
             return boost::filesystem::path{path}.filename().string();

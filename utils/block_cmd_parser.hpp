@@ -19,106 +19,109 @@
 #include <utility>
 #include <vector>
 
-class BlockSettings : public command_line::SettingsParser
+namespace
 {
-public:
-    aes::Algorithm algorithm = AES_AES128;
-    aes::Mode mode = AES_ECB;
-
-    bool use_boxes = false;
-    bool verbose = false;
-
-    std::vector<Input> inputs;
-
-    explicit BlockSettings(const std::string& argv0)
-        : SettingsParser{argv0}
+    class BlockSettings : public command_line::SettingsParser
     {
-        visible.add_options()
-            ("verbose,v",
-                boost::program_options::bool_switch(&verbose),
-                "enable verbose output")
-            ("algorithm,a",
-                boost::program_options::value<aes::Algorithm>(&algorithm)
-                    ->required()
-                    ->value_name("NAME"),
-                "set algorithm")
-            ("mode,m",
-                boost::program_options::value<aes::Mode>(&mode)
-                    ->required()
-                    ->value_name("MODE"),
-                "set mode of operation")
-            ("use-boxes,b",
-                boost::program_options::bool_switch(&use_boxes),
-                "use the \"boxes\" interface");
-        hidden.add_options()
-            ("args",
-                boost::program_options::value<std::vector<std::string>>(&args),
-                "shouldn't be visible");
-        positional.add("args", -1);
-    }
+    public:
+        aes::Algorithm algorithm = AES_AES128;
+        aes::Mode mode = AES_ECB;
 
-    const char* get_short_description() const override
-    {
-        return "[-h|--help] [-v|--verbose] [-a|--algorithm NAME] [-m|--mode MODE]"
-               " [-- KEY [IV] [BLOCK]...]...";
-    }
+        bool use_boxes = false;
+        bool verbose = false;
 
-    void parse(int argc, char* argv[]) override
-    {
-        SettingsParser::parse(argc, argv);
-        parse_inputs(std::deque<std::string>{
-            std::make_move_iterator(args.begin()),
-            std::make_move_iterator(args.end())});
-    }
+        std::vector<Input> inputs;
 
-private:
-    void parse_inputs(std::deque<std::string>&& src)
-    {
-        while (!src.empty())
-            inputs.emplace_back(parse_input(src));
-    }
-
-    Input parse_input(std::deque<std::string>& src) const
-    {
-        std::string key{std::move(src.front())};
-        src.pop_front();
-
-        std::string iv;
-
-        if (aes::mode_requires_init_vector(mode))
+        explicit BlockSettings(const std::string& argv0)
+            : SettingsParser{argv0}
         {
-            if (src.empty())
+            visible.add_options()
+                ("verbose,v",
+                    boost::program_options::bool_switch(&verbose),
+                    "enable verbose output")
+                ("algorithm,a",
+                    boost::program_options::value<aes::Algorithm>(&algorithm)
+                        ->required()
+                        ->value_name("NAME"),
+                    "set algorithm")
+                ("mode,m",
+                    boost::program_options::value<aes::Mode>(&mode)
+                        ->required()
+                        ->value_name("MODE"),
+                    "set mode of operation")
+                ("use-boxes,b",
+                    boost::program_options::bool_switch(&use_boxes),
+                    "use the \"boxes\" interface");
+            hidden.add_options()
+                ("args",
+                    boost::program_options::value<std::vector<std::string>>(&args),
+                    "shouldn't be visible");
+            positional.add("args", -1);
+        }
+
+        const char* get_short_description() const override
+        {
+            return "[-h|--help] [-v|--verbose] [-a|--algorithm NAME] [-m|--mode MODE]"
+                   " [-- KEY [IV] [BLOCK]...]...";
+        }
+
+        void parse(int argc, char* argv[]) override
+        {
+            SettingsParser::parse(argc, argv);
+            parse_inputs(std::deque<std::string>{
+                std::make_move_iterator(args.begin()),
+                std::make_move_iterator(args.end())});
+        }
+
+    private:
+        void parse_inputs(std::deque<std::string>&& src)
+        {
+            while (!src.empty())
+                inputs.emplace_back(parse_input(src));
+        }
+
+        Input parse_input(std::deque<std::string>& src) const
+        {
+            std::string key{std::move(src.front())};
+            src.pop_front();
+
+            std::string iv;
+
+            if (aes::mode_requires_init_vector(mode))
             {
-                throw boost::program_options::error{
-                    "an initialization vector is required for the selected mode of operation"};
+                if (src.empty())
+                {
+                    throw boost::program_options::error{
+                        "an initialization vector is required for the selected mode of operation"};
+                }
+                iv = std::move(src.front());
+                src.pop_front();
             }
-            iv = std::move(src.front());
-            src.pop_front();
+
+            auto blocks = parse_blocks(src);
+
+            if (aes::mode_requires_init_vector(mode))
+                return {key, iv, std::move(blocks)};
+            else
+                return {key, std::move(blocks)};
         }
 
-        auto blocks = parse_blocks(src);
-
-        if (aes::mode_requires_init_vector(mode))
-            return {key, iv, std::move(blocks)};
-        else
-            return {key, std::move(blocks)};
-    }
-
-    static std::vector<std::string> parse_blocks(std::deque<std::string>& src)
-    {
-        std::vector<std::string> blocks;
-
-        while (!src.empty())
+        static std::vector<std::string> parse_blocks(std::deque<std::string>& src)
         {
-            std::string block{std::move(src.front())};
-            src.pop_front();
-            if (block == "--")
-                break;
-            blocks.emplace_back(std::move(block));
+            std::vector<std::string> blocks;
+
+            while (!src.empty())
+            {
+                std::string block{std::move(src.front())};
+                src.pop_front();
+                if (block == "--")
+                    break;
+                blocks.emplace_back(std::move(block));
+            }
+
+            return blocks;
         }
 
-        return blocks;
-    }
-
-    std::vector<std::string> args;
-};
+        std::vector<std::string> args;
+    };
+}
