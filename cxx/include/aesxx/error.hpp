@@ -69,7 +69,7 @@ namespace aes
         const void* call_stack[AES_MAX_CALL_STACK_LENGTH] = {nullptr};
     };
 
-    std::ostream& operator<<(std::ostream& os, const Error& error)
+    inline std::ostream& operator<<(std::ostream& os, const Error& error)
     {
         os << "AES error: " << error.what() << '\n';
         os << "Call stack:\n";

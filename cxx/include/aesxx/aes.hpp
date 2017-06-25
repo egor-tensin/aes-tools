@@ -34,19 +34,19 @@ namespace aes
     };
 
     template <>
-    std::size_t get_number_of_rounds<AES_AES128>()
+    inline std::size_t get_number_of_rounds<AES_AES128>()
     {
         return 11;
     }
 
     template <>
-    void from_string<AES_AES128>(aes128::Block& dest, const char* src)
+    inline void from_string<AES_AES128>(aes128::Block& dest, const char* src)
     {
         aes_AES128_parse_block(&dest, src, ErrorDetailsThrowsInDestructor{});
     }
 
     template <>
-    std::string to_string<AES_AES128>(const aes128::Block& src)
+    inline std::string to_string<AES_AES128>(const aes128::Block& src)
     {
         AES_AES128_BlockString str;
         aes_AES128_format_block(&str, &src, ErrorDetailsThrowsInDestructor{});
@@ -54,7 +54,7 @@ namespace aes
     }
 
     template <>
-    std::string to_matrix_string<AES_AES128>(const aes128::Block& src)
+    inline std::string to_matrix_string<AES_AES128>(const aes128::Block& src)
     {
         AES_AES128_BlockMatrixString str;
         aes_AES128_format_block_as_matrix(&str, &src, ErrorDetailsThrowsInDestructor{});
@@ -62,13 +62,13 @@ namespace aes
     }
 
     template <>
-    void from_string<AES_AES128>(aes128::Key& dest, const char* src)
+    inline void from_string<AES_AES128>(aes128::Key& dest, const char* src)
     {
         aes_AES128_parse_key(&dest, src, ErrorDetailsThrowsInDestructor{});
     }
 
     template <>
-    std::string to_string<AES_AES128>(const aes128::Key& src)
+    inline std::string to_string<AES_AES128>(const aes128::Key& src)
     {
         AES_AES128_KeyString str;
         aes_AES128_format_key(&str, &src, ErrorDetailsThrowsInDestructor{});
@@ -119,19 +119,19 @@ namespace aes
     };
 
     template <>
-    std::size_t get_number_of_rounds<AES_AES192>()
+    inline std::size_t get_number_of_rounds<AES_AES192>()
     {
         return 13;
     }
 
     template <>
-    void from_string<AES_AES192>(aes192::Block& dest, const char* src)
+    inline void from_string<AES_AES192>(aes192::Block& dest, const char* src)
     {
         aes_AES192_parse_block(&dest, src, ErrorDetailsThrowsInDestructor{});
     }
 
     template <>
-    std::string to_string<AES_AES192>(const aes192::Block& src)
+    inline std::string to_string<AES_AES192>(const aes192::Block& src)
     {
         AES_AES192_BlockString str;
         aes_AES192_format_block(&str, &src, ErrorDetailsThrowsInDestructor{});
@@ -139,7 +139,7 @@ namespace aes
     }
 
     template <>
-    std::string to_matrix_string<AES_AES192>(const aes192::Block& src)
+    inline std::string to_matrix_string<AES_AES192>(const aes192::Block& src)
     {
         AES_AES192_BlockMatrixString str;
         aes_AES192_format_block_as_matrix(&str, &src, ErrorDetailsThrowsInDestructor{});
@@ -147,13 +147,13 @@ namespace aes
     }
 
     template <>
-    void from_string<AES_AES192>(aes192::Key& dest, const char* src)
+    inline void from_string<AES_AES192>(aes192::Key& dest, const char* src)
     {
         aes_AES192_parse_key(&dest, src, ErrorDetailsThrowsInDestructor{});
     }
 
     template <>
-    std::string to_string<AES_AES192>(const aes192::Key& src)
+    inline std::string to_string<AES_AES192>(const aes192::Key& src)
     {
         AES_AES192_KeyString str;
         aes_AES192_format_key(&str, &src, ErrorDetailsThrowsInDestructor{});
@@ -204,19 +204,19 @@ namespace aes
     };
 
     template <>
-    std::size_t get_number_of_rounds<AES_AES256>()
+    inline std::size_t get_number_of_rounds<AES_AES256>()
     {
         return 15;
     }
 
     template <>
-    void from_string<AES_AES256>(aes256::Block& dest, const char* src)
+    inline void from_string<AES_AES256>(aes256::Block& dest, const char* src)
     {
         aes_AES256_parse_block(&dest, src, ErrorDetailsThrowsInDestructor{});
     }
 
     template <>
-    std::string to_string<AES_AES256>(const aes256::Block& src)
+    inline std::string to_string<AES_AES256>(const aes256::Block& src)
     {
         AES_AES256_BlockString str;
         aes_AES256_format_block(&str, &src, ErrorDetailsThrowsInDestructor{});
@@ -224,7 +224,7 @@ namespace aes
     }
 
     template <>
-    std::string to_matrix_string<AES_AES256>(const aes256::Block& src)
+    inline std::string to_matrix_string<AES_AES256>(const aes256::Block& src)
     {
         AES_AES256_BlockMatrixString str;
         aes_AES256_format_block_as_matrix(&str, &src, ErrorDetailsThrowsInDestructor{});
@@ -232,13 +232,13 @@ namespace aes
     }
 
     template <>
-    void from_string<AES_AES256>(aes256::Key& dest, const char* src)
+    inline void from_string<AES_AES256>(aes256::Key& dest, const char* src)
     {
         aes_AES256_parse_key(&dest, src, ErrorDetailsThrowsInDestructor{});
     }
 
     template <>
-    std::string to_string<AES_AES256>(const aes256::Key& src)
+    inline std::string to_string<AES_AES256>(const aes256::Key& src)
     {
         AES_AES256_KeyString str;
         aes_AES256_format_key(&str, &src, ErrorDetailsThrowsInDestructor{});

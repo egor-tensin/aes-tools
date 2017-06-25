@@ -19,7 +19,7 @@
 #define snprintf c99_snprintf
 #define vsnprintf c99_vsnprintf
 
-__inline int c99_vsnprintf(char *dest, size_t dest_size, const char *fmt, va_list ap)
+static int c99_vsnprintf(char *dest, size_t dest_size, const char *fmt, va_list ap)
 {
     int dest_len = -1;
 
@@ -31,7 +31,7 @@ __inline int c99_vsnprintf(char *dest, size_t dest_size, const char *fmt, va_lis
     return dest_len;
 }
 
-__inline int c99_snprintf(char *dest, size_t dest_size, const char *fmt, ...)
+static int c99_snprintf(char *dest, size_t dest_size, const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);

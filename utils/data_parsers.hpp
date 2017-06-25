@@ -14,7 +14,7 @@
 #include <string>
 #include <unordered_map>
 
-static std::istream& operator>>(std::istream& is, aes::Mode& dest)
+inline std::istream& operator>>(std::istream& is, aes::Mode& dest)
 {
     std::string src;
     is >> src;
@@ -37,7 +37,7 @@ static std::istream& operator>>(std::istream& is, aes::Mode& dest)
     return is;
 }
 
-static std::istream& operator>>(std::istream& is, aes::Algorithm& dest)
+inline std::istream& operator>>(std::istream& is, aes::Algorithm& dest)
 {
     std::string src;
     is >> src;

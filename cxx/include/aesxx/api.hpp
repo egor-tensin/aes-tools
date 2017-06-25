@@ -27,7 +27,7 @@ namespace aes
         const char*);
 
     template <Algorithm algorithm>
-    inline void from_string(
+    void from_string(
         typename Types<algorithm>::Block& dest,
         const std::string& src)
     {
@@ -46,7 +46,7 @@ namespace aes
         const char*);
 
     template <Algorithm algorithm>
-    inline void from_string(
+    void from_string(
         typename Types<algorithm>::Key& dest,
         const std::string& src)
     {
@@ -57,30 +57,30 @@ namespace aes
     std::string to_string(const typename Types<algorithm>::Key&);
 
     template <Algorithm algorithm>
-    inline void expand_key(
+    void expand_key(
         const typename Types<algorithm>::Key& key,
         typename Types<algorithm>::RoundKeys& encryption_keys);
 
     template <Algorithm algorithm>
-    inline void derive_decryption_keys(
+    void derive_decryption_keys(
         const typename Types<algorithm>::RoundKeys& encryption_keys,
         typename Types<algorithm>::RoundKeys& decryption_keys);
 
     template <Algorithm algorithm, Mode mode, typename std::enable_if<ModeRequiresInitVector<mode>::value>::type* = nullptr>
-    inline void encrypt_block(
+    void encrypt_block(
         const typename Types<algorithm>::Block& plaintext,
         const typename Types<algorithm>::RoundKeys& round_keys,
         typename Types<algorithm>::Block& iv,
         typename Types<algorithm>::Block& ciphertext);
 
     template <Algorithm algorithm, Mode mode, typename std::enable_if<!ModeRequiresInitVector<mode>::value>::type* = nullptr>
-    inline void encrypt_block(
+    void encrypt_block(
         const typename Types<algorithm>::Block& plaintext,
         const typename Types<algorithm>::RoundKeys& round_keys,
         typename Types<algorithm>::Block& ciphertext);
 
     template <Algorithm algorithm, Mode mode, typename std::enable_if<!ModeRequiresInitVector<mode>::value>::type* = nullptr>
-    inline void encrypt_block(
+    void encrypt_block(
         const typename Types<algorithm>::Block& plaintext,
         const typename Types<algorithm>::RoundKeys& round_keys,
         typename Types<algorithm>::Block&,
@@ -90,20 +90,20 @@ namespace aes
     }
 
     template <Algorithm algorithm, Mode mode, typename std::enable_if<ModeRequiresInitVector<mode>::value>::type* = nullptr>
-    inline void decrypt_block(
+    void decrypt_block(
         const typename Types<algorithm>::Block& ciphertext,
         const typename Types<algorithm>::RoundKeys& round_keys,
         typename Types<algorithm>::Block& iv,
         typename Types<algorithm>::Block& plaintext);
 
     template <Algorithm algorithm, Mode mode, typename std::enable_if<!ModeRequiresInitVector<mode>::value>::type* = nullptr>
-    inline void decrypt_block(
+    void decrypt_block(
         const typename Types<algorithm>::Block& ciphertext,
         const typename Types<algorithm>::RoundKeys& round_keys,
         typename Types<algorithm>::Block& plaintext);
 
     template <Algorithm algorithm, Mode mode, typename std::enable_if<!ModeRequiresInitVector<mode>::value>::type* = nullptr>
-    inline void decrypt_block(
+    void decrypt_block(
         const typename Types<algorithm>::Block& ciphertext,
         const typename Types<algorithm>::RoundKeys& round_keys,
         typename Types<algorithm>::Block&,
@@ -122,7 +122,7 @@ namespace aes
             expand_key<algorithm>(key, encryption_keys);
         }
 
-        inline void encrypt_block(
+        void encrypt_block(
             const typename Types<algorithm>::Block& plaintext,
             typename Types<algorithm>::Block& ciphertext)
         {
@@ -154,7 +154,7 @@ namespace aes
             }
         }
 
-        inline void decrypt_block(
+        void decrypt_block(
             const typename Types<algorithm>::Block& ciphertext,
             typename Types<algorithm>::Block& plaintext)
         {
