@@ -1,12 +1,14 @@
 @setlocal enabledelayedexpansion
 
-@if "%~1" == "" goto exit_with_usage
+@set "script_dir=%~dp0"
+
+@if "%~1"=="" goto exit_with_usage
 
 @set "utils_dir=%~1"
 
-nist.py --path "%utils_dir%" || exit /b !errorlevel!
-cavp.py --path "%utils_dir%" || exit /b !errorlevel!
-file.py --path "%utils_dir%" || exit /b !errorlevel!
+"%script_dir%nist.py" --path "%utils_dir%" || exit /b !errorlevel!
+"%script_dir%cavp.py" --path "%utils_dir%" || exit /b !errorlevel!
+"%script_dir%file.py" --path "%utils_dir%" || exit /b !errorlevel!
 
 @goto :eof
 

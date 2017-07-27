@@ -183,11 +183,15 @@ class TestArchive(zipfile.ZipFile):
             for path in self.namelist():
                 yield TestFile(self.extract(path, tmp_dir))
 
-def _build_default_log_path():
-    return datetime.now().strftime('{}_%Y-%m-%d_%H-%M-%S.log').format(
-        os.path.splitext(os.path.basename(__file__))[0])
+_script_dir = os.path.dirname(__file__)
+_script_name = os.path.splitext(os.path.basename(__file__))[0]
 
-def run_tests(archive_path, tools_path=(), use_sde=False, use_boxes=False, log_path=None):
+def _build_default_log_path():
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    fn = '{}_{}.log'.format(_script_name, timestamp)
+    return os.path.join(_script_dir, fn)
+
+def _setup_logging(log_path=None):
     if log_path is None:
         log_path = _build_default_log_path()
 
@@ -196,6 +200,8 @@ def run_tests(archive_path, tools_path=(), use_sde=False, use_boxes=False, log_p
         format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
         level=logging.DEBUG)
 
+def run_tests(archive_path, tools_path=(), use_sde=False, use_boxes=False, log_path=None):
+    _setup_logging(log_path)
     tools = Tools(tools_path, use_sde=use_sde)
     archive = TestArchive(archive_path)
     exit_codes = []
@@ -228,7 +234,7 @@ def _parse_args(args=None):
     parser.add_argument('--boxes', '-b', action='store_true', dest='use_boxes',
                         help='use the "boxes" interface')
     parser.add_argument('--archive', '-a', dest='archive_path', metavar='PATH',
-                        default='KAT_AES.zip',
+                        default=os.path.join(_script_dir, 'KAT_AES.zip'),
                         help='set test vectors archive file path')
     parser.add_argument('--log', '-l', dest='log_path', metavar='PATH',
                         help='set log file path')

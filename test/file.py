@@ -154,11 +154,15 @@ def enum_tests(suite_dir):
                 ciphertext_path = _extract_ciphertext_path(key_path)
                 yield algorithm, mode, key, plaintext_path, ciphertext_path, iv
 
-def _build_default_log_path():
-    return datetime.now().strftime('{}_%Y-%m-%d_%H-%M-%S.log').format(
-        os.path.splitext(os.path.basename(__file__))[0])
+_script_dir = os.path.dirname(__file__)
+_script_name = os.path.splitext(os.path.basename(__file__))[0]
 
-def run_tests(suite_path, tools_path=(), log_path=None, use_sde=False, force=False):
+def _build_default_log_path():
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    fn = '{}_{}.log'.format(_script_name, timestamp)
+    return os.path.join(_script_dir, fn)
+
+def _setup_logging(log_path=None):
     if log_path is None:
         log_path = _build_default_log_path()
 
@@ -167,6 +171,8 @@ def run_tests(suite_path, tools_path=(), log_path=None, use_sde=False, force=Fal
         format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
         level=logging.DEBUG)
 
+def run_tests(suite_path, tools_path=(), log_path=None, use_sde=False, force=False):
+    _setup_logging(log_path)
     tools = Tools(tools_path, use_sde=use_sde)
     exit_codes = []
 
@@ -199,7 +205,8 @@ def _parse_args(args=None):
                         help='set log file path')
     parser.add_argument('--force', '-f', action='store_true',
                         help='overwrite ciphertext files')
-    parser.add_argument('--suite', '-s', dest='suite_path', default='file/',
+    parser.add_argument('--suite', '-s', dest='suite_path',
+                        default=os.path.join(_script_dir, 'file'),
                         help='set test suite directory path')
     return parser.parse_args(args)
 

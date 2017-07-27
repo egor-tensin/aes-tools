@@ -217,11 +217,15 @@ def run_decryption_test(tools, algorithm, mode, use_boxes=False):
         logging.exception(e)
         return TestExitCode.ERROR
 
-def _build_default_log_path():
-    return datetime.now().strftime('{}_%Y-%m-%d_%H-%M-%S.log').format(
-        os.path.splitext(os.path.basename(__file__))[0])
+_script_dir = os.path.dirname(__file__)
+_script_name = os.path.splitext(os.path.basename(__file__))[0]
 
-def run_tests(tools_path=(), use_sde=False, use_boxes=False, log_path=None):
+def _build_default_log_path():
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    fn = '{}_{}.log'.format(_script_name, timestamp)
+    return os.path.join(_script_dir, fn)
+
+def _setup_logging(log_path=None):
     if log_path is None:
         log_path = _build_default_log_path()
 
@@ -230,6 +234,8 @@ def run_tests(tools_path=(), use_sde=False, use_boxes=False, log_path=None):
         format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
         level=logging.DEBUG)
 
+def run_tests(tools_path=(), use_sde=False, use_boxes=False, log_path=None):
+    _setup_logging(log_path)
     tools = Tools(tools_path, use_sde=use_sde)
 
     exit_codes = []
