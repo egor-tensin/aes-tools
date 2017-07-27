@@ -24,7 +24,8 @@ namespace
     {
         const auto plaintext_buf = file::read_file(plaintext_path);
         const auto ciphertext_buf = box.encrypt_buffer(
-            plaintext_buf.data(), plaintext_buf.size());
+            plaintext_buf.data(),
+            plaintext_buf.size());
         file::write_file(ciphertext_path, ciphertext_buf);
     }
 

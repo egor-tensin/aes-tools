@@ -11,10 +11,8 @@
 
 #include <aes/all.h>
 
-#include <cassert>
 #include <cstddef>
 
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -77,16 +75,16 @@ namespace aes
         }
 
         Box(Algorithm algorithm, const Key& key)
-            : algorithm(algorithm)
-            , mode(AES_ECB)
+            : algorithm{algorithm}
+            , mode{AES_ECB}
         {
             aes_box_init(&impl, algorithm, &key, mode, nullptr,
                 ErrorDetailsThrowsInDestructor{});
         }
 
         Box(Algorithm algorithm, const Key& key, Mode mode, const Block& iv)
-            : algorithm(algorithm)
-            , mode(mode)
+            : algorithm{algorithm}
+            , mode{mode}
         {
             aes_box_init(&impl, algorithm, &key, mode, &iv,
                 ErrorDetailsThrowsInDestructor{});
@@ -110,7 +108,7 @@ namespace aes
             const void* src_buf,
             std::size_t src_size)
         {
-            std::size_t dest_size;
+            std::size_t dest_size = 0;
 
             aes_box_encrypt_buffer(
                 &impl,
@@ -139,7 +137,7 @@ namespace aes
             const void* src_buf,
             std::size_t src_size)
         {
-            std::size_t dest_size;
+            std::size_t dest_size = 0;
 
             aes_box_decrypt_buffer(
                 &impl,

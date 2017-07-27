@@ -37,7 +37,7 @@ namespace
         if (verbose)
             dump_key<algorithm>(key);
 
-        aes::DecryptWrapper<algorithm, mode> decrypt(key, iv);
+        aes::DecryptWrapper<algorithm, mode> decrypt{key, iv};
         if (verbose)
             dump_wrapper<algorithm, mode>(decrypt);
 
