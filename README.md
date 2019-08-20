@@ -1,6 +1,8 @@
 AES tools
 =========
 
+[![Build Status](https://travis-ci.com/egor-tensin/aes-tools.svg?branch=master)](https://travis-ci.com/egor-tensin/aes-tools)
+
 Simple AES implementation and utilities.
 
 Building
