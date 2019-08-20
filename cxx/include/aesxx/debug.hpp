@@ -6,7 +6,7 @@
 #pragma once
 
 #ifdef WIN32
-#include <Windows.h>
+#include <windows.h>
 #include <DbgHelp.h>
 #pragma comment(lib, "DbgHelp.Lib")
 #endif

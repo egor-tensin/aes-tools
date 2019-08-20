@@ -3,7 +3,7 @@
 // For details, see https://github.com/egor-tensin/aes-tools.
 // Distributed under the MIT License.
 
-#include <Windows.h>
+#include <windows.h>
 
 #include <cstddef>
 #include <cstring>

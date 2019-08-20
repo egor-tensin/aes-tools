@@ -151,7 +151,7 @@ size_t aes_format_error(
 }
 
 #ifdef WIN32
-#include <Windows.h>
+#include <windows.h>
 
 static void aes_collect_call_stack(AES_ErrorDetails* err_details)
 {
