@@ -2,6 +2,16 @@ language: cpp
 os: linux
 dist: bionic
 
+branches:
+  only:
+    - master
+
+addons:
+  apt:
+    update: true
+    packages:
+      - mingw-w64
+
 env:
   global:
     - boost_version=1.71.0
@@ -10,12 +20,6 @@ env:
     - build_type=release arch=x86
     - build_type=debug   arch=x64
     - build_type=release arch=x64
-
-addons:
-  apt:
-    update: true
-    packages:
-      - mingw-w64
 
 before_script:
   - ./.travis/build_boost.sh
