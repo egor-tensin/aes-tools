@@ -17,14 +17,14 @@ cd -- "$HOME"
 mkdir -- cmake
 cd -- cmake/
 
-cmake \
-    -D "CMAKE_BUILD_TYPE=$build_type" \
-    -D "CMAKE_C_COMPILER=$cc" \
-    -D "CMAKE_CXX_COMPILER=$cxx" \
-    -D "BOOST_ROOT=$boost_dir" \
+cmake                                       \
+    -D "CMAKE_BUILD_TYPE=$build_type"       \
+    -D "CMAKE_C_COMPILER=$cc"               \
+    -D "CMAKE_CXX_COMPILER=$cxx"            \
+    -D "BOOST_ROOT=$boost_dir"              \
     -D "BOOST_LIBRARYDIR=$boost_librarydir" \
-    -D Boost_USE_STATIC_LIBS=ON \
-    -D CMAKE_SYSTEM_NAME=Windows \
+    -D Boost_USE_STATIC_LIBS=ON             \
+    -D CMAKE_SYSTEM_NAME=Windows            \
     "$TRAVIS_BUILD_DIR"
 
 cmake --build .

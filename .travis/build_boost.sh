@@ -22,14 +22,14 @@ echo "using gcc : : $cxx ;" > "user-config-$arch.jam"
 address_model=32
 [ "$arch" = x64 ] && address_model=64
 
-./b2 \
-    toolset=gcc \
-    "address-model=$address_model" \
-    target-os=windows \
-    link=static \
-    variant="$build_type" \
-    "--stagedir=stage/$arch/$build_type" \
+./b2                                      \
+    toolset=gcc                           \
+    "address-model=$address_model"        \
+    target-os=windows                     \
+    link=static                           \
+    variant="$build_type"                 \
+    "--stagedir=stage/$arch/$build_type"  \
     "--user-config=user-config-$arch.jam" \
-    --with-filesystem \
-    --with-program_options \
+    --with-filesystem                     \
+    --with-program_options                \
     --with-system
