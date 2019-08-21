@@ -2,6 +2,7 @@ AES tools
 =========
 
 [![Build Status](https://travis-ci.com/egor-tensin/aes-tools.svg?branch=master)](https://travis-ci.com/egor-tensin/aes-tools)
+[![Build status](https://ci.appveyor.com/api/projects/status/atqrk0m9vj3mcoor/branch/master?svg=true)](https://ci.appveyor.com/project/egor-tensin/aes-tools/branch/master)
 
 Simple AES implementation and utilities.
 
