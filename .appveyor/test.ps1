@@ -5,6 +5,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop";
+Set-PSDebug -Strict
 
 function Invoke-Exe {
     param(
@@ -47,6 +48,12 @@ function Get-AppVeyorPythonDir {
     }
 }
 
+function Set-AppVeyorDefaults {
+    $script:ProjectDir = $env:APPVEYOR_BUILD_FOLDER
+    $script:UtilsDir = Get-AppVeyorUtilsDir
+    $script:PythonDir = Get-AppVeyorPythonDir
+}
+
 function Run-ProjectTests {
     param(
         [Parameter(Mandatory=$true)]
@@ -58,33 +65,37 @@ function Run-ProjectTests {
     $test_dir = "$ProjectDir\test"
     cd $test_dir
 
-    Invoke-Exe { python nist.py --path $UtilsDir --log nist.log }
+    Invoke-Exe { python.exe nist.py --path $UtilsDir --log nist.log }
     Get-Content nist.log -Tail 5
-    Invoke-Exe { python cavp.py --path $UtilsDir --log cavp.log }
+    Invoke-Exe { python.exe cavp.py --path $UtilsDir --log cavp.log }
     Get-Content cavp.log -Tail 5
-    Invoke-Exe { python nist.py --path $UtilsDir --log nist.log --boxes }
-    Get-Content nist.log -Tail 5
-    Invoke-Exe { python cavp.py --path $UtilsDir --log cavp.log --boxes }
-    Get-Content cavp.log -Tail 5
-    Invoke-Exe { python file.py --path $UtilsDir --log file.log }
+    Invoke-Exe { python.exe nist.py --path $UtilsDir --log nist_boxes.log --boxes }
+    Get-Content nist_boxes.log -Tail 5
+    Invoke-Exe { python.exe cavp.py --path $UtilsDir --log cavp_boxes.log --boxes }
+    Get-Content cavp_boxes.log -Tail 5
+    Invoke-Exe { python.exe file.py --path $UtilsDir --log file.log }
     Get-Content file.log -Tail 5
 }
 
-if (Test-AppVeyor) {
-    $cwd = pwd
-    $ProjectDir = $env:APPVEYOR_BUILD_FOLDER
-    $UtilsDir = Get-AppVeyorUtilsDir
-    $PythonDir = Get-AppVeyorPythonDir
+function Run-ProjectTestsAppVeyor {
+    if (Test-AppVeyor) {
+        Set-AppVeyorDefaults
+        $appveyor_cwd = pwd
+    }
+
+    try {
+        if ($script:PythonDir) {
+            $env:PATH = "${script:PythonDir};${env:PATH}"
+        }
+
+        Run-ProjectTests                   `
+            -ProjectDir $script:ProjectDir `
+            -UtilsDir $script:UtilsDir
+    } finally {
+        if (Test-AppVeyor) {
+            cd $appveyor_cwd
+        }
+    }
 }
 
-if ($PythonDir) {
-    $env:PATH = "${PythonDir};${env:PATH}"
-}
-
-Run-ProjectTests            `
-    -ProjectDir $ProjectDir `
-    -UtilsDir $UtilsDir
-
-if (Test-AppVeyor) {
-    cd $cwd
-}
+Run-ProjectTestsAppVeyor

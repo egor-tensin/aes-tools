@@ -1,17 +1,23 @@
 version: '{build}'
 
-image:
-  - Visual Studio 2017
-
 branches:
   only:
     - master
 
 environment:
-  appveyor_boost_version: 1.69.0
   matrix:
-    - appveyor_asm: 1
-    - appveyor_asm: 0
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      appveyor_boost_version: 1.62.0
+      appveyor_asm: 1
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      appveyor_boost_version: 1.62.0
+      appveyor_asm: 0
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      appveyor_boost_version: 1.69.0
+      appveyor_asm: 1
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      appveyor_boost_version: 1.69.0
+      appveyor_asm: 0
 
 platform:
   - Win32
