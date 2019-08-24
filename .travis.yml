@@ -2,10 +2,6 @@ language: cpp
 os: linux
 dist: bionic
 
-branches:
-  only:
-    - master
-
 addons:
   apt:
     update: true
