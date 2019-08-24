@@ -27,4 +27,4 @@ cmake                                       \
     -D CMAKE_SYSTEM_NAME=Windows            \
     "$TRAVIS_BUILD_DIR"
 
-cmake --build .
+cmake --build . -- -j
