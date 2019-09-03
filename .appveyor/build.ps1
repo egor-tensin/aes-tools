@@ -104,13 +104,13 @@ function Build-Project {
     mkdir $BuildDir
     cd $BuildDir
 
-    Invoke-Exe { cmake.exe -Wno-dev             `
-        -G $Generator -A $Platform              `
-        -D "AES_TOOLS_ASM=$cmake_asm"           `
-        -D "BOOST_ROOT=$BoostDir"               `
-        -D "BOOST_LIBRARYDIR=$BoostLibraryDir"  `
-        -D Boost_USE_STATIC_LIBS=ON             `
-        -D Boost_USE_STATIC_RUNTIME=ON          `
+    Invoke-Exe { cmake.exe -Wno-dev            `
+        -G $Generator -A $Platform             `
+        -D "AES_TOOLS_ASM=$cmake_asm"          `
+        -D "BOOST_ROOT=$BoostDir"              `
+        -D "BOOST_LIBRARYDIR=$BoostLibraryDir" `
+        -D Boost_USE_STATIC_LIBS=ON            `
+        -D Boost_USE_STATIC_RUNTIME=ON         `
         $ProjectDir
     }
     
