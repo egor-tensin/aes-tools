@@ -22,6 +22,9 @@ matrix:
     - appveyor_asm: 1
       platform: x64
 
+install:
+  - git submodule update --init --recursive
+
 build_script:
   - ps: .\.appveyor\build.ps1
 
