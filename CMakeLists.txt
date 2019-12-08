@@ -1,6 +1,6 @@
 project(aes_tools)
 
-include(common.cmake)
+include(cmake/common.cmake)
 
 set(AES_TOOLS_ASM OFF CACHE BOOL "Use the assembly language implementation instead of the one in C")
 
