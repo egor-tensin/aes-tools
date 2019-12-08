@@ -1,8 +1,10 @@
-project(aes_tools)
+cmake_minimum_required(VERSION 3.1)
+
+project(aes_tools C CXX)
 
 include(cmake/common.cmake)
 
-set(AES_TOOLS_ASM OFF CACHE BOOL "Use the assembly language implementation instead of the one in C")
+option(AES_TOOLS_ASM "Use the assembly language implementation instead of the one in C")
 
 file(GLOB_RECURSE aes_include "include/*.h")
 
@@ -20,10 +22,8 @@ endif()
 add_library(aes ${aes_src} ${aes_include})
 target_include_directories(aes PUBLIC include/)
 
-if(is_root_project)
-    if(MSVC)
-        target_compile_definitions(aes PRIVATE _CRT_SECURE_NO_WARNINGS)
-    endif()
+if(MSVC)
+    target_compile_definitions(aes PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)

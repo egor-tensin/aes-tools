@@ -1,7 +1,3 @@
-if(MSVC)
-    add_definitions(/DNOMINMAX)
-endif()
-
 find_package(Boost REQUIRED COMPONENTS filesystem program_options system)
 
 set(block_util_headers block_cmd_parser.hpp block_dumper.hpp block_input.hpp data_parsers.hpp helpers/command_line.hpp)
