@@ -35,3 +35,8 @@ add_executable(util_decrypt_bmp decrypt_bmp.cpp ${bmp_util_headers})
 target_include_directories(util_decrypt_bmp SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
 target_link_libraries(util_decrypt_bmp PRIVATE aesxx ${Boost_LIBRARIES})
 set_target_properties(util_decrypt_bmp PROPERTIES OUTPUT_NAME decrypt_bmp)
+
+install(TARGETS
+        util_encrypt_block util_encrypt_file util_encrypt_bmp
+        util_decrypt_block util_decrypt_file util_decrypt_bmp
+        RUNTIME DESTINATION bin)
