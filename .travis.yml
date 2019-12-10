@@ -10,15 +10,28 @@ addons:
 
 env:
   global:
-    - boost_version=1.71.0
+    - travis_boost_version=1.71.0
   matrix:
-    - build_type=debug   arch=x86
-    - build_type=release arch=x86
-    - build_type=debug   arch=x64
-    - build_type=release arch=x64
+    - configuration=Debug   platform=x86
+    - configuration=Release platform=x86
+    - configuration=Debug   platform=x64
+    - configuration=Release platform=x64
 
 before_script:
-  - ./.travis/build_boost.sh
+  - |-
+    ./cmake/build/boost/build_travis.sh \
+        target-os=windows               \
+        --user-config="$TRAVIS_BUILD_DIR/cmake/toolchains/boost/mingw-w64-$platform.jam" \
+        --with-filesystem               \
+        --with-program_options          \
+        --with-system
 
 script:
-  - ./.travis/build.sh
+  - |-
+    ./cmake/build/build_travis.py                                  \
+        --configuration "$configuration"                           \
+        --install "$HOME/install"                                  \
+        --boost "$HOME/boost_1_71_0"                               \
+        --toolchain "./cmake/toolchains/mingw-w64-$platform.cmake" \
+        --boost-librarydir "$HOME/boost_1_71_0/stage/$platform/${configuration,,}/lib" \
+        -- -DCMAKE_SYSTEM_NAME=Windows

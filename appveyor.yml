@@ -6,9 +6,12 @@ image:
   - Visual Studio 2019
 
 environment:
+  global:
+    python_exe: C:\Python36-x64\python.exe
+    install_dir: C:\Projects\install
   matrix:
-    - appveyor_asm: 1
-    - appveyor_asm: 0
+    - use_asm: ON
+    - use_asm: OFF
 
 platform:
   - Win32
@@ -20,17 +23,26 @@ configuration:
 
 matrix:
   exclude:
-    - appveyor_asm: 1
+    - use_asm: ON
       platform: x64
 
 install:
   - git submodule update --init --recursive
 
 build_script:
-  - ps: .\.appveyor\build.ps1
+  - '"%python_exe%" cmake\build\build_appveyor.py --install "%install_dir%" --boost "%appveyor_boost_root%" --boost-librarydir "%appveyor_boost_librarydir%" -- "-DAES_TOOLS_ASM=%use_asm%"'
 
 test_script:
-  - ps: .\.appveyor\test.ps1
+  - '"%python_exe%" "%APPVEYOR_BUILD_FOLDER%\\test\\nist.py" --path "%install_dir%\bin" --log "%APPVEYOR_BUILD_FOLDER%\test\nist.log"'
+  - ps: Get-Content "$env:APPVEYOR_BUILD_FOLDER\test\nist.log" -Tail 5
+  - '"%python_exe%" "%APPVEYOR_BUILD_FOLDER%\\test\\cavp.py" --path "%install_dir%\bin" --log "%APPVEYOR_BUILD_FOLDER%\test\cavp.log"'
+  - ps: Get-Content "$env:APPVEYOR_BUILD_FOLDER\test\cavp.log" -Tail 5
+  - '"%python_exe%" "%APPVEYOR_BUILD_FOLDER%\\test\\nist.py" --path "%install_dir%\bin" --log "%APPVEYOR_BUILD_FOLDER%\test\nist_boxes.log" --boxes'
+  - ps: Get-Content "$env:APPVEYOR_BUILD_FOLDER\test\nist_boxes.log" -Tail 5
+  - '"%python_exe%" "%APPVEYOR_BUILD_FOLDER%\\test\\cavp.py" --path "%install_dir%\bin" --log "%APPVEYOR_BUILD_FOLDER%\test\cavp_boxes.log" --boxes'
+  - ps: Get-Content "$env:APPVEYOR_BUILD_FOLDER\test\cavp_boxes.log" -Tail 5
+  - '"%python_exe%" "%APPVEYOR_BUILD_FOLDER%\\test\\file.py" --path "%install_dir%\bin" --log "%APPVEYOR_BUILD_FOLDER%\test\file.log"'
+  - ps: Get-Content "$env:APPVEYOR_BUILD_FOLDER\test\file.log" -Tail 5
 
 for:
 # Only build Release builds for master to speed things up:
