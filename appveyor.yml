@@ -33,6 +33,13 @@ test_script:
   - ps: .\.appveyor\test.ps1
 
 for:
+# Only build Release builds for master to speed things up:
+- branches:
+    except:
+      - master
+  configuration:
+    - Debug
+
 - matrix:
     only:
       - image: Visual Studio 2015
