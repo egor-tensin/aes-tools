@@ -30,7 +30,7 @@ install:
   - git submodule update --init --recursive
 
 build_script:
-  - '"%python_exe%" cmake\build\build_appveyor.py --install "%install_dir%" --boost "%appveyor_boost_root%" --boost-librarydir "%appveyor_boost_librarydir%" -- "-DAES_TOOLS_ASM=%use_asm%"'
+  - '"%python_exe%" cmake\ci\build_appveyor.py --install "%install_dir%" -- -D "BOOST_ROOT=%appveyor_boost_root%" -D "BOOST_LIBRARYDIR=%appveyor_boost_librarydir%" -D "AES_TOOLS_ASM=%use_asm%"'
 
 test_script:
   - '"%python_exe%" "%APPVEYOR_BUILD_FOLDER%\\test\\nist.py" --path "%install_dir%\bin" --log "%APPVEYOR_BUILD_FOLDER%\test\nist.log"'

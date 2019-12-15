@@ -19,19 +19,21 @@ env:
 
 before_script:
   - |-
-    ./cmake/build/boost/build_travis.sh \
-        target-os=windows               \
+    ./cmake/ci/boost/build_travis.py \
+        --                           \
+        link=static                  \
+        target-os=windows            \
         --user-config="$TRAVIS_BUILD_DIR/cmake/toolchains/boost/mingw-w64-$platform.jam" \
-        --with-filesystem               \
-        --with-program_options          \
+        --with-filesystem            \
+        --with-program_options       \
         --with-system
 
 script:
   - |-
-    ./cmake/build/build_travis.py                                  \
-        --configuration "$configuration"                           \
-        --install "$HOME/install"                                  \
-        --boost "$HOME/boost_1_71_0"                               \
-        --toolchain "./cmake/toolchains/mingw-w64-$platform.cmake" \
-        --boost-librarydir "$HOME/boost_1_71_0/stage/$platform/${configuration,,}/lib" \
-        -- -DCMAKE_SYSTEM_NAME=Windows
+    ./cmake/ci/build_travis.py \
+        --install "$HOME/install" \
+        -- \
+        -D "BOOST_ROOT=$HOME/boost_1_71_0" \
+        -D "BOOST_LIBRARYDIR=$HOME/boost_1_71_0/stage/$platform/$configuration/lib" \
+        -D "CMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw-w64-$platform.cmake" \
+        -D CMAKE_SYSTEM_NAME=Windows
