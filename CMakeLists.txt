@@ -33,3 +33,5 @@ endif()
 add_subdirectory(cxx)
 
 add_subdirectory(utils)
+
+install(FILES LICENSE.txt DESTINATION share)
