@@ -234,7 +234,7 @@ def _parse_args(args=None):
     parser.add_argument('--boxes', '-b', action='store_true', dest='use_boxes',
                         help='use the "boxes" interface')
     parser.add_argument('--archive', '-a', dest='archive_path', metavar='PATH',
-                        default=os.path.join(_script_dir, 'KAT_AES.zip'),
+                        default=os.path.join(_script_dir, 'data/KAT_AES.zip'),
                         help='set test vectors archive file path')
     parser.add_argument('--log', '-l', dest='log_path', metavar='PATH',
                         help='set log file path')

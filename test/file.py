@@ -206,7 +206,7 @@ def _parse_args(args=None):
     parser.add_argument('--force', '-f', action='store_true',
                         help='overwrite ciphertext files')
     parser.add_argument('--suite', '-s', dest='suite_path',
-                        default=os.path.join(_script_dir, 'file'),
+                        default=os.path.join(_script_dir, 'data', 'file'),
                         help='set test suite directory path')
     return parser.parse_args(args)
 
