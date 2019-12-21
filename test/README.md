@@ -7,7 +7,7 @@ the test vectors provided by various AES [validation programs].
 
 You can also test that [file encryption] works (at least to some extent).
 
-[utilities]: ../utils/README.md
+[utilities]: ../aesxx/utils/README.md
 [Manual testing]: #manual-testing
 [validation programs]: #validation-programs
 [file encryption]: #file-encryption
