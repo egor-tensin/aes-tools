@@ -9,3 +9,5 @@ if(MSVC_VERSION EQUAL 1900)
     # https://connect.microsoft.com/VisualStudio/feedback/details/888527/warnings-on-dbghelp-h
     target_compile_options(aesxx INTERFACE /wd4091)
 endif()
+
+install(DIRECTORY include/aesxx DESTINATION include)

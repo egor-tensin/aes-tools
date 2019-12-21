@@ -33,4 +33,6 @@ endif()
 add_subdirectory(cxx)
 add_subdirectory(utils)
 
+install(TARGETS aes ARCHIVE DESTINATION lib)
+install(DIRECTORY include/aes DESTINATION include)
 install(FILES LICENSE.txt DESTINATION share)
