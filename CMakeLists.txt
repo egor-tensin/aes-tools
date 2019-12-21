@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.5) # for Boost::* imported targets
 
 project(aes_tools C CXX)
 
@@ -31,7 +31,6 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 add_subdirectory(cxx)
-
 add_subdirectory(utils)
 
 install(FILES LICENSE.txt DESTINATION share)
