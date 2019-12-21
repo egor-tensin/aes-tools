@@ -11,3 +11,5 @@ if(MSVC_VERSION EQUAL 1900)
 endif()
 
 install(DIRECTORY include/aesxx DESTINATION include)
+
+add_subdirectory(utils)

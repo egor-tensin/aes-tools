@@ -154,5 +154,5 @@ See also
 * [Usage on older CPUs]
 * [License]
 
-[Usage on older CPUs]: ../README.md#usage-on-older-cpus
-[License]: ../README.md#license
+[Usage on older CPUs]: ../../README.md#usage-on-older-cpus
+[License]: ../../README.md#license

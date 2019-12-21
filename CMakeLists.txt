@@ -6,6 +6,5 @@ include(cmake/common.cmake)
 
 add_subdirectory(aes)
 add_subdirectory(aesxx)
-add_subdirectory(utils)
 
 install(FILES LICENSE.txt DESTINATION share)
