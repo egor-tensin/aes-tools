@@ -18,13 +18,16 @@ from tempfile import NamedTemporaryFile
 
 from toolkit import Algorithm, Mode, Tools
 
+
 class TestExitCode(Enum):
     SUCCESS, FAILURE, ERROR, SKIPPED = range(1, 5)
+
 
 _KEY_EXT = 'key'
 _IV_EXT = 'iv'
 _PLAIN_EXT = 'plain'
 _CIPHER_EXT = 'cipher'
+
 
 def _list_dirs(root_path):
     for path in os.listdir(root_path):
@@ -32,38 +35,49 @@ def _list_dirs(root_path):
         if os.path.isdir(path):
             yield path
 
+
 def _list_files(root_path, ext):
     for path in glob(os.path.join(root_path, '*.{}'.format(ext))):
         if os.path.isfile(path):
             yield path
 
+
 def _list_keys(root_path):
     return _list_files(root_path, _KEY_EXT)
+
 
 def _read_first_line(path):
     with open(path) as fd:
         return fd.readline()
 
+
 def _read_key(key_path):
     return _read_first_line(key_path)
+
 
 def _read_iv(iv_path):
     return _read_first_line(iv_path)
 
+
 def _extract_test_name(key_path):
     return os.path.splitext(os.path.basename(key_path))[0]
+
 
 def _replace_ext(path, new_ext):
     return '{}.{}'.format(os.path.splitext(path)[0], new_ext)
 
+
 def _extract_iv_path(key_path):
     return _replace_ext(key_path, _IV_EXT)
+
 
 def _extract_plaintext_path(key_path):
     return _replace_ext(key_path, _PLAIN_EXT)
 
+
 def _extract_ciphertext_path(key_path):
     return _replace_ext(key_path, _CIPHER_EXT)
+
 
 @contextmanager
 def _make_output_file():
@@ -72,16 +86,17 @@ def _make_output_file():
         yield tmp_path
     os.remove(tmp_path)
 
+
 def run_encryption_test(tools, algorithm, mode, key, plaintext_path,
                         ciphertext_path, iv=None, force=False):
     logging.info('Running encryption test...')
-    logging.info('\tPlaintext file path: ' + plaintext_path)
-    logging.info('\tExpected ciphertext file path: ' + ciphertext_path)
-    logging.info('\tAlgorithm: ' + str(algorithm))
-    logging.info('\tMode: ' + str(mode))
+    logging.info('\tPlaintext file path: %s', plaintext_path)
+    logging.info('\tExpected ciphertext file path: %s', ciphertext_path)
+    logging.info('\tAlgorithm: %s', algorithm)
+    logging.info('\tMode: %s', mode)
 
     with _make_output_file() as tmp_path:
-        logging.info('\tEncrypted file path: ' + tmp_path)
+        logging.info('\tEncrypted file path: %s', tmp_path)
 
         try:
             tools.run_encrypt_file(algorithm, mode, key, plaintext_path,
@@ -92,60 +107,60 @@ def run_encryption_test(tools, algorithm, mode, key, plaintext_path,
                 return TestExitCode.SKIPPED
             if filecmp.cmp(ciphertext_path, tmp_path):
                 return TestExitCode.SUCCESS
-            else:
-                logging.error('The encrypted file doesn\'t match the ciphertext file')
-                return TestExitCode.FAILURE
+            logging.error('The encrypted file doesn\'t match the ciphertext file')
+            return TestExitCode.FAILURE
         except CalledProcessError as e:
             logging.error('Encountered an exception!')
             logging.exception(e)
             return TestExitCode.ERROR
 
+
 def run_decryption_test(tools, algorithm, mode, key, plaintext_path,
                         ciphertext_path, iv=None):
     logging.info('Running decryption test...')
-    logging.info('\tCiphertext file path: ' + ciphertext_path)
-    logging.info('\tExpected plaintext file path: ' + plaintext_path)
-    logging.info('\tAlgorithm: ' + str(algorithm))
-    logging.info('\tMode: ' + str(mode))
+    logging.info('\tCiphertext file path: %s', ciphertext_path)
+    logging.info('\tExpected plaintext file path: %s', plaintext_path)
+    logging.info('\tAlgorithm: %s', algorithm)
+    logging.info('\tMode: %s', mode)
 
     with _make_output_file() as tmp_path:
-        logging.info('\tDecrypted file path: ' + tmp_path)
+        logging.info('\tDecrypted file path: %s', tmp_path)
 
         try:
             tools.run_decrypt_file(algorithm, mode, key, ciphertext_path,
                                    tmp_path, iv)
             if filecmp.cmp(tmp_path, plaintext_path):
                 return TestExitCode.SUCCESS
-            else:
-                logging.error('The decrypted file doesn\'t match the plaintext file')
-                return TestExitCode.FAILURE
+            logging.error('The decrypted file doesn\'t match the plaintext file')
+            return TestExitCode.FAILURE
         except CalledProcessError as e:
             logging.error('Encountered an exception!')
             logging.exception(e)
             return TestExitCode.ERROR
 
+
 def enum_tests(suite_dir):
     suite_dir = os.path.abspath(suite_dir)
-    logging.info('Suite directory path: ' + suite_dir)
+    logging.info('Suite directory path: %s', suite_dir)
     for algorithm_dir in _list_dirs(suite_dir):
         algorithm = os.path.basename(algorithm_dir)
         maybe_algorithm = Algorithm.try_parse(algorithm)
         if maybe_algorithm is None:
-            logging.warning('Unknown or unsupported algorithm: ' + algorithm)
+            logging.warning('Unknown or unsupported algorithm: %s', algorithm)
             continue
         algorithm = maybe_algorithm
         for mode_dir in _list_dirs(algorithm_dir):
             mode = os.path.basename(mode_dir)
             maybe_mode = Mode.try_parse(mode)
             if maybe_mode is None:
-                logging.warning('Unknown or unsupported mode: ' + mode)
+                logging.warning('Unknown or unsupported mode: %s', mode)
                 continue
             mode = maybe_mode
             for key_path in _list_keys(mode_dir):
                 key = _read_key(key_path)
-                logging.info('Key: ' + key)
+                logging.info('Key: %s', key)
                 test_name = _extract_test_name(key_path)
-                logging.info('Test name: ' + test_name)
+                logging.info('Test name: %s', test_name)
                 iv = None
                 if mode.requires_init_vector():
                     iv_path = _extract_iv_path(key_path)
@@ -154,13 +169,16 @@ def enum_tests(suite_dir):
                 ciphertext_path = _extract_ciphertext_path(key_path)
                 yield algorithm, mode, key, plaintext_path, ciphertext_path, iv
 
+
 _script_dir = os.path.dirname(__file__)
 _script_name = os.path.splitext(os.path.basename(__file__))[0]
+
 
 def _build_default_log_path():
     timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     fn = '{}_{}.log'.format(_script_name, timestamp)
     return os.path.join(_script_dir, fn)
+
 
 def _setup_logging(log_path=None):
     if log_path is None:
@@ -170,6 +188,7 @@ def _setup_logging(log_path=None):
         filename=log_path,
         format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
         level=logging.DEBUG)
+
 
 def run_tests(suite_path, tools_path=(), log_path=None, use_sde=False, force=False):
     _setup_logging(log_path)
@@ -192,6 +211,7 @@ def run_tests(suite_path, tools_path=(), log_path=None, use_sde=False, force=Fal
     else:
         return 1
 
+
 def _parse_args(args=None):
     if args is None:
         args = sys.argv[1:]
@@ -210,8 +230,10 @@ def _parse_args(args=None):
                         help='set test suite directory path')
     return parser.parse_args(args)
 
+
 def main(args=None):
     return run_tests(**vars(_parse_args(args)))
+
 
 if __name__ == '__main__':
     sys.exit(main())

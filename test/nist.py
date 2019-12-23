@@ -140,24 +140,30 @@ _TEST_CIPHERTEXTS = {
     }
 }
 
+
 def get_test_plaintexts(*_):
     return _TEST_PLAINTEXTS
 
+
 def get_test_key(algorithm, *_):
     return _TEST_KEYS[algorithm]
+
 
 def get_test_iv(algorithm, mode):
     if not mode.requires_init_vector():
         return None
     return _TEST_INIT_VECTORS[algorithm][mode]
 
+
 def get_test_ciphertexts(algorithm, mode):
     return _TEST_CIPHERTEXTS[algorithm][mode]
+
 
 def get_tested_algorithms_and_modes():
     for algorithm in _TEST_CIPHERTEXTS:
         for mode in _TEST_CIPHERTEXTS[algorithm]:
             yield algorithm, mode
+
 
 def verify_test_output(actual, expected):
     if len(actual) != len(expected):
@@ -170,8 +176,10 @@ def verify_test_output(actual, expected):
         return False
     return True
 
+
 class TestExitCode(Enum):
     SUCCESS, FAILURE, ERROR, SKIPPED = range(1, 5)
+
 
 def run_encryption_test(tools, algorithm, mode, use_boxes=False):
     logging.info('Running encryption test...')
@@ -188,12 +196,12 @@ def run_encryption_test(tools, algorithm, mode, use_boxes=False):
             algorithm, mode, input_, use_boxes)
         if verify_test_output(actual_ciphertexts, expected_ciphertexts):
             return TestExitCode.SUCCESS
-        else:
-            return TestExitCode.FAILURE
+        return TestExitCode.FAILURE
     except CalledProcessError as e:
         logging.error('Encountered an exception!')
         logging.exception(e)
         return TestExitCode.ERROR
+
 
 def run_decryption_test(tools, algorithm, mode, use_boxes=False):
     logging.info('Running decryption test...')
@@ -210,20 +218,22 @@ def run_decryption_test(tools, algorithm, mode, use_boxes=False):
             algorithm, mode, input_, use_boxes)
         if verify_test_output(actual_plaintexts, expected_plaintexts):
             return TestExitCode.SUCCESS
-        else:
-            return TestExitCode.FAILURE
+        return TestExitCode.FAILURE
     except CalledProcessError as e:
         logging.error('Encountered an exception!')
         logging.exception(e)
         return TestExitCode.ERROR
 
+
 _script_dir = os.path.dirname(__file__)
 _script_name = os.path.splitext(os.path.basename(__file__))[0]
+
 
 def _build_default_log_path():
     timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     fn = '{}_{}.log'.format(_script_name, timestamp)
     return os.path.join(_script_dir, fn)
+
 
 def _setup_logging(log_path=None):
     if log_path is None:
@@ -233,6 +243,7 @@ def _setup_logging(log_path=None):
         filename=log_path,
         format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
         level=logging.DEBUG)
+
 
 def run_tests(tools_path=(), use_sde=False, use_boxes=False, log_path=None):
     _setup_logging(log_path)
@@ -257,6 +268,7 @@ def run_tests(tools_path=(), use_sde=False, use_boxes=False, log_path=None):
     else:
         return 1
 
+
 def _parse_args(args=None):
     if args is None:
         args = sys.argv[1:]
@@ -272,8 +284,10 @@ def _parse_args(args=None):
                         help='set log file path')
     return parser.parse_args(args)
 
+
 def main(args=None):
     return run_tests(**vars(_parse_args(args)))
+
 
 if __name__ == '__main__':
     sys.exit(main())

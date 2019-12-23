@@ -18,12 +18,14 @@ import zipfile
 
 from toolkit import Algorithm, BlockInput, Mode, Tools
 
+
 class _MultiOrderedDict(OrderedDict):
     def __setitem__(self, key, value):
         if isinstance(value, MutableSequence) and key in self:
             self[key].extend(value)
         else:
             super(OrderedDict, self).__setitem__(key, value)
+
 
 def verify_test_output(actual, expected):
     if len(actual) != len(expected):
@@ -32,12 +34,14 @@ def verify_test_output(actual, expected):
         logging.error('\tActual: %d', len(actual))
         return False
     if actual != expected:
-        logging.error('Expected output:\n' + '\n'.join(expected))
+        logging.error('Expected output:\n%s', '\n'.join(expected))
         return False
     return True
 
+
 class TestExitCode(Enum):
     SUCCESS, FAILURE, ERROR, SKIPPED = range(1, 5)
+
 
 class TestFile:
     def __init__(self, path):
@@ -149,12 +153,11 @@ class TestFile:
         key_size = stub[-3:]
         maybe_algorithm = 'aes{}'.format(key_size)
         self._algorithm = Algorithm.try_parse(maybe_algorithm)
-        if self._algorithm is not None:
-            logging.info('\tAlgorithm: %s', self._algorithm)
-            return stub[0:-3]
-        else:
-            logging.warning('Unknown or unsupported algorithm: ' + self._path)
+        if self._algorithm is None:
+            logging.warning('Unknown or unsupported algorithm: %s', self._path)
             return None
+        logging.info('\tAlgorithm: %s', self._algorithm)
+        return stub[0:-3]
 
     _RECOGNIZED_METHODS = ('GFSbox', 'KeySbox', 'VarKey', 'VarTxt')
 
@@ -163,16 +166,17 @@ class TestFile:
             if stub.endswith(method):
                 logging.info('\tMethod: %s', method)
                 return stub[0:len(stub) - len(method)]
-        logging.warning('Unknown or unsupported method: ' + self._path)
+        logging.warning('Unknown or unsupported method: %s', self._path)
+        return None
 
     def _strip_mode(self, stub):
         self._mode = Mode.try_parse(stub)
-        if self._mode is not None:
-            logging.info('\tMode: %s', self._mode)
-            return self._mode
-        else:
-            logging.warning('Unknown or unsupported mode: ' + self._path)
+        if self._mode is None:
+            logging.warning('Unknown or unsupported mode: %s', self._path)
             return None
+        logging.info('\tMode: %s', self._mode)
+        return self._mode
+
 
 class TestArchive(zipfile.ZipFile):
     def __init__(self, path):
@@ -183,13 +187,16 @@ class TestArchive(zipfile.ZipFile):
             for path in self.namelist():
                 yield TestFile(self.extract(path, tmp_dir))
 
+
 _script_dir = os.path.dirname(__file__)
 _script_name = os.path.splitext(os.path.basename(__file__))[0]
+
 
 def _build_default_log_path():
     timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     fn = '{}_{}.log'.format(_script_name, timestamp)
     return os.path.join(_script_dir, fn)
+
 
 def _setup_logging(log_path=None):
     if log_path is None:
@@ -199,6 +206,7 @@ def _setup_logging(log_path=None):
         filename=log_path,
         format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
         level=logging.DEBUG)
+
 
 def run_tests(archive_path, tools_path=(), use_sde=False, use_boxes=False, log_path=None):
     _setup_logging(log_path)
@@ -222,6 +230,7 @@ def run_tests(archive_path, tools_path=(), use_sde=False, use_boxes=False, log_p
     else:
         return 1
 
+
 def _parse_args(args=None):
     if args is None:
         args = sys.argv[1:]
@@ -240,8 +249,10 @@ def _parse_args(args=None):
                         help='set log file path')
     return parser.parse_args(args)
 
+
 def main(args=None):
     return run_tests(**vars(_parse_args(args)))
+
 
 if __name__ == '__main__':
     sys.exit(main())
