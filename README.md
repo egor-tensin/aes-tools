@@ -20,11 +20,11 @@ Therefore, the Boost libraries must also link them statically.
 You can link the runtime dynamically by passing `-D CC_STATIC_RUNTIME=OFF` to
 `cmake`.
 * **Example.**
-Using Visual Studio 2013 (targeting x86), build & install the release version
+Using Visual Studio 2015 (targeting x86), build & install the release version
 to C:\aes-tools:
 
-      > cmake -G "Visual Studio 12 2013" -A Win32 ^
-          -D BOOST_ROOT=C:\path\to\boost_1_58_0   ^
+      > cmake -G "Visual Studio 14 2015" -A Win32 ^
+          -D BOOST_ROOT=C:\path\to\boost          ^
           C:\path\to\aes-tools
       ...
 
