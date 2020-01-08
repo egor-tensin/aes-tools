@@ -30,22 +30,45 @@ install:
   - git submodule update --init --recursive
 
 build_script:
-  - '"%python_exe%" cmake\ci\build_appveyor.py --install "%install_dir%" -- -D "BOOST_ROOT=%appveyor_boost_root%" -D "BOOST_LIBRARYDIR=%appveyor_boost_librarydir%" -D "AES_TOOLS_ASM=%use_asm%"'
+  - >-
+    "%python_exe%" cmake\cmake\build\ci\appveyor.py
+    --install "%install_dir%"
+    --
+    -D "AES_TOOLS_ASM=%use_asm%"
+    -D "BOOST_ROOT=%appveyor_boost_root%"
+    -D "BOOST_LIBRARYDIR=%appveyor_boost_librarydir%"
 
 after_build:
   - 7z.exe a "%APPVEYOR_PROJECT_NAME%-%PLATFORM%-%CONFIGURATION%.zip" "%install_dir%"
   - appveyor.exe PushArtifact "%APPVEYOR_PROJECT_NAME%-%PLATFORM%-%CONFIGURATION%.zip"
 
 test_script:
-  - '"%python_exe%" "%APPVEYOR_BUILD_FOLDER%\\test\\nist.py" --path "%install_dir%\bin" --log "%APPVEYOR_BUILD_FOLDER%\test\nist.log"'
+  - >-
+    "%python_exe%" "%APPVEYOR_BUILD_FOLDER%\test\nist.py"
+    --path "%install_dir%\bin"
+    --log "%APPVEYOR_BUILD_FOLDER%\test\nist.log"
   - ps: Get-Content "$env:APPVEYOR_BUILD_FOLDER\test\nist.log" -Tail 5
-  - '"%python_exe%" "%APPVEYOR_BUILD_FOLDER%\\test\\cavp.py" --path "%install_dir%\bin" --log "%APPVEYOR_BUILD_FOLDER%\test\cavp.log"'
+  - >-
+    "%python_exe%" "%APPVEYOR_BUILD_FOLDER%\test\cavp.py"
+    --path "%install_dir%\bin"
+    --log "%APPVEYOR_BUILD_FOLDER%\test\cavp.log"
   - ps: Get-Content "$env:APPVEYOR_BUILD_FOLDER\test\cavp.log" -Tail 5
-  - '"%python_exe%" "%APPVEYOR_BUILD_FOLDER%\\test\\nist.py" --path "%install_dir%\bin" --log "%APPVEYOR_BUILD_FOLDER%\test\nist_boxes.log" --boxes'
+  - >-
+    "%python_exe%" "%APPVEYOR_BUILD_FOLDER%\test\nist.py"
+    --path "%install_dir%\bin"
+    --log "%APPVEYOR_BUILD_FOLDER%\test\nist_boxes.log"
+    --boxes
   - ps: Get-Content "$env:APPVEYOR_BUILD_FOLDER\test\nist_boxes.log" -Tail 5
-  - '"%python_exe%" "%APPVEYOR_BUILD_FOLDER%\\test\\cavp.py" --path "%install_dir%\bin" --log "%APPVEYOR_BUILD_FOLDER%\test\cavp_boxes.log" --boxes'
+  - >-
+    "%python_exe%" "%APPVEYOR_BUILD_FOLDER%\test\cavp.py"
+    --path "%install_dir%\bin"
+    --log "%APPVEYOR_BUILD_FOLDER%\test\cavp_boxes.log"
+    --boxes
   - ps: Get-Content "$env:APPVEYOR_BUILD_FOLDER\test\cavp_boxes.log" -Tail 5
-  - '"%python_exe%" "%APPVEYOR_BUILD_FOLDER%\\test\\file.py" --path "%install_dir%\bin" --log "%APPVEYOR_BUILD_FOLDER%\test\file.log"'
+  - >-
+    "%python_exe%" "%APPVEYOR_BUILD_FOLDER%\test\file.py"
+    --path "%install_dir%\bin"
+    --log "%APPVEYOR_BUILD_FOLDER%\test\file.log"
   - ps: Get-Content "$env:APPVEYOR_BUILD_FOLDER\test\file.log" -Tail 5
 
 for:
