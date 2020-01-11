@@ -11,11 +11,14 @@ addons:
 env:
   global:
     - travis_boost_version=1.71.0
-  matrix:
+  jobs:
     - configuration=Debug   platform=x86
     - configuration=Release platform=x86
     - configuration=Debug   platform=x64
     - configuration=Release platform=x64
+
+jobs:
+  fast_finish: true
 
 before_script:
   - >-
