@@ -1,8 +1,8 @@
 AES tools
 =========
 
-[![Travis (.com) branch](https://img.shields.io/travis/com/egor-tensin/aes-tools/master?label=Travis)](https://travis-ci.com/egor-tensin/aes-tools)
-[![AppVeyor branch](https://img.shields.io/appveyor/ci/egor-tensin/aes-tools/master?label=AppVeyor)](https://ci.appveyor.com/project/egor-tensin/aes-tools/branch/master)
+[![AppVeyor branch](https://img.shields.io/appveyor/ci/egor-tensin/aes-tools/master?label=Build%20%28Visual%20Studio%29)](https://ci.appveyor.com/project/egor-tensin/aes-tools/branch/master)
+[![Travis (.com) branch](https://img.shields.io/travis/com/egor-tensin/aes-tools/master?label=Build%20%28MinGW-w64%29)](https://travis-ci.com/egor-tensin/aes-tools)
 
 Simple AES implementation and utilities.
 
