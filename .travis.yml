@@ -10,7 +10,7 @@ addons:
 
 env:
   global:
-    - boost_version=1.71.0
+    - boost_version=1.72.0
   jobs:
     - configuration=Debug   platform=x86
     - configuration=Release platform=x86
