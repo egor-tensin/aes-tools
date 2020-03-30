@@ -10,7 +10,7 @@ addons:
 
 env:
   global:
-    - travis_boost_version=1.71.0
+    - boost_version=1.71.0
   jobs:
     - configuration=Debug   platform=x86
     - configuration=Release platform=x86
@@ -21,20 +21,17 @@ jobs:
   fast_finish: true
 
 before_script:
+  - cd cmake
   - >-
-    ./cmake/boost/build/ci/travis.py
-    --link static
+    python3 -m project.ci.travis.boost
+    --mingw
     --
-    --user-config="$TRAVIS_BUILD_DIR/cmake/boost/toolchains/mingw-w64-$platform.jam"
     --with-filesystem
     --with-program_options
     --with-system
 
 script:
   - >-
-    ./cmake/cmake/build/ci/travis.py
+    python3 -m project.ci.travis.cmake
     --install "$HOME/install"
-    --
-    -D "CMAKE_TOOLCHAIN_FILE=cmake/cmake/toolchains/mingw-w64-$platform.cmake"
-    -D "BOOST_ROOT=$HOME/boost"
-    -D "BOOST_LIBRARYDIR=$HOME/boost/stage/$platform/$configuration/lib"
+    --mingw
