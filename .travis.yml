@@ -1,12 +1,6 @@
 language: cpp
 os: linux
-dist: bionic
-
-addons:
-  apt:
-    update: true
-    packages:
-      - mingw-w64
+dist: focal
 
 env:
   global:
