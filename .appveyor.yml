@@ -23,9 +23,15 @@ configuration:
 
 matrix:
   fast_finish: true
+
   exclude:
-    - use_asm: ON
-      platform: x64
+    - platform: x64
+      use_asm: ON
+
+    # On Win32, only build Debug to speed things up:
+    - platform: Win32
+      use_asm: OFF
+      configuration: Release
 
 install:
   - git submodule update --init --recursive
@@ -73,7 +79,7 @@ test_script:
   - ps: Get-Content "$env:APPVEYOR_BUILD_FOLDER\test\file.log" -Tail 5
 
 for:
-# Only build Release builds for master to speed things up:
+# Build Release on master only to speed things up:
 - branches:
     except:
       - master
