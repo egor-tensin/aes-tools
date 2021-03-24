@@ -62,28 +62,8 @@ jobs:
         with:
           name: 'aes-tools-${{ matrix.os }}-${{ matrix.toolset }}-${{ matrix.platform }}-asm${{ matrix.use_asm }}-${{ matrix.configuration }}'
           path: '${{ runner.workspace }}/build/install/'
-      - name: Run test/nist.py
+      - name: Test
         run: |
-          python test/nist.py --path ../build/install/bin --log test/nist.log
-          Get-Content test/nist.log -Tail 5
-        if: runner.os == 'Windows'
-      - name: Run test/cavp.py
-        run: |
-          python test/cavp.py --path ../build/install/bin --log test/cavp.log
-          Get-Content test/cavp.log -Tail 5
-        if: runner.os == 'Windows'
-      - name: Run test/nist.py --boxes
-        run: |
-          python test/nist.py --path ../build/install/bin --log test/nist.log --boxes
-          Get-Content test/nist.log -Tail 5
-        if: runner.os == 'Windows'
-      - name: Run test/cavp.py --boxes
-        run: |
-          python test/cavp.py --path ../build/install/bin --log test/cavp.log --boxes
-          Get-Content test/cavp.log -Tail 5
-        if: runner.os == 'Windows'
-      - name: Run test/file.py
-        run: |
-          python test/file.py --path ../build/install/bin --log test/file.log
-          Get-Content test/file.log -Tail 5
+          cd ../build/cmake
+          ctest -C '${{ env.CONFIGURATION }}' --verbose
         if: runner.os == 'Windows'
