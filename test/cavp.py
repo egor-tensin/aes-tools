@@ -103,7 +103,7 @@ class TestFile:
         return TestExitCode.SUCCESS
 
     def run_encryption_tests(self, tools, use_boxes=False):
-        logging.info('Running encryption tests...')
+        logging.debug('Running encryption tests...')
         if not self.recognized():
             return TestExitCode.SKIPPED
         try:
@@ -116,7 +116,7 @@ class TestFile:
             return TestExitCode.ERROR
 
     def run_decryption_tests(self, tools, use_boxes=False):
-        logging.info('Running decryption tests...')
+        logging.debug('Running decryption tests...')
         if not self.recognized():
             return TestExitCode.SKIPPED
         try:
@@ -129,7 +129,7 @@ class TestFile:
             return TestExitCode.ERROR
 
     def _parse_path(self):
-        logging.info('Trying to parse test file path \'%s\'...', self._path)
+        logging.debug('Trying to parse test file path \'%s\'...', self._path)
         stub = self._strip_extension(os.path.basename(self._path))
         if not stub: return
         stub = self._strip_algorithm(stub)
@@ -156,7 +156,7 @@ class TestFile:
         if self._algorithm is None:
             logging.warning('Unknown or unsupported algorithm: %s', self._path)
             return None
-        logging.info('\tAlgorithm: %s', self._algorithm)
+        logging.debug('\tAlgorithm: %s', self._algorithm)
         return stub[0:-3]
 
     _RECOGNIZED_METHODS = ('GFSbox', 'KeySbox', 'VarKey', 'VarTxt')
@@ -164,7 +164,7 @@ class TestFile:
     def _strip_method(self, stub):
         for method in self._RECOGNIZED_METHODS:
             if stub.endswith(method):
-                logging.info('\tMethod: %s', method)
+                logging.debug('\tMethod: %s', method)
                 return stub[0:len(stub) - len(method)]
         logging.warning('Unknown or unsupported method: %s', self._path)
         return None
@@ -174,7 +174,7 @@ class TestFile:
         if self._mode is None:
             logging.warning('Unknown or unsupported mode: %s', self._path)
             return None
-        logging.info('\tMode: %s', self._mode)
+        logging.debug('\tMode: %s', self._mode)
         return self._mode
 
 
@@ -189,27 +189,17 @@ class TestArchive(zipfile.ZipFile):
 
 
 _script_dir = os.path.dirname(__file__)
-_script_name = os.path.splitext(os.path.basename(__file__))[0]
 
 
-def _build_default_log_path():
-    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    fn = '{}_{}.log'.format(_script_name, timestamp)
-    return os.path.join(_script_dir, fn)
-
-
-def _setup_logging(log_path=None):
-    if log_path is None:
-        log_path = _build_default_log_path()
-
+def _setup_logging(verbose=False):
+    level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(
-        filename=log_path,
         format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
-        level=logging.DEBUG)
+        level=level)
 
 
-def run_tests(archive_path, tools_path=(), use_sde=False, use_boxes=False, log_path=None):
-    _setup_logging(log_path)
+def run_tests(archive_path, tools_path=(), use_sde=False, use_boxes=False, verbose=False):
+    _setup_logging(verbose)
     tools = Tools(tools_path, use_sde=use_sde)
     archive = TestArchive(archive_path)
     exit_codes = []
@@ -245,8 +235,8 @@ def _parse_args(args=None):
     parser.add_argument('--archive', '-a', dest='archive_path', metavar='PATH',
                         default=os.path.join(_script_dir, 'data/KAT_AES.zip'),
                         help='set test vectors archive file path')
-    parser.add_argument('--log', '-l', dest='log_path', metavar='PATH',
-                        help='set log file path')
+    parser.add_argument('--verbose', '-v', action='store_true',
+                        help='verbose log output')
     return parser.parse_args(args)
 
 

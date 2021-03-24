@@ -89,14 +89,14 @@ def _make_output_file():
 
 def run_encryption_test(tools, algorithm, mode, key, plaintext_path,
                         ciphertext_path, iv=None, force=False):
-    logging.info('Running encryption test...')
-    logging.info('\tPlaintext file path: %s', plaintext_path)
-    logging.info('\tExpected ciphertext file path: %s', ciphertext_path)
-    logging.info('\tAlgorithm: %s', algorithm)
-    logging.info('\tMode: %s', mode)
+    logging.debug('Running encryption test...')
+    logging.debug('\tPlaintext file path: %s', plaintext_path)
+    logging.debug('\tExpected ciphertext file path: %s', ciphertext_path)
+    logging.debug('\tAlgorithm: %s', algorithm)
+    logging.debug('\tMode: %s', mode)
 
     with _make_output_file() as tmp_path:
-        logging.info('\tEncrypted file path: %s', tmp_path)
+        logging.debug('\tEncrypted file path: %s', tmp_path)
 
         try:
             tools.run_encrypt_file(algorithm, mode, key, plaintext_path,
@@ -117,14 +117,14 @@ def run_encryption_test(tools, algorithm, mode, key, plaintext_path,
 
 def run_decryption_test(tools, algorithm, mode, key, plaintext_path,
                         ciphertext_path, iv=None):
-    logging.info('Running decryption test...')
-    logging.info('\tCiphertext file path: %s', ciphertext_path)
-    logging.info('\tExpected plaintext file path: %s', plaintext_path)
-    logging.info('\tAlgorithm: %s', algorithm)
-    logging.info('\tMode: %s', mode)
+    logging.debug('Running decryption test...')
+    logging.debug('\tCiphertext file path: %s', ciphertext_path)
+    logging.debug('\tExpected plaintext file path: %s', plaintext_path)
+    logging.debug('\tAlgorithm: %s', algorithm)
+    logging.debug('\tMode: %s', mode)
 
     with _make_output_file() as tmp_path:
-        logging.info('\tDecrypted file path: %s', tmp_path)
+        logging.debug('\tDecrypted file path: %s', tmp_path)
 
         try:
             tools.run_decrypt_file(algorithm, mode, key, ciphertext_path,
@@ -158,9 +158,9 @@ def enum_tests(suite_dir):
             mode = maybe_mode
             for key_path in _list_keys(mode_dir):
                 key = _read_key(key_path)
-                logging.info('Key: %s', key)
+                logging.debug('Key: %s', key)
                 test_name = _extract_test_name(key_path)
-                logging.info('Test name: %s', test_name)
+                logging.debug('Test name: %s', test_name)
                 iv = None
                 if mode.requires_init_vector():
                     iv_path = _extract_iv_path(key_path)
@@ -174,24 +174,15 @@ _script_dir = os.path.dirname(__file__)
 _script_name = os.path.splitext(os.path.basename(__file__))[0]
 
 
-def _build_default_log_path():
-    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    fn = '{}_{}.log'.format(_script_name, timestamp)
-    return os.path.join(_script_dir, fn)
-
-
-def _setup_logging(log_path=None):
-    if log_path is None:
-        log_path = _build_default_log_path()
-
+def _setup_logging(verbose=False):
+    level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(
-        filename=log_path,
         format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
-        level=logging.DEBUG)
+        level=level)
 
 
-def run_tests(suite_path, tools_path=(), log_path=None, use_sde=False, force=False):
-    _setup_logging(log_path)
+def run_tests(suite_path, tools_path=(), verbose=False, use_sde=False, force=False):
+    _setup_logging(verbose)
     tools = Tools(tools_path, use_sde=use_sde)
     exit_codes = []
 
@@ -221,8 +212,8 @@ def _parse_args(args=None):
                         help='set file encryption utilities directory path')
     parser.add_argument('--sde', '-e', dest='use_sde', action='store_true',
                         help='use Intel SDE to run the utilities')
-    parser.add_argument('--log', '-l', dest='log_path', metavar='PATH',
-                        help='set log file path')
+    parser.add_argument('--verbose', '-v', action='store_true',
+                        help='verbose log output')
     parser.add_argument('--force', '-f', action='store_true',
                         help='overwrite ciphertext files')
     parser.add_argument('--suite', '-s', dest='suite_path',

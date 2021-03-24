@@ -85,14 +85,14 @@ class Tools:
     def run(self, tool_path, args):
         cmd_list = ['sde', '--', tool_path] if self._use_sde else [tool_path]
         cmd_list.extend(args)
-        logging.info('Trying to execute: %s', subprocess.list2cmdline(cmd_list))
+        logging.debug('Trying to execute: %s', subprocess.list2cmdline(cmd_list))
         try:
             output = subprocess.check_output(
                 cmd_list, universal_newlines=True, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             logging.error('Output:\n%s', e.output)
             raise
-        logging.info('Output:\n%s', output)
+        logging.debug('Output:\n%s', output)
         return output.split()
 
     @staticmethod

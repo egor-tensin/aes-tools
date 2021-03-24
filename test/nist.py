@@ -182,9 +182,9 @@ class TestExitCode(Enum):
 
 
 def run_encryption_test(tools, algorithm, mode, use_boxes=False):
-    logging.info('Running encryption test...')
-    logging.info('Algorithm: %s', algorithm)
-    logging.info('Mode: %s', mode)
+    logging.debug('Running encryption test...')
+    logging.debug('Algorithm: %s', algorithm)
+    logging.debug('Mode: %s', mode)
 
     try:
         plaintexts = get_test_plaintexts(algorithm, mode)
@@ -204,9 +204,9 @@ def run_encryption_test(tools, algorithm, mode, use_boxes=False):
 
 
 def run_decryption_test(tools, algorithm, mode, use_boxes=False):
-    logging.info('Running decryption test...')
-    logging.info('Algorithm: %s', algorithm)
-    logging.info('Mode: %s', mode)
+    logging.debug('Running decryption test...')
+    logging.debug('Algorithm: %s', algorithm)
+    logging.debug('Mode: %s', mode)
 
     try:
         ciphertexts = get_test_ciphertexts(algorithm, mode)
@@ -225,28 +225,15 @@ def run_decryption_test(tools, algorithm, mode, use_boxes=False):
         return TestExitCode.ERROR
 
 
-_script_dir = os.path.dirname(__file__)
-_script_name = os.path.splitext(os.path.basename(__file__))[0]
-
-
-def _build_default_log_path():
-    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    fn = '{}_{}.log'.format(_script_name, timestamp)
-    return os.path.join(_script_dir, fn)
-
-
-def _setup_logging(log_path=None):
-    if log_path is None:
-        log_path = _build_default_log_path()
-
+def _setup_logging(verbose=False):
+    level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(
-        filename=log_path,
         format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
-        level=logging.DEBUG)
+        level=level)
 
 
-def run_tests(tools_path=(), use_sde=False, use_boxes=False, log_path=None):
-    _setup_logging(log_path)
+def run_tests(tools_path=(), use_sde=False, use_boxes=False, verbose=False):
+    _setup_logging(verbose)
     tools = Tools(tools_path, use_sde=use_sde)
 
     exit_codes = []
@@ -280,8 +267,8 @@ def _parse_args(args=None):
                         help='use Intel SDE to run the utilities')
     parser.add_argument('--boxes', '-b', action='store_true', dest='use_boxes',
                         help='use the "boxes" interface')
-    parser.add_argument('--log', '-l', dest='log_path', metavar='PATH',
-                        help='set log file path')
+    parser.add_argument('--verbose', '-v', action='store_true',
+                        help='verbose log output')
     return parser.parse_args(args)
 
 
