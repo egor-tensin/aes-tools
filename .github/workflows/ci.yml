@@ -28,10 +28,10 @@ jobs:
     runs-on: '${{ matrix.os }}'
     name: 'Build: ${{ matrix.os }} / ${{ matrix.toolset }} / ${{ matrix.platform }} / asm${{ matrix.use_asm }} / ${{ matrix.configuration }}'
     env:
-      toolset: '${{ matrix.toolset }}'
-      platform: '${{ matrix.platform }}'
-      configuration: '${{ matrix.configuration }}'
-      boost_version: 1.72.0
+      TOOLSET: '${{ matrix.toolset }}'
+      PLATFORM: '${{ matrix.platform }}'
+      CONFIGURATION: '${{ matrix.configuration }}'
+      BOOST_VERSION: 1.72.0
     defaults:
       run:
         shell: pwsh
@@ -49,42 +49,41 @@ jobs:
         with:
           platform: '${{ matrix.platform }}'
         if: matrix.toolset == 'mingw'
-      - name: Boost (MinGW)
+      - name: Build Boost
         run: |
           cd cmake
-          python -m project.ci.github.boost -- --with-filesystem --with-program_options --with-system
-        if: matrix.toolset == 'mingw'
+          python -m project.ci.boost -- --with-filesystem --with-program_options --with-system
       - name: Build
         run: |
           cd cmake
-          python -m project.ci.github.cmake --install -- -D 'AES_TOOLS_ASM=${{ matrix.use_asm }}'
-      - name: Upload the binaries
+          python -m project.ci.cmake --install -- -D 'AES_TOOLS_ASM=${{ matrix.use_asm }}'
+      - name: Upload binaries
         uses: actions/upload-artifact@v2
         with:
           name: 'aes-tools-${{ matrix.os }}-${{ matrix.toolset }}-${{ matrix.platform }}-asm${{ matrix.use_asm }}-${{ matrix.configuration }}'
-          path: '${{ runner.workspace }}/install/'
+          path: '${{ runner.workspace }}/build/install/'
       - name: Run test/nist.py
         run: |
-          python test/nist.py --path ../install/bin --log test/nist.log
+          python test/nist.py --path ../build/install/bin --log test/nist.log
           Get-Content test/nist.log -Tail 5
         if: runner.os == 'Windows'
       - name: Run test/cavp.py
         run: |
-          python test/cavp.py --path ../install/bin --log test/cavp.log
+          python test/cavp.py --path ../build/install/bin --log test/cavp.log
           Get-Content test/cavp.log -Tail 5
         if: runner.os == 'Windows'
       - name: Run test/nist.py --boxes
         run: |
-          python test/nist.py --path ../install/bin --log test/nist.log --boxes
+          python test/nist.py --path ../build/install/bin --log test/nist.log --boxes
           Get-Content test/nist.log -Tail 5
         if: runner.os == 'Windows'
       - name: Run test/cavp.py --boxes
         run: |
-          python test/cavp.py --path ../install/bin --log test/cavp.log --boxes
+          python test/cavp.py --path ../build/install/bin --log test/cavp.log --boxes
           Get-Content test/cavp.log -Tail 5
         if: runner.os == 'Windows'
       - name: Run test/file.py
         run: |
-          python test/file.py --path ../install/bin --log test/file.log
+          python test/file.py --path ../build/install/bin --log test/file.log
           Get-Content test/file.log -Tail 5
         if: runner.os == 'Windows'
