@@ -1,7 +1,7 @@
 # Various one-liners which I'm too lazy to remember.
 # Basically a collection of really small shell scripts.
 
-MAKEFLAGS += --warn-undefined-variables
+MAKEFLAGS += --no-builtin-rules --no-builtin-variables --warn-undefined-variables
 unexport MAKEFLAGS
 .DEFAULT_GOAL := all
 .DELETE_ON_ERROR:
@@ -26,7 +26,6 @@ ifeq ($$(origin $(1)),command line)
 endif
 endef
 
-PROJECT := aes-tools
 TOOLSET ?= mingw
 CONFIGURATION ?= Debug
 BOOST_VERSION ?= 1.72.0
