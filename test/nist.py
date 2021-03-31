@@ -4,10 +4,8 @@
 # Distributed under the MIT License.
 
 import argparse
-from datetime import datetime
 from enum import Enum
 import logging
-import os.path
 from subprocess import CalledProcessError
 import sys
 

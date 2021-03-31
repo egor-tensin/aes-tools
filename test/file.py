@@ -5,7 +5,6 @@
 
 import argparse
 from contextlib import contextmanager
-from datetime import datetime
 from enum import Enum
 from glob import iglob as glob
 import filecmp

@@ -7,7 +7,6 @@ import argparse
 from collections import OrderedDict
 from collections.abc import MutableSequence
 import configparser
-from datetime import datetime
 from enum import Enum
 import logging
 import os.path
