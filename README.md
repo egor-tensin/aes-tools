@@ -5,30 +5,18 @@ AES tools
 
 Simple AES implementation and utilities.
 
-Building
---------
+Development
+-----------
 
-Create the build files using CMake and build using your native build tools
-(Visual Studio/make/etc.).
-
-* **Prerequisites.**
+Build using CMake.
 Depends on Boost.{Filesystem,Program_options}.
-* **Customization.**
-The runtime libraries are linked statically by default.
-Therefore, the Boost libraries must also link them statically.
-You can link the runtime dynamically by passing `-D CC_STATIC_RUNTIME=OFF` to
-`cmake`.
-* **Example.**
-Using Visual Studio 2015 (targeting x86), build & install the release version
-to C:\aes-tools:
 
-      > cmake -G "Visual Studio 14 2015" -A Win32 ^
-          -D BOOST_ROOT=C:\path\to\boost          ^
-          C:\path\to\aes-tools
-      ...
+There's a Makefile with useful shortcuts to build the project in the .build/
+directory along with the dependencies:
 
-      > cmake --build . --config Release --target install -- /m
-      ...
+    make deps
+    make build
+    make test
 
 Usage on older CPUs
 -------------------
