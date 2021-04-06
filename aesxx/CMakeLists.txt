@@ -2,7 +2,7 @@ find_package(Boost REQUIRED)
 
 add_library(aesxx INTERFACE)
 target_include_directories(aesxx INTERFACE include/)
-target_link_libraries(aesxx INTERFACE aes Boost::boost)
+target_link_libraries(aesxx INTERFACE aes Boost::disable_autolinking Boost::boost)
 
 if(MSVC_VERSION EQUAL 1900)
     # These annoying DbgHelp.h warnings:
