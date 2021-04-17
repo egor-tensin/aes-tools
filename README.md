@@ -1,7 +1,7 @@
 AES tools
 =========
 
-[![CI](https://github.com/egor-tensin/aes-tools/workflows/CI/badge.svg)](https://github.com/egor-tensin/aes-tools/actions?query=workflow%3ACI)
+[![CI](https://github.com/egor-tensin/aes-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/egor-tensin/aes-tools/actions/workflows/ci.yml)
 
 Simple AES implementation and utilities.
 
