@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Copyright (c) 2015 Egor Tensin <Egor.Tensin@gmail.com>
 # This file is part of the "AES tools" project.
 # For details, see https://github.com/egor-tensin/aes-tools.
