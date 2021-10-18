@@ -3,7 +3,7 @@
 # For details, see https://github.com/egor-tensin/aes-tools.
 # Distributed under the MIT License.
 
-import collections
+from collections.abc import Iterable
 from enum import Enum
 import logging
 import os.path
@@ -71,7 +71,7 @@ class Tools:
         if search_dirs:
             if isinstance(search_dirs, str):
                 os.environ['PATH'] += os.pathsep + search_dirs
-            elif isinstance(search_dirs, collections.Iterable):
+            elif isinstance(search_dirs, Iterable):
                 os.environ['PATH'] += os.pathsep + os.pathsep.join(search_dirs)
             else:
                 os.environ['PATH'] += os.pathsep + str(search_dirs)
@@ -119,7 +119,7 @@ class Tools:
     @staticmethod
     def _build_block_args(algorithm, mode, inputs, use_boxes=False):
         args = Tools._block_settings_to_args(algorithm, mode, use_boxes)
-        if isinstance(inputs, collections.Iterable):
+        if isinstance(inputs, Iterable):
             args.extend(Tools._block_inputs_to_args(iter(inputs)))
         else:
             args.extend(inputs.to_args())
