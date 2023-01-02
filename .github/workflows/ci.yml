@@ -9,7 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        toolset: [mingw, vs2019]
+        toolset: [mingw, vs2019, vs2022]
         platform: [x64, x86]
         use_asm: [1, 0]
         configuration: [Debug, Release]
@@ -18,6 +18,7 @@ jobs:
           # and it's much faster.
           - {toolset: mingw, os: ubuntu-latest}
           - {toolset: vs2019, os: windows-2019}
+          - {toolset: vs2022, os: windows-2022}
         exclude:
           - {platform: x64, use_asm: 1}
           - {toolset: mingw, use_asm: 1}
@@ -27,7 +28,7 @@ jobs:
       TOOLSET: '${{ matrix.toolset }}'
       PLATFORM: '${{ matrix.platform }}'
       CONFIGURATION: '${{ matrix.configuration }}'
-      BOOST_VERSION: 1.72.0
+      BOOST_VERSION: 1.81.0
       CMAKE_FLAGS: -D 'AES_TOOLS_ASM=${{ matrix.use_asm }}'
     defaults:
       run:
