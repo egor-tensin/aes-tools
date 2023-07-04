@@ -41,7 +41,7 @@ jobs:
       - name: Cache Boost
         uses: actions/cache@v3
         with:
-          path: '${{ runner.workspace }}/build/boost_*.tar.gz'
+          path: './build/boost_*.tar.gz'
           key: 'boost_${{ env.BOOST_VERSION }}'
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -60,7 +60,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: 'aes-tools-${{ matrix.toolset }}-${{ matrix.platform }}-asm${{ matrix.use_asm }}-${{ matrix.configuration }}'
-          path: '${{ runner.workspace }}/build/install/'
+          path: './build/install/'
           if-no-files-found: error
       - name: Test
         run: make test
