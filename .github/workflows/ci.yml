@@ -48,7 +48,7 @@ jobs:
         with:
           python-version: '3.x'
       - name: Set up MinGW
-        uses: egor-tensin/setup-mingw@v2
+        uses: egor-tensin/setup-mingw@v3
         with:
           platform: '${{ matrix.platform }}'
         if: matrix.toolset == 'mingw'
