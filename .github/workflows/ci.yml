@@ -9,7 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        toolset: [mingw, vs2019, vs2022]
+        toolset: [mingw, vs2022]
         platform: [x64, x86]
         use_asm: [1, 0]
         configuration: [Debug, Release]
@@ -17,8 +17,7 @@ jobs:
           # MinGW builds are done on Linux, since it's more up-to-date there,
           # and it's much faster.
           - {toolset: mingw, os: ubuntu-latest}
-          - {toolset: vs2019, os: windows-2019}
-          - {toolset: vs2022, os: windows-2022}
+          - {toolset: vs2022, os: windows-2025}
         exclude:
           - {platform: x64, use_asm: 1}
           - {toolset: mingw, use_asm: 1}
