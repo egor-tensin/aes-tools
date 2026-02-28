@@ -24,7 +24,8 @@ jobs:
           - {platform: x64, use_asm: 1}
           - {toolset: mingw, use_asm: 1}
     runs-on: '${{ matrix.os }}'
-    name: 'Build: ${{ matrix.toolset }} / ${{ matrix.platform }} / asm${{ matrix.use_asm }} / ${{ matrix.configuration }}'
+    name: |
+      Build: ${{ matrix.toolset }} / ${{ matrix.platform }} / ${{ matrix.use_asm && '+asm' || '-asm' }} / ${{ matrix.configuration }}
     env:
       TOOLSET: '${{ matrix.toolset }}'
       PLATFORM: '${{ matrix.platform }}'
