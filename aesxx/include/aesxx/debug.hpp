@@ -7,8 +7,8 @@
 
 #ifdef WIN32
 #include <windows.h>
-#include <DbgHelp.h>
-#pragma comment(lib, "DbgHelp.Lib")
+#include <dbghelp.h>
+#pragma comment(lib, "dbghelp.lib")
 #endif
 
 #include <cstddef>
