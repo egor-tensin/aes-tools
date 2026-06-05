@@ -1,15 +1,15 @@
 option(AES_TOOLS_ASM "Use the assembly language implementation instead of the one in C")
 
-file(GLOB_RECURSE aes_include "include/*.h")
-file(GLOB aes_src "src/*.c")
+file(GLOB_RECURSE aes_include CONFIGURE_DEPENDS "include/*.h")
+file(GLOB aes_src CONFIGURE_DEPENDS "src/*.c")
 
 if(MSVC AND AES_TOOLS_ASM)
     enable_language(ASM_MASM)
-    file(GLOB aes_src_impl "src/asm/*.asm")
+    file(GLOB aes_src_impl CONFIGURE_DEPENDS "src/asm/*.asm")
     set_source_files_properties(${aes_src_impl} PROPERTIES COMPILE_FLAGS /safeseh)
     # Setting CMAKE_ASM_MASM_FLAGS doesn't work: http://www.cmake.org/Bug/view.php?id=14711
 else()
-    file(GLOB aes_src_impl "src/c/*.c")
+    file(GLOB aes_src_impl CONFIGURE_DEPENDS "src/c/*.c")
 endif()
 
 add_library(aes ${aes_include} ${aes_src} ${aes_src_impl})

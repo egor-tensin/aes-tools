@@ -28,7 +28,7 @@ jobs:
       PLATFORM: '${{ matrix.platform }}'
       CONFIGURATION: '${{ matrix.configuration }}'
       BOOST_VERSION: 1.81.0
-      CMAKE_FLAGS: -D 'AES_TOOLS_ASM=${{ matrix.use_asm }}'
+      CMAKE_FLAGS: '--cmake-arg=-DAES_TOOLS_ASM=${{ matrix.use_asm }}'
     defaults:
       run:
         shell: pwsh

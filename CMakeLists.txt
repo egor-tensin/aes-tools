@@ -1,9 +1,18 @@
-cmake_minimum_required(VERSION 3.8)
+# oldstable as of May '26
+# Plus, I'm pretty sure it's required for things like CONFIGURE_DEPENDS and
+# CMAKE_MSVC_RUNTIME_LIBRARY and stuff.
+cmake_minimum_required(VERSION 3.25)
 
 project(aes_tools C CXX)
 enable_testing()
 
-include(cmake/common.cmake)
+if (MSVC)
+    add_compile_options(/MP /W4)
+else()
+    add_compile_options(-Wall -Wextra)
+endif()
+
+add_compile_definitions(WIN32_LEAN_AND_MEAN NOMINMAX)
 
 add_subdirectory(aes)
 add_subdirectory(aesxx)
