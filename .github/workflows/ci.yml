@@ -8,15 +8,18 @@ jobs:
   build:
     strategy:
       matrix:
-        toolset: [mingw, vs2022]
+        toolset: [mingw, vs2022, vs2026]
         platform: [x64, x86]
         use_asm: [1, 0]
         configuration: [Debug, Release]
         include:
+          - boost-version: 1.81.0
           # MinGW builds are done on Linux, since it's more up-to-date there,
           # and it's much faster.
           - {toolset: mingw, os: ubuntu-latest}
-          - {toolset: vs2022, os: windows-2025}
+          - {toolset: vs2022, os: windows-2022}
+          # Boost only supports VS 2026 starting with version 1.91, I think?
+          - {toolset: vs2026, os: windows-2025, boost-version: 1.91.0}
         exclude:
           - {platform: x64, use_asm: 1}
           - {toolset: mingw, use_asm: 1}
@@ -27,7 +30,7 @@ jobs:
       TOOLSET: '${{ matrix.toolset }}'
       PLATFORM: '${{ matrix.platform }}'
       CONFIGURATION: '${{ matrix.configuration }}'
-      BOOST_VERSION: 1.81.0
+      BOOST_VERSION: '${{ matrix.boost-version }}'
       CMAKE_FLAGS: '--cmake-arg=-DAES_TOOLS_ASM=${{ matrix.use_asm }}'
     defaults:
       run:
