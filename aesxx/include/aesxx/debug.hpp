@@ -18,8 +18,7 @@
 #include <string>
 #include <string_view>
 
-namespace aes {
-namespace aux {
+namespace aes::aux {
 
 class CallStackFormatter {
 public:
@@ -129,5 +128,4 @@ private:
 #endif
 };
 
-} // namespace aux
-} // namespace aes
+} // namespace aes::aux
