@@ -95,8 +95,9 @@ static __inline AES_Block128 __fastcall aes_make_block128(int hi3, int hi2, int 
 }
 
 static __inline AES_Block128 __fastcall aes_reverse_byte_order_block128(AES_Block128 block) {
-    return _mm_shuffle_epi8(block,
-                            aes_make_block128(0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f));
+    return _mm_shuffle_epi8(
+        block, aes_make_block128(0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f)
+    );
 }
 
 static __inline AES_Block128 __fastcall aes_inc_block128(AES_Block128 x) {

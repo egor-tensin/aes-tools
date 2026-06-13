@@ -83,10 +83,12 @@ void decrypt_with_algorithm(aes::Mode mode, const Input& input, bool verbose = f
     }
 }
 
-void decrypt_using_cxx_api(aes::Algorithm algorithm,
-                           aes::Mode mode,
-                           const Input& input,
-                           bool verbose = false) {
+void decrypt_using_cxx_api(
+    aes::Algorithm algorithm,
+    aes::Mode mode,
+    const Input& input,
+    bool verbose = false
+) {
     switch (algorithm) {
         case AES_AES128:
             decrypt_with_algorithm<AES_AES128>(mode, input, verbose);

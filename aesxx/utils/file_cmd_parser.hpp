@@ -28,31 +28,40 @@ public:
     std::string iv;
 
     explicit FileSettings(std::string_view argv0) : SettingsParser{argv0} {
-        visible.add_options()("algorithm,a",
-                              boost::program_options::value<aes::Algorithm>(&algorithm)
-                                  ->required()
-                                  ->value_name("NAME"),
-                              "set algorithm");
+        visible.add_options()(
+            "algorithm,a",
+            boost::program_options::value<aes::Algorithm>(&algorithm)
+                ->required()
+                ->value_name("NAME"),
+            "set algorithm"
+        );
         visible.add_options()(
             "mode,m",
             boost::program_options::value<aes::Mode>(&mode)->required()->value_name("MODE"),
-            "set mode of operation");
+            "set mode of operation"
+        );
         visible.add_options()(
             "key,k",
             boost::program_options::value<std::string>(&key)->required()->value_name("KEY"),
-            "set encryption key");
-        visible.add_options()("iv,v",
-                              boost::program_options::value<std::string>(&iv)->value_name("BLOCK"),
-                              "set initialization vector");
+            "set encryption key"
+        );
+        visible.add_options()(
+            "iv,v",
+            boost::program_options::value<std::string>(&iv)->value_name("BLOCK"),
+            "set initialization vector"
+        );
         visible.add_options()(
             "input,i",
             boost::program_options::value<std::string>(&input_path)->required()->value_name("PATH"),
-            "set input file path");
-        visible.add_options()("output,o",
-                              boost::program_options::value<std::string>(&output_path)
-                                  ->required()
-                                  ->value_name("PATH"),
-                              "set output file path");
+            "set input file path"
+        );
+        visible.add_options()(
+            "output,o",
+            boost::program_options::value<std::string>(&output_path)
+                ->required()
+                ->value_name("PATH"),
+            "set output file path"
+        );
     }
 
     const char* get_short_description() const override {
@@ -66,7 +75,8 @@ public:
 
         if (aes::mode_requires_init_vector(mode) && iv.empty()) {
             throw boost::program_options::error{
-                "an initialization vector is required for the selected mode of operation"};
+                "an initialization vector is required for the selected mode of operation"
+            };
         }
     }
 };

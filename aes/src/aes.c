@@ -11,9 +11,11 @@
 #include <stdio.h>
 #include <string.h>
 
-AES_StatusCode aes_AES_format_block(AES_AES_BlockString* str,
-                                    const AES_AES_Block* block,
-                                    AES_ErrorDetails* err_details) {
+AES_StatusCode aes_AES_format_block(
+    AES_AES_BlockString* str,
+    const AES_AES_Block* block,
+    AES_ErrorDetails* err_details
+) {
     assert(str);
     assert(block);
 
@@ -34,9 +36,11 @@ AES_StatusCode aes_AES_format_block(AES_AES_BlockString* str,
     return AES_SUCCESS;
 }
 
-AES_StatusCode aes_AES_format_block_as_matrix(AES_AES_BlockMatrixString* str,
-                                              const AES_AES_Block* block,
-                                              AES_ErrorDetails* err_details) {
+AES_StatusCode aes_AES_format_block_as_matrix(
+    AES_AES_BlockMatrixString* str,
+    const AES_AES_Block* block,
+    AES_ErrorDetails* err_details
+) {
     assert(str);
     assert(block);
 
@@ -76,8 +80,10 @@ AES_StatusCode aes_AES_print_block(const AES_AES_Block* block, AES_ErrorDetails*
     return ec;
 }
 
-AES_StatusCode aes_AES_print_block_as_matrix(const AES_AES_Block* block,
-                                             AES_ErrorDetails* err_details) {
+AES_StatusCode aes_AES_print_block_as_matrix(
+    const AES_AES_Block* block,
+    AES_ErrorDetails* err_details
+) {
     assert(block);
 
     if (block == NULL)
@@ -93,9 +99,11 @@ AES_StatusCode aes_AES_print_block_as_matrix(const AES_AES_Block* block,
     return ec;
 }
 
-AES_StatusCode aes_AES_parse_block(AES_AES_Block* dest,
-                                   const char* src,
-                                   AES_ErrorDetails* err_details) {
+AES_StatusCode aes_AES_parse_block(
+    AES_AES_Block* dest,
+    const char* src,
+    AES_ErrorDetails* err_details
+) {
     assert(dest);
     assert(src);
 
@@ -121,9 +129,11 @@ AES_StatusCode aes_AES_parse_block(AES_AES_Block* dest,
     return AES_SUCCESS;
 }
 
-AES_StatusCode aes_AES128_format_key(AES_AES128_KeyString* str,
-                                     const AES_AES128_Key* key,
-                                     AES_ErrorDetails* err_details) {
+AES_StatusCode aes_AES128_format_key(
+    AES_AES128_KeyString* str,
+    const AES_AES128_Key* key,
+    AES_ErrorDetails* err_details
+) {
     assert(str);
     assert(key);
 
@@ -144,9 +154,11 @@ AES_StatusCode aes_AES128_format_key(AES_AES128_KeyString* str,
     return AES_SUCCESS;
 }
 
-AES_StatusCode aes_AES192_format_key(AES_AES192_KeyString* str,
-                                     const AES_AES192_Key* key,
-                                     AES_ErrorDetails* err_details) {
+AES_StatusCode aes_AES192_format_key(
+    AES_AES192_KeyString* str,
+    const AES_AES192_Key* key,
+    AES_ErrorDetails* err_details
+) {
     assert(str);
     assert(key);
 
@@ -177,9 +189,11 @@ AES_StatusCode aes_AES192_format_key(AES_AES192_KeyString* str,
     return AES_SUCCESS;
 }
 
-AES_StatusCode aes_AES256_format_key(AES_AES256_KeyString* str,
-                                     const AES_AES256_Key* key,
-                                     AES_ErrorDetails* err_details) {
+AES_StatusCode aes_AES256_format_key(
+    AES_AES256_KeyString* str,
+    const AES_AES256_Key* key,
+    AES_ErrorDetails* err_details
+) {
     assert(str);
     assert(key);
 
@@ -246,15 +260,19 @@ AES_StatusCode aes_AES256_print_key(const AES_AES256_Key* key, AES_ErrorDetails*
     return ec;
 }
 
-AES_StatusCode aes_AES128_parse_key(AES_AES128_Key* dest,
-                                    const char* src,
-                                    AES_ErrorDetails* err_details) {
+AES_StatusCode aes_AES128_parse_key(
+    AES_AES128_Key* dest,
+    const char* src,
+    AES_ErrorDetails* err_details
+) {
     return aes_AES_parse_block(&dest->key, src, err_details);
 }
 
-AES_StatusCode aes_AES192_parse_key(AES_AES192_Key* dest,
-                                    const char* src,
-                                    AES_ErrorDetails* err_details) {
+AES_StatusCode aes_AES192_parse_key(
+    AES_AES192_Key* dest,
+    const char* src,
+    AES_ErrorDetails* err_details
+) {
     assert(dest);
     assert(src);
 
@@ -299,9 +317,11 @@ AES_StatusCode aes_AES192_parse_key(AES_AES192_Key* dest,
     return AES_SUCCESS;
 }
 
-AES_StatusCode aes_AES256_parse_key(AES_AES256_Key* dest,
-                                    const char* src,
-                                    AES_ErrorDetails* err_details) {
+AES_StatusCode aes_AES256_parse_key(
+    AES_AES256_Key* dest,
+    const char* src,
+    AES_ErrorDetails* err_details
+) {
     assert(dest);
     assert(src);
 

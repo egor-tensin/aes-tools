@@ -18,9 +18,11 @@
 
 namespace {
 
-void encrypt_bmp(aes::Box& box,
-                 const std::string& plaintext_path,
-                 const std::string& ciphertext_path) {
+void encrypt_bmp(
+    aes::Box& box,
+    const std::string& plaintext_path,
+    const std::string& ciphertext_path
+) {
     bmp::BmpFile bmp{file::read_file(plaintext_path)};
     bmp.replace_pixels(box.encrypt_buffer(bmp.get_pixels(), bmp.get_pixels_size()));
     file::write_file(ciphertext_path, bmp.get_buffer(), bmp.get_size());

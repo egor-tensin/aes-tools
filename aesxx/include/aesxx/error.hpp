@@ -34,7 +34,8 @@ public:
         std::for_each(
             call_stack, call_stack + call_stack_len, [&formatter, &callback](const void* addr) {
                 callback(addr, formatter.format_address(addr));
-            });
+            }
+        );
     }
 
 private:

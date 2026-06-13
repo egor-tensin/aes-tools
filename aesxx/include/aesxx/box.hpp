@@ -64,17 +64,20 @@ public:
         std::size_t dest_size = 0;
 
         aes_box_encrypt_buffer(
-            &impl, src_buf, src_size, nullptr, &dest_size, aes::ErrorDetailsThrowsInDestructor{});
+            &impl, src_buf, src_size, nullptr, &dest_size, aes::ErrorDetailsThrowsInDestructor{}
+        );
 
         std::vector<unsigned char> dest_buf;
         dest_buf.resize(dest_size);
 
-        aes_box_encrypt_buffer(&impl,
-                               src_buf,
-                               src_size,
-                               dest_buf.data(),
-                               &dest_size,
-                               aes::ErrorDetailsThrowsInDestructor{});
+        aes_box_encrypt_buffer(
+            &impl,
+            src_buf,
+            src_size,
+            dest_buf.data(),
+            &dest_size,
+            aes::ErrorDetailsThrowsInDestructor{}
+        );
 
         dest_buf.resize(dest_size);
         return dest_buf;
@@ -84,17 +87,20 @@ public:
         std::size_t dest_size = 0;
 
         aes_box_decrypt_buffer(
-            &impl, src_buf, src_size, nullptr, &dest_size, aes::ErrorDetailsThrowsInDestructor{});
+            &impl, src_buf, src_size, nullptr, &dest_size, aes::ErrorDetailsThrowsInDestructor{}
+        );
 
         std::vector<unsigned char> dest_buf;
         dest_buf.resize(dest_size);
 
-        aes_box_decrypt_buffer(&impl,
-                               src_buf,
-                               src_size,
-                               dest_buf.data(),
-                               &dest_size,
-                               aes::ErrorDetailsThrowsInDestructor{});
+        aes_box_decrypt_buffer(
+            &impl,
+            src_buf,
+            src_size,
+            dest_buf.data(),
+            &dest_size,
+            aes::ErrorDetailsThrowsInDestructor{}
+        );
 
         dest_buf.resize(dest_size);
         return dest_buf;

@@ -37,73 +37,99 @@ template <Algorithm algorithm>
 std::string to_string(const typename Types<algorithm>::Key&);
 
 template <Algorithm algorithm>
-void expand_key(const typename Types<algorithm>::Key& key,
-                typename Types<algorithm>::RoundKeys& encryption_keys);
+void expand_key(
+    const typename Types<algorithm>::Key& key,
+    typename Types<algorithm>::RoundKeys& encryption_keys
+);
 
 template <Algorithm algorithm>
-void derive_decryption_keys(const typename Types<algorithm>::RoundKeys& encryption_keys,
-                            typename Types<algorithm>::RoundKeys& decryption_keys);
+void derive_decryption_keys(
+    const typename Types<algorithm>::RoundKeys& encryption_keys,
+    typename Types<algorithm>::RoundKeys& decryption_keys
+);
 
-template <Algorithm algorithm,
-          Mode mode,
-          typename std::enable_if<ModeRequiresInitVector<mode>::value>::type* = nullptr>
-void encrypt_block(const typename Types<algorithm>::Block& plaintext,
-                   const typename Types<algorithm>::RoundKeys& round_keys,
-                   typename Types<algorithm>::Block& iv,
-                   typename Types<algorithm>::Block& ciphertext);
+template <
+    Algorithm algorithm,
+    Mode mode,
+    typename std::enable_if<ModeRequiresInitVector<mode>::value>::type* = nullptr>
+void encrypt_block(
+    const typename Types<algorithm>::Block& plaintext,
+    const typename Types<algorithm>::RoundKeys& round_keys,
+    typename Types<algorithm>::Block& iv,
+    typename Types<algorithm>::Block& ciphertext
+);
 
-template <Algorithm algorithm,
-          Mode mode,
-          typename std::enable_if<!ModeRequiresInitVector<mode>::value>::type* = nullptr>
-void encrypt_block(const typename Types<algorithm>::Block& plaintext,
-                   const typename Types<algorithm>::RoundKeys& round_keys,
-                   typename Types<algorithm>::Block& ciphertext);
+template <
+    Algorithm algorithm,
+    Mode mode,
+    typename std::enable_if<!ModeRequiresInitVector<mode>::value>::type* = nullptr>
+void encrypt_block(
+    const typename Types<algorithm>::Block& plaintext,
+    const typename Types<algorithm>::RoundKeys& round_keys,
+    typename Types<algorithm>::Block& ciphertext
+);
 
-template <Algorithm algorithm,
-          Mode mode,
-          typename std::enable_if<!ModeRequiresInitVector<mode>::value>::type* = nullptr>
-void encrypt_block(const typename Types<algorithm>::Block& plaintext,
-                   const typename Types<algorithm>::RoundKeys& round_keys,
-                   typename Types<algorithm>::Block&,
-                   typename Types<algorithm>::Block& ciphertext) {
+template <
+    Algorithm algorithm,
+    Mode mode,
+    typename std::enable_if<!ModeRequiresInitVector<mode>::value>::type* = nullptr>
+void encrypt_block(
+    const typename Types<algorithm>::Block& plaintext,
+    const typename Types<algorithm>::RoundKeys& round_keys,
+    typename Types<algorithm>::Block&,
+    typename Types<algorithm>::Block& ciphertext
+) {
     encrypt_block<algorithm, mode>(plaintext, round_keys, ciphertext);
 }
 
-template <Algorithm algorithm,
-          Mode mode,
-          typename std::enable_if<ModeRequiresInitVector<mode>::value>::type* = nullptr>
-void decrypt_block(const typename Types<algorithm>::Block& ciphertext,
-                   const typename Types<algorithm>::RoundKeys& round_keys,
-                   typename Types<algorithm>::Block& iv,
-                   typename Types<algorithm>::Block& plaintext);
+template <
+    Algorithm algorithm,
+    Mode mode,
+    typename std::enable_if<ModeRequiresInitVector<mode>::value>::type* = nullptr>
+void decrypt_block(
+    const typename Types<algorithm>::Block& ciphertext,
+    const typename Types<algorithm>::RoundKeys& round_keys,
+    typename Types<algorithm>::Block& iv,
+    typename Types<algorithm>::Block& plaintext
+);
 
-template <Algorithm algorithm,
-          Mode mode,
-          typename std::enable_if<!ModeRequiresInitVector<mode>::value>::type* = nullptr>
-void decrypt_block(const typename Types<algorithm>::Block& ciphertext,
-                   const typename Types<algorithm>::RoundKeys& round_keys,
-                   typename Types<algorithm>::Block& plaintext);
+template <
+    Algorithm algorithm,
+    Mode mode,
+    typename std::enable_if<!ModeRequiresInitVector<mode>::value>::type* = nullptr>
+void decrypt_block(
+    const typename Types<algorithm>::Block& ciphertext,
+    const typename Types<algorithm>::RoundKeys& round_keys,
+    typename Types<algorithm>::Block& plaintext
+);
 
-template <Algorithm algorithm,
-          Mode mode,
-          typename std::enable_if<!ModeRequiresInitVector<mode>::value>::type* = nullptr>
-void decrypt_block(const typename Types<algorithm>::Block& ciphertext,
-                   const typename Types<algorithm>::RoundKeys& round_keys,
-                   typename Types<algorithm>::Block&,
-                   typename Types<algorithm>::Block& plaintext) {
+template <
+    Algorithm algorithm,
+    Mode mode,
+    typename std::enable_if<!ModeRequiresInitVector<mode>::value>::type* = nullptr>
+void decrypt_block(
+    const typename Types<algorithm>::Block& ciphertext,
+    const typename Types<algorithm>::RoundKeys& round_keys,
+    typename Types<algorithm>::Block&,
+    typename Types<algorithm>::Block& plaintext
+) {
     decrypt_block<algorithm, mode>(ciphertext, round_keys, plaintext);
 }
 
 template <Algorithm algorithm, Mode mode>
 struct EncryptWrapper {
-    EncryptWrapper(const typename Types<algorithm>::Key& key,
-                   const typename Types<algorithm>::Block& iv)
+    EncryptWrapper(
+        const typename Types<algorithm>::Key& key,
+        const typename Types<algorithm>::Block& iv
+    )
         : iv{iv} {
         expand_key<algorithm>(key, encryption_keys);
     }
 
-    void encrypt_block(const typename Types<algorithm>::Block& plaintext,
-                       typename Types<algorithm>::Block& ciphertext) {
+    void encrypt_block(
+        const typename Types<algorithm>::Block& plaintext,
+        typename Types<algorithm>::Block& ciphertext
+    ) {
         aes::encrypt_block<algorithm, mode>(plaintext, encryption_keys, iv, ciphertext);
     }
 
@@ -113,8 +139,10 @@ struct EncryptWrapper {
 
 template <Algorithm algorithm, Mode mode>
 struct DecryptWrapper {
-    DecryptWrapper(const typename Types<algorithm>::Key& key,
-                   const typename Types<algorithm>::Block& iv)
+    DecryptWrapper(
+        const typename Types<algorithm>::Key& key,
+        const typename Types<algorithm>::Block& iv
+    )
         : iv{iv} {
         typename Types<algorithm>::RoundKeys encryption_keys;
         expand_key<algorithm>(key, encryption_keys);
@@ -126,8 +154,10 @@ struct DecryptWrapper {
         }
     }
 
-    void decrypt_block(const typename Types<algorithm>::Block& ciphertext,
-                       typename Types<algorithm>::Block& plaintext) {
+    void decrypt_block(
+        const typename Types<algorithm>::Block& ciphertext,
+        typename Types<algorithm>::Block& plaintext
+    ) {
         aes::decrypt_block<algorithm, mode>(ciphertext, decryption_keys, iv, plaintext);
     }
 

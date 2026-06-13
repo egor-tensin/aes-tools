@@ -61,9 +61,11 @@ const char* aes_strerror(AES_StatusCode ec) {
     return aes_strerror_messages[ec];
 }
 
-static size_t aes_format_error_strerror(const AES_ErrorDetails* err_details,
-                                        char* dest,
-                                        size_t dest_size) {
+static size_t aes_format_error_strerror(
+    const AES_ErrorDetails* err_details,
+    char* dest,
+    size_t dest_size
+) {
     const AES_StatusCode ec = aes_get_error_code(err_details);
     const char* const msg = aes_strerror(ec);
 
@@ -74,9 +76,11 @@ static size_t aes_format_error_strerror(const AES_ErrorDetails* err_details,
     return strlen(dest);
 }
 
-static size_t aes_format_null_argument_error(const AES_ErrorDetails* err_details,
-                                             char* dest,
-                                             size_t dest_size) {
+static size_t aes_format_null_argument_error(
+    const AES_ErrorDetails* err_details,
+    char* dest,
+    size_t dest_size
+) {
     static const char* const fmt = "Invalid argument value NULL for parameter '%s'";
     const char* const param_name = err_details->params.null_arg.param_name;
 
@@ -87,9 +91,11 @@ static size_t aes_format_null_argument_error(const AES_ErrorDetails* err_details
     return strlen(dest);
 }
 
-static size_t aes_format_parse_error(const AES_ErrorDetails* err_details,
-                                     char* dest,
-                                     size_t dest_size) {
+static size_t aes_format_parse_error(
+    const AES_ErrorDetails* err_details,
+    char* dest,
+    size_t dest_size
+) {
     static const char* const fmt = "Couldn't parse '%s' (possibly not complete input) as %s";
     const char* const src = err_details->params.parse_error.src;
     const char* const what = err_details->params.parse_error.what;
@@ -101,9 +107,11 @@ static size_t aes_format_parse_error(const AES_ErrorDetails* err_details,
     return strlen(dest);
 }
 
-static size_t aes_format_not_implemented_error(const AES_ErrorDetails* err_details,
-                                               char* dest,
-                                               size_t dest_size) {
+static size_t aes_format_not_implemented_error(
+    const AES_ErrorDetails* err_details,
+    char* dest,
+    size_t dest_size
+) {
     static const char* const fmt = "Not implemented: %s";
     const char* const src = err_details->params.not_implemented.what;
 
@@ -163,9 +171,11 @@ AES_StatusCode aes_error_null_argument(AES_ErrorDetails* err_details, const char
     AES_StatusCode status = aes_make_error(err_details, AES_NULL_ARGUMENT_ERROR);
 
     if (err_details != NULL)
-        aes_fill_string(err_details->params.null_arg.param_name,
-                        sizeof(err_details->params.null_arg.param_name),
-                        param_name);
+        aes_fill_string(
+            err_details->params.null_arg.param_name,
+            sizeof(err_details->params.null_arg.param_name),
+            param_name
+        );
 
     return status;
 }
@@ -175,10 +185,11 @@ AES_StatusCode aes_error_parse(AES_ErrorDetails* err_details, const char* src, c
 
     if (err_details != NULL) {
         aes_fill_string(
-            err_details->params.parse_error.src, sizeof(err_details->params.parse_error.src), src);
-        aes_fill_string(err_details->params.parse_error.what,
-                        sizeof(err_details->params.parse_error.what),
-                        what);
+            err_details->params.parse_error.src, sizeof(err_details->params.parse_error.src), src
+        );
+        aes_fill_string(
+            err_details->params.parse_error.what, sizeof(err_details->params.parse_error.what), what
+        );
     }
 
     return status;
@@ -192,9 +203,11 @@ AES_StatusCode aes_error_not_implemented(AES_ErrorDetails* err_details, const ch
     AES_StatusCode status = aes_make_error(err_details, AES_NOT_IMPLEMENTED_ERROR);
 
     if (err_details != NULL)
-        aes_fill_string(err_details->params.not_implemented.what,
-                        sizeof(err_details->params.not_implemented.what),
-                        what);
+        aes_fill_string(
+            err_details->params.not_implemented.what,
+            sizeof(err_details->params.not_implemented.what),
+            what
+        );
 
     return status;
 }

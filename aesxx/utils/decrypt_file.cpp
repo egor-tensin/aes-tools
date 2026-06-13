@@ -18,9 +18,11 @@
 
 namespace {
 
-void decrypt_file(aes::Box& box,
-                  const std::string& ciphertext_path,
-                  const std::string& plaintext_path) {
+void decrypt_file(
+    aes::Box& box,
+    const std::string& ciphertext_path,
+    const std::string& plaintext_path
+) {
     const auto ciphertext_buf = file::read_file(ciphertext_path);
     const auto plaintext_buf = box.decrypt_buffer(ciphertext_buf.data(), ciphertext_buf.size());
     file::write_file(plaintext_path, plaintext_buf);

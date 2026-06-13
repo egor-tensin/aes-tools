@@ -18,9 +18,11 @@
 
 namespace {
 
-void encrypt_file(aes::Box& box,
-                  const std::string& plaintext_path,
-                  const std::string& ciphertext_path) {
+void encrypt_file(
+    aes::Box& box,
+    const std::string& plaintext_path,
+    const std::string& ciphertext_path
+) {
     const auto plaintext_buf = file::read_file(plaintext_path);
     const auto ciphertext_buf = box.encrypt_buffer(plaintext_buf.data(), plaintext_buf.size());
     file::write_file(ciphertext_path, ciphertext_buf);

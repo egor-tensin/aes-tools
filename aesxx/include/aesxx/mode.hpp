@@ -41,7 +41,8 @@ inline bool mode_uses_encryption_keys_only(Mode mode) {
     inline void encrypt_block<AES_##prefix, AES_ECB>(                               \
         const typename Types<AES_##prefix>::Block& plaintext,                       \
         const typename Types<AES_##prefix>::RoundKeys& encryption_keys,             \
-        typename Types<AES_##prefix>::Block& ciphertext) {                          \
+        typename Types<AES_##prefix>::Block& ciphertext                             \
+    ) {                                                                             \
         ciphertext = aes_##prefix##_encrypt_block_ECB(plaintext, &encryption_keys); \
     }
 
@@ -50,7 +51,8 @@ inline bool mode_uses_encryption_keys_only(Mode mode) {
     inline void decrypt_block<AES_##prefix, AES_ECB>(                               \
         const typename Types<AES_##prefix>::Block& ciphertext,                      \
         const typename Types<AES_##prefix>::RoundKeys& decryption_keys,             \
-        typename Types<AES_##prefix>::Block& plaintext) {                           \
+        typename Types<AES_##prefix>::Block& plaintext                              \
+    ) {                                                                             \
         plaintext = aes_##prefix##_decrypt_block_ECB(ciphertext, &decryption_keys); \
     }
 
@@ -60,7 +62,8 @@ inline bool mode_uses_encryption_keys_only(Mode mode) {
         const typename Types<AES_##prefix>::Block& plaintext,                                \
         const typename Types<AES_##prefix>::RoundKeys& encryption_keys,                      \
         typename Types<AES_##prefix>::Block& iv,                                             \
-        typename Types<AES_##prefix>::Block& ciphertext) {                                   \
+        typename Types<AES_##prefix>::Block& ciphertext                                      \
+    ) {                                                                                      \
         ciphertext = aes_##prefix##_encrypt_block_CBC(plaintext, &encryption_keys, iv, &iv); \
     }
 
@@ -70,7 +73,8 @@ inline bool mode_uses_encryption_keys_only(Mode mode) {
         const typename Types<AES_##prefix>::Block& ciphertext,                               \
         const typename Types<AES_##prefix>::RoundKeys& decryption_keys,                      \
         typename Types<AES_##prefix>::Block& iv,                                             \
-        typename Types<AES_##prefix>::Block& plaintext) {                                    \
+        typename Types<AES_##prefix>::Block& plaintext                                       \
+    ) {                                                                                      \
         plaintext = aes_##prefix##_decrypt_block_CBC(ciphertext, &decryption_keys, iv, &iv); \
     }
 
@@ -80,7 +84,8 @@ inline bool mode_uses_encryption_keys_only(Mode mode) {
         const typename Types<AES_##prefix>::Block& plaintext,                                \
         const typename Types<AES_##prefix>::RoundKeys& encryption_keys,                      \
         typename Types<AES_##prefix>::Block& iv,                                             \
-        typename Types<AES_##prefix>::Block& ciphertext) {                                   \
+        typename Types<AES_##prefix>::Block& ciphertext                                      \
+    ) {                                                                                      \
         ciphertext = aes_##prefix##_encrypt_block_CFB(plaintext, &encryption_keys, iv, &iv); \
     }
 
@@ -90,7 +95,8 @@ inline bool mode_uses_encryption_keys_only(Mode mode) {
         const typename Types<AES_##prefix>::Block& ciphertext,                               \
         const typename Types<AES_##prefix>::RoundKeys& encryption_keys,                      \
         typename Types<AES_##prefix>::Block& iv,                                             \
-        typename Types<AES_##prefix>::Block& plaintext) {                                    \
+        typename Types<AES_##prefix>::Block& plaintext                                       \
+    ) {                                                                                      \
         plaintext = aes_##prefix##_decrypt_block_CFB(ciphertext, &encryption_keys, iv, &iv); \
     }
 
@@ -100,7 +106,8 @@ inline bool mode_uses_encryption_keys_only(Mode mode) {
         const typename Types<AES_##prefix>::Block& plaintext,                                \
         const typename Types<AES_##prefix>::RoundKeys& encryption_keys,                      \
         typename Types<AES_##prefix>::Block& iv,                                             \
-        typename Types<AES_##prefix>::Block& ciphertext) {                                   \
+        typename Types<AES_##prefix>::Block& ciphertext                                      \
+    ) {                                                                                      \
         ciphertext = aes_##prefix##_encrypt_block_OFB(plaintext, &encryption_keys, iv, &iv); \
     }
 
@@ -110,7 +117,8 @@ inline bool mode_uses_encryption_keys_only(Mode mode) {
         const typename Types<AES_##prefix>::Block& ciphertext,                               \
         const typename Types<AES_##prefix>::RoundKeys& encryption_keys,                      \
         typename Types<AES_##prefix>::Block& iv,                                             \
-        typename Types<AES_##prefix>::Block& plaintext) {                                    \
+        typename Types<AES_##prefix>::Block& plaintext                                       \
+    ) {                                                                                      \
         plaintext = aes_##prefix##_decrypt_block_OFB(ciphertext, &encryption_keys, iv, &iv); \
     }
 
@@ -120,7 +128,8 @@ inline bool mode_uses_encryption_keys_only(Mode mode) {
         const typename Types<AES_##prefix>::Block& plaintext,                                \
         const typename Types<AES_##prefix>::RoundKeys& encryption_keys,                      \
         typename Types<AES_##prefix>::Block& iv,                                             \
-        typename Types<AES_##prefix>::Block& ciphertext) {                                   \
+        typename Types<AES_##prefix>::Block& ciphertext                                      \
+    ) {                                                                                      \
         ciphertext = aes_##prefix##_encrypt_block_CTR(plaintext, &encryption_keys, iv, &iv); \
     }
 
@@ -130,7 +139,8 @@ inline bool mode_uses_encryption_keys_only(Mode mode) {
         const typename Types<AES_##prefix>::Block& ciphertext,                               \
         const typename Types<AES_##prefix>::RoundKeys& encryption_keys,                      \
         typename Types<AES_##prefix>::Block& iv,                                             \
-        typename Types<AES_##prefix>::Block& plaintext) {                                    \
+        typename Types<AES_##prefix>::Block& plaintext                                       \
+    ) {                                                                                      \
         plaintext = aes_##prefix##_decrypt_block_CTR(ciphertext, &encryption_keys, iv, &iv); \
     }
 

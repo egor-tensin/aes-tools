@@ -53,9 +53,11 @@ private:
         return format_module(symbol_name, offset);
     }
 
-    static std::string format_symbol(std::string_view module_name,
-                                     std::string_view symbol_name,
-                                     const void* offset = nullptr) {
+    static std::string format_symbol(
+        std::string_view module_name,
+        std::string_view symbol_name,
+        const void* offset = nullptr
+    ) {
         return format_symbol(std::format("{}!{}", module_name, symbol_name), offset);
     }
 
@@ -99,22 +101,26 @@ private:
         DWORD64 symbol_offset;
 
         const auto symbol_resolved = SymFromAddr(
-            GetCurrentProcess(), reinterpret_cast<DWORD64>(addr), &symbol_offset, symbol_info);
+            GetCurrentProcess(), reinterpret_cast<DWORD64>(addr), &symbol_offset, symbol_info
+        );
 
         if (symbol_resolved) {
             const auto module_resolved =
                 SymGetModuleInfo64(GetCurrentProcess(), symbol_info->ModBase, &module_info);
 
             if (module_resolved) {
-                return format_symbol(module_info.ModuleName,
-                                     symbol_info->Name,
-                                     reinterpret_cast<const void*>(symbol_offset));
+                return format_symbol(
+                    module_info.ModuleName,
+                    symbol_info->Name,
+                    reinterpret_cast<const void*>(symbol_offset)
+                );
             } else {
                 return format_symbol(symbol_info->Name, addr);
             }
         } else {
             const auto module_resolved = SymGetModuleInfo64(
-                GetCurrentProcess(), reinterpret_cast<DWORD64>(addr), &module_info);
+                GetCurrentProcess(), reinterpret_cast<DWORD64>(addr), &module_info
+            );
 
             if (module_resolved) {
                 const auto module_offset =

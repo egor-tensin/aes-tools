@@ -74,8 +74,10 @@ inline void expand_key<AES_AES128>(const aes128::Key& key, aes128::RoundKeys& en
 }
 
 template <>
-inline void derive_decryption_keys<AES_AES128>(const aes128::RoundKeys& encryption_keys,
-                                               aes128::RoundKeys& decryption_keys) {
+inline void derive_decryption_keys<AES_AES128>(
+    const aes128::RoundKeys& encryption_keys,
+    aes128::RoundKeys& decryption_keys
+) {
     aes_AES128_derive_decryption_keys(&encryption_keys, &decryption_keys);
 }
 
@@ -147,8 +149,10 @@ inline void expand_key<AES_AES192>(const aes192::Key& key, aes192::RoundKeys& en
 }
 
 template <>
-inline void derive_decryption_keys<AES_AES192>(const aes192::RoundKeys& encryption_keys,
-                                               aes192::RoundKeys& decryption_keys) {
+inline void derive_decryption_keys<AES_AES192>(
+    const aes192::RoundKeys& encryption_keys,
+    aes192::RoundKeys& decryption_keys
+) {
     aes_AES192_derive_decryption_keys(&encryption_keys, &decryption_keys);
 }
 
@@ -220,8 +224,10 @@ inline void expand_key<AES_AES256>(const aes256::Key& key, aes256::RoundKeys& en
 }
 
 template <>
-inline void derive_decryption_keys<AES_AES256>(const aes256::RoundKeys& encryption_keys,
-                                               aes256::RoundKeys& decryption_keys) {
+inline void derive_decryption_keys<AES_AES256>(
+    const aes256::RoundKeys& encryption_keys,
+    aes256::RoundKeys& decryption_keys
+) {
     aes_AES256_derive_decryption_keys(&encryption_keys, &decryption_keys);
 }
 

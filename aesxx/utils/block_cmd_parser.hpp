@@ -32,22 +32,30 @@ public:
 
     explicit BlockSettings(std::string_view argv0) : SettingsParser{argv0} {
         visible.add_options()(
-            "verbose,v", boost::program_options::bool_switch(&verbose), "enable verbose output");
-        visible.add_options()("algorithm,a",
-                              boost::program_options::value<aes::Algorithm>(&algorithm)
-                                  ->required()
-                                  ->value_name("NAME"),
-                              "set algorithm");
+            "verbose,v", boost::program_options::bool_switch(&verbose), "enable verbose output"
+        );
+        visible.add_options()(
+            "algorithm,a",
+            boost::program_options::value<aes::Algorithm>(&algorithm)
+                ->required()
+                ->value_name("NAME"),
+            "set algorithm"
+        );
         visible.add_options()(
             "mode,m",
             boost::program_options::value<aes::Mode>(&mode)->required()->value_name("MODE"),
-            "set mode of operation");
-        visible.add_options()("use-boxes,b",
-                              boost::program_options::bool_switch(&use_boxes),
-                              "use the \"boxes\" interface");
-        hidden.add_options()("args",
-                             boost::program_options::value<std::vector<std::string>>(&args),
-                             "shouldn't be visible");
+            "set mode of operation"
+        );
+        visible.add_options()(
+            "use-boxes,b",
+            boost::program_options::bool_switch(&use_boxes),
+            "use the \"boxes\" interface"
+        );
+        hidden.add_options()(
+            "args",
+            boost::program_options::value<std::vector<std::string>>(&args),
+            "shouldn't be visible"
+        );
         positional.add("args", -1);
     }
 
@@ -58,8 +66,11 @@ public:
 
     void parse(int argc, char* argv[]) override {
         SettingsParser::parse(argc, argv);
-        parse_inputs(std::deque<std::string>{std::make_move_iterator(args.begin()),
-                                             std::make_move_iterator(args.end())});
+        parse_inputs(
+            std::deque<std::string>{
+                std::make_move_iterator(args.begin()), std::make_move_iterator(args.end())
+            }
+        );
     }
 
 private:
@@ -77,7 +88,8 @@ private:
         if (aes::mode_requires_init_vector(mode)) {
             if (src.empty()) {
                 throw boost::program_options::error{
-                    "an initialization vector is required for the selected mode of operation"};
+                    "an initialization vector is required for the selected mode of operation"
+                };
             }
             iv = std::move(src.front());
             src.pop_front();

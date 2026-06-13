@@ -83,10 +83,12 @@ void encrypt_with_algorithm(aes::Mode mode, const Input& input, bool verbose = f
     }
 }
 
-void encrypt_using_cxx_api(aes::Algorithm algorithm,
-                           aes::Mode mode,
-                           const Input& input,
-                           bool verbose = false) {
+void encrypt_using_cxx_api(
+    aes::Algorithm algorithm,
+    aes::Mode mode,
+    const Input& input,
+    bool verbose = false
+) {
     switch (algorithm) {
         case AES_AES128:
             encrypt_with_algorithm<AES_AES128>(mode, input, verbose);
@@ -106,8 +108,10 @@ void encrypt_using_cxx_api(aes::Algorithm algorithm,
     }
 }
 
-void encrypt_using_particular_box(aes::Box& box,
-                                  const std::vector<std::string>& input_block_strings) {
+void encrypt_using_particular_box(
+    aes::Box& box,
+    const std::vector<std::string>& input_block_strings
+) {
     for (const auto& input_block_string : input_block_strings) {
         aes::Box::Block plaintext;
         box.parse_block(plaintext, input_block_string);
