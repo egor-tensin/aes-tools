@@ -1,15 +1,11 @@
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Boost CONFIG REQUIRED)
-
 add_library(aesxx INTERFACE)
 target_include_directories(aesxx INTERFACE include/)
 target_link_libraries(aesxx INTERFACE
     aes
-    dbghelp
-    Boost::disable_autolinking
-    Boost::boost)
+    dbghelp)
 
 if(MSVC_VERSION EQUAL 1900)
     # These annoying dbghelp.h warnings:

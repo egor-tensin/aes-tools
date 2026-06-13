@@ -9,8 +9,6 @@
 
 #include <aes/all.h>
 
-#include <boost/config.hpp>
-
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
@@ -75,7 +73,7 @@ public:
         aes_success(get());
     }
 
-    ~ErrorDetailsThrowsInDestructor() BOOST_NOEXCEPT_IF(false) {
+    ~ErrorDetailsThrowsInDestructor() noexcept(false) {
         if (aes_is_error(aes_get_error_code(get())))
             throw Error(impl);
     }
