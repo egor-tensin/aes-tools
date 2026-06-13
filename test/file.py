@@ -88,8 +88,9 @@ def _make_output_file():
     os.remove(tmp_path)
 
 
-def run_encryption_test(tools, algorithm, mode, key, plaintext_path,
-                        ciphertext_path, iv=None, force=False):
+def run_encryption_test(
+    tools, algorithm, mode, key, plaintext_path, ciphertext_path, iv=None, force=False
+):
     logging.debug('Running encryption test...')
     logging.debug('\tPlaintext file path: %s', plaintext_path)
     logging.debug('\tExpected ciphertext file path: %s', ciphertext_path)
@@ -100,8 +101,7 @@ def run_encryption_test(tools, algorithm, mode, key, plaintext_path,
         logging.debug('\tEncrypted file path: %s', tmp_path)
 
         try:
-            tools.run_encrypt_file(algorithm, mode, key, plaintext_path,
-                                   tmp_path, iv)
+            tools.run_encrypt_file(algorithm, mode, key, plaintext_path, tmp_path, iv)
             if force:
                 logging.warning('Overwriting expected ciphertext file')
                 shutil.copy(tmp_path, ciphertext_path)
@@ -116,8 +116,9 @@ def run_encryption_test(tools, algorithm, mode, key, plaintext_path,
             return TestExitCode.ERROR
 
 
-def run_decryption_test(tools, algorithm, mode, key, plaintext_path,
-                        ciphertext_path, iv=None):
+def run_decryption_test(
+    tools, algorithm, mode, key, plaintext_path, ciphertext_path, iv=None
+):
     logging.debug('Running decryption test...')
     logging.debug('\tCiphertext file path: %s', ciphertext_path)
     logging.debug('\tExpected plaintext file path: %s', plaintext_path)
@@ -128,8 +129,7 @@ def run_decryption_test(tools, algorithm, mode, key, plaintext_path,
         logging.debug('\tDecrypted file path: %s', tmp_path)
 
         try:
-            tools.run_decrypt_file(algorithm, mode, key, ciphertext_path,
-                                   tmp_path, iv)
+            tools.run_decrypt_file(algorithm, mode, key, ciphertext_path, tmp_path, iv)
             if filecmp.cmp(tmp_path, plaintext_path):
                 return TestExitCode.SUCCESS
             logging.error('The decrypted file doesn\'t match the plaintext file')
@@ -178,8 +178,8 @@ _script_name = os.path.splitext(os.path.basename(__file__))[0]
 def _setup_logging(verbose=False):
     level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(
-        format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
-        level=level)
+        format='%(asctime)s | %(module)s | %(levelname)s | %(message)s', level=level
+    )
 
 
 def run_tests(suite_path, tools_path=(), verbose=False, use_sde=False, force=False):
@@ -197,8 +197,10 @@ def run_tests(suite_path, tools_path=(), verbose=False, use_sde=False, force=Fal
     logging.info('\tSucceeded: %d', exit_codes.count(TestExitCode.SUCCESS))
     logging.info('\tFailed:    %d', exit_codes.count(TestExitCode.FAILURE))
 
-    if (exit_codes.count(TestExitCode.ERROR) == 0 and
-            exit_codes.count(TestExitCode.FAILURE) == 0):
+    if (
+        exit_codes.count(TestExitCode.ERROR) == 0
+        and exit_codes.count(TestExitCode.FAILURE) == 0
+    ):
         return 0
     else:
         return 1
@@ -208,18 +210,34 @@ def _parse_args(args=None):
     if args is None:
         args = sys.argv[1:]
     parser = argparse.ArgumentParser()
-    parser.add_argument('--path', '-p', dest='tools_path', metavar='PATH',
-                        nargs='*',
-                        help='set file encryption utilities directory path')
-    parser.add_argument('--sde', '-e', dest='use_sde', action='store_true',
-                        help='use Intel SDE to run the utilities')
-    parser.add_argument('--verbose', '-v', action='store_true',
-                        help='verbose log output')
-    parser.add_argument('--force', '-f', action='store_true',
-                        help='overwrite ciphertext files')
-    parser.add_argument('--suite', '-s', dest='suite_path',
-                        default=os.path.join(_script_dir, 'data', 'file'),
-                        help='set test suite directory path')
+    parser.add_argument(
+        '--path',
+        '-p',
+        dest='tools_path',
+        metavar='PATH',
+        nargs='*',
+        help='set file encryption utilities directory path',
+    )
+    parser.add_argument(
+        '--sde',
+        '-e',
+        dest='use_sde',
+        action='store_true',
+        help='use Intel SDE to run the utilities',
+    )
+    parser.add_argument(
+        '--verbose', '-v', action='store_true', help='verbose log output'
+    )
+    parser.add_argument(
+        '--force', '-f', action='store_true', help='overwrite ciphertext files'
+    )
+    parser.add_argument(
+        '--suite',
+        '-s',
+        dest='suite_path',
+        default=os.path.join(_script_dir, 'data', 'file'),
+        help='set test suite directory path',
+    )
     return parser.parse_args(args)
 
 

@@ -88,7 +88,8 @@ class Tools:
         logging.debug('Trying to execute: %s', subprocess.list2cmdline(cmd_list))
         try:
             output = subprocess.check_output(
-                cmd_list, universal_newlines=True, stderr=subprocess.STDOUT)
+                cmd_list, universal_newlines=True, stderr=subprocess.STDOUT
+            )
         except subprocess.CalledProcessError as e:
             logging.error('Output:\n%s', e.output)
             raise
@@ -109,8 +110,10 @@ class Tools:
     @staticmethod
     def _block_settings_to_args(algorithm, mode, use_boxes=False):
         args = [
-            '--algorithm', str(algorithm),
-            '--mode', str(mode),
+            '--algorithm',
+            str(algorithm),
+            '--mode',
+            str(mode),
         ]
         if use_boxes:
             args.append('--use-boxes')
@@ -134,30 +137,30 @@ class Tools:
         return self.run(self._DECRYPT_BLOCK, args)
 
     @staticmethod
-    def _build_file_args(
-            algorithm, mode, key, input_path, output_path, iv=None):
+    def _build_file_args(algorithm, mode, key, input_path, output_path, iv=None):
 
         args = [
-            '--algorithm', str(algorithm),
-            '--mode', str(mode),
-            '--key', key,
-            '--input', input_path,
-            '--output', output_path
+            '--algorithm',
+            str(algorithm),
+            '--mode',
+            str(mode),
+            '--key',
+            key,
+            '--input',
+            input_path,
+            '--output',
+            output_path,
         ]
         if iv is not None:
             args.extend(('--iv', iv))
         return args
 
-    def run_encrypt_file(
-            self, algorithm, mode, key, input_path, output_path, iv=None):
+    def run_encrypt_file(self, algorithm, mode, key, input_path, output_path, iv=None):
 
-        args = self._build_file_args(
-            algorithm, mode, key, input_path, output_path, iv)
+        args = self._build_file_args(algorithm, mode, key, input_path, output_path, iv)
         return self.run(self._ENCRYPT_FILE, args)
 
-    def run_decrypt_file(
-            self, algorithm, mode, key, input_path, output_path, iv=None):
+    def run_decrypt_file(self, algorithm, mode, key, input_path, output_path, iv=None):
 
-        args = self._build_file_args(
-            algorithm, mode, key, input_path, output_path, iv)
+        args = self._build_file_args(algorithm, mode, key, input_path, output_path, iv)
         return self.run(self._DECRYPT_FILE, args)

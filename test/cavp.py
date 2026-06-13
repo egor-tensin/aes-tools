@@ -78,7 +78,8 @@ class TestFile:
             dict_type=_MultiOrderedDict,
             strict=False,
             interpolation=None,
-            empty_lines_in_values=False)
+            empty_lines_in_values=False,
+        )
         with open(self._path) as fd:
             parser.read_string(fd.read())
             self._encryption_data = self._parse_data_section(parser, 'ENCRYPT')
@@ -94,11 +95,15 @@ class TestFile:
     @staticmethod
     def _split_into_chunks(expected_output, inputs, max_len=100):
         for i in range(0, len(inputs), max_len):
-            yield expected_output[i:i+max_len], inputs[i:i+max_len]
+            yield expected_output[i : i + max_len], inputs[i : i + max_len]
 
     def _run_tests(self, tool, inputs, expected_output, use_boxes=False):
-        for expected_output_chunk, input_chunk in self._split_into_chunks(expected_output, list(inputs)):
-            actual_output = tool(self.algorithm(), self.mode(), input_chunk, use_boxes=use_boxes)
+        for expected_output_chunk, input_chunk in self._split_into_chunks(
+            expected_output, list(inputs)
+        ):
+            actual_output = tool(
+                self.algorithm(), self.mode(), input_chunk, use_boxes=use_boxes
+            )
             if not verify_test_output(actual_output, expected_output_chunk):
                 return TestExitCode.FAILURE
         return TestExitCode.SUCCESS
@@ -110,7 +115,9 @@ class TestFile:
         try:
             keys, plaintexts, ciphertexts, init_vectors = self._encryption_data
             inputs = self._gen_inputs(keys, plaintexts, init_vectors)
-            return self._run_tests(tools.run_encrypt_block, inputs, ciphertexts, use_boxes)
+            return self._run_tests(
+                tools.run_encrypt_block, inputs, ciphertexts, use_boxes
+            )
         except CalledProcessError as e:
             logging.error('Encountered an exception!')
             logging.exception(e)
@@ -123,7 +130,9 @@ class TestFile:
         try:
             keys, plaintexts, ciphertexts, init_vectors = self._decryption_data
             inputs = self._gen_inputs(keys, ciphertexts, init_vectors)
-            return self._run_tests(tools.run_decrypt_block, inputs, plaintexts, use_boxes)
+            return self._run_tests(
+                tools.run_decrypt_block, inputs, plaintexts, use_boxes
+            )
         except CalledProcessError as e:
             logging.error('Encountered an exception!')
             logging.exception(e)
@@ -132,13 +141,17 @@ class TestFile:
     def _parse_path(self):
         logging.debug('Trying to parse test file path \'%s\'...', self._path)
         stub = self._strip_extension(os.path.basename(self._path))
-        if not stub: return
+        if not stub:
+            return
         stub = self._strip_algorithm(stub)
-        if not stub: return
+        if not stub:
+            return
         stub = self._strip_method(stub)
-        if not stub: return
+        if not stub:
+            return
         stub = self._strip_mode(stub)
-        if not stub: return
+        if not stub:
+            return
         self._recognized = True
 
     _RECOGNIZED_EXT = '.rsp'
@@ -166,7 +179,7 @@ class TestFile:
         for method in self._RECOGNIZED_METHODS:
             if stub.endswith(method):
                 logging.debug('\tMethod: %s', method)
-                return stub[0:len(stub) - len(method)]
+                return stub[0 : len(stub) - len(method)]
         logging.warning('Unknown or unsupported method: %s', self._path)
         return None
 
@@ -195,11 +208,13 @@ _script_dir = os.path.dirname(__file__)
 def _setup_logging(verbose=False):
     level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(
-        format='%(asctime)s | %(module)s | %(levelname)s | %(message)s',
-        level=level)
+        format='%(asctime)s | %(module)s | %(levelname)s | %(message)s', level=level
+    )
 
 
-def run_tests(archive_path, tools_path=(), use_sde=False, use_boxes=False, verbose=False):
+def run_tests(
+    archive_path, tools_path=(), use_sde=False, use_boxes=False, verbose=False
+):
     _setup_logging(verbose)
     tools = Tools(tools_path, use_sde=use_sde)
     archive = TestArchive(archive_path)
@@ -215,8 +230,10 @@ def run_tests(archive_path, tools_path=(), use_sde=False, use_boxes=False, verbo
     logging.info('\tSucceeded: %d', exit_codes.count(TestExitCode.SUCCESS))
     logging.info('\tFailed:    %d', exit_codes.count(TestExitCode.FAILURE))
 
-    if (exit_codes.count(TestExitCode.ERROR) == 0 and
-            exit_codes.count(TestExitCode.FAILURE) == 0):
+    if (
+        exit_codes.count(TestExitCode.ERROR) == 0
+        and exit_codes.count(TestExitCode.FAILURE) == 0
+    ):
         return 0
     else:
         return 1
@@ -226,18 +243,39 @@ def _parse_args(args=None):
     if args is None:
         args = sys.argv[1:]
     parser = argparse.ArgumentParser()
-    parser.add_argument('--path', '-p', dest='tools_path', metavar='PATH',
-                        nargs='*',
-                        help='set block encryption utilities directory path')
-    parser.add_argument('--sde', '-e', action='store_true', dest='use_sde',
-                        help='use Intel SDE to run the utilities')
-    parser.add_argument('--boxes', '-b', action='store_true', dest='use_boxes',
-                        help='use the "boxes" interface')
-    parser.add_argument('--archive', '-a', dest='archive_path', metavar='PATH',
-                        default=os.path.join(_script_dir, 'data/KAT_AES.zip'),
-                        help='set test vectors archive file path')
-    parser.add_argument('--verbose', '-v', action='store_true',
-                        help='verbose log output')
+    parser.add_argument(
+        '--path',
+        '-p',
+        dest='tools_path',
+        metavar='PATH',
+        nargs='*',
+        help='set block encryption utilities directory path',
+    )
+    parser.add_argument(
+        '--sde',
+        '-e',
+        action='store_true',
+        dest='use_sde',
+        help='use Intel SDE to run the utilities',
+    )
+    parser.add_argument(
+        '--boxes',
+        '-b',
+        action='store_true',
+        dest='use_boxes',
+        help='use the "boxes" interface',
+    )
+    parser.add_argument(
+        '--archive',
+        '-a',
+        dest='archive_path',
+        metavar='PATH',
+        default=os.path.join(_script_dir, 'data/KAT_AES.zip'),
+        help='set test vectors archive file path',
+    )
+    parser.add_argument(
+        '--verbose', '-v', action='store_true', help='verbose log output'
+    )
     return parser.parse_args(args)
 
 
