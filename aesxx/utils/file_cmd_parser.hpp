@@ -10,7 +10,6 @@
 
 #include <aesxx/all.hpp>
 
-#include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
 #include <ostream>
