@@ -12,6 +12,7 @@
 #include <boost/program_options.hpp>
 
 #include <exception>
+#include <format>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -48,7 +49,7 @@ void encrypt_with_mode(const Input& input, bool verbose = false) {
             dump_ciphertext<algorithm>(ciphertext);
             dump_next_iv<algorithm, mode>(encrypt);
         } else {
-            std::cout << aes::to_string<algorithm>(ciphertext) << '\n';
+            std::cout << std::format("{}\n", aes::to_string<algorithm>(ciphertext));
         }
     }
 }
@@ -113,7 +114,7 @@ void encrypt_using_particular_box(aes::Box& box,
 
         aes::Box::Block ciphertext;
         box.encrypt_block(plaintext, ciphertext);
-        std::cout << box.format_block(ciphertext) << '\n';
+        std::cout << std::format("{}\n", box.format_block(ciphertext));
     }
 }
 
@@ -162,7 +163,7 @@ int main(int argc, char** argv) {
         std::cerr << e;
         return 1;
     } catch (const std::exception& e) {
-        std::cerr << e.what() << "\n";
+        std::cerr << std::format("{}\n", e.what());
         return 1;
     }
     return 0;

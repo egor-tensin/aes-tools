@@ -10,6 +10,7 @@
 
 #include <cstddef>
 #include <string>
+#include <string_view>
 #include <type_traits>
 
 namespace aes {
@@ -21,12 +22,7 @@ template <Algorithm algorithm>
 std::size_t get_number_of_rounds();
 
 template <Algorithm algorithm>
-void from_string(typename Types<algorithm>::Block&, const char*);
-
-template <Algorithm algorithm>
-void from_string(typename Types<algorithm>::Block& dest, const std::string& src) {
-    from_string<algorithm>(dest, src.c_str());
-}
+void from_string(typename Types<algorithm>::Block&, std::string_view);
 
 template <Algorithm algorithm>
 std::string to_string(const typename Types<algorithm>::Block&);
@@ -35,12 +31,7 @@ template <Algorithm algorithm>
 std::string to_matrix_string(const typename Types<algorithm>::Block&);
 
 template <Algorithm algorithm>
-void from_string(typename Types<algorithm>::Key&, const char*);
-
-template <Algorithm algorithm>
-void from_string(typename Types<algorithm>::Key& dest, const std::string& src) {
-    from_string<algorithm>(dest, src.c_str());
-}
+void from_string(typename Types<algorithm>::Key&, std::string_view);
 
 template <Algorithm algorithm>
 std::string to_string(const typename Types<algorithm>::Key&);

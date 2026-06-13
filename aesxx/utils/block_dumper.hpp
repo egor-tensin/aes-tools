@@ -8,13 +8,15 @@
 #include <aesxx/all.hpp>
 
 #include <cstdlib>
+#include <format>
 #include <iostream>
+#include <string_view>
 #include <type_traits>
 
 template <aes::Algorithm algorithm>
-void dump_block(const char* header, const typename aes::Types<algorithm>::Block& block) {
-    std::cout << header << ": " << aes::to_string<algorithm>(block) << "\n";
-    std::cout << aes::to_matrix_string<algorithm>(block) << "\n";
+void dump_block(std::string_view header, const typename aes::Types<algorithm>::Block& block) {
+    std::cout << std::format("{}: {}\n", header, aes::to_string<algorithm>(block));
+    std::cout << std::format("{}\n", aes::to_matrix_string<algorithm>(block));
 }
 
 template <aes::Algorithm algorithm>
@@ -24,7 +26,7 @@ void dump_plaintext(const typename aes::Types<algorithm>::Block& block) {
 
 template <aes::Algorithm algorithm>
 void dump_key(const typename aes::Types<algorithm>::Key& key) {
-    std::cout << "Key: " << aes::to_string<algorithm>(key) << "\n\n";
+    std::cout << std::format("Key: {}\n\n", aes::to_string<algorithm>(key));
 }
 
 template <aes::Algorithm algorithm>
@@ -40,9 +42,9 @@ void dump_iv(const typename aes::Types<algorithm>::Block& iv) {
 template <aes::Algorithm algorithm>
 void dump_round_keys(const char* header,
                      const typename aes::Types<algorithm>::RoundKeys& round_keys) {
-    std::cout << header << ":\n";
+    std::cout << std::format("{}:\n", header);
     for (std::size_t i = 0; i < aes::get_number_of_rounds<algorithm>(); ++i)
-        std::cout << "\t[" << i << "]: " << aes::to_string<algorithm>(round_keys.keys[i]) << "\n";
+        std::cout << std::format("\t[{}]: {}\n", i, aes::to_string<algorithm>(round_keys.keys[i]));
     std::cout << "\n";
 }
 

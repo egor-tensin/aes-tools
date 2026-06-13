@@ -13,8 +13,10 @@
 #endif
 
 #include <cstddef>
+#include <format>
 #include <sstream>
 #include <string>
+#include <string_view>
 
 namespace aes {
 namespace aux {
@@ -34,37 +36,28 @@ public:
 private:
     template <typename T>
     static std::string put_between_brackets(const T& x) {
-        std::ostringstream oss;
-        oss << "[" << x << "]";
-        return oss.str();
-    }
-
-    template <typename T>
-    static std::string stringify(const T& x) {
-        std::ostringstream oss;
-        oss << x;
-        return oss.str();
+        return std::format("[{}]", x);
     }
 
     static std::string format_address_fallback(const void* addr) {
         return put_between_brackets(addr);
     }
 
-    static std::string format_module(const std::string& module_name, const void* offset = nullptr) {
+    static std::string format_module(std::string_view module_name, const void* offset = nullptr) {
         if (offset == nullptr)
             return put_between_brackets(module_name);
         else
-            return put_between_brackets(module_name + "+" + stringify(offset));
+            return put_between_brackets(std::format("{}+{}", module_name, offset));
     }
 
-    static std::string format_symbol(const std::string& symbol_name, const void* offset = nullptr) {
+    static std::string format_symbol(std::string_view symbol_name, const void* offset = nullptr) {
         return format_module(symbol_name, offset);
     }
 
-    static std::string format_symbol(const std::string& module_name,
-                                     const std::string& symbol_name,
+    static std::string format_symbol(std::string_view module_name,
+                                     std::string_view symbol_name,
                                      const void* offset = nullptr) {
-        return format_symbol(module_name + "!" + symbol_name, offset);
+        return format_symbol(std::format("{}!{}", module_name, symbol_name), offset);
     }
 
 #ifdef WIN32

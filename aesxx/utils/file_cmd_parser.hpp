@@ -15,6 +15,7 @@
 
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <utility>
 
 class FileSettings : public command_line::SettingsParser {
@@ -27,7 +28,7 @@ public:
     std::string key;
     std::string iv;
 
-    explicit FileSettings(const std::string& argv0) : SettingsParser{argv0} {
+    explicit FileSettings(std::string_view argv0) : SettingsParser{argv0} {
         visible.add_options()("algorithm,a",
                               boost::program_options::value<aes::Algorithm>(&algorithm)
                                   ->required()

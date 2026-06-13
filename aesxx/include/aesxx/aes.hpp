@@ -14,6 +14,7 @@
 
 #include <cstddef>
 #include <string>
+#include <string_view>
 
 namespace aes {
 namespace aes128 {
@@ -37,8 +38,8 @@ inline std::size_t get_number_of_rounds<AES_AES128>() {
 }
 
 template <>
-inline void from_string<AES_AES128>(aes128::Block& dest, const char* src) {
-    aes_AES128_parse_block(&dest, src, ErrorDetailsThrowsInDestructor{});
+inline void from_string<AES_AES128>(aes128::Block& dest, std::string_view src) {
+    aes_AES128_parse_block(&dest, src.data(), ErrorDetailsThrowsInDestructor{});
 }
 
 template <>
@@ -56,8 +57,8 @@ inline std::string to_matrix_string<AES_AES128>(const aes128::Block& src) {
 }
 
 template <>
-inline void from_string<AES_AES128>(aes128::Key& dest, const char* src) {
-    aes_AES128_parse_key(&dest, src, ErrorDetailsThrowsInDestructor{});
+inline void from_string<AES_AES128>(aes128::Key& dest, std::string_view src) {
+    aes_AES128_parse_key(&dest, src.data(), ErrorDetailsThrowsInDestructor{});
 }
 
 template <>
@@ -110,8 +111,8 @@ inline std::size_t get_number_of_rounds<AES_AES192>() {
 }
 
 template <>
-inline void from_string<AES_AES192>(aes192::Block& dest, const char* src) {
-    aes_AES192_parse_block(&dest, src, ErrorDetailsThrowsInDestructor{});
+inline void from_string<AES_AES192>(aes192::Block& dest, std::string_view src) {
+    aes_AES192_parse_block(&dest, src.data(), ErrorDetailsThrowsInDestructor{});
 }
 
 template <>
@@ -129,8 +130,8 @@ inline std::string to_matrix_string<AES_AES192>(const aes192::Block& src) {
 }
 
 template <>
-inline void from_string<AES_AES192>(aes192::Key& dest, const char* src) {
-    aes_AES192_parse_key(&dest, src, ErrorDetailsThrowsInDestructor{});
+inline void from_string<AES_AES192>(aes192::Key& dest, std::string_view src) {
+    aes_AES192_parse_key(&dest, src.data(), ErrorDetailsThrowsInDestructor{});
 }
 
 template <>
@@ -183,8 +184,8 @@ inline std::size_t get_number_of_rounds<AES_AES256>() {
 }
 
 template <>
-inline void from_string<AES_AES256>(aes256::Block& dest, const char* src) {
-    aes_AES256_parse_block(&dest, src, ErrorDetailsThrowsInDestructor{});
+inline void from_string<AES_AES256>(aes256::Block& dest, std::string_view src) {
+    aes_AES256_parse_block(&dest, src.data(), ErrorDetailsThrowsInDestructor{});
 }
 
 template <>
@@ -202,8 +203,8 @@ inline std::string to_matrix_string<AES_AES256>(const aes256::Block& src) {
 }
 
 template <>
-inline void from_string<AES_AES256>(aes256::Key& dest, const char* src) {
-    aes_AES256_parse_key(&dest, src, ErrorDetailsThrowsInDestructor{});
+inline void from_string<AES_AES256>(aes256::Key& dest, std::string_view src) {
+    aes_AES256_parse_key(&dest, src.data(), ErrorDetailsThrowsInDestructor{});
 }
 
 template <>

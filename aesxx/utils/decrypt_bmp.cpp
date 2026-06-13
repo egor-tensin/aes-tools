@@ -14,6 +14,7 @@
 #include <windows.h>
 
 #include <exception>
+#include <format>
 #include <iostream>
 #include <string>
 
@@ -69,7 +70,7 @@ int main(int argc, char** argv) {
         std::cerr << e;
         return 1;
     } catch (const std::exception& e) {
-        std::cerr << e.what() << "\n";
+        std::cerr << std::format("{}\n", e.what());
         return 1;
     }
     return 0;

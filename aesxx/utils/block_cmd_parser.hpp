@@ -16,6 +16,7 @@
 #include <deque>
 #include <iterator>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -29,7 +30,7 @@ public:
 
     std::vector<Input> inputs;
 
-    explicit BlockSettings(const std::string& argv0) : SettingsParser{argv0} {
+    explicit BlockSettings(std::string_view argv0) : SettingsParser{argv0} {
         visible.add_options()(
             "verbose,v", boost::program_options::bool_switch(&verbose), "enable verbose output");
         visible.add_options()("algorithm,a",

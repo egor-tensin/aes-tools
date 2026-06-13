@@ -5,19 +5,21 @@
 
 #pragma once
 
-#include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
 #include <exception>
+#include <filesystem>
+#include <format>
 #include <iostream>
 #include <ostream>
 #include <string>
+#include <string_view>
 
 namespace command_line {
 
 class SettingsParser {
 public:
-    explicit SettingsParser(const std::string& argv0) : prog_name{extract_filename(argv0)} {
+    explicit SettingsParser(std::string_view argv0) : prog_name{extract_filename(argv0)} {
         visible.add_options()("help,h", "show this message and exit");
     }
 
@@ -49,7 +51,7 @@ public:
     }
 
     void usage_error(const std::exception& e) const {
-        std::cerr << "usage error: " << e.what() << '\n';
+        std::cerr << std::format("usage error: {}\n", e.what());
         std::cerr << *this;
     }
 
@@ -59,15 +61,15 @@ protected:
     boost::program_options::positional_options_description positional;
 
 private:
-    static std::string extract_filename(const std::string& path) {
-        return boost::filesystem::path{path}.filename().string();
+    static std::string extract_filename(std::string_view path) {
+        return std::filesystem::path{path}.filename().string();
     }
 
     const std::string prog_name;
 
     friend std::ostream& operator<<(std::ostream& os, const SettingsParser& parser) {
         const auto short_descr = parser.get_short_description();
-        os << "usage: " << parser.prog_name << ' ' << short_descr << '\n';
+        os << std::format("usage: {} {}\n", parser.prog_name, short_descr);
         os << parser.visible;
         return os;
     }

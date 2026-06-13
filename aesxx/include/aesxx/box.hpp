@@ -13,6 +13,7 @@
 
 #include <cstddef>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace aes {
@@ -34,20 +35,12 @@ public:
         return reinterpret_cast<const char*>(&str);
     }
 
-    static void parse_block(Block& dest, Algorithm algorithm, const char* src) {
-        aes_box_parse_block(&dest, algorithm, src, ErrorDetailsThrowsInDestructor{});
+    static void parse_block(Block& dest, Algorithm algorithm, std::string_view src) {
+        aes_box_parse_block(&dest, algorithm, src.data(), ErrorDetailsThrowsInDestructor{});
     }
 
-    static void parse_block(Block& dest, Algorithm algorithm, const std::string& src) {
-        parse_block(dest, algorithm, src.c_str());
-    }
-
-    static void parse_key(Key& dest, Algorithm algorithm, const char* src) {
-        aes_box_parse_key(&dest, algorithm, src, ErrorDetailsThrowsInDestructor{});
-    }
-
-    static void parse_key(Key& dest, Algorithm algorithm, const std::string& src) {
-        parse_key(dest, algorithm, src.c_str());
+    static void parse_key(Key& dest, Algorithm algorithm, std::string_view src) {
+        aes_box_parse_key(&dest, algorithm, src.data(), ErrorDetailsThrowsInDestructor{});
     }
 
     Box(Algorithm algorithm, const Key& key) : algorithm{algorithm}, mode{AES_ECB} {
@@ -115,20 +108,12 @@ public:
         return format_key(src, get_algorithm());
     }
 
-    void parse_block(Block& dest, const char* src) {
+    void parse_block(Block& dest, std::string_view src) {
         parse_block(dest, get_algorithm(), src);
     }
 
-    void parse_block(Block& dest, const std::string& src) {
-        parse_block(dest, src.c_str());
-    }
-
-    void parse_key(Key& dest, const char* src) {
+    void parse_key(Key& dest, std::string_view src) {
         parse_key(dest, get_algorithm(), src);
-    }
-
-    void parse_key(Key& dest, const std::string& src) {
-        parse_key(dest, src.c_str());
     }
 
     Algorithm get_algorithm() const {

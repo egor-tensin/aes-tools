@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
+#include <format>
 #include <functional>
 #include <ostream>
 #include <stdexcept>
@@ -60,10 +61,10 @@ private:
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Error& error) {
-    os << "AES error: " << error.what() << '\n';
+    os << std::format("AES error: {}\n", error.what());
     os << "Call stack:\n";
     error.for_each_addr([&os](const void* addr, const std::string& name) {
-        os << '\t' << addr << ' ' << name << '\n';
+        os << std::format("\t{} {}\n", addr, name);
     });
     return os;
 }

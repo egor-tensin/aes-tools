@@ -1,4 +1,4 @@
-find_package(Boost CONFIG REQUIRED COMPONENTS filesystem program_options)
+find_package(Boost CONFIG REQUIRED COMPONENTS program_options)
 
 function(add_util name src)
     set(target "util_${name}")
@@ -6,7 +6,6 @@ function(add_util name src)
     target_link_libraries("${target}" PRIVATE
         aesxx
         Boost::disable_autolinking
-        Boost::filesystem
         Boost::program_options)
     set_target_properties("${target}" PROPERTIES OUTPUT_NAME "${name}")
     install(TARGETS "${target}" RUNTIME DESTINATION bin)
