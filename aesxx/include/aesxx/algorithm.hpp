@@ -7,7 +7,8 @@
 
 #include <aes/all.h>
 
-namespace aes
-{
-    typedef AES_Algorithm Algorithm;
+namespace aes {
+
+typedef AES_Algorithm Algorithm;
+
 }

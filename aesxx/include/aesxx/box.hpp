@@ -12,196 +12,140 @@
 #include <aes/all.h>
 
 #include <cstddef>
-
 #include <string>
 #include <vector>
 
-namespace aes
-{
-    class Box
-    {
-    public:
-        typedef AES_BoxBlock Block;
-        typedef AES_BoxKey Key;
+namespace aes {
 
-        static std::string format_key(const Key& src, Algorithm algorithm)
-        {
-            AES_BoxKeyString str;
-            aes_box_format_key(
-                &str, algorithm, &src, ErrorDetailsThrowsInDestructor{});
-            return reinterpret_cast<const char*>(&str);
-        }
+class Box {
+public:
+    typedef AES_BoxBlock Block;
+    typedef AES_BoxKey Key;
 
-        static std::string format_block(const Block& src, Algorithm algorithm)
-        {
-            AES_BoxBlockString str;
-            aes_box_format_block(
-                &str, algorithm, &src, ErrorDetailsThrowsInDestructor{});
-            return reinterpret_cast<const char*>(&str);
-        }
+    static std::string format_key(const Key& src, Algorithm algorithm) {
+        AES_BoxKeyString str;
+        aes_box_format_key(&str, algorithm, &src, ErrorDetailsThrowsInDestructor{});
+        return reinterpret_cast<const char*>(&str);
+    }
 
-        static void parse_block(
-            Block& dest,
-            Algorithm algorithm,
-            const char* src)
-        {
-            aes_box_parse_block(&dest, algorithm, src,
-                ErrorDetailsThrowsInDestructor{});
-        }
+    static std::string format_block(const Block& src, Algorithm algorithm) {
+        AES_BoxBlockString str;
+        aes_box_format_block(&str, algorithm, &src, ErrorDetailsThrowsInDestructor{});
+        return reinterpret_cast<const char*>(&str);
+    }
 
-        static void parse_block(
-            Block& dest,
-            Algorithm algorithm,
-            const std::string& src)
-        {
-            parse_block(dest, algorithm, src.c_str());
-        }
+    static void parse_block(Block& dest, Algorithm algorithm, const char* src) {
+        aes_box_parse_block(&dest, algorithm, src, ErrorDetailsThrowsInDestructor{});
+    }
 
-        static void parse_key(
-            Key& dest,
-            Algorithm algorithm,
-            const char* src)
-        {
-            aes_box_parse_key(&dest, algorithm, src,
-                ErrorDetailsThrowsInDestructor{});
-        }
+    static void parse_block(Block& dest, Algorithm algorithm, const std::string& src) {
+        parse_block(dest, algorithm, src.c_str());
+    }
 
-        static void parse_key(
-            Key& dest,
-            Algorithm algorithm,
-            const std::string& src)
-        {
-            parse_key(dest, algorithm, src.c_str());
-        }
+    static void parse_key(Key& dest, Algorithm algorithm, const char* src) {
+        aes_box_parse_key(&dest, algorithm, src, ErrorDetailsThrowsInDestructor{});
+    }
 
-        Box(Algorithm algorithm, const Key& key)
-            : algorithm{algorithm}
-            , mode{AES_ECB}
-        {
-            aes_box_init(&impl, algorithm, &key, mode, nullptr,
-                ErrorDetailsThrowsInDestructor{});
-        }
+    static void parse_key(Key& dest, Algorithm algorithm, const std::string& src) {
+        parse_key(dest, algorithm, src.c_str());
+    }
 
-        Box(Algorithm algorithm, const Key& key, Mode mode, const Block& iv)
-            : algorithm{algorithm}
-            , mode{mode}
-        {
-            aes_box_init(&impl, algorithm, &key, mode, &iv,
-                ErrorDetailsThrowsInDestructor{});
-        }
+    Box(Algorithm algorithm, const Key& key) : algorithm{algorithm}, mode{AES_ECB} {
+        aes_box_init(&impl, algorithm, &key, mode, nullptr, ErrorDetailsThrowsInDestructor{});
+    }
 
-        void encrypt_block(const Block& plaintext, Block& ciphertext)
-        {
-            aes_box_encrypt_block(
-                &impl, &plaintext, &ciphertext,
-                ErrorDetailsThrowsInDestructor{});
-        }
+    Box(Algorithm algorithm, const Key& key, Mode mode, const Block& iv)
+        : algorithm{algorithm}, mode{mode} {
+        aes_box_init(&impl, algorithm, &key, mode, &iv, ErrorDetailsThrowsInDestructor{});
+    }
 
-        void decrypt_block(const Block& ciphertext, Block& plaintext)
-        {
-            aes_box_decrypt_block(
-                &impl, &ciphertext, &plaintext,
-                ErrorDetailsThrowsInDestructor{});
-        }
+    void encrypt_block(const Block& plaintext, Block& ciphertext) {
+        aes_box_encrypt_block(&impl, &plaintext, &ciphertext, ErrorDetailsThrowsInDestructor{});
+    }
 
-        std::vector<unsigned char> encrypt_buffer(
-            const void* src_buf,
-            std::size_t src_size)
-        {
-            std::size_t dest_size = 0;
+    void decrypt_block(const Block& ciphertext, Block& plaintext) {
+        aes_box_decrypt_block(&impl, &ciphertext, &plaintext, ErrorDetailsThrowsInDestructor{});
+    }
 
-            aes_box_encrypt_buffer(
-                &impl,
-                src_buf,
-                src_size,
-                nullptr,
-                &dest_size,
-                aes::ErrorDetailsThrowsInDestructor{});
+    std::vector<unsigned char> encrypt_buffer(const void* src_buf, std::size_t src_size) {
+        std::size_t dest_size = 0;
 
-            std::vector<unsigned char> dest_buf;
-            dest_buf.resize(dest_size);
+        aes_box_encrypt_buffer(
+            &impl, src_buf, src_size, nullptr, &dest_size, aes::ErrorDetailsThrowsInDestructor{});
 
-            aes_box_encrypt_buffer(
-                &impl,
-                src_buf,
-                src_size,
-                dest_buf.data(),
-                &dest_size,
-                aes::ErrorDetailsThrowsInDestructor{});
+        std::vector<unsigned char> dest_buf;
+        dest_buf.resize(dest_size);
 
-            dest_buf.resize(dest_size);
-            return dest_buf;
-        }
+        aes_box_encrypt_buffer(&impl,
+                               src_buf,
+                               src_size,
+                               dest_buf.data(),
+                               &dest_size,
+                               aes::ErrorDetailsThrowsInDestructor{});
 
-        std::vector<unsigned char> decrypt_buffer(
-            const void* src_buf,
-            std::size_t src_size)
-        {
-            std::size_t dest_size = 0;
+        dest_buf.resize(dest_size);
+        return dest_buf;
+    }
 
-            aes_box_decrypt_buffer(
-                &impl,
-                src_buf,
-                src_size,
-                nullptr,
-                &dest_size,
-                aes::ErrorDetailsThrowsInDestructor{});
+    std::vector<unsigned char> decrypt_buffer(const void* src_buf, std::size_t src_size) {
+        std::size_t dest_size = 0;
 
-            std::vector<unsigned char> dest_buf;
-            dest_buf.resize(dest_size);
+        aes_box_decrypt_buffer(
+            &impl, src_buf, src_size, nullptr, &dest_size, aes::ErrorDetailsThrowsInDestructor{});
 
-            aes_box_decrypt_buffer(
-                &impl,
-                src_buf,
-                src_size,
-                dest_buf.data(),
-                &dest_size,
-                aes::ErrorDetailsThrowsInDestructor{});
+        std::vector<unsigned char> dest_buf;
+        dest_buf.resize(dest_size);
 
-            dest_buf.resize(dest_size);
-            return dest_buf;
-        }
+        aes_box_decrypt_buffer(&impl,
+                               src_buf,
+                               src_size,
+                               dest_buf.data(),
+                               &dest_size,
+                               aes::ErrorDetailsThrowsInDestructor{});
 
-        std::string format_block(const Block& src)
-        {
-            return format_block(src, get_algorithm());
-        }
+        dest_buf.resize(dest_size);
+        return dest_buf;
+    }
 
-        std::string format_key(const Key& src)
-        {
-            return format_key(src, get_algorithm());
-        }
+    std::string format_block(const Block& src) {
+        return format_block(src, get_algorithm());
+    }
 
-        void parse_block(Block& dest, const char* src)
-        {
-            parse_block(dest, get_algorithm(), src);
-        }
+    std::string format_key(const Key& src) {
+        return format_key(src, get_algorithm());
+    }
 
-        void parse_block(Block& dest, const std::string& src)
-        {
-            parse_block(dest, src.c_str());
-        }
+    void parse_block(Block& dest, const char* src) {
+        parse_block(dest, get_algorithm(), src);
+    }
 
-        void parse_key(Key& dest, const char* src)
-        {
-            parse_key(dest, get_algorithm(), src);
-        }
+    void parse_block(Block& dest, const std::string& src) {
+        parse_block(dest, src.c_str());
+    }
 
-        void parse_key(Key& dest, const std::string& src)
-        {
-            parse_key(dest, src.c_str());
-        }
+    void parse_key(Key& dest, const char* src) {
+        parse_key(dest, get_algorithm(), src);
+    }
 
-        Algorithm get_algorithm() const { return algorithm; }
+    void parse_key(Key& dest, const std::string& src) {
+        parse_key(dest, src.c_str());
+    }
 
-        Mode get_mode() const { return mode; }
+    Algorithm get_algorithm() const {
+        return algorithm;
+    }
 
-    private:
-        Key key;
+    Mode get_mode() const {
+        return mode;
+    }
 
-        Algorithm algorithm;
-        Mode mode;
+private:
+    Key key;
 
-        AES_Box impl;
-    };
-}
+    Algorithm algorithm;
+    Mode mode;
+
+    AES_Box impl;
+};
+
+} // namespace aes

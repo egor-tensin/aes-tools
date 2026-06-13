@@ -9,19 +9,13 @@
 #include <utility>
 #include <vector>
 
-class Input
-{
+class Input {
 public:
     Input(const std::string& key, const std::string& iv, std::vector<std::string>&& blocks)
-        : key{key}
-        , iv{iv}
-        , blocks{std::move(blocks)}
-    { }
+        : key{key}, iv{iv}, blocks{std::move(blocks)} {}
 
     Input(const std::string& key, std::vector<std::string>&& blocks)
-        : key{key}
-        , blocks{std::move(blocks)}
-    { }
+        : key{key}, blocks{std::move(blocks)} {}
 
     const std::string key;
     const std::string iv;

@@ -1,0 +1,32 @@
+---
+Language: Cpp
+BasedOnStyle: Chromium
+
+IndentWidth: 4
+
+AccessModifierOffset: -4
+AlignConsecutiveMacros: AcrossComments
+AllowShortFunctionsOnASingleLine: Empty
+BinPackArguments: false
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
+BreakStringLiterals: false
+ColumnLimit: 100
+IncludeBlocks: Regroup
+SpacesBeforeTrailingComments: 1
+WrapNamespaceBodyWithEmptyLines: Always
+
+IncludeCategories:
+  - Regex: '^".+'
+    Priority: 1
+  - Regex: '^<aes\/|<aesxx\/'
+    Priority: 2
+  - Regex: '^<boost\/'
+    Priority: 3
+  - Regex: '^<windows\.h>'
+    Priority: 4
+  - Regex: '^<.*\.h>$'
+    Priority: 5
+  - Regex: '.*'
+    Priority: 6
+...

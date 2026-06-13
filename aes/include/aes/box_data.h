@@ -12,117 +12,83 @@
 #include <stdlib.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-typedef union
-{
+typedef union {
     AES_AES128_Key aes128_key;
     AES_AES192_Key aes192_key;
     AES_AES256_Key aes256_key;
-}
-AES_BoxKey;
+} AES_BoxKey;
 
-typedef union
-{
+typedef union {
     AES_AES128_RoundKeys aes128_encryption_keys;
     AES_AES192_RoundKeys aes192_encryption_keys;
     AES_AES256_RoundKeys aes256_encryption_keys;
-}
-AES_BoxEncryptionRoundKeys;
+} AES_BoxEncryptionRoundKeys;
 
-typedef union
-{
+typedef union {
     AES_AES128_RoundKeys aes128_decryption_keys;
     AES_AES192_RoundKeys aes192_decryption_keys;
     AES_AES256_RoundKeys aes256_decryption_keys;
-}
-AES_BoxDecryptionRoundKeys;
+} AES_BoxDecryptionRoundKeys;
 
-typedef union
-{
+typedef union {
     AES_AES128_KeyString aes128;
     AES_AES192_KeyString aes192;
     AES_AES256_KeyString aes256;
-}
-AES_BoxKeyString;
+} AES_BoxKeyString;
 
-typedef union
-{
+typedef union {
     AES_AES_Block aes_block;
-}
-AES_BoxBlock;
+} AES_BoxBlock;
 
-typedef union
-{
+typedef union {
     AES_AES_BlockString aes;
-}
-AES_BoxBlockString;
+} AES_BoxBlockString;
 
-typedef AES_StatusCode (*AES_BoxCalculateRoundKeys)(
-    const AES_BoxKey* params,
-    AES_BoxEncryptionRoundKeys*,
-    AES_BoxDecryptionRoundKeys*,
-    AES_ErrorDetails* err_details);
+typedef AES_StatusCode (*AES_BoxCalculateRoundKeys)(const AES_BoxKey* params,
+                                                    AES_BoxEncryptionRoundKeys*,
+                                                    AES_BoxDecryptionRoundKeys*,
+                                                    AES_ErrorDetails* err_details);
 
-typedef AES_StatusCode (*AES_BoxParseBlock)(
-    AES_BoxBlock* dest,
-    const char* src,
-    AES_ErrorDetails* err_details);
+typedef AES_StatusCode (*AES_BoxParseBlock)(AES_BoxBlock* dest,
+                                            const char* src,
+                                            AES_ErrorDetails* err_details);
 
-typedef AES_StatusCode (*AES_BoxParseKey)(
-    AES_BoxKey* dest,
-    const char* src,
-    AES_ErrorDetails* err_details);
+typedef AES_StatusCode (*AES_BoxParseKey)(AES_BoxKey* dest,
+                                          const char* src,
+                                          AES_ErrorDetails* err_details);
 
-typedef AES_StatusCode (*AES_BoxFormatBlock)(
-    AES_BoxBlockString* dest,
-    const AES_BoxBlock* src,
-    AES_ErrorDetails* err_details);
+typedef AES_StatusCode (*AES_BoxFormatBlock)(AES_BoxBlockString* dest,
+                                             const AES_BoxBlock* src,
+                                             AES_ErrorDetails* err_details);
 
-typedef AES_StatusCode (*AES_BoxFormatKey)(
-    AES_BoxKeyString* dest,
-    const AES_BoxKey* src,
-    AES_ErrorDetails* err_details);
+typedef AES_StatusCode (*AES_BoxFormatKey)(AES_BoxKeyString* dest,
+                                           const AES_BoxKey* src,
+                                           AES_ErrorDetails* err_details);
 
-typedef AES_StatusCode (*AES_BoxEncryptBlock)(
-    const AES_BoxBlock* plaintext,
-    const AES_BoxEncryptionRoundKeys* params,
-    AES_BoxBlock* ciphertext,
-    AES_ErrorDetails* err_details);
+typedef AES_StatusCode (*AES_BoxEncryptBlock)(const AES_BoxBlock* plaintext,
+                                              const AES_BoxEncryptionRoundKeys* params,
+                                              AES_BoxBlock* ciphertext,
+                                              AES_ErrorDetails* err_details);
 
-typedef AES_StatusCode (*AES_BoxDecryptBlock)(
-    const AES_BoxBlock* ciphertext,
-    const AES_BoxDecryptionRoundKeys* params,
-    AES_BoxBlock* plaintext,
-    AES_ErrorDetails* err_details);
+typedef AES_StatusCode (*AES_BoxDecryptBlock)(const AES_BoxBlock* ciphertext,
+                                              const AES_BoxDecryptionRoundKeys* params,
+                                              AES_BoxBlock* plaintext,
+                                              AES_ErrorDetails* err_details);
 
-typedef AES_StatusCode (*AES_BoxXorBlock)(
-    AES_BoxBlock*,
-    const AES_BoxBlock*,
-    AES_ErrorDetails*);
+typedef AES_StatusCode (*AES_BoxXorBlock)(AES_BoxBlock*, const AES_BoxBlock*, AES_ErrorDetails*);
 
-typedef AES_StatusCode (*AES_BoxIncBlock)(
-    AES_BoxBlock*,
-    AES_ErrorDetails*);
+typedef AES_StatusCode (*AES_BoxIncBlock)(AES_BoxBlock*, AES_ErrorDetails*);
 
-typedef AES_StatusCode (*AES_BoxGetBlockSize)(
-    size_t*,
-    AES_ErrorDetails*);
+typedef AES_StatusCode (*AES_BoxGetBlockSize)(size_t*, AES_ErrorDetails*);
 
-typedef AES_StatusCode (*AES_BoxStoreBlock)(
-    void*,
-    const AES_BoxBlock*,
-    AES_ErrorDetails*);
+typedef AES_StatusCode (*AES_BoxStoreBlock)(void*, const AES_BoxBlock*, AES_ErrorDetails*);
 
-typedef AES_StatusCode (*AES_BoxLoadBlock)(
-    AES_BoxBlock*,
-    const void*,
-    AES_ErrorDetails*);
+typedef AES_StatusCode (*AES_BoxLoadBlock)(AES_BoxBlock*, const void*, AES_ErrorDetails*);
 
-typedef struct
-{
+typedef struct {
     AES_BoxCalculateRoundKeys calc_round_keys;
     AES_BoxParseBlock parse_block;
     AES_BoxParseKey parse_key;
@@ -135,18 +101,15 @@ typedef struct
     AES_BoxGetBlockSize get_block_size;
     AES_BoxStoreBlock store_block;
     AES_BoxLoadBlock load_block;
-}
-AES_BoxAlgorithmInterface;
+} AES_BoxAlgorithmInterface;
 
-typedef struct
-{
+typedef struct {
     const AES_BoxAlgorithmInterface* algorithm;
     AES_BoxEncryptionRoundKeys encryption_keys;
     AES_BoxDecryptionRoundKeys decryption_keys;
     AES_Mode mode;
     AES_BoxBlock iv;
-}
-AES_Box;
+} AES_Box;
 
 #ifdef __cplusplus
 }

@@ -6,17 +6,14 @@
 #pragma once
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-typedef enum
-{
+typedef enum {
     AES_AES128,
     AES_AES192,
     AES_AES256,
-}
-AES_Algorithm;
+} AES_Algorithm;
 
 #ifdef __cplusplus
 }

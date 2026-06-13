@@ -8,8 +8,7 @@
 #include "box_data.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 extern AES_BoxAlgorithmInterface aes_box_algorithm_aes128;

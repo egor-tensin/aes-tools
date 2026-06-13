@@ -15,75 +15,58 @@
 #include <string>
 #include <vector>
 
-namespace
-{
-    void decrypt_file(
-        aes::Box& box,
-        const std::string& ciphertext_path,
-        const std::string& plaintext_path)
-    {
-        const auto ciphertext_buf = file::read_file(ciphertext_path);
-        const auto plaintext_buf = box.decrypt_buffer(
-            ciphertext_buf.data(),
-            ciphertext_buf.size());
-        file::write_file(plaintext_path, plaintext_buf);
-    }
+namespace {
 
-    void decrypt_file(const FileSettings& settings)
-    {
-        const auto& algorithm = settings.algorithm;
-        const auto& mode = settings.mode;
+void decrypt_file(aes::Box& box,
+                  const std::string& ciphertext_path,
+                  const std::string& plaintext_path) {
+    const auto ciphertext_buf = file::read_file(ciphertext_path);
+    const auto plaintext_buf = box.decrypt_buffer(ciphertext_buf.data(), ciphertext_buf.size());
+    file::write_file(plaintext_path, plaintext_buf);
+}
 
-        aes::Box::Key key;
-        aes::Box::parse_key(key, algorithm, settings.key);
+void decrypt_file(const FileSettings& settings) {
+    const auto& algorithm = settings.algorithm;
+    const auto& mode = settings.mode;
 
-        if (aes::mode_requires_init_vector(mode))
-        {
-            aes::Box::Block iv;
-            aes::Box::parse_block(iv, algorithm, settings.iv);
+    aes::Box::Key key;
+    aes::Box::parse_key(key, algorithm, settings.key);
 
-            aes::Box box{algorithm, key, mode, iv};
-            decrypt_file(box, settings.input_path, settings.output_path);
-        }
-        else
-        {
-            aes::Box box{algorithm, key};
-            decrypt_file(box, settings.input_path, settings.output_path);
-        }
+    if (aes::mode_requires_init_vector(mode)) {
+        aes::Box::Block iv;
+        aes::Box::parse_block(iv, algorithm, settings.iv);
+
+        aes::Box box{algorithm, key, mode, iv};
+        decrypt_file(box, settings.input_path, settings.output_path);
+    } else {
+        aes::Box box{algorithm, key};
+        decrypt_file(box, settings.input_path, settings.output_path);
     }
 }
 
-int main(int argc, char** argv)
-{
-    try
-    {
+} // namespace
+
+int main(int argc, char** argv) {
+    try {
         FileSettings settings{argv[0]};
 
-        try
-        {
+        try {
             settings.parse(argc, argv);
-        }
-        catch (const boost::program_options::error& e)
-        {
+        } catch (const boost::program_options::error& e) {
             settings.usage_error(e);
             return 1;
         }
 
-        if (settings.exit_with_usage)
-        {
+        if (settings.exit_with_usage) {
             settings.usage();
             return 0;
         }
 
         decrypt_file(settings);
-    }
-    catch (const aes::Error& e)
-    {
+    } catch (const aes::Error& e) {
         std::cerr << e;
         return 1;
-    }
-    catch (const std::exception& e)
-    {
+    } catch (const std::exception& e) {
         std::cerr << e.what() << "\n";
         return 1;
     }

@@ -14,13 +14,11 @@
 #include <string>
 #include <unordered_map>
 
-inline std::istream& operator>>(std::istream& is, aes::Mode& dest)
-{
+inline std::istream& operator>>(std::istream& is, aes::Mode& dest) {
     std::string src;
     is >> src;
 
-    static const std::unordered_map<std::string, aes::Mode> lookup_table =
-    {
+    static const std::unordered_map<std::string, aes::Mode> lookup_table = {
         {"ecb", AES_ECB},
         {"cbc", AES_CBC},
         {"cfb", AES_CFB},
@@ -37,13 +35,11 @@ inline std::istream& operator>>(std::istream& is, aes::Mode& dest)
     return is;
 }
 
-inline std::istream& operator>>(std::istream& is, aes::Algorithm& dest)
-{
+inline std::istream& operator>>(std::istream& is, aes::Algorithm& dest) {
     std::string src;
     is >> src;
 
-    static const std::unordered_map<std::string, aes::Algorithm> lookup_table =
-    {
+    static const std::unordered_map<std::string, aes::Algorithm> lookup_table = {
         {"aes128", AES_AES128},
         {"aes192", AES_AES192},
         {"aes256", AES_AES256},
