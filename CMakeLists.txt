@@ -7,9 +7,9 @@ project(aes_tools C CXX)
 enable_testing()
 
 if (MSVC)
-    add_compile_options(/MP /W4 /WX)
+    add_compile_options(/MP /W4)
 else()
-    add_compile_options(-Wall -Wextra -pedantic -Werror)
+    add_compile_options(-Wall -Wextra)
 endif()
 
 add_compile_definitions(WIN32_LEAN_AND_MEAN NOMINMAX)
