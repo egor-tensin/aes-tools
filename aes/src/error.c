@@ -43,7 +43,8 @@ static int c99_snprintf(char* dest, size_t dest_size, const char* fmt, ...) {
 #endif
 
 static void aes_fill_string(char* dest, size_t dest_size, const char* src) {
-    strncpy(dest, src, dest_size);
+    assert(dest_size != 0);
+    strncpy(dest, src, dest_size - 1);
     dest[dest_size - 1] = '\0';
 }
 

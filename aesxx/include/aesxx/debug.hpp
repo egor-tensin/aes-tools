@@ -9,7 +9,6 @@
 #include <windows.h>
 
 #include <dbghelp.h>
-#pragma comment(lib, "dbghelp.lib")
 #endif
 
 #include <cstddef>
