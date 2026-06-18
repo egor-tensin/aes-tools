@@ -70,30 +70,16 @@ void dump_wrapper(const aes::DecryptWrapper<algorithm, mode>& wrapper) {
     dump_decryption_keys<algorithm>(wrapper.decryption_keys);
 }
 
-template <
-    aes::Algorithm algorithm,
-    aes::Mode mode,
-    typename std::enable_if<aes::ModeRequiresInitVector<mode>::value>::type* = nullptr>
+template <aes::Algorithm algorithm, aes::Mode mode>
 void dump_next_iv(const aes::EncryptWrapper<algorithm, mode>& wrapper) {
-    dump_block<algorithm>("Next initialization vector", wrapper.iv);
+    if constexpr (aes::mode_requires_init_vector(mode)) {
+        dump_block<algorithm>("Next initialization vector", wrapper.iv);
+    }
 }
 
-template <
-    aes::Algorithm algorithm,
-    aes::Mode mode,
-    typename std::enable_if<!aes::ModeRequiresInitVector<mode>::value>::type* = nullptr>
-void dump_next_iv(const aes::EncryptWrapper<algorithm, mode>&) {}
-
-template <
-    aes::Algorithm algorithm,
-    aes::Mode mode,
-    typename std::enable_if<aes::ModeRequiresInitVector<mode>::value>::type* = nullptr>
+template <aes::Algorithm algorithm, aes::Mode mode>
 void dump_next_iv(const aes::DecryptWrapper<algorithm, mode>& wrapper) {
-    dump_block<algorithm>("Next initialization vector", wrapper.iv);
+    if constexpr (aes::mode_requires_init_vector(mode)) {
+        dump_block<algorithm>("Next initialization vector", wrapper.iv);
+    }
 }
-
-template <
-    aes::Algorithm algorithm,
-    aes::Mode mode,
-    typename std::enable_if<!aes::ModeRequiresInitVector<mode>::value>::type* = nullptr>
-void dump_next_iv(const aes::DecryptWrapper<algorithm, mode>&) {}

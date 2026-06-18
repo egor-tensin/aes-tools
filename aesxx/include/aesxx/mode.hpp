@@ -13,26 +13,11 @@ namespace aes {
 
 typedef AES_Mode Mode;
 
-template <Mode mode>
-struct ModeRequiresInitVector : public std::true_type {};
-
-template <>
-struct ModeRequiresInitVector<AES_ECB> : public std::false_type {};
-
-template <Mode mode>
-struct ModeUsesEncryptionKeysOnly : public std::true_type {};
-
-inline bool mode_requires_init_vector(Mode mode) {
+inline constexpr bool mode_requires_init_vector(Mode mode) {
     return mode != AES_ECB;
 }
 
-template <>
-struct ModeUsesEncryptionKeysOnly<AES_ECB> : public std::false_type {};
-
-template <>
-struct ModeUsesEncryptionKeysOnly<AES_CBC> : public std::false_type {};
-
-inline bool mode_uses_encryption_keys_only(Mode mode) {
+inline constexpr bool mode_uses_encryption_keys_only(Mode mode) {
     return mode != AES_ECB && mode != AES_CBC;
 }
 
@@ -41,6 +26,7 @@ inline bool mode_uses_encryption_keys_only(Mode mode) {
     inline void encrypt_block<AES_##prefix, AES_ECB>(                               \
         const typename Types<AES_##prefix>::Block& plaintext,                       \
         const typename Types<AES_##prefix>::RoundKeys& encryption_keys,             \
+        typename Types<AES_##prefix>::Block&,                                       \
         typename Types<AES_##prefix>::Block& ciphertext                             \
     ) {                                                                             \
         ciphertext = aes_##prefix##_encrypt_block_ECB(plaintext, &encryption_keys); \
@@ -51,6 +37,7 @@ inline bool mode_uses_encryption_keys_only(Mode mode) {
     inline void decrypt_block<AES_##prefix, AES_ECB>(                               \
         const typename Types<AES_##prefix>::Block& ciphertext,                      \
         const typename Types<AES_##prefix>::RoundKeys& decryption_keys,             \
+        typename Types<AES_##prefix>::Block&,                                       \
         typename Types<AES_##prefix>::Block& plaintext                              \
     ) {                                                                             \
         plaintext = aes_##prefix##_decrypt_block_ECB(ciphertext, &decryption_keys); \

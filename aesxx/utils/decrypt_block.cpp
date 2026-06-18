@@ -23,7 +23,7 @@ template <aes::Algorithm algorithm, aes::Mode mode>
 void decrypt_with_mode(const Input& input, bool verbose = false) {
     typename aes::Types<algorithm>::Block iv;
 
-    if (aes::ModeRequiresInitVector<mode>()) {
+    if constexpr (aes::mode_requires_init_vector(mode)) {
         aes::from_string<algorithm>(iv, input.iv);
         if (verbose)
             dump_iv<algorithm>(iv);
