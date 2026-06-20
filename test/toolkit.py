@@ -22,7 +22,7 @@ class Algorithm(Enum):
         except ValueError:
             return None
 
-    AES128, AES192, AES256 = 'aes128', 'aes192', 'aes256'
+    AES128, AES192, AES256 = "aes128", "aes192", "aes256"
 
     def __str__(self):
         return self.value
@@ -32,7 +32,7 @@ class Mode(Enum):
     @staticmethod
     def parse(s):
         s = s.lower()
-        if '{}128'.format(Mode.CFB) == s:
+        if "{}128".format(Mode.CFB) == s:
             return Mode.CFB
         return Mode(s)
 
@@ -43,7 +43,7 @@ class Mode(Enum):
         except ValueError:
             return None
 
-    ECB, CBC, CFB, OFB, CTR = 'ecb', 'cbc', 'cfb', 'ofb', 'ctr'
+    ECB, CBC, CFB, OFB, CTR = "ecb", "cbc", "cfb", "ofb", "ctr"
 
     def requires_init_vector(self):
         return self != Mode.ECB
@@ -70,30 +70,30 @@ class Tools:
     def __init__(self, search_dirs, use_sde=False):
         if search_dirs:
             if isinstance(search_dirs, str):
-                os.environ['PATH'] += os.pathsep + search_dirs
+                os.environ["PATH"] += os.pathsep + search_dirs
             elif isinstance(search_dirs, Iterable):
-                os.environ['PATH'] += os.pathsep + os.pathsep.join(search_dirs)
+                os.environ["PATH"] += os.pathsep + os.pathsep.join(search_dirs)
             else:
-                os.environ['PATH'] += os.pathsep + str(search_dirs)
+                os.environ["PATH"] += os.pathsep + str(search_dirs)
         self._use_sde = use_sde
 
-    _ENCRYPT_BLOCK = 'encrypt_block'
-    _DECRYPT_BLOCK = 'decrypt_block'
-    _ENCRYPT_FILE = 'encrypt_file'
-    _DECRYPT_FILE = 'decrypt_file'
+    _ENCRYPT_BLOCK = "encrypt_block"
+    _DECRYPT_BLOCK = "decrypt_block"
+    _ENCRYPT_FILE = "encrypt_file"
+    _DECRYPT_FILE = "decrypt_file"
 
     def run(self, tool_path, args):
-        cmd_list = ['sde', '--', tool_path] if self._use_sde else [tool_path]
+        cmd_list = ["sde", "--", tool_path] if self._use_sde else [tool_path]
         cmd_list.extend(args)
-        logging.debug('Trying to execute: %s', subprocess.list2cmdline(cmd_list))
+        logging.debug("Trying to execute: %s", subprocess.list2cmdline(cmd_list))
         try:
             output = subprocess.check_output(
                 cmd_list, universal_newlines=True, stderr=subprocess.STDOUT
             )
         except subprocess.CalledProcessError as e:
-            logging.error('Output:\n%s', e.output)
+            logging.error("Output:\n%s", e.output)
             raise
-        logging.debug('Output:\n%s', output)
+        logging.debug("Output:\n%s", output)
         return output.split()
 
     @staticmethod
@@ -103,20 +103,20 @@ class Tools:
             head = next(inputs, None)
             if head is None:
                 break
-            args.append('--')
+            args.append("--")
             args.extend(head.to_args())
         return args
 
     @staticmethod
     def _block_settings_to_args(algorithm, mode, use_boxes=False):
         args = [
-            '--algorithm',
+            "--algorithm",
             str(algorithm),
-            '--mode',
+            "--mode",
             str(mode),
         ]
         if use_boxes:
-            args.append('--use-boxes')
+            args.append("--use-boxes")
         return args
 
     @staticmethod
@@ -140,19 +140,19 @@ class Tools:
     def _build_file_args(algorithm, mode, key, input_path, output_path, iv=None):
 
         args = [
-            '--algorithm',
+            "--algorithm",
             str(algorithm),
-            '--mode',
+            "--mode",
             str(mode),
-            '--key',
+            "--key",
             key,
-            '--input',
+            "--input",
             input_path,
-            '--output',
+            "--output",
             output_path,
         ]
         if iv is not None:
-            args.extend(('--iv', iv))
+            args.extend(("--iv", iv))
         return args
 
     def run_encrypt_file(self, algorithm, mode, key, input_path, output_path, iv=None):
