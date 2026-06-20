@@ -8,7 +8,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     name: Linting
-    if: github.ref == 'refs/heads/master'
+    continue-on-error: "${{ github.ref != 'refs/heads/master' }}"
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -59,9 +59,6 @@ jobs:
       CONFIGURATION: '${{ matrix.configuration }}'
       BOOST_VERSION: '${{ matrix.boost-version }}'
       CMAKE_FLAGS: '--cmake-arg=-DAES_TOOLS_ASM=${{ matrix.use_asm }}'
-    defaults:
-      run:
-        shell: pwsh
     steps:
       - name: Checkout
         uses: actions/checkout@v6
