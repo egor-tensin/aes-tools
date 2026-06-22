@@ -4,7 +4,6 @@
 // Distributed under the MIT License.
 
 #include "helpers/block_dumper.hpp"
-#include "helpers/block_input.hpp"
 #include "helpers/cmd_parser_block.hpp"
 
 #include <aesxx/all.hpp>
@@ -20,18 +19,18 @@
 namespace {
 
 template <aes::Algorithm algorithm, aes::Mode mode>
-void encrypt_with_mode(const Input& input, bool verbose = false) {
+void encrypt_with_mode(const BlockSettings::Input& input, bool verbose = false) {
     typename aes::Types<algorithm>::Block iv;
     aes::make_block(iv, 0, 0, 0, 0);
 
     if constexpr (aes::mode_requires_init_vector(mode)) {
-        aes::from_string<algorithm>(iv, input.iv);
+        aes::from_string<algorithm>(iv, input.get_iv());
         if (verbose)
             dump_iv<algorithm>(iv);
     }
 
     typename aes::Types<algorithm>::Key key;
-    aes::from_string<algorithm>(key, input.key);
+    aes::from_string<algorithm>(key, input.get_key());
     if (verbose)
         dump_key<algorithm>(key);
 
@@ -39,7 +38,7 @@ void encrypt_with_mode(const Input& input, bool verbose = false) {
     if (verbose)
         dump_wrapper<algorithm, mode>(encrypt);
 
-    for (const auto& input_block_string : input.blocks) {
+    for (const auto& input_block_string : input.get_blocks()) {
         typename aes::Types<algorithm>::Block plaintext, ciphertext;
         aes::from_string<algorithm>(plaintext, input_block_string);
 
@@ -56,7 +55,11 @@ void encrypt_with_mode(const Input& input, bool verbose = false) {
 }
 
 template <aes::Algorithm algorithm>
-void encrypt_with_algorithm(aes::Mode mode, const Input& input, bool verbose = false) {
+void encrypt_with_algorithm(
+    aes::Mode mode,
+    const BlockSettings::Input& input,
+    bool verbose = false
+) {
     switch (mode) {
         case AES_ECB:
             encrypt_with_mode<algorithm, AES_ECB>(input, verbose);
@@ -87,7 +90,7 @@ void encrypt_with_algorithm(aes::Mode mode, const Input& input, bool verbose = f
 void encrypt_using_cxx_api(
     aes::Algorithm algorithm,
     aes::Mode mode,
-    const Input& input,
+    const BlockSettings::Input& input,
     bool verbose = false
 ) {
     switch (algorithm) {
@@ -123,19 +126,23 @@ void encrypt_using_particular_box(
     }
 }
 
-void encrypt_using_boxes(aes::Algorithm algorithm, aes::Mode mode, const Input& input) {
+void encrypt_using_boxes(
+    aes::Algorithm algorithm,
+    aes::Mode mode,
+    const BlockSettings::Input& input
+) {
     aes::Box::Key key;
-    aes::Box::parse_key(key, algorithm, input.key);
+    aes::Box::parse_key(key, algorithm, input.get_key());
 
     if (aes::mode_requires_init_vector(mode)) {
         aes::Box::Block iv;
-        aes::Box::parse_block(iv, algorithm, input.iv);
+        aes::Box::parse_block(iv, algorithm, input.get_iv());
         aes::Box box{algorithm, key, mode, iv};
 
-        encrypt_using_particular_box(box, input.blocks);
+        encrypt_using_particular_box(box, input.get_blocks());
     } else {
         aes::Box box{algorithm, key};
-        encrypt_using_particular_box(box, input.blocks);
+        encrypt_using_particular_box(box, input.get_blocks());
     }
 }
 

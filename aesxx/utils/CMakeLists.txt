@@ -16,8 +16,7 @@ function(add_util name src)
 endfunction()
 
 set(block_util_headers
-    block_dumper.hpp
-    block_input.hpp
+    helpers/block_dumper.hpp
     helpers/cmd_parser.hpp
     helpers/cmd_paresr_block.hpp
     helpers/data_parsers.hpp

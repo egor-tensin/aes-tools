@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include "block_input.hpp"
 #include "cmd_parser.hpp"
 #include "data_parsers.hpp"
 
@@ -22,6 +21,32 @@
 
 class BlockSettings : public SettingsParser {
 public:
+    class Input {
+    public:
+        Input(std::string_view key, std::string_view iv, std::vector<std::string>&& blocks)
+            : key{key}, iv{iv}, blocks{std::move(blocks)} {}
+
+        Input(std::string key, std::vector<std::string>&& blocks)
+            : key{key}, blocks{std::move(blocks)} {}
+
+        std::string get_key() const {
+            return key;
+        }
+
+        std::string get_iv() const {
+            return iv;
+        }
+
+        std::vector<std::string> get_blocks() const {
+            return blocks;
+        }
+
+    private:
+        std::string key;
+        std::string iv;
+        std::vector<std::string> blocks;
+    };
+
     aes::Algorithm algorithm = AES_AES128;
     aes::Mode mode = AES_ECB;
 
