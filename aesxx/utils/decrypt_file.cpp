@@ -29,21 +29,21 @@ void decrypt_file(
 }
 
 void decrypt_file(const FileSettings& settings) {
-    const auto& algorithm = settings.algorithm;
-    const auto& mode = settings.mode;
+    const auto algorithm = settings.get_algorithm();
+    const auto mode = settings.get_mode();
 
     aes::Box::Key key;
-    aes::Box::parse_key(key, algorithm, settings.key);
+    aes::Box::parse_key(key, algorithm, settings.get_key());
 
     if (aes::mode_requires_init_vector(mode)) {
         aes::Box::Block iv;
-        aes::Box::parse_block(iv, algorithm, settings.iv);
+        aes::Box::parse_block(iv, algorithm, settings.get_iv());
 
         aes::Box box{algorithm, key, mode, iv};
-        decrypt_file(box, settings.input_path, settings.output_path);
+        decrypt_file(box, settings.get_input_path(), settings.get_output_path());
     } else {
         aes::Box box{algorithm, key};
-        decrypt_file(box, settings.input_path, settings.output_path);
+        decrypt_file(box, settings.get_input_path(), settings.get_output_path());
     }
 }
 
@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
             return 1;
         }
 
-        if (settings.exit_with_usage) {
+        if (settings.exit_with_usage()) {
             settings.usage();
             return 0;
         }

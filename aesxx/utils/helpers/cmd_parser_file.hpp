@@ -19,14 +19,6 @@
 
 class FileSettings : public SettingsParser {
 public:
-    aes::Algorithm algorithm = AES_AES128;
-    aes::Mode mode = AES_ECB;
-
-    std::string input_path;
-    std::string output_path;
-    std::string key;
-    std::string iv;
-
     explicit FileSettings(std::string_view argv0) : SettingsParser{argv0} {
         visible.add_options()(
             "algorithm,a",
@@ -79,4 +71,38 @@ public:
             };
         }
     }
+
+    aes::Algorithm get_algorithm() const {
+        return algorithm;
+    }
+
+    aes::Mode get_mode() const {
+        return mode;
+    }
+
+    std::string get_input_path() const {
+        return input_path;
+    }
+
+    std::string get_output_path() const {
+        return output_path;
+    }
+
+    std::string get_key() const {
+        return key;
+    }
+
+    std::string get_iv() const {
+        return iv;
+    }
+
+private:
+    aes::Algorithm algorithm;
+    aes::Mode mode;
+
+    std::string input_path;
+    std::string output_path;
+
+    std::string key;
+    std::string iv;
 };

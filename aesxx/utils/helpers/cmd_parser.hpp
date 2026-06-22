@@ -39,12 +39,14 @@ public:
             vm
         );
         if (vm.count("help"))
-            exit_with_usage = true;
+            _exit_with_usage = true;
         else
             boost::program_options::notify(vm);
     }
 
-    bool exit_with_usage = false;
+    bool exit_with_usage() const {
+        return _exit_with_usage;
+    }
 
     void usage() const {
         std::cout << *this;
@@ -73,4 +75,6 @@ private:
         os << parser.visible;
         return os;
     }
+
+    bool _exit_with_usage = false;
 };

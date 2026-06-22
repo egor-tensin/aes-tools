@@ -159,7 +159,7 @@ int main(int argc, char** argv) {
             return 1;
         }
 
-        if (settings.exit_with_usage) {
+        if (settings.exit_with_usage()) {
             settings.usage();
             return 0;
         }
