@@ -164,11 +164,13 @@ int main(int argc, char** argv) {
             return 0;
         }
 
-        for (const auto& input : settings.inputs) {
-            if (settings.use_boxes) {
-                encrypt_using_boxes(settings.algorithm, settings.mode, input);
+        for (const auto& input : settings.get_inputs()) {
+            if (settings.use_boxes()) {
+                encrypt_using_boxes(settings.get_algorithm(), settings.get_mode(), input);
             } else {
-                encrypt_using_cxx_api(settings.algorithm, settings.mode, input, settings.verbose);
+                encrypt_using_cxx_api(
+                    settings.get_algorithm(), settings.get_mode(), input, settings.verbose()
+                );
             }
         }
     } catch (const aes::Error& e) {

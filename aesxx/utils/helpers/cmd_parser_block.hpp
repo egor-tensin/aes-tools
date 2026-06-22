@@ -47,17 +47,9 @@ public:
         std::vector<std::string> blocks;
     };
 
-    aes::Algorithm algorithm = AES_AES128;
-    aes::Mode mode = AES_ECB;
-
-    bool use_boxes = false;
-    bool verbose = false;
-
-    std::vector<Input> inputs;
-
     explicit BlockSettings(std::string_view argv0) : SettingsParser{argv0} {
         visible.add_options()(
-            "verbose,v", boost::program_options::bool_switch(&verbose), "enable verbose output"
+            "verbose,v", boost::program_options::bool_switch(&_verbose), "enable verbose output"
         );
         visible.add_options()(
             "algorithm,a",
@@ -73,15 +65,9 @@ public:
         );
         visible.add_options()(
             "use-boxes,b",
-            boost::program_options::bool_switch(&use_boxes),
+            boost::program_options::bool_switch(&_use_boxes),
             "use the \"boxes\" interface"
         );
-        hidden.add_options()(
-            "args",
-            boost::program_options::value<std::vector<std::string>>(&args),
-            "shouldn't be visible"
-        );
-        positional.add("args", -1);
     }
 
     const char* get_short_description() const override {
@@ -90,12 +76,41 @@ public:
     }
 
     void parse(int argc, char* argv[]) override {
+        std::vector<std::string> args;
+        hidden.add_options()(
+            "args",
+            boost::program_options::value<std::vector<std::string>>(&args),
+            "shouldn't be visible"
+        );
+        positional.add("args", -1);
+
         SettingsParser::parse(argc, argv);
+
         parse_inputs(
             std::deque<std::string>{
                 std::make_move_iterator(args.begin()), std::make_move_iterator(args.end())
             }
         );
+    }
+
+    aes::Algorithm get_algorithm() const {
+        return algorithm;
+    }
+
+    aes::Mode get_mode() const {
+        return mode;
+    }
+
+    const std::vector<Input>& get_inputs() const {
+        return inputs;
+    }
+
+    bool use_boxes() const {
+        return _use_boxes;
+    }
+
+    bool verbose() const {
+        return _verbose;
     }
 
 private:
@@ -142,5 +157,10 @@ private:
         return blocks;
     }
 
-    std::vector<std::string> args;
+    aes::Algorithm algorithm;
+    aes::Mode mode;
+    std::vector<Input> inputs;
+
+    bool _use_boxes = false;
+    bool _verbose = false;
 };
