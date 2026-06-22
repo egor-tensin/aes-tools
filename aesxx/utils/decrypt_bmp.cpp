@@ -25,9 +25,9 @@ void decrypt_bmp(
     const std::string& ciphertext_path,
     const std::string& plaintext_path
 ) {
-    bmp::BmpFile bmp{file::read_file(ciphertext_path)};
+    BmpFile bmp{file::read(ciphertext_path)};
     bmp.replace_pixels(box.decrypt_buffer(bmp.get_pixels(), bmp.get_pixels_size()));
-    file::write_file(plaintext_path, bmp.get_buffer(), bmp.get_size());
+    file::write(plaintext_path, bmp.get_buffer(), bmp.get_size());
 }
 
 void decrypt_bmp(const FileSettings& settings) {

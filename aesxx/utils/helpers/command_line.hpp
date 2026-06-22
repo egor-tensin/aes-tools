@@ -15,8 +15,6 @@
 #include <string>
 #include <string_view>
 
-namespace command_line {
-
 class SettingsParser {
 public:
     explicit SettingsParser(std::string_view argv0) : prog_name{extract_filename(argv0)} {
@@ -76,5 +74,3 @@ private:
         return os;
     }
 };
-
-} // namespace command_line

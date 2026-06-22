@@ -23,15 +23,15 @@ inline std::size_t cast_to_size_t(std::streamoff size) {
     return static_cast<std::size_t>(size);
 }
 
-inline std::size_t get_file_size(const std::string& path) {
+inline std::size_t get_size(const std::string& path) {
     std::ifstream ifs;
     ifs.exceptions(std::ifstream::badbit | std::ifstream::failbit);
     ifs.open(path, std::ifstream::binary | std::ifstream::ate);
     return cast_to_size_t(ifs.tellg());
 }
 
-inline std::vector<char> read_file(const std::string& path) {
-    const auto size = get_file_size(path);
+inline std::vector<char> read(const std::string& path) {
+    const auto size = get_size(path);
 
     std::ifstream ifs;
     ifs.exceptions(std::ifstream::badbit | std::ifstream::failbit);
@@ -43,15 +43,15 @@ inline std::vector<char> read_file(const std::string& path) {
     return src_buf;
 }
 
-inline void write_file(const std::string& path, const void* buffer, const std::size_t size) {
+inline void write(const std::string& path, const void* buffer, const std::size_t size) {
     std::ofstream ofs;
     ofs.exceptions(std::ofstream::badbit | std::ofstream::failbit);
     ofs.open(path, std::ofstream::binary);
     ofs.write(reinterpret_cast<const char*>(buffer), size);
 }
 
-inline void write_file(const std::string& path, const std::vector<unsigned char>& src) {
-    write_file(path, src.data(), src.size());
+inline void write(const std::string& path, const std::vector<unsigned char>& src) {
+    write(path, src.data(), src.size());
 }
 
 } // namespace file

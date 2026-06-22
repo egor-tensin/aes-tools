@@ -11,8 +11,6 @@
 #include <utility>
 #include <vector>
 
-namespace bmp {
-
 class BmpFile {
 public:
     BmpFile(std::vector<char>&& buffer)
@@ -52,5 +50,3 @@ private:
     std::vector<char> buffer;
     std::size_t header_size;
 };
-
-} // namespace bmp

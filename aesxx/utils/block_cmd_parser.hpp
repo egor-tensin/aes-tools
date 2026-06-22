@@ -20,7 +20,7 @@
 #include <utility>
 #include <vector>
 
-class BlockSettings : public command_line::SettingsParser {
+class BlockSettings : public SettingsParser {
 public:
     aes::Algorithm algorithm = AES_AES128;
     aes::Mode mode = AES_ECB;

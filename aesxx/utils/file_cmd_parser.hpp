@@ -17,7 +17,7 @@
 #include <string_view>
 #include <utility>
 
-class FileSettings : public command_line::SettingsParser {
+class FileSettings : public SettingsParser {
 public:
     aes::Algorithm algorithm = AES_AES128;
     aes::Mode mode = AES_ECB;
