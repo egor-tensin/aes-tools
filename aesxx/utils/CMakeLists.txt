@@ -16,20 +16,20 @@ function(add_util name src)
 endfunction()
 
 set(block_util_headers
-    block_cmd_parser.hpp
     block_dumper.hpp
     block_input.hpp
-    data_parsers.hpp
-    helpers/command_line.hpp
+    helpers/cmd_parser.hpp
+    helpers/cmd_paresr_block.hpp
+    helpers/data_parsers.hpp
 )
 
 add_util(encrypt_block encrypt_block.cpp ${block_util_headers})
 add_util(decrypt_block decrypt_block.cpp ${block_util_headers})
 
 set(file_util_headers
-    data_parsers.hpp
-    file_cmd_parser.hpp
-    helpers/command_line.hpp
+    helpers/cmd_parser.hpp
+    helpers/cmd_parser_file.hpp
+    helpers/data_parsers.hpp
     helpers/file.hpp
 )
 

@@ -3,8 +3,8 @@
 // For details, see https://github.com/egor-tensin/aes-tools.
 // Distributed under the MIT License.
 
-#include "file_cmd_parser.hpp"
 #include "helpers/bmp.hpp"
+#include "helpers/cmd_parser_file.hpp"
 #include "helpers/file.hpp"
 
 #include <aesxx/all.hpp>

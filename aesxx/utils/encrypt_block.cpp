@@ -3,9 +3,9 @@
 // For details, see https://github.com/egor-tensin/aes-tools.
 // Distributed under the MIT License.
 
-#include "block_cmd_parser.hpp"
-#include "block_dumper.hpp"
-#include "block_input.hpp"
+#include "helpers/block_dumper.hpp"
+#include "helpers/block_input.hpp"
+#include "helpers/cmd_parser_block.hpp"
 
 #include <aesxx/all.hpp>
 
