@@ -44,3 +44,4 @@ find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
 include(test/basic.cmake)
 include(test/block.cmake)
+include(test/bmp.cmake)
