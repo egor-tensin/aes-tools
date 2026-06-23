@@ -5,6 +5,10 @@
 # For details, see https://github.com/egor-tensin/aes-tools.
 # Distributed under the MIT License.
 
+# This uses the CAVP (Cryptographic Algorithm Validation Program) "Known Answer
+# Test Vectors". The .zip archive can be downloaded from the program's page:
+# https://csrc.nist.gov/projects/cryptographic-algorithm-validation-program/block-ciphers#AES
+
 import argparse
 from collections import OrderedDict
 from collections.abc import MutableSequence

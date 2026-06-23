@@ -13,6 +13,9 @@ import sys
 
 from toolkit import Algorithm, BlockInput, Mode, Tools
 
+# The data is from "Example Vectors for Modes of Operation of the AES":
+# https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38a.pdf
+
 _TEST_PLAINTEXTS = [
     "6bc1bee22e409f96e93d7e117393172a",
     "ae2d8a571e03ac9c9eb76fac45af8e51",
