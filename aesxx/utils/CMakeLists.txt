@@ -39,3 +39,8 @@ set(bmp_util_headers ${file_util_headers} helpers/bmp.hpp)
 
 add_util(encrypt_bmp encrypt_bmp.cpp ${bmp_util_headers})
 add_util(decrypt_bmp decrypt_bmp.cpp ${bmp_util_headers})
+
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+
+include(test/basic.cmake)
+include(test/block.cmake)

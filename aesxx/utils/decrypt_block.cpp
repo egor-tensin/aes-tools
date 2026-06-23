@@ -23,7 +23,7 @@ void decrypt_with_mode(const BlockSettings::Input& input, bool verbose = false) 
     typename aes::Types<algorithm>::Block iv;
     aes::make_block(iv, 0, 0, 0, 0);
 
-    if constexpr (aes::mode_requires_init_vector(mode)) {
+    if (input.has_iv()) {
         aes::from_string<algorithm>(iv, input.get_iv());
         if (verbose)
             dump_iv<algorithm>(iv);
@@ -131,7 +131,7 @@ void decrypt_using_boxes(
     aes::Box::Key key;
     aes::Box::parse_key(key, algorithm, input.get_key());
 
-    if (aes::mode_requires_init_vector(mode)) {
+    if (input.has_iv()) {
         aes::Box::Block iv;
         aes::Box::parse_block(iv, algorithm, input.get_iv());
         aes::Box box{algorithm, key, mode, iv};

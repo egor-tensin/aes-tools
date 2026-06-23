@@ -37,7 +37,7 @@ void decrypt_bmp(const FileSettings& settings) {
     aes::Box::Key key;
     aes::Box::parse_key(key, algorithm, settings.get_key());
 
-    if (aes::mode_requires_init_vector(mode)) {
+    if (settings.has_iv()) {
         aes::Box::Block iv;
         aes::Box::parse_block(iv, algorithm, settings.get_iv());
 

@@ -33,6 +33,10 @@ public:
             return key;
         }
 
+        bool has_iv() const {
+            return !iv.empty();
+        }
+
         std::string get_iv() const {
             return iv;
         }
@@ -85,6 +89,8 @@ public:
         positional.add("args", -1);
 
         SettingsParser::parse(argc, argv);
+        if (exit_with_usage())
+            return;
 
         parse_inputs(
             std::deque<std::string>{

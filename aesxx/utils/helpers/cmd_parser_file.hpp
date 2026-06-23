@@ -64,8 +64,10 @@ public:
 
     void parse(int argc, char** argv) override {
         SettingsParser::parse(argc, argv);
+        if (exit_with_usage())
+            return;
 
-        if (aes::mode_requires_init_vector(mode) && iv.empty()) {
+        if (aes::mode_requires_init_vector(get_mode()) && iv.empty()) {
             throw boost::program_options::error{
                 "an initialization vector is required for the selected mode of operation"
             };
@@ -90,6 +92,10 @@ public:
 
     std::string get_key() const {
         return key;
+    }
+
+    bool has_iv() const {
+        return !iv.empty();
     }
 
     std::string get_iv() const {
