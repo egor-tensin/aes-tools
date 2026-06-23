@@ -156,7 +156,6 @@ class Tools:
 
     @staticmethod
     def _build_file_args(algorithm, mode, key, input_path, output_path, iv=None):
-
         args = [
             "--algorithm",
             str(algorithm),
@@ -174,11 +173,9 @@ class Tools:
         return args
 
     def run_encrypt_file(self, algorithm, mode, key, input_path, output_path, iv=None):
-
         args = self._build_file_args(algorithm, mode, key, input_path, output_path, iv)
         return self.run(self._ENCRYPT_FILE, args)
 
     def run_decrypt_file(self, algorithm, mode, key, input_path, output_path, iv=None):
-
         args = self._build_file_args(algorithm, mode, key, input_path, output_path, iv)
         return self.run(self._DECRYPT_FILE, args)
