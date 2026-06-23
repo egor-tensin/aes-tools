@@ -17,7 +17,7 @@ from subprocess import CalledProcessError
 import sys
 from tempfile import NamedTemporaryFile
 
-from toolkit import Algorithm, Mode, Tools
+from toolkit import Algorithm, Mode, Tools, setup_logging
 
 
 class TestExitCode(Enum):
@@ -175,15 +175,7 @@ _script_dir = os.path.dirname(__file__)
 _script_name = os.path.splitext(os.path.basename(__file__))[0]
 
 
-def _setup_logging(verbose=False):
-    level = logging.DEBUG if verbose else logging.INFO
-    logging.basicConfig(
-        format="%(asctime)s | %(module)s | %(levelname)s | %(message)s", level=level
-    )
-
-
 def run_tests(suite_path, tools_path=(), verbose=False, use_sde=False, force=False):
-    _setup_logging(verbose)
     tools = Tools(tools_path, use_sde=use_sde)
     exit_codes = []
 
@@ -242,7 +234,9 @@ def _parse_args(args=None):
 
 
 def main(args=None):
-    return run_tests(**vars(_parse_args(args)))
+    args = _parse_args(args)
+    with setup_logging(args.verbose):
+        return run_tests(**vars(args))
 
 
 if __name__ == "__main__":

@@ -4,10 +4,28 @@
 # Distributed under the MIT License.
 
 from collections.abc import Iterable
+from contextlib import contextmanager
 from enum import Enum
 import logging
 import os.path
 import subprocess
+import sys
+
+
+@contextmanager
+def setup_logging(verbose=False):
+    level = logging.DEBUG if verbose else logging.INFO
+    logging.basicConfig(
+        level=level,
+        datefmt="%Y-%m-%d %H:%M:%S%z",
+        # The 8 below is for "CRITICAL"
+        format="%(asctime)s | %(levelname)8s | %(message)s",
+    )
+    try:
+        yield
+    except Exception as e:
+        logging.exception(e)
+        sys.exit(1)
 
 
 class Algorithm(Enum):

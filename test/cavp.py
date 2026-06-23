@@ -21,7 +21,7 @@ import sys
 from tempfile import TemporaryDirectory
 import zipfile
 
-from toolkit import Algorithm, BlockInput, Mode, Tools
+from toolkit import Algorithm, BlockInput, Mode, Tools, setup_logging
 
 
 class _MultiOrderedDict(OrderedDict):
@@ -209,17 +209,9 @@ class TestArchive(zipfile.ZipFile):
 _script_dir = os.path.dirname(__file__)
 
 
-def _setup_logging(verbose=False):
-    level = logging.DEBUG if verbose else logging.INFO
-    logging.basicConfig(
-        format="%(asctime)s | %(module)s | %(levelname)s | %(message)s", level=level
-    )
-
-
 def run_tests(
     archive_path, tools_path=(), use_sde=False, use_boxes=False, verbose=False
 ):
-    _setup_logging(verbose)
     tools = Tools(tools_path, use_sde=use_sde)
     archive = TestArchive(archive_path)
     exit_codes = []
@@ -284,7 +276,9 @@ def _parse_args(args=None):
 
 
 def main(args=None):
-    return run_tests(**vars(_parse_args(args)))
+    args = _parse_args(args)
+    with setup_logging(args.verbose):
+        return run_tests(**vars(args))
 
 
 if __name__ == "__main__":

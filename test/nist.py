@@ -11,7 +11,7 @@ import logging
 from subprocess import CalledProcessError
 import sys
 
-from toolkit import Algorithm, BlockInput, Mode, Tools
+from toolkit import Algorithm, BlockInput, Mode, Tools, setup_logging
 
 # The data is from "Example Vectors for Modes of Operation of the AES":
 # https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38a.pdf
@@ -226,15 +226,7 @@ def run_decryption_test(tools, algorithm, mode, use_boxes=False):
         return TestExitCode.ERROR
 
 
-def _setup_logging(verbose=False):
-    level = logging.DEBUG if verbose else logging.INFO
-    logging.basicConfig(
-        format="%(asctime)s | %(module)s | %(levelname)s | %(message)s", level=level
-    )
-
-
 def run_tests(tools_path=(), use_sde=False, use_boxes=False, verbose=False):
-    _setup_logging(verbose)
     tools = Tools(tools_path, use_sde=use_sde)
 
     exit_codes = []
@@ -294,7 +286,9 @@ def _parse_args(args=None):
 
 
 def main(args=None):
-    return run_tests(**vars(_parse_args(args)))
+    args = _parse_args(args)
+    with setup_logging(args.verbose):
+        return run_tests(**vars(args))
 
 
 if __name__ == "__main__":
