@@ -263,7 +263,7 @@ static AES_StatusCode aes_box_decrypt_block_aes256(
     return AES_SUCCESS;
 }
 
-AES_BoxAlgorithmInterface aes_box_algorithm_aes128 = {
+AES_BoxInterface aes128_box_interface = {
     &aes_box_derive_params_aes128,
     &aes_box_parse_block_aes,
     &aes_box_parse_key_aes128,
@@ -278,7 +278,7 @@ AES_BoxAlgorithmInterface aes_box_algorithm_aes128 = {
     &aes_box_load_block_aes,
 };
 
-AES_BoxAlgorithmInterface aes_box_algorithm_aes192 = {
+AES_BoxInterface aes192_box_interface = {
     &aes_box_derive_params_aes192,
     &aes_box_parse_block_aes,
     &aes_box_parse_key_aes192,
@@ -293,7 +293,7 @@ AES_BoxAlgorithmInterface aes_box_algorithm_aes192 = {
     &aes_box_load_block_aes,
 };
 
-AES_BoxAlgorithmInterface aes_box_algorithm_aes256 = {
+AES_BoxInterface aes256_box_interface = {
     &aes_box_derive_params_aes256,
     &aes_box_parse_block_aes,
     &aes_box_parse_key_aes256,

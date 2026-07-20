@@ -10,10 +10,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-static const AES_BoxAlgorithmInterface* aes_box_algorithms[] = {
-    &aes_box_algorithm_aes128,
-    &aes_box_algorithm_aes192,
-    &aes_box_algorithm_aes256,
+static const AES_BoxInterface* aes_box_interfaces[] = {
+    &aes128_box_interface,
+    &aes192_box_interface,
+    &aes256_box_interface,
 };
 
 AES_StatusCode aes_box_init(
@@ -26,7 +26,7 @@ AES_StatusCode aes_box_init(
 ) {
     AES_StatusCode status = AES_SUCCESS;
 
-    box->algorithm = aes_box_algorithms[algorithm];
+    box->algorithm = aes_box_interfaces[algorithm];
 
     status = box->algorithm->calc_round_keys(
         box_key, &box->encryption_keys, &box->decryption_keys, err_details
@@ -614,7 +614,7 @@ AES_StatusCode aes_box_parse_block(
     if (src == NULL)
         return aes_error_null_argument(err_details, "src");
 
-    return aes_box_algorithms[algorithm]->parse_block(dest, src, err_details);
+    return aes_box_interfaces[algorithm]->parse_block(dest, src, err_details);
 }
 
 AES_StatusCode aes_box_parse_key(
@@ -628,7 +628,7 @@ AES_StatusCode aes_box_parse_key(
     if (src == NULL)
         return aes_error_null_argument(err_details, "src");
 
-    return aes_box_algorithms[algorithm]->parse_key(dest, src, err_details);
+    return aes_box_interfaces[algorithm]->parse_key(dest, src, err_details);
 }
 
 AES_StatusCode aes_box_format_block(
@@ -642,7 +642,7 @@ AES_StatusCode aes_box_format_block(
     if (src == NULL)
         return aes_error_null_argument(err_details, "src");
 
-    return aes_box_algorithms[algorithm]->format_block(dest, src, err_details);
+    return aes_box_interfaces[algorithm]->format_block(dest, src, err_details);
 }
 
 AES_StatusCode aes_box_format_key(
@@ -656,5 +656,5 @@ AES_StatusCode aes_box_format_key(
     if (src == NULL)
         return aes_error_null_argument(err_details, "src");
 
-    return aes_box_algorithms[algorithm]->format_key(dest, src, err_details);
+    return aes_box_interfaces[algorithm]->format_key(dest, src, err_details);
 }

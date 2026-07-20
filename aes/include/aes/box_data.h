@@ -115,10 +115,10 @@ typedef struct {
     AES_BoxGetBlockSize get_block_size;
     AES_BoxStoreBlock store_block;
     AES_BoxLoadBlock load_block;
-} AES_BoxAlgorithmInterface;
+} AES_BoxInterface;
 
 typedef struct {
-    const AES_BoxAlgorithmInterface* algorithm;
+    const AES_BoxInterface* algorithm;
     AES_BoxEncryptionRoundKeys encryption_keys;
     AES_BoxDecryptionRoundKeys decryption_keys;
     AES_Mode mode;

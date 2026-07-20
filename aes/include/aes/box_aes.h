@@ -11,9 +11,9 @@
 extern "C" {
 #endif
 
-extern AES_BoxAlgorithmInterface aes_box_algorithm_aes128;
-extern AES_BoxAlgorithmInterface aes_box_algorithm_aes192;
-extern AES_BoxAlgorithmInterface aes_box_algorithm_aes256;
+extern AES_BoxInterface aes128_box_interface;
+extern AES_BoxInterface aes192_box_interface;
+extern AES_BoxInterface aes256_box_interface;
 
 #ifdef __cplusplus
 }
