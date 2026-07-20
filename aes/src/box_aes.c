@@ -17,8 +17,8 @@ static AES_StatusCode aes_box_derive_params_aes128(
     AES_ErrorDetails* err_details
 ) {
     AES_UNUSED_PARAMETER(err_details);
-    aes_AES128_expand_key_(box_key->aes128_key.key, &encryption_keys->aes128_encryption_keys);
-    aes_AES128_derive_decryption_keys_(
+    aes128_expand_key_(box_key->aes128_key.key, &encryption_keys->aes128_encryption_keys);
+    aes128_derive_decryption_keys_(
         &encryption_keys->aes128_encryption_keys, &decryption_keys->aes128_decryption_keys
     );
     return AES_SUCCESS;
@@ -31,10 +31,10 @@ static AES_StatusCode aes_box_derive_params_aes192(
     AES_ErrorDetails* err_details
 ) {
     AES_UNUSED_PARAMETER(err_details);
-    aes_AES192_expand_key_(
+    aes192_expand_key_(
         box_key->aes192_key.lo, box_key->aes192_key.hi, &encryption_keys->aes192_encryption_keys
     );
-    aes_AES192_derive_decryption_keys_(
+    aes192_derive_decryption_keys_(
         &encryption_keys->aes192_encryption_keys, &decryption_keys->aes192_decryption_keys
     );
     return AES_SUCCESS;
@@ -47,10 +47,10 @@ static AES_StatusCode aes_box_derive_params_aes256(
     AES_ErrorDetails* err_details
 ) {
     AES_UNUSED_PARAMETER(err_details);
-    aes_AES256_expand_key_(
+    aes256_expand_key_(
         box_key->aes256_key.lo, box_key->aes256_key.hi, &encryption_keys->aes256_encryption_keys
     );
-    aes_AES256_derive_decryption_keys_(
+    aes256_derive_decryption_keys_(
         &encryption_keys->aes256_encryption_keys, &decryption_keys->aes256_decryption_keys
     );
     return AES_SUCCESS;
@@ -75,7 +75,7 @@ static AES_StatusCode aes_box_parse_key_aes128(
     if (dest == NULL)
         return aes_error_null_argument(err_details, "dest");
 
-    return aes_AES128_parse_key(&dest->aes128_key, src, err_details);
+    return aes128_parse_key(&dest->aes128_key, src, err_details);
 }
 
 static AES_StatusCode aes_box_parse_key_aes192(
@@ -86,7 +86,7 @@ static AES_StatusCode aes_box_parse_key_aes192(
     if (dest == NULL)
         return aes_error_null_argument(err_details, "dest");
 
-    return aes_AES192_parse_key(&dest->aes192_key, src, err_details);
+    return aes192_parse_key(&dest->aes192_key, src, err_details);
 }
 
 static AES_StatusCode aes_box_parse_key_aes256(
@@ -97,7 +97,7 @@ static AES_StatusCode aes_box_parse_key_aes256(
     if (dest == NULL)
         return aes_error_null_argument(err_details, "dest");
 
-    return aes_AES256_parse_key(&dest->aes256_key, src, err_details);
+    return aes256_parse_key(&dest->aes256_key, src, err_details);
 }
 
 static AES_StatusCode aes_box_format_block_aes(
@@ -110,7 +110,7 @@ static AES_StatusCode aes_box_format_block_aes(
     if (src == NULL)
         return aes_error_null_argument(err_details, "src");
 
-    return aes_AES128_format_block(&dest->aes, &src->aes_block, err_details);
+    return aes128_format_block(&dest->aes, &src->aes_block, err_details);
 }
 
 static AES_StatusCode aes_box_format_key_aes128(
@@ -123,7 +123,7 @@ static AES_StatusCode aes_box_format_key_aes128(
     if (src == NULL)
         return aes_error_null_argument(err_details, "src");
 
-    return aes_AES128_format_key(&dest->aes128, &src->aes128_key, err_details);
+    return aes128_format_key(&dest->aes128, &src->aes128_key, err_details);
 }
 
 static AES_StatusCode aes_box_format_key_aes192(
@@ -136,7 +136,7 @@ static AES_StatusCode aes_box_format_key_aes192(
     if (src == NULL)
         return aes_error_null_argument(err_details, "src");
 
-    return aes_AES192_format_key(&dest->aes192, &src->aes192_key, err_details);
+    return aes192_format_key(&dest->aes192, &src->aes192_key, err_details);
 }
 
 static AES_StatusCode aes_box_format_key_aes256(
@@ -149,7 +149,7 @@ static AES_StatusCode aes_box_format_key_aes256(
     if (src == NULL)
         return aes_error_null_argument(err_details, "src");
 
-    return aes_AES256_format_key(&dest->aes256, &src->aes256_key, err_details);
+    return aes256_format_key(&dest->aes256, &src->aes256_key, err_details);
 }
 
 static AES_StatusCode aes_box_xor_block_aes(
@@ -158,13 +158,13 @@ static AES_StatusCode aes_box_xor_block_aes(
     AES_ErrorDetails* err_details
 ) {
     AES_UNUSED_PARAMETER(err_details);
-    dest->aes_block = aes_AES_xor_blocks(dest->aes_block, src->aes_block);
+    dest->aes_block = aes_xor_blocks(dest->aes_block, src->aes_block);
     return AES_SUCCESS;
 }
 
 static AES_StatusCode aes_box_inc_block_aes(AES_BoxBlock* ctr, AES_ErrorDetails* err_details) {
     AES_UNUSED_PARAMETER(err_details);
-    ctr->aes_block = aes_AES_inc_block(ctr->aes_block);
+    ctr->aes_block = aes_inc_block(ctr->aes_block);
     return AES_SUCCESS;
 }
 
@@ -183,7 +183,7 @@ static AES_StatusCode aes_box_store_block_aes(
     AES_ErrorDetails* err_details
 ) {
     AES_UNUSED_PARAMETER(err_details);
-    aes_store_block128(dest, src->aes_block);
+    aes_store_block(dest, src->aes_block);
     return AES_SUCCESS;
 }
 
@@ -193,7 +193,7 @@ static AES_StatusCode aes_box_load_block_aes(
     AES_ErrorDetails* err_details
 ) {
     AES_UNUSED_PARAMETER(err_details);
-    dest->aes_block = aes_load_block128(src);
+    dest->aes_block = aes_load_block(src);
     return AES_SUCCESS;
 }
 
@@ -204,8 +204,7 @@ static AES_StatusCode aes_box_encrypt_block_aes128(
     AES_ErrorDetails* err_details
 ) {
     AES_UNUSED_PARAMETER(err_details);
-    output->aes_block =
-        aes_AES128_encrypt_block_(input->aes_block, &params->aes128_encryption_keys);
+    output->aes_block = aes128_encrypt_block_(input->aes_block, &params->aes128_encryption_keys);
     return AES_SUCCESS;
 }
 
@@ -216,8 +215,7 @@ static AES_StatusCode aes_box_decrypt_block_aes128(
     AES_ErrorDetails* err_details
 ) {
     AES_UNUSED_PARAMETER(err_details);
-    output->aes_block =
-        aes_AES128_decrypt_block_(input->aes_block, &params->aes128_decryption_keys);
+    output->aes_block = aes128_decrypt_block_(input->aes_block, &params->aes128_decryption_keys);
     return AES_SUCCESS;
 }
 
@@ -228,8 +226,7 @@ static AES_StatusCode aes_box_encrypt_block_aes192(
     AES_ErrorDetails* err_details
 ) {
     AES_UNUSED_PARAMETER(err_details);
-    output->aes_block =
-        aes_AES192_encrypt_block_(input->aes_block, &params->aes192_encryption_keys);
+    output->aes_block = aes192_encrypt_block_(input->aes_block, &params->aes192_encryption_keys);
     return AES_SUCCESS;
 }
 
@@ -240,8 +237,7 @@ static AES_StatusCode aes_box_decrypt_block_aes192(
     AES_ErrorDetails* err_details
 ) {
     AES_UNUSED_PARAMETER(err_details);
-    output->aes_block =
-        aes_AES192_decrypt_block_(input->aes_block, &params->aes192_decryption_keys);
+    output->aes_block = aes192_decrypt_block_(input->aes_block, &params->aes192_decryption_keys);
     return AES_SUCCESS;
 }
 
@@ -252,8 +248,7 @@ static AES_StatusCode aes_box_encrypt_block_aes256(
     AES_ErrorDetails* err_details
 ) {
     AES_UNUSED_PARAMETER(err_details);
-    output->aes_block =
-        aes_AES256_encrypt_block_(input->aes_block, &params->aes256_encryption_keys);
+    output->aes_block = aes256_encrypt_block_(input->aes_block, &params->aes256_encryption_keys);
     return AES_SUCCESS;
 }
 
@@ -264,8 +259,7 @@ static AES_StatusCode aes_box_decrypt_block_aes256(
     AES_ErrorDetails* err_details
 ) {
     AES_UNUSED_PARAMETER(err_details);
-    output->aes_block =
-        aes_AES256_decrypt_block_(input->aes_block, &params->aes256_decryption_keys);
+    output->aes_block = aes256_decrypt_block_(input->aes_block, &params->aes256_decryption_keys);
     return AES_SUCCESS;
 }
 

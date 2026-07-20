@@ -10,9 +10,9 @@
 #include <emmintrin.h>
 #include <wmmintrin.h>
 
-AES_AES_Block __fastcall aes_AES192_encrypt_block_(
-    AES_AES_Block plaintext,
-    const AES_AES192_RoundKeys* encryption_keys
+AES_Block __fastcall aes192_encrypt_block_(
+    AES_Block plaintext,
+    const AES192_RoundKeys* encryption_keys
 ) {
     plaintext = _mm_xor_si128(plaintext, encryption_keys->keys[0]);
     plaintext = _mm_aesenc_si128(plaintext, encryption_keys->keys[1]);
@@ -29,9 +29,9 @@ AES_AES_Block __fastcall aes_AES192_encrypt_block_(
     return _mm_aesenclast_si128(plaintext, encryption_keys->keys[12]);
 }
 
-AES_AES_Block __fastcall aes_AES192_decrypt_block_(
-    AES_AES_Block ciphertext,
-    const AES_AES192_RoundKeys* decryption_keys
+AES_Block __fastcall aes192_decrypt_block_(
+    AES_Block ciphertext,
+    const AES192_RoundKeys* decryption_keys
 ) {
     ciphertext = _mm_xor_si128(ciphertext, decryption_keys->keys[0]);
     ciphertext = _mm_aesdec_si128(ciphertext, decryption_keys->keys[1]);
@@ -49,11 +49,11 @@ AES_AES_Block __fastcall aes_AES192_decrypt_block_(
 }
 
 static void __fastcall aes_aes192_expand_key_assist(
-    AES_AES_Block* prev_lo,
-    AES_AES_Block* prev_hi,
-    AES_AES_Block hwgen
+    AES_Block* prev_lo,
+    AES_Block* prev_hi,
+    AES_Block hwgen
 ) {
-    AES_AES_Block tmp = *prev_lo;
+    AES_Block tmp = *prev_lo;
 
     tmp = _mm_slli_si128(tmp, 4);
     *prev_lo = _mm_xor_si128(*prev_lo, tmp);
@@ -73,10 +73,10 @@ static void __fastcall aes_aes192_expand_key_assist(
     *prev_hi = _mm_xor_si128(*prev_hi, tmp);
 }
 
-void __fastcall aes_AES192_expand_key_(
-    AES_AES_Block key_lo,
-    AES_AES_Block key_hi,
-    AES_AES192_RoundKeys* encryption_keys
+void __fastcall aes192_expand_key_(
+    AES_Block key_lo,
+    AES_Block key_hi,
+    AES192_RoundKeys* encryption_keys
 ) {
     encryption_keys->keys[0] = key_lo;
     encryption_keys->keys[1] = key_hi;
@@ -125,9 +125,9 @@ void __fastcall aes_AES192_expand_key_(
     encryption_keys->keys[12] = key_lo;
 }
 
-void __fastcall aes_AES192_derive_decryption_keys_(
-    const AES_AES192_RoundKeys* encryption_keys,
-    AES_AES192_RoundKeys* decryption_keys
+void __fastcall aes192_derive_decryption_keys_(
+    const AES192_RoundKeys* encryption_keys,
+    AES192_RoundKeys* decryption_keys
 ) {
     decryption_keys->keys[0] = encryption_keys->keys[12];
     decryption_keys->keys[1] = _mm_aesimc_si128(encryption_keys->keys[11]);

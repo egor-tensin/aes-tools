@@ -10,9 +10,9 @@
 #include <emmintrin.h>
 #include <wmmintrin.h>
 
-AES_AES_Block __fastcall aes_AES128_encrypt_block_(
-    AES_AES_Block plaintext,
-    const AES_AES128_RoundKeys* encryption_keys
+AES_Block __fastcall aes128_encrypt_block_(
+    AES_Block plaintext,
+    const AES128_RoundKeys* encryption_keys
 ) {
     plaintext = _mm_xor_si128(plaintext, encryption_keys->keys[0]);
     plaintext = _mm_aesenc_si128(plaintext, encryption_keys->keys[1]);
@@ -27,9 +27,9 @@ AES_AES_Block __fastcall aes_AES128_encrypt_block_(
     return _mm_aesenclast_si128(plaintext, encryption_keys->keys[10]);
 }
 
-AES_AES_Block __fastcall aes_AES128_decrypt_block_(
-    AES_AES_Block ciphertext,
-    const AES_AES128_RoundKeys* decryption_keys
+AES_Block __fastcall aes128_decrypt_block_(
+    AES_Block ciphertext,
+    const AES128_RoundKeys* decryption_keys
 ) {
     ciphertext = _mm_xor_si128(ciphertext, decryption_keys->keys[0]);
     ciphertext = _mm_aesdec_si128(ciphertext, decryption_keys->keys[1]);
@@ -44,11 +44,8 @@ AES_AES_Block __fastcall aes_AES128_decrypt_block_(
     return _mm_aesdeclast_si128(ciphertext, decryption_keys->keys[10]);
 }
 
-static AES_AES_Block __fastcall aes_aes128_expand_key_assist(
-    AES_AES_Block prev,
-    AES_AES_Block hwgen
-) {
-    AES_AES_Block tmp = prev;
+static AES_Block __fastcall aes_aes128_expand_key_assist(AES_Block prev, AES_Block hwgen) {
+    AES_Block tmp = prev;
 
     tmp = _mm_slli_si128(tmp, 4);
     prev = _mm_xor_si128(prev, tmp);
@@ -63,8 +60,8 @@ static AES_AES_Block __fastcall aes_aes128_expand_key_assist(
     return prev;
 }
 
-void __fastcall aes_AES128_expand_key_(AES_AES_Block key, AES_AES128_RoundKeys* encryption_keys) {
-    AES_Block128 prev = encryption_keys->keys[0] = key;
+void __fastcall aes128_expand_key_(AES_Block key, AES128_RoundKeys* encryption_keys) {
+    AES_Block prev = encryption_keys->keys[0] = key;
     prev = encryption_keys->keys[1] =
         aes_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x01));
     prev = encryption_keys->keys[2] =
@@ -87,9 +84,9 @@ void __fastcall aes_AES128_expand_key_(AES_AES_Block key, AES_AES128_RoundKeys* 
         aes_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x36));
 }
 
-void __fastcall aes_AES128_derive_decryption_keys_(
-    const AES_AES128_RoundKeys* encryption_keys,
-    AES_AES128_RoundKeys* decryption_keys
+void __fastcall aes128_derive_decryption_keys_(
+    const AES128_RoundKeys* encryption_keys,
+    AES128_RoundKeys* decryption_keys
 ) {
     decryption_keys->keys[0] = encryption_keys->keys[10];
     decryption_keys->keys[1] = _mm_aesimc_si128(encryption_keys->keys[9]);

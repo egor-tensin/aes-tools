@@ -16,35 +16,35 @@ extern "C" {
 #endif
 
 typedef union {
-    AES_AES128_Key aes128_key;
-    AES_AES192_Key aes192_key;
-    AES_AES256_Key aes256_key;
+    AES128_Key aes128_key;
+    AES192_Key aes192_key;
+    AES256_Key aes256_key;
 } AES_BoxKey;
 
 typedef union {
-    AES_AES128_RoundKeys aes128_encryption_keys;
-    AES_AES192_RoundKeys aes192_encryption_keys;
-    AES_AES256_RoundKeys aes256_encryption_keys;
+    AES128_RoundKeys aes128_encryption_keys;
+    AES192_RoundKeys aes192_encryption_keys;
+    AES256_RoundKeys aes256_encryption_keys;
 } AES_BoxEncryptionRoundKeys;
 
 typedef union {
-    AES_AES128_RoundKeys aes128_decryption_keys;
-    AES_AES192_RoundKeys aes192_decryption_keys;
-    AES_AES256_RoundKeys aes256_decryption_keys;
+    AES128_RoundKeys aes128_decryption_keys;
+    AES192_RoundKeys aes192_decryption_keys;
+    AES256_RoundKeys aes256_decryption_keys;
 } AES_BoxDecryptionRoundKeys;
 
 typedef union {
-    AES_AES128_KeyString aes128;
-    AES_AES192_KeyString aes192;
-    AES_AES256_KeyString aes256;
+    AES128_KeyString aes128;
+    AES192_KeyString aes192;
+    AES256_KeyString aes256;
 } AES_BoxKeyString;
 
 typedef union {
-    AES_AES_Block aes_block;
+    AES_Block aes_block;
 } AES_BoxBlock;
 
 typedef union {
-    AES_AES_BlockString aes;
+    AES_BlockString aes;
 } AES_BoxBlockString;
 
 typedef AES_StatusCode (*AES_BoxCalculateRoundKeys)(
