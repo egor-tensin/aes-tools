@@ -19,7 +19,15 @@ template <Algorithm algorithm>
 struct Types;
 
 template <Algorithm algorithm>
-std::size_t get_number_of_rounds();
+std::size_t get_number_of_rounds() {
+    if constexpr (algorithm == AES_AES128)
+        return 11;
+    if constexpr (algorithm == AES_AES192)
+        return 13;
+    if constexpr (algorithm == AES_AES256)
+        return 15;
+    static_assert("Unrecognized algorithm");
+}
 
 template <Algorithm algorithm>
 void from_string(typename Types<algorithm>::Block&, std::string_view);

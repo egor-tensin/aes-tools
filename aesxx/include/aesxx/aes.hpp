@@ -33,11 +33,6 @@ struct Types<AES_AES128> {
 };
 
 template <>
-inline std::size_t get_number_of_rounds<AES_AES128>() {
-    return 11;
-}
-
-template <>
 inline void from_string<AES_AES128>(aes128::Block& dest, std::string_view src) {
     aes_AES128_parse_block(&dest, src.data(), ErrorDetailsThrowsInDestructor{});
 }
@@ -108,11 +103,6 @@ struct Types<AES_AES192> {
 };
 
 template <>
-inline std::size_t get_number_of_rounds<AES_AES192>() {
-    return 13;
-}
-
-template <>
 inline void from_string<AES_AES192>(aes192::Block& dest, std::string_view src) {
     aes_AES192_parse_block(&dest, src.data(), ErrorDetailsThrowsInDestructor{});
 }
@@ -181,11 +171,6 @@ struct Types<AES_AES256> {
     typedef aes256::RoundKeys RoundKeys;
     typedef aes256::Key Key;
 };
-
-template <>
-inline std::size_t get_number_of_rounds<AES_AES256>() {
-    return 15;
-}
 
 template <>
 inline void from_string<AES_AES256>(aes256::Block& dest, std::string_view src) {
