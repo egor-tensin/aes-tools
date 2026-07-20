@@ -21,7 +21,7 @@ typedef enum {
     AES_MEMORY_ALLOCATION_ERROR,
 } AES_StatusCode;
 
-static __inline int aes_is_error(AES_StatusCode ec) {
+static inline int aes_is_error(AES_StatusCode ec) {
     return ec != AES_SUCCESS;
 }
 
@@ -49,7 +49,7 @@ typedef struct {
     size_t call_stack_len;
 } AES_ErrorDetails;
 
-static __inline AES_StatusCode aes_get_error_code(const AES_ErrorDetails* err_details) {
+static inline AES_StatusCode aes_get_error_code(const AES_ErrorDetails* err_details) {
     return err_details->ec;
 }
 
