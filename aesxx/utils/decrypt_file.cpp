@@ -37,7 +37,7 @@ void decrypt_file(const FileSettings& settings) {
 
     if (settings.has_iv()) {
         aes::Box::Block iv;
-        aes::Box::parse_block(iv, algorithm, settings.get_iv());
+        aes::Box::parse_block(iv, settings.get_iv());
 
         aes::Box box{algorithm, key, mode, iv};
         decrypt_file(box, settings.get_input_path(), settings.get_output_path());

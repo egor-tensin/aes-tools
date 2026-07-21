@@ -21,7 +21,7 @@ AES_StatusCode aes_box_init(
     AES_Algorithm algorithm,
     const AES_BoxKey* box_key,
     AES_Mode mode,
-    const AES_BoxBlock* iv,
+    const AES_Block* iv,
     AES_ErrorDetails* err_details
 ) {
     AES_StatusCode status = AES_SUCCESS;
@@ -43,8 +43,8 @@ AES_StatusCode aes_box_init(
 
 static AES_StatusCode aes_box_encrypt_block_ecb(
     AES_Box* box,
-    const AES_BoxBlock* input,
-    AES_BoxBlock* output,
+    const AES_Block* input,
+    AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
     return box->algorithm->encrypt_block(input, &box->encryption_keys, output, err_details);
@@ -52,16 +52,12 @@ static AES_StatusCode aes_box_encrypt_block_ecb(
 
 static AES_StatusCode aes_box_encrypt_block_cbc(
     AES_Box* box,
-    const AES_BoxBlock* input,
-    AES_BoxBlock* output,
+    const AES_Block* input,
+    AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
     AES_StatusCode status = AES_SUCCESS;
-    AES_BoxBlock xored_input = *input;
-
-    status = box->algorithm->xor_block(&xored_input, &box->iv, err_details);
-    if (aes_is_error(status))
-        return status;
+    AES_Block xored_input = aes_xor_blocks(*input, box->iv);
 
     status =
         box->algorithm->encrypt_block(&xored_input, &box->encryption_keys, output, err_details);
@@ -74,8 +70,8 @@ static AES_StatusCode aes_box_encrypt_block_cbc(
 
 static AES_StatusCode aes_box_encrypt_block_cfb(
     AES_Box* box,
-    const AES_BoxBlock* input,
-    AES_BoxBlock* output,
+    const AES_Block* input,
+    AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
     AES_StatusCode status = AES_SUCCESS;
@@ -84,18 +80,16 @@ static AES_StatusCode aes_box_encrypt_block_cfb(
     if (aes_is_error(status))
         return status;
 
-    status = box->algorithm->xor_block(output, input, err_details);
-    if (aes_is_error(status))
-        return status;
-
+    *output = aes_xor_blocks(*output, *input);
     box->iv = *output;
+
     return status;
 }
 
 static AES_StatusCode aes_box_encrypt_block_ofb(
     AES_Box* box,
-    const AES_BoxBlock* input,
-    AES_BoxBlock* output,
+    const AES_Block* input,
+    AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
     AES_StatusCode status = AES_SUCCESS;
@@ -105,18 +99,15 @@ static AES_StatusCode aes_box_encrypt_block_ofb(
         return status;
 
     *output = box->iv;
-
-    status = box->algorithm->xor_block(output, input, err_details);
-    if (aes_is_error(status))
-        return status;
+    *output = aes_xor_blocks(*output, *input);
 
     return status;
 }
 
 static AES_StatusCode aes_box_encrypt_block_ctr(
     AES_Box* box,
-    const AES_BoxBlock* input,
-    AES_BoxBlock* output,
+    const AES_Block* input,
+    AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
     AES_StatusCode status = AES_SUCCESS;
@@ -125,21 +116,16 @@ static AES_StatusCode aes_box_encrypt_block_ctr(
     if (aes_is_error(status))
         return status;
 
-    status = box->algorithm->xor_block(output, input, err_details);
-    if (aes_is_error(status))
-        return status;
-
-    status = box->algorithm->inc_block(&box->iv, err_details);
-    if (aes_is_error(status))
-        return status;
+    *output = aes_xor_blocks(*output, *input);
+    box->iv = aes_inc_block(box->iv);
 
     return status;
 }
 
 typedef AES_StatusCode (*AES_BoxEncryptBlockInMode)(
     AES_Box*,
-    const AES_BoxBlock*,
-    AES_BoxBlock*,
+    const AES_Block*,
+    AES_Block*,
     AES_ErrorDetails*
 );
 
@@ -153,8 +139,8 @@ static AES_BoxEncryptBlockInMode aes_box_encrypt_block_in_mode[] = {
 
 AES_StatusCode aes_box_encrypt_block(
     AES_Box* box,
-    const AES_BoxBlock* input,
-    AES_BoxBlock* output,
+    const AES_Block* input,
+    AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
     return aes_box_encrypt_block_in_mode[box->mode](box, input, output, err_details);
@@ -162,8 +148,8 @@ AES_StatusCode aes_box_encrypt_block(
 
 static AES_StatusCode aes_box_decrypt_block_ecb(
     AES_Box* box,
-    const AES_BoxBlock* input,
-    AES_BoxBlock* output,
+    const AES_Block* input,
+    AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
     return box->algorithm->decrypt_block(input, &box->decryption_keys, output, err_details);
@@ -171,8 +157,8 @@ static AES_StatusCode aes_box_decrypt_block_ecb(
 
 static AES_StatusCode aes_box_decrypt_block_cbc(
     AES_Box* box,
-    const AES_BoxBlock* input,
-    AES_BoxBlock* output,
+    const AES_Block* input,
+    AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
     AES_StatusCode status = AES_SUCCESS;
@@ -181,18 +167,16 @@ static AES_StatusCode aes_box_decrypt_block_cbc(
     if (aes_is_error(status))
         return status;
 
-    status = box->algorithm->xor_block(output, &box->iv, err_details);
-    if (aes_is_error(status))
-        return status;
-
+    *output = aes_xor_blocks(*output, box->iv);
     box->iv = *input;
+
     return status;
 }
 
 static AES_StatusCode aes_box_decrypt_block_cfb(
     AES_Box* box,
-    const AES_BoxBlock* input,
-    AES_BoxBlock* output,
+    const AES_Block* input,
+    AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
     AES_StatusCode status = AES_SUCCESS;
@@ -201,11 +185,9 @@ static AES_StatusCode aes_box_decrypt_block_cfb(
     if (aes_is_error(status))
         return status;
 
-    status = box->algorithm->xor_block(output, input, err_details);
-    if (aes_is_error(status))
-        return status;
-
+    *output = aes_xor_blocks(*output, *input);
     box->iv = *input;
+
     return status;
 }
 
@@ -221,8 +203,8 @@ static AES_BoxDecryptBlockInMode aes_box_decrypt_block_in_mode[] = {
 
 AES_StatusCode aes_box_decrypt_block(
     AES_Box* box,
-    const AES_BoxBlock* input,
-    AES_BoxBlock* output,
+    const AES_Block* input,
+    AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
     return aes_box_decrypt_block_in_mode[box->mode](box, input, output, err_details);
@@ -270,22 +252,14 @@ static AES_StatusCode aes_box_encrypt_buffer_block(
     AES_ErrorDetails* err_details
 ) {
     AES_StatusCode status = AES_SUCCESS;
-    AES_BoxBlock plaintext;
-
-    status = box->algorithm->load_block(&plaintext, src, err_details);
-    if (aes_is_error(status))
-        return status;
-
-    AES_BoxBlock ciphertext;
+    AES_Block plaintext = aes_load_block(src);
+    AES_Block ciphertext;
 
     status = aes_box_encrypt_block(box, &plaintext, &ciphertext, err_details);
     if (aes_is_error(status))
         return status;
 
-    status = box->algorithm->store_block(dest, &ciphertext, err_details);
-    if (aes_is_error(status))
-        return status;
-
+    aes_store_block(dest, ciphertext);
     return status;
 }
 
@@ -475,22 +449,14 @@ static AES_StatusCode aes_box_decrypt_buffer_block(
     AES_ErrorDetails* err_details
 ) {
     AES_StatusCode status = AES_SUCCESS;
-    AES_BoxBlock ciphertext;
-
-    status = box->algorithm->load_block(&ciphertext, src, err_details);
-    if (aes_is_error(status))
-        return status;
-
-    AES_BoxBlock plaintext;
+    AES_Block ciphertext = aes_load_block(src);
+    AES_Block plaintext;
 
     status = aes_box_decrypt_block(box, &ciphertext, &plaintext, err_details);
     if (aes_is_error(status))
         return status;
 
-    status = box->algorithm->store_block(dest, &plaintext, err_details);
-    if (aes_is_error(status))
-        return status;
-
+    aes_store_block(dest, plaintext);
     return status;
 }
 
@@ -603,20 +569,6 @@ AES_StatusCode aes_box_decrypt_buffer(
     }
 }
 
-AES_StatusCode aes_box_parse_block(
-    AES_BoxBlock* dest,
-    AES_Algorithm algorithm,
-    const char* src,
-    AES_ErrorDetails* err_details
-) {
-    if (dest == NULL)
-        return aes_error_null_argument(err_details, "dest");
-    if (src == NULL)
-        return aes_error_null_argument(err_details, "src");
-
-    return aes_box_interfaces[algorithm]->parse_block(dest, src, err_details);
-}
-
 AES_StatusCode aes_box_parse_key(
     AES_BoxKey* dest,
     AES_Algorithm algorithm,
@@ -629,20 +581,6 @@ AES_StatusCode aes_box_parse_key(
         return aes_error_null_argument(err_details, "src");
 
     return aes_box_interfaces[algorithm]->parse_key(dest, src, err_details);
-}
-
-AES_StatusCode aes_box_format_block(
-    AES_BoxBlockString* dest,
-    AES_Algorithm algorithm,
-    const AES_BoxBlock* src,
-    AES_ErrorDetails* err_details
-) {
-    if (dest == NULL)
-        return aes_error_null_argument(err_details, "dest");
-    if (src == NULL)
-        return aes_error_null_argument(err_details, "src");
-
-    return aes_box_interfaces[algorithm]->format_block(dest, src, err_details);
 }
 
 AES_StatusCode aes_box_format_key(

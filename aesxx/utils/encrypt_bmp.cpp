@@ -37,7 +37,7 @@ void encrypt_bmp(const FileSettings& settings) {
 
     if (settings.has_iv()) {
         aes::Box::Block iv;
-        aes::Box::parse_block(iv, algorithm, settings.get_iv());
+        aes::Box::parse_block(iv, settings.get_iv());
 
         aes::Box box{algorithm, key, mode, iv};
         encrypt_bmp(box, settings.get_input_path(), settings.get_output_path());

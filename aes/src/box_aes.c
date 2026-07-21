@@ -56,17 +56,6 @@ static AES_StatusCode aes_box_derive_params_aes256(
     return AES_SUCCESS;
 }
 
-static AES_StatusCode aes_box_parse_block_aes(
-    AES_BoxBlock* dest,
-    const char* src,
-    AES_ErrorDetails* err_details
-) {
-    if (dest == NULL)
-        return aes_error_null_argument(err_details, "dest");
-
-    return aes_AES_parse_block(&dest->aes_block, src, err_details);
-}
-
 static AES_StatusCode aes_box_parse_key_aes128(
     AES_BoxKey* dest,
     const char* src,
@@ -98,19 +87,6 @@ static AES_StatusCode aes_box_parse_key_aes256(
         return aes_error_null_argument(err_details, "dest");
 
     return aes256_parse_key(&dest->aes256_key, src, err_details);
-}
-
-static AES_StatusCode aes_box_format_block_aes(
-    AES_BoxBlockString* dest,
-    const AES_BoxBlock* src,
-    AES_ErrorDetails* err_details
-) {
-    if (dest == NULL)
-        return aes_error_null_argument(err_details, "dest");
-    if (src == NULL)
-        return aes_error_null_argument(err_details, "src");
-
-    return aes128_format_block(&dest->aes, &src->aes_block, err_details);
 }
 
 static AES_StatusCode aes_box_format_key_aes128(
@@ -152,22 +128,6 @@ static AES_StatusCode aes_box_format_key_aes256(
     return aes256_format_key(&dest->aes256, &src->aes256_key, err_details);
 }
 
-static AES_StatusCode aes_box_xor_block_aes(
-    AES_BoxBlock* dest,
-    const AES_BoxBlock* src,
-    AES_ErrorDetails* err_details
-) {
-    AES_UNUSED_PARAMETER(err_details);
-    dest->aes_block = aes_xor_blocks(dest->aes_block, src->aes_block);
-    return AES_SUCCESS;
-}
-
-static AES_StatusCode aes_box_inc_block_aes(AES_BoxBlock* ctr, AES_ErrorDetails* err_details) {
-    AES_UNUSED_PARAMETER(err_details);
-    ctr->aes_block = aes_inc_block(ctr->aes_block);
-    return AES_SUCCESS;
-}
-
 static AES_StatusCode aes_box_get_block_size_aes(
     size_t* block_size,
     AES_ErrorDetails* err_details
@@ -177,133 +137,95 @@ static AES_StatusCode aes_box_get_block_size_aes(
     return AES_SUCCESS;
 }
 
-static AES_StatusCode aes_box_store_block_aes(
-    void* dest,
-    const AES_BoxBlock* src,
-    AES_ErrorDetails* err_details
-) {
-    AES_UNUSED_PARAMETER(err_details);
-    aes_store_block(dest, src->aes_block);
-    return AES_SUCCESS;
-}
-
-static AES_StatusCode aes_box_load_block_aes(
-    AES_BoxBlock* dest,
-    const void* src,
-    AES_ErrorDetails* err_details
-) {
-    AES_UNUSED_PARAMETER(err_details);
-    dest->aes_block = aes_load_block(src);
-    return AES_SUCCESS;
-}
-
 static AES_StatusCode aes_box_encrypt_block_aes128(
-    const AES_BoxBlock* input,
+    const AES_Block* input,
     const AES_BoxEncryptionRoundKeys* params,
-    AES_BoxBlock* output,
+    AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
     AES_UNUSED_PARAMETER(err_details);
-    output->aes_block = aes128_encrypt_block_(input->aes_block, &params->aes128_encryption_keys);
+    *output = aes128_encrypt_block_(*input, &params->aes128_encryption_keys);
     return AES_SUCCESS;
 }
 
 static AES_StatusCode aes_box_decrypt_block_aes128(
-    const AES_BoxBlock* input,
+    const AES_Block* input,
     const AES_BoxDecryptionRoundKeys* params,
-    AES_BoxBlock* output,
+    AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
     AES_UNUSED_PARAMETER(err_details);
-    output->aes_block = aes128_decrypt_block_(input->aes_block, &params->aes128_decryption_keys);
+    *output = aes128_decrypt_block_(*input, &params->aes128_decryption_keys);
     return AES_SUCCESS;
 }
 
 static AES_StatusCode aes_box_encrypt_block_aes192(
-    const AES_BoxBlock* input,
+    const AES_Block* input,
     const AES_BoxEncryptionRoundKeys* params,
-    AES_BoxBlock* output,
+    AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
     AES_UNUSED_PARAMETER(err_details);
-    output->aes_block = aes192_encrypt_block_(input->aes_block, &params->aes192_encryption_keys);
+    *output = aes192_encrypt_block_(*input, &params->aes192_encryption_keys);
     return AES_SUCCESS;
 }
 
 static AES_StatusCode aes_box_decrypt_block_aes192(
-    const AES_BoxBlock* input,
+    const AES_Block* input,
     const AES_BoxDecryptionRoundKeys* params,
-    AES_BoxBlock* output,
+    AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
     AES_UNUSED_PARAMETER(err_details);
-    output->aes_block = aes192_decrypt_block_(input->aes_block, &params->aes192_decryption_keys);
+    *output = aes192_decrypt_block_(*input, &params->aes192_decryption_keys);
     return AES_SUCCESS;
 }
 
 static AES_StatusCode aes_box_encrypt_block_aes256(
-    const AES_BoxBlock* input,
+    const AES_Block* input,
     const AES_BoxEncryptionRoundKeys* params,
-    AES_BoxBlock* output,
+    AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
     AES_UNUSED_PARAMETER(err_details);
-    output->aes_block = aes256_encrypt_block_(input->aes_block, &params->aes256_encryption_keys);
+    *output = aes256_encrypt_block_(*input, &params->aes256_encryption_keys);
     return AES_SUCCESS;
 }
 
 static AES_StatusCode aes_box_decrypt_block_aes256(
-    const AES_BoxBlock* input,
+    const AES_Block* input,
     const AES_BoxDecryptionRoundKeys* params,
-    AES_BoxBlock* output,
+    AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
     AES_UNUSED_PARAMETER(err_details);
-    output->aes_block = aes256_decrypt_block_(input->aes_block, &params->aes256_decryption_keys);
+    *output = aes256_decrypt_block_(*input, &params->aes256_decryption_keys);
     return AES_SUCCESS;
 }
 
 AES_BoxInterface aes128_box_interface = {
     &aes_box_derive_params_aes128,
-    &aes_box_parse_block_aes,
     &aes_box_parse_key_aes128,
-    &aes_box_format_block_aes,
     &aes_box_format_key_aes128,
     &aes_box_encrypt_block_aes128,
     &aes_box_decrypt_block_aes128,
-    &aes_box_xor_block_aes,
-    &aes_box_inc_block_aes,
     &aes_box_get_block_size_aes,
-    &aes_box_store_block_aes,
-    &aes_box_load_block_aes,
 };
 
 AES_BoxInterface aes192_box_interface = {
     &aes_box_derive_params_aes192,
-    &aes_box_parse_block_aes,
     &aes_box_parse_key_aes192,
-    &aes_box_format_block_aes,
     &aes_box_format_key_aes192,
     &aes_box_encrypt_block_aes192,
     &aes_box_decrypt_block_aes192,
-    &aes_box_xor_block_aes,
-    &aes_box_inc_block_aes,
     &aes_box_get_block_size_aes,
-    &aes_box_store_block_aes,
-    &aes_box_load_block_aes,
 };
 
 AES_BoxInterface aes256_box_interface = {
     &aes_box_derive_params_aes256,
-    &aes_box_parse_block_aes,
     &aes_box_parse_key_aes256,
-    &aes_box_format_block_aes,
     &aes_box_format_key_aes256,
     &aes_box_encrypt_block_aes256,
     &aes_box_decrypt_block_aes256,
-    &aes_box_xor_block_aes,
-    &aes_box_inc_block_aes,
     &aes_box_get_block_size_aes,
-    &aes_box_store_block_aes,
-    &aes_box_load_block_aes,
 };

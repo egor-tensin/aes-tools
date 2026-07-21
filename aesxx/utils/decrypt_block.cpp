@@ -133,7 +133,7 @@ void decrypt_using_boxes(
 
     if (input.has_iv()) {
         aes::Box::Block iv;
-        aes::Box::parse_block(iv, algorithm, input.get_iv());
+        aes::Box::parse_block(iv, input.get_iv());
         aes::Box box{algorithm, key, mode, iv};
 
         decrypt_using_particular_box(box, input.get_blocks());

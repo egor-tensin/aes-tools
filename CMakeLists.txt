@@ -8,6 +8,10 @@ enable_testing()
 
 if (MSVC)
     add_compile_options("$<$<NOT:$<COMPILE_LANGUAGE:ASM,ASM_MASM>>:/MP;/W4;/WX>")
+
+    # > structure was padded due to alignment specifier
+    # So what?
+    add_compile_options("/wd4324")
 else()
     add_compile_options("$<$<NOT:$<COMPILE_LANGUAGE:ASM,ASM_MASM>>:-Wall;-Wextra;-pedantic;-Werror>")
 endif()

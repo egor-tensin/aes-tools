@@ -20,7 +20,7 @@ AES_StatusCode aes_box_init(
     AES_Algorithm algorithm,
     const AES_BoxKey* box_key,
     AES_Mode mode,
-    const AES_BoxBlock* iv,
+    const AES_Block* iv,
     AES_ErrorDetails* err_details
 );
 
@@ -32,7 +32,7 @@ AES_StatusCode aes_box_parse_key(
 );
 
 AES_StatusCode aes_box_parse_block(
-    AES_BoxBlock* dest,
+    AES_Block* dest,
     AES_Algorithm algorithm,
     const char* src,
     AES_ErrorDetails* err_details
@@ -46,23 +46,23 @@ AES_StatusCode aes_box_format_key(
 );
 
 AES_StatusCode aes_box_format_block(
-    AES_BoxBlockString* dest,
+    AES_BlockString* dest,
     AES_Algorithm algorithm,
-    const AES_BoxBlock* src,
+    const AES_Block* src,
     AES_ErrorDetails* err_details
 );
 
 AES_StatusCode aes_box_encrypt_block(
     AES_Box* box,
-    const AES_BoxBlock* plaintext,
-    AES_BoxBlock* ciphertext,
+    const AES_Block* plaintext,
+    AES_Block* ciphertext,
     AES_ErrorDetails* err_details
 );
 
 AES_StatusCode aes_box_decrypt_block(
     AES_Box* box,
-    const AES_BoxBlock* ciphertext,
-    AES_BoxBlock* plaintext,
+    const AES_Block* ciphertext,
+    AES_Block* plaintext,
     AES_ErrorDetails* err_details
 );
 
