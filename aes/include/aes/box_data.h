@@ -72,15 +72,12 @@ typedef AES_StatusCode (*AES_BoxDecryptBlock)(
     AES_ErrorDetails* err_details
 );
 
-typedef AES_StatusCode (*AES_BoxGetBlockSize)(size_t*, AES_ErrorDetails*);
-
 typedef struct {
     AES_BoxCalculateRoundKeys calc_round_keys;
     AES_BoxParseKey parse_key;
     AES_BoxFormatKey format_key;
     AES_BoxEncryptBlock encrypt_block;
     AES_BoxDecryptBlock decrypt_block;
-    AES_BoxGetBlockSize get_block_size;
 } AES_BoxInterface;
 
 typedef struct {

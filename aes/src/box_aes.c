@@ -128,15 +128,6 @@ static AES_StatusCode aes_box_format_key_aes256(
     return aes256_format_key(&dest->aes256, &src->aes256_key, err_details);
 }
 
-static AES_StatusCode aes_box_get_block_size_aes(
-    size_t* block_size,
-    AES_ErrorDetails* err_details
-) {
-    AES_UNUSED_PARAMETER(err_details);
-    *block_size = 16;
-    return AES_SUCCESS;
-}
-
 static AES_StatusCode aes_box_encrypt_block_aes128(
     const AES_Block* input,
     const AES_BoxEncryptionRoundKeys* params,
@@ -209,7 +200,6 @@ AES_BoxInterface aes128_box_interface = {
     &aes_box_format_key_aes128,
     &aes_box_encrypt_block_aes128,
     &aes_box_decrypt_block_aes128,
-    &aes_box_get_block_size_aes,
 };
 
 AES_BoxInterface aes192_box_interface = {
@@ -218,7 +208,6 @@ AES_BoxInterface aes192_box_interface = {
     &aes_box_format_key_aes192,
     &aes_box_encrypt_block_aes192,
     &aes_box_decrypt_block_aes192,
-    &aes_box_get_block_size_aes,
 };
 
 AES_BoxInterface aes256_box_interface = {
@@ -227,5 +216,4 @@ AES_BoxInterface aes256_box_interface = {
     &aes_box_format_key_aes256,
     &aes_box_encrypt_block_aes256,
     &aes_box_decrypt_block_aes256,
-    &aes_box_get_block_size_aes,
 };

@@ -222,12 +222,7 @@ static AES_StatusCode aes_box_get_encrypted_buffer_size(
     switch (box->mode) {
         case AES_ECB:
         case AES_CBC: {
-            size_t block_size;
-
-            status = box->algorithm->get_block_size(&block_size, err_details);
-            if (aes_is_error(status))
-                return status;
-
+            size_t block_size = sizeof(AES_Block);
             *padding_size = block_size - src_size % block_size;
             *dest_size = src_size + *padding_size;
             return status;
@@ -273,12 +268,7 @@ static AES_StatusCode aes_box_encrypt_buffer_partial_block_with_padding(
 ) {
     AES_StatusCode status = AES_SUCCESS;
 
-    size_t block_size;
-
-    status = box->algorithm->get_block_size(&block_size, err_details);
-    if (aes_is_error(status))
-        return status;
-
+    size_t block_size = sizeof(AES_Block);
     void* plaintext_buf = malloc(block_size);
 
     if (plaintext_buf == NULL)
@@ -314,12 +304,7 @@ static AES_StatusCode aes_box_encrypt_buffer_partial_block(
     if (src_size == 0)
         return status;
 
-    size_t block_size;
-
-    status = box->algorithm->get_block_size(&block_size, err_details);
-    if (aes_is_error(status))
-        return status;
-
+    size_t block_size = sizeof(AES_Block);
     void* plaintext_buf = malloc(block_size);
 
     if (plaintext_buf == NULL)
@@ -377,12 +362,7 @@ AES_StatusCode aes_box_encrypt_buffer(
     if (src == NULL && src_size != 0)
         return aes_error_null_argument(err_details, "src");
 
-    size_t block_size;
-
-    status = box->algorithm->get_block_size(&block_size, err_details);
-    if (aes_is_error(status))
-        return status;
-
+    size_t block_size = sizeof(AES_Block);
     const size_t src_len = src_size / block_size;
 
     for (size_t i = 0; i < src_len; ++i) {
@@ -416,11 +396,7 @@ static AES_StatusCode aes_box_get_decrypted_buffer_size(
     switch (box->mode) {
         case AES_ECB:
         case AES_CBC: {
-            size_t block_size;
-
-            status = box->algorithm->get_block_size(&block_size, err_details);
-            if (aes_is_error(status))
-                return status;
+            size_t block_size = sizeof(AES_Block);
 
             if (src_size == 0 || src_size % block_size != 0)
                 return aes_error_missing_padding(err_details);
@@ -472,12 +448,7 @@ static AES_StatusCode aes_box_decrypt_buffer_partial_block(
     if (src_size == 0)
         return status;
 
-    size_t block_size;
-
-    status = box->algorithm->get_block_size(&block_size, err_details);
-    if (aes_is_error(status))
-        return status;
-
+    size_t block_size = sizeof(AES_Block);
     void* ciphertext_buf = malloc(block_size);
 
     if (ciphertext_buf == NULL)
@@ -534,12 +505,7 @@ AES_StatusCode aes_box_decrypt_buffer(
     if (src == NULL)
         return aes_error_null_argument(err_details, "src");
 
-    size_t block_size;
-
-    status = box->algorithm->get_block_size(&block_size, err_details);
-    if (aes_is_error(status))
-        return status;
-
+    size_t block_size = sizeof(AES_Block);
     const size_t src_len = src_size / block_size;
 
     for (size_t i = 0; i < src_len; ++i) {
