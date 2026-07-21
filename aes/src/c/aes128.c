@@ -44,7 +44,7 @@ AES_Block __fastcall aes128_decrypt_block_(
     return _mm_aesdeclast_si128(ciphertext, decryption_keys->keys[10]);
 }
 
-static AES_Block __fastcall aes_aes128_expand_key_assist(AES_Block prev, AES_Block hwgen) {
+static AES_Block __fastcall aes128_expand_key_assist(AES_Block prev, AES_Block hwgen) {
     AES_Block tmp = prev;
 
     tmp = _mm_slli_si128(tmp, 4);
@@ -63,25 +63,25 @@ static AES_Block __fastcall aes_aes128_expand_key_assist(AES_Block prev, AES_Blo
 void __fastcall aes128_expand_key_(AES_Block key, AES128_RoundKeys* encryption_keys) {
     AES_Block prev = encryption_keys->keys[0] = key;
     prev = encryption_keys->keys[1] =
-        aes_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x01));
+        aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x01));
     prev = encryption_keys->keys[2] =
-        aes_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x02));
+        aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x02));
     prev = encryption_keys->keys[3] =
-        aes_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x04));
+        aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x04));
     prev = encryption_keys->keys[4] =
-        aes_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x08));
+        aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x08));
     prev = encryption_keys->keys[5] =
-        aes_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x10));
+        aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x10));
     prev = encryption_keys->keys[6] =
-        aes_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x20));
+        aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x20));
     prev = encryption_keys->keys[7] =
-        aes_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x40));
+        aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x40));
     prev = encryption_keys->keys[8] =
-        aes_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x80));
+        aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x80));
     prev = encryption_keys->keys[9] =
-        aes_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x1b));
+        aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x1b));
     prev = encryption_keys->keys[10] =
-        aes_aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x36));
+        aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x36));
 }
 
 void __fastcall aes128_derive_decryption_keys_(
