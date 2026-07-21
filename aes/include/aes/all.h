@@ -5,10 +5,6 @@
 
 #pragma once
 
-/**
- * \defgroup aes AES
- */
-
 #include "aes.h"
 #include "algorithm.h"
 #include "box.h"

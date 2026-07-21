@@ -37,10 +37,6 @@ inline Block128 xor_blocks(Block128& a, Block128& b) {
     return aes_xor_blocks(a, b);
 }
 
-inline Block128 reverse_byte_order(Block128& block) {
-    return aes_reverse_byte_order_block(block);
-}
-
 inline Block128 inc_block(Block128& block) {
     return aes_inc_block(block);
 }

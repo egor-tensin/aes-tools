@@ -62,17 +62,9 @@ typedef struct {
     char str[33];
 } AES_BlockString;
 
-typedef AES_BlockString AES128_BlockString;
-typedef AES_BlockString AES192_BlockString;
-typedef AES_BlockString AES256_BlockString;
-
 typedef struct {
     char str[49];
 } AES_BlockMatrixString;
-
-typedef AES_BlockMatrixString AES128_BlockMatrixString;
-typedef AES_BlockMatrixString AES192_BlockMatrixString;
-typedef AES_BlockMatrixString AES256_BlockMatrixString;
 
 AES_StatusCode aes_format_block(AES_BlockString*, const AES_Block*, AES_ErrorDetails*);
 
@@ -101,21 +93,15 @@ typedef struct {
 } AES256_KeyString;
 
 AES_StatusCode aes128_format_key(AES128_KeyString*, const AES128_Key*, AES_ErrorDetails*);
-
 AES_StatusCode aes192_format_key(AES192_KeyString*, const AES192_Key*, AES_ErrorDetails*);
-
 AES_StatusCode aes256_format_key(AES256_KeyString*, const AES256_Key*, AES_ErrorDetails*);
 
 AES_StatusCode aes128_print_key(const AES128_Key*, AES_ErrorDetails*);
-
 AES_StatusCode aes192_print_key(const AES192_Key*, AES_ErrorDetails*);
-
 AES_StatusCode aes256_print_key(const AES256_Key*, AES_ErrorDetails*);
 
 AES_StatusCode aes128_parse_key(AES128_Key* dest, const char* src, AES_ErrorDetails* err_details);
-
 AES_StatusCode aes192_parse_key(AES192_Key* dest, const char* src, AES_ErrorDetails* err_details);
-
 AES_StatusCode aes256_parse_key(AES256_Key* dest, const char* src, AES_ErrorDetails* err_details);
 
 typedef struct {
@@ -160,15 +146,11 @@ void __fastcall aes256_derive_decryption_keys_(
 );
 
 AES_Block __fastcall aes128_encrypt_block_(AES_Block plaintext, const AES128_RoundKeys*);
-
 AES_Block __fastcall aes192_encrypt_block_(AES_Block plaintext, const AES192_RoundKeys*);
-
 AES_Block __fastcall aes256_encrypt_block_(AES_Block plaintext, const AES256_RoundKeys*);
 
 AES_Block __fastcall aes128_decrypt_block_(AES_Block ciphertext, const AES128_RoundKeys*);
-
 AES_Block __fastcall aes192_decrypt_block_(AES_Block ciphertext, const AES192_RoundKeys*);
-
 AES_Block __fastcall aes256_decrypt_block_(AES_Block ciphertext, const AES256_RoundKeys*);
 
 AES_ENCRYPT_BLOCK_ECB(128)
@@ -204,12 +186,6 @@ AES_DECRYPT_BLOCK_OFB(256)
 AES_ENCRYPT_BLOCK_CTR(256)
 AES_DECRYPT_BLOCK_CTR(256)
 
-/**
- * \brief Expands an AES-128 key into 10 encryption round keys.
- *
- * \param[in] key The AES-128 key.
- * \param[out] encryption_keys The AES-128 encryption round keys. Must not be `NULL`.
- */
 static inline void __fastcall aes128_expand_key(
     const AES128_Key* key,
     AES128_RoundKeys* encryption_keys
@@ -219,12 +195,6 @@ static inline void __fastcall aes128_expand_key(
     aes128_expand_key_(key->key, encryption_keys);
 }
 
-/**
- * \brief Derives AES-128 decryption round keys from AES-128 encryption round keys.
- *
- * \param[in] encryption_keys The AES-128 encryption round keys. Must not be `NULL`.
- * \param[out] decryption_keys The AES-128 decryption round keys. Must not be `NULL`.
- */
 static inline void __fastcall aes128_derive_decryption_keys(
     const AES128_RoundKeys* encryption_keys,
     AES128_RoundKeys* decryption_keys
@@ -235,12 +205,6 @@ static inline void __fastcall aes128_derive_decryption_keys(
     aes128_derive_decryption_keys_(encryption_keys, decryption_keys);
 }
 
-/**
- * \brief Expands an AES-192 key into 12 encryption round keys.
- *
- * \param[in] key The AES-192 key.
- * \param[out] encryption_keys The AES-192 encryption round keys. Must not be `NULL`.
- */
 static inline void __fastcall aes192_expand_key(
     const AES192_Key* key,
     AES192_RoundKeys* encryption_keys
@@ -251,12 +215,6 @@ static inline void __fastcall aes192_expand_key(
     aes192_expand_key_(key->lo, key->hi, encryption_keys);
 }
 
-/**
- * \brief Derives AES-192 decryption round keys from AES-192 encryption round keys.
- *
- * \param[in] encryption_keys The AES-192 encryption round keys. Must not be `NULL`.
- * \param[out] decryption_keys The AES-192 decryption round keys. Must not be `NULL`.
- */
 static inline void __fastcall aes192_derive_decryption_keys(
     const AES192_RoundKeys* encryption_keys,
     AES192_RoundKeys* decryption_keys
@@ -267,12 +225,6 @@ static inline void __fastcall aes192_derive_decryption_keys(
     aes192_derive_decryption_keys_(encryption_keys, decryption_keys);
 }
 
-/**
- * \brief Expands an AES-256 key into 14 encryption round keys.
- *
- * \param[in] key The AES-256 key.
- * \param[out] encryption_keys The AES-256 encryption round keys. Must not be `NULL`.
- */
 static inline void __fastcall aes256_expand_key(
     const AES256_Key* key,
     AES256_RoundKeys* encryption_keys
@@ -283,12 +235,6 @@ static inline void __fastcall aes256_expand_key(
     aes256_expand_key_(key->lo, key->hi, encryption_keys);
 }
 
-/**
- * \brief Derives AES-256 decryption round keys from AES-256 encryption round keys.
- *
- * \param[in] encryption_keys The AES-256 encryption round keys. Must not be `NULL`.
- * \param[out] decryption_keys The AES-256 decryption round keys. Must not be `NULL`.
- */
 static inline void __fastcall aes256_derive_decryption_keys(
     const AES256_RoundKeys* encryption_keys,
     AES256_RoundKeys* decryption_keys

@@ -39,14 +39,14 @@ inline void from_string<AES_AES128>(aes128::Block& dest, std::string_view src) {
 
 template <>
 inline std::string to_string<AES_AES128>(const aes128::Block& src) {
-    AES128_BlockString str;
+    AES_BlockString str;
     aes_format_block(&str, &src, ErrorDetailsThrowsInDestructor{});
     return {str.str};
 }
 
 template <>
 inline std::string to_matrix_string<AES_AES128>(const aes128::Block& src) {
-    AES128_BlockMatrixString str;
+    AES_BlockMatrixString str;
     aes_format_block_as_matrix(&str, &src, ErrorDetailsThrowsInDestructor{});
     return {str.str};
 }
@@ -109,14 +109,14 @@ inline void from_string<AES_AES192>(aes192::Block& dest, std::string_view src) {
 
 template <>
 inline std::string to_string<AES_AES192>(const aes192::Block& src) {
-    AES192_BlockString str;
+    AES_BlockString str;
     aes_format_block(&str, &src, ErrorDetailsThrowsInDestructor{});
     return {str.str};
 }
 
 template <>
 inline std::string to_matrix_string<AES_AES192>(const aes192::Block& src) {
-    AES192_BlockMatrixString str;
+    AES_BlockMatrixString str;
     aes_format_block_as_matrix(&str, &src, ErrorDetailsThrowsInDestructor{});
     return {str.str};
 }
@@ -179,14 +179,14 @@ inline void from_string<AES_AES256>(aes256::Block& dest, std::string_view src) {
 
 template <>
 inline std::string to_string<AES_AES256>(const aes256::Block& src) {
-    AES256_BlockString str;
+    AES_BlockString str;
     aes_format_block(&str, &src, ErrorDetailsThrowsInDestructor{});
     return {str.str};
 }
 
 template <>
 inline std::string to_matrix_string<AES_AES256>(const aes256::Block& src) {
-    AES256_BlockMatrixString str;
+    AES_BlockMatrixString str;
     aes_format_block_as_matrix(&str, &src, ErrorDetailsThrowsInDestructor{});
     return {str.str};
 }
