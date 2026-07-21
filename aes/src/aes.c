@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 
-AES_StatusCode aes_AES_format_block(
+AES_StatusCode aes_format_block(
     AES_BlockString* str,
     const AES_Block* block,
     AES_ErrorDetails* err_details
@@ -36,7 +36,7 @@ AES_StatusCode aes_AES_format_block(
     return AES_SUCCESS;
 }
 
-AES_StatusCode aes_AES_format_block_as_matrix(
+AES_StatusCode aes_format_block_as_matrix(
     AES_BlockMatrixString* str,
     const AES_Block* block,
     AES_ErrorDetails* err_details
@@ -64,7 +64,7 @@ AES_StatusCode aes_AES_format_block_as_matrix(
     return AES_SUCCESS;
 }
 
-AES_StatusCode aes_AES_print_block(const AES_Block* block, AES_ErrorDetails* err_details) {
+AES_StatusCode aes_print_block(const AES_Block* block, AES_ErrorDetails* err_details) {
     assert(block);
 
     if (block == NULL)
@@ -73,17 +73,14 @@ AES_StatusCode aes_AES_print_block(const AES_Block* block, AES_ErrorDetails* err
     AES_StatusCode ec = AES_SUCCESS;
     AES_BlockString str;
 
-    if (aes_is_error(ec = aes_AES_format_block(&str, block, err_details)))
+    if (aes_is_error(ec = aes_format_block(&str, block, err_details)))
         return ec;
 
     printf("%s\n", str.str);
     return ec;
 }
 
-AES_StatusCode aes_AES_print_block_as_matrix(
-    const AES_Block* block,
-    AES_ErrorDetails* err_details
-) {
+AES_StatusCode aes_print_block_as_matrix(const AES_Block* block, AES_ErrorDetails* err_details) {
     assert(block);
 
     if (block == NULL)
@@ -92,18 +89,14 @@ AES_StatusCode aes_AES_print_block_as_matrix(
     AES_StatusCode ec = AES_SUCCESS;
     AES_BlockMatrixString str;
 
-    if (aes_is_error(ec = aes_AES_format_block_as_matrix(&str, block, err_details)))
+    if (aes_is_error(ec = aes_format_block_as_matrix(&str, block, err_details)))
         return ec;
 
     printf("%s", str.str);
     return ec;
 }
 
-AES_StatusCode aes_AES_parse_block(
-    AES_Block* dest,
-    const char* src,
-    AES_ErrorDetails* err_details
-) {
+AES_StatusCode aes_parse_block(AES_Block* dest, const char* src, AES_ErrorDetails* err_details) {
     assert(dest);
     assert(src);
 
@@ -225,7 +218,7 @@ AES_StatusCode aes256_format_key(
 }
 
 AES_StatusCode aes128_print_key(const AES128_Key* key, AES_ErrorDetails* err_details) {
-    return aes_AES_print_block(&key->key, err_details);
+    return aes_print_block(&key->key, err_details);
 }
 
 AES_StatusCode aes192_print_key(const AES192_Key* key, AES_ErrorDetails* err_details) {
@@ -261,7 +254,7 @@ AES_StatusCode aes256_print_key(const AES256_Key* key, AES_ErrorDetails* err_det
 }
 
 AES_StatusCode aes128_parse_key(AES128_Key* dest, const char* src, AES_ErrorDetails* err_details) {
-    return aes_AES_parse_block(&dest->key, src, err_details);
+    return aes_parse_block(&dest->key, src, err_details);
 }
 
 AES_StatusCode aes192_parse_key(AES192_Key* dest, const char* src, AES_ErrorDetails* err_details) {

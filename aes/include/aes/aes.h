@@ -74,133 +74,19 @@ typedef AES_BlockMatrixString AES128_BlockMatrixString;
 typedef AES_BlockMatrixString AES192_BlockMatrixString;
 typedef AES_BlockMatrixString AES256_BlockMatrixString;
 
-AES_StatusCode aes_AES_format_block(AES_BlockString*, const AES_Block*, AES_ErrorDetails*);
+AES_StatusCode aes_format_block(AES_BlockString*, const AES_Block*, AES_ErrorDetails*);
 
-static inline AES_StatusCode aes128_format_block(
-    AES128_BlockString* dest,
-    const AES_Block* src,
-    AES_ErrorDetails* err_details
-) {
-    return aes_AES_format_block(dest, src, err_details);
-}
-
-static inline AES_StatusCode aes192_format_block(
-    AES192_BlockString* dest,
-    const AES_Block* src,
-    AES_ErrorDetails* err_details
-) {
-    return aes_AES_format_block(dest, src, err_details);
-}
-
-static inline AES_StatusCode aes256_format_block(
-    AES256_BlockString* dest,
-    const AES_Block* src,
-    AES_ErrorDetails* err_details
-) {
-    return aes_AES_format_block(dest, src, err_details);
-}
-
-AES_StatusCode aes_AES_format_block_as_matrix(
+AES_StatusCode aes_format_block_as_matrix(
     AES_BlockMatrixString*,
     const AES_Block*,
     AES_ErrorDetails*
 );
 
-static inline AES_StatusCode aes128_format_block_as_matrix(
-    AES128_BlockMatrixString* dest,
-    const AES_Block* src,
-    AES_ErrorDetails* err_details
-) {
-    return aes_AES_format_block_as_matrix(dest, src, err_details);
-}
+AES_StatusCode aes_print_block(const AES_Block*, AES_ErrorDetails*);
 
-static inline AES_StatusCode aes192_format_block_as_matrix(
-    AES192_BlockMatrixString* dest,
-    const AES_Block* src,
-    AES_ErrorDetails* err_details
-) {
-    return aes_AES_format_block_as_matrix(dest, src, err_details);
-}
+AES_StatusCode aes_print_block_as_matrix(const AES_Block*, AES_ErrorDetails*);
 
-static inline AES_StatusCode aes256_format_block_as_matrix(
-    AES256_BlockMatrixString* dest,
-    const AES_Block* src,
-    AES_ErrorDetails* err_details
-) {
-    return aes_AES_format_block_as_matrix(dest, src, err_details);
-}
-
-AES_StatusCode aes_AES_print_block(const AES_Block*, AES_ErrorDetails*);
-
-static inline AES_StatusCode aes128_print_block(
-    const AES_Block* block,
-    AES_ErrorDetails* err_details
-) {
-    return aes_AES_print_block(block, err_details);
-}
-
-static inline AES_StatusCode aes192_print_block(
-    const AES_Block* block,
-    AES_ErrorDetails* err_details
-) {
-    return aes_AES_print_block(block, err_details);
-}
-
-static inline AES_StatusCode aes256_print_block(
-    const AES_Block* block,
-    AES_ErrorDetails* err_details
-) {
-    return aes_AES_print_block(block, err_details);
-}
-
-AES_StatusCode aes_AES_print_block_as_matrix(const AES_Block*, AES_ErrorDetails*);
-
-static inline AES_StatusCode aes128_print_block_as_matrix(
-    const AES_Block* block,
-    AES_ErrorDetails* err_details
-) {
-    return aes_AES_print_block_as_matrix(block, err_details);
-}
-
-static inline AES_StatusCode aes192_print_block_as_matrix(
-    const AES_Block* block,
-    AES_ErrorDetails* err_details
-) {
-    return aes_AES_print_block_as_matrix(block, err_details);
-}
-
-static inline AES_StatusCode aes256_print_block_as_matrix(
-    const AES_Block* block,
-    AES_ErrorDetails* err_details
-) {
-    return aes_AES_print_block_as_matrix(block, err_details);
-}
-
-AES_StatusCode aes_AES_parse_block(AES_Block* dest, const char* src, AES_ErrorDetails* err_details);
-
-static inline AES_StatusCode aes128_parse_block(
-    AES_Block* dest,
-    const char* src,
-    AES_ErrorDetails* err_details
-) {
-    return aes_AES_parse_block(dest, src, err_details);
-}
-
-static inline AES_StatusCode aes192_parse_block(
-    AES_Block* dest,
-    const char* src,
-    AES_ErrorDetails* err_details
-) {
-    return aes_AES_parse_block(dest, src, err_details);
-}
-
-static inline AES_StatusCode aes256_parse_block(
-    AES_Block* dest,
-    const char* src,
-    AES_ErrorDetails* err_details
-) {
-    return aes_AES_parse_block(dest, src, err_details);
-}
+AES_StatusCode aes_parse_block(AES_Block* dest, const char* src, AES_ErrorDetails* err_details);
 
 typedef struct {
     char str[33];

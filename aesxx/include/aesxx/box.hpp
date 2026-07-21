@@ -31,12 +31,12 @@ public:
 
     static std::string format_block(const Block& src) {
         AES_BlockString str;
-        aes_AES_format_block(&str, &src, ErrorDetailsThrowsInDestructor{});
+        aes_format_block(&str, &src, ErrorDetailsThrowsInDestructor{});
         return reinterpret_cast<const char*>(&str);
     }
 
     static void parse_block(Block& dest, std::string_view src) {
-        aes_AES_parse_block(&dest, src.data(), ErrorDetailsThrowsInDestructor{});
+        aes_parse_block(&dest, src.data(), ErrorDetailsThrowsInDestructor{});
     }
 
     static void parse_key(Key& dest, Algorithm algorithm, std::string_view src) {
