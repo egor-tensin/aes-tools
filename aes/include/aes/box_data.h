@@ -6,6 +6,7 @@
 #pragma once
 
 #include "aes.h"
+#include "algorithm.h"
 #include "error.h"
 #include "mode.h"
 
@@ -78,14 +79,15 @@ typedef struct {
     AES_BoxFormatKey format_key;
     AES_BoxEncryptBlock encrypt_block;
     AES_BoxDecryptBlock decrypt_block;
-} AES_BoxInterface;
+} AES_BoxOps;
 
 typedef struct {
-    const AES_BoxInterface* algorithm;
-    AES_BoxEncryptionRoundKeys encryption_keys;
-    AES_BoxDecryptionRoundKeys decryption_keys;
+    AES_Algorithm algorithm;
     AES_Mode mode;
     AES_Block iv;
+    AES_BoxEncryptionRoundKeys encryption_keys;
+    AES_BoxDecryptionRoundKeys decryption_keys;
+    const AES_BoxOps* ops;
 } AES_Box;
 
 #ifdef __cplusplus

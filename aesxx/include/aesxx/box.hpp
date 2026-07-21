@@ -43,12 +43,11 @@ public:
         aes_box_parse_key(&dest, algorithm, src.data(), ErrorDetailsThrowsInDestructor{});
     }
 
-    Box(Algorithm algorithm, const Key& key) : algorithm{algorithm}, mode{AES_ECB} {
-        aes_box_init(&impl, algorithm, &key, mode, nullptr, ErrorDetailsThrowsInDestructor{});
+    Box(Algorithm algorithm, const Key& key) {
+        aes_box_init(&impl, algorithm, &key, AES_ECB, nullptr, ErrorDetailsThrowsInDestructor{});
     }
 
-    Box(Algorithm algorithm, const Key& key, Mode mode, const Block& iv)
-        : algorithm{algorithm}, mode{mode} {
+    Box(Algorithm algorithm, const Key& key, Mode mode, const Block& iv) {
         aes_box_init(&impl, algorithm, &key, mode, &iv, ErrorDetailsThrowsInDestructor{});
     }
 
@@ -115,18 +114,15 @@ public:
     }
 
     Algorithm get_algorithm() const {
-        return algorithm;
+        return impl.algorithm;
     }
 
     Mode get_mode() const {
-        return mode;
+        return impl.mode;
     }
 
 private:
     Key key;
-
-    Algorithm algorithm;
-    Mode mode;
 
     AES_Box impl;
 };

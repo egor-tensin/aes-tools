@@ -10,10 +10,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-static const AES_BoxInterface* aes_box_interfaces[] = {
-    &aes128_box_interface,
-    &aes192_box_interface,
-    &aes256_box_interface,
+static const AES_BoxOps* aes_box_ops_list[] = {
+    &aes128_box_ops,
+    &aes192_box_ops,
+    &aes256_box_ops,
 };
 
 AES_StatusCode aes_box_init(
@@ -26,17 +26,17 @@ AES_StatusCode aes_box_init(
 ) {
     AES_StatusCode status = AES_SUCCESS;
 
-    box->algorithm = aes_box_interfaces[algorithm];
+    box->algorithm = algorithm;
+    box->mode = mode;
+    if (iv != NULL)
+        box->iv = *iv;
+    box->ops = aes_box_ops_list[algorithm];
 
-    status = box->algorithm->calc_round_keys(
+    status = box->ops->calc_round_keys(
         box_key, &box->encryption_keys, &box->decryption_keys, err_details
     );
     if (aes_is_error(status))
         return status;
-
-    box->mode = mode;
-    if (iv != NULL)
-        box->iv = *iv;
 
     return status;
 }
@@ -47,7 +47,7 @@ static AES_StatusCode aes_box_encrypt_block_ecb(
     AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
-    return box->algorithm->encrypt_block(input, &box->encryption_keys, output, err_details);
+    return box->ops->encrypt_block(input, &box->encryption_keys, output, err_details);
 }
 
 static AES_StatusCode aes_box_encrypt_block_cbc(
@@ -59,8 +59,7 @@ static AES_StatusCode aes_box_encrypt_block_cbc(
     AES_StatusCode status = AES_SUCCESS;
     AES_Block xored_input = aes_xor_blocks(*input, box->iv);
 
-    status =
-        box->algorithm->encrypt_block(&xored_input, &box->encryption_keys, output, err_details);
+    status = box->ops->encrypt_block(&xored_input, &box->encryption_keys, output, err_details);
     if (aes_is_error(status))
         return status;
 
@@ -76,7 +75,7 @@ static AES_StatusCode aes_box_encrypt_block_cfb(
 ) {
     AES_StatusCode status = AES_SUCCESS;
 
-    status = box->algorithm->encrypt_block(&box->iv, &box->encryption_keys, output, err_details);
+    status = box->ops->encrypt_block(&box->iv, &box->encryption_keys, output, err_details);
     if (aes_is_error(status))
         return status;
 
@@ -94,7 +93,7 @@ static AES_StatusCode aes_box_encrypt_block_ofb(
 ) {
     AES_StatusCode status = AES_SUCCESS;
 
-    status = box->algorithm->encrypt_block(&box->iv, &box->encryption_keys, &box->iv, err_details);
+    status = box->ops->encrypt_block(&box->iv, &box->encryption_keys, &box->iv, err_details);
     if (aes_is_error(status))
         return status;
 
@@ -112,7 +111,7 @@ static AES_StatusCode aes_box_encrypt_block_ctr(
 ) {
     AES_StatusCode status = AES_SUCCESS;
 
-    status = box->algorithm->encrypt_block(&box->iv, &box->encryption_keys, output, err_details);
+    status = box->ops->encrypt_block(&box->iv, &box->encryption_keys, output, err_details);
     if (aes_is_error(status))
         return status;
 
@@ -152,7 +151,7 @@ static AES_StatusCode aes_box_decrypt_block_ecb(
     AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
-    return box->algorithm->decrypt_block(input, &box->decryption_keys, output, err_details);
+    return box->ops->decrypt_block(input, &box->decryption_keys, output, err_details);
 }
 
 static AES_StatusCode aes_box_decrypt_block_cbc(
@@ -163,7 +162,7 @@ static AES_StatusCode aes_box_decrypt_block_cbc(
 ) {
     AES_StatusCode status = AES_SUCCESS;
 
-    status = box->algorithm->decrypt_block(input, &box->decryption_keys, output, err_details);
+    status = box->ops->decrypt_block(input, &box->decryption_keys, output, err_details);
     if (aes_is_error(status))
         return status;
 
@@ -181,7 +180,7 @@ static AES_StatusCode aes_box_decrypt_block_cfb(
 ) {
     AES_StatusCode status = AES_SUCCESS;
 
-    status = box->algorithm->encrypt_block(&box->iv, &box->encryption_keys, output, err_details);
+    status = box->ops->encrypt_block(&box->iv, &box->encryption_keys, output, err_details);
     if (aes_is_error(status))
         return status;
 
@@ -546,7 +545,7 @@ AES_StatusCode aes_box_parse_key(
     if (src == NULL)
         return aes_error_null_argument(err_details, "src");
 
-    return aes_box_interfaces[algorithm]->parse_key(dest, src, err_details);
+    return aes_box_ops_list[algorithm]->parse_key(dest, src, err_details);
 }
 
 AES_StatusCode aes_box_format_key(
@@ -560,5 +559,5 @@ AES_StatusCode aes_box_format_key(
     if (src == NULL)
         return aes_error_null_argument(err_details, "src");
 
-    return aes_box_interfaces[algorithm]->format_key(dest, src, err_details);
+    return aes_box_ops_list[algorithm]->format_key(dest, src, err_details);
 }
