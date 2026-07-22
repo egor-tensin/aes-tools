@@ -10,6 +10,7 @@
 #include "block.h"
 #include "box.h"
 #include "error.h"
+#include "hex.h"
 #include "key.h"
 #include "mode.h"
 #include "padding.h"

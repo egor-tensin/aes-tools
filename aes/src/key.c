@@ -98,6 +98,11 @@ AES_StatusCode aes256_format_key(
 }
 
 AES_StatusCode aes128_parse_key(AES128_Key* dest, const char* src, AES_ErrorDetails* err_details) {
+    if (dest == NULL)
+        return aes_error_null_argument(err_details, "dest");
+    if (src == NULL)
+        return aes_error_null_argument(err_details, "src");
+
     return aes_parse_block(&dest->key, src, err_details);
 }
 
@@ -107,40 +112,17 @@ AES_StatusCode aes192_parse_key(AES192_Key* dest, const char* src, AES_ErrorDeta
     if (src == NULL)
         return aes_error_null_argument(err_details, "src");
 
-    const char* cursor = src;
+    AES_ALIGN(unsigned char, 16) bytes[32];
+    memset(bytes, 0x00, sizeof(bytes));
 
-    {
-        AES_ALIGN(unsigned char, 16) bytes[16];
+    AES_StatusCode status = aes_parse_hex_string(bytes, src, 24, err_details);
+    if (aes_is_error(status))
+        return status;
 
-        for (int i = 0; i < 16; ++i) {
-            int n;
-            unsigned int byte;
-            if (sscanf(cursor, "%2x%n", &byte, &n) != 1)
-                return aes_error_parse(err_details, src, "a 192-bit block");
-            bytes[i] = (unsigned char)byte;
-            cursor += n;
-        }
+    dest->lo = aes_load_block_aligned(bytes);
+    dest->hi = aes_load_block_aligned(bytes + 16);
 
-        dest->lo = aes_load_block_aligned(bytes);
-    }
-
-    {
-        AES_ALIGN(unsigned char, 16) bytes[16];
-
-        for (int i = 0; i < 8; ++i) {
-            int n;
-            unsigned int byte;
-            if (sscanf(cursor, "%2x%n", &byte, &n) != 1)
-                return aes_error_parse(err_details, src, "a 192-bit block");
-            bytes[i] = (unsigned char)byte;
-            cursor += n;
-        }
-
-        memset(bytes + 8, 0x00, 8);
-        dest->hi = aes_load_block_aligned(bytes);
-    }
-
-    return AES_SUCCESS;
+    return status;
 }
 
 AES_StatusCode aes256_parse_key(AES256_Key* dest, const char* src, AES_ErrorDetails* err_details) {
@@ -149,37 +131,14 @@ AES_StatusCode aes256_parse_key(AES256_Key* dest, const char* src, AES_ErrorDeta
     if (src == NULL)
         return aes_error_null_argument(err_details, "src");
 
-    const char* cursor = src;
+    AES_ALIGN(unsigned char, 16) bytes[32];
 
-    {
-        AES_ALIGN(unsigned char, 16) bytes[16];
+    AES_StatusCode status = aes_parse_hex_string(bytes, src, sizeof(bytes), err_details);
+    if (aes_is_error(status))
+        return status;
 
-        for (int i = 0; i < 16; ++i) {
-            int n;
-            unsigned int byte;
-            if (sscanf(cursor, "%2x%n", &byte, &n) != 1)
-                return aes_error_parse(err_details, src, "a 256-bit block");
-            bytes[i] = (unsigned char)byte;
-            cursor += n;
-        }
+    dest->lo = aes_load_block_aligned(bytes);
+    dest->hi = aes_load_block_aligned(bytes + 16);
 
-        dest->lo = aes_load_block_aligned(bytes);
-    }
-
-    {
-        AES_ALIGN(unsigned char, 16) bytes[16];
-
-        for (int i = 0; i < 16; ++i) {
-            int n;
-            unsigned int byte;
-            if (sscanf(cursor, "%2x%n", &byte, &n) != 1)
-                return aes_error_parse(err_details, src, "a 256-bit block");
-            bytes[i] = (unsigned char)byte;
-            cursor += n;
-        }
-
-        dest->hi = aes_load_block_aligned(bytes);
-    }
-
-    return AES_SUCCESS;
+    return status;
 }

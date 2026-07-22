@@ -77,19 +77,12 @@ AES_StatusCode aes_parse_block(AES_Block* dest, const char* src, AES_ErrorDetail
     if (src == NULL)
         return aes_error_null_argument(err_details, "src");
 
-    const char* cursor = src;
-
     AES_ALIGN(unsigned char, 16) bytes[16];
 
-    for (int i = 0; i < 16; ++i) {
-        int n;
-        unsigned int byte;
-        if (sscanf(cursor, "%2x%n", &byte, &n) != 1)
-            return aes_error_parse(err_details, src, "a 128-bit block");
-        bytes[i] = (unsigned char)byte;
-        cursor += n;
-    }
+    AES_StatusCode status = aes_parse_hex_string(bytes, src, sizeof(bytes), err_details);
+    if (aes_is_error(status))
+        return status;
 
     *dest = aes_load_block_aligned(bytes);
-    return AES_SUCCESS;
+    return status;
 }
