@@ -28,20 +28,17 @@ public:
     }
 
     virtual void parse(int argc, char* argv[]) {
-        boost::program_options::options_description all;
+        namespace po = boost::program_options;
+        po::options_description all;
         all.add(hidden).add(visible);
-        boost::program_options::variables_map vm;
-        boost::program_options::store(
-            boost::program_options::command_line_parser{argc, argv}
-                .options(all)
-                .positional(positional)
-                .run(),
-            vm
+        po::variables_map vm;
+        po::store(
+            po::command_line_parser{argc, argv}.options(all).positional(positional).run(), vm
         );
         if (vm.count("help"))
             _exit_with_usage = true;
         else
-            boost::program_options::notify(vm);
+            po::notify(vm);
     }
 
     bool exit_with_usage() const {

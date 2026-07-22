@@ -8,16 +8,20 @@
 #include <aesxx/all.hpp>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/optional.hpp>
+#include <boost/any.hpp>
 #include <boost/program_options.hpp>
 
-#include <istream>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
-inline std::istream& operator>>(std::istream& is, aes::Mode& dest) {
-    std::string src;
-    is >> src;
+namespace boost {
+
+inline void validate(any& dest, const std::vector<std::string>& values, aes::Mode*, int) {
+    using namespace program_options;
+
+    validators::check_first_occurrence(dest);
+    const auto& src = validators::get_single_string(values);
 
     static const std::unordered_map<std::string, aes::Mode> lookup_table = {
         {"ecb", AES_ECB},
@@ -27,18 +31,17 @@ inline std::istream& operator>>(std::istream& is, aes::Mode& dest) {
         {"ctr", AES_CTR},
     };
 
-    const auto it = lookup_table.find(boost::algorithm::to_lower_copy(src));
-
+    const auto it = lookup_table.find(algorithm::to_lower_copy(src));
     if (it == lookup_table.cend())
-        throw boost::program_options::invalid_option_value(src);
-
+        throw invalid_option_value(src);
     dest = it->second;
-    return is;
 }
 
-inline std::istream& operator>>(std::istream& is, aes::Algorithm& dest) {
-    std::string src;
-    is >> src;
+inline void validate(any& dest, const std::vector<std::string>& values, aes::Algorithm*, int) {
+    using namespace program_options;
+
+    validators::check_first_occurrence(dest);
+    const auto& src = validators::get_single_string(values);
 
     static const std::unordered_map<std::string, aes::Algorithm> lookup_table = {
         {"aes128", AES_AES128},
@@ -46,16 +49,11 @@ inline std::istream& operator>>(std::istream& is, aes::Algorithm& dest) {
         {"aes256", AES_AES256},
     };
 
-    const auto it = lookup_table.find(boost::algorithm::to_lower_copy(src));
-
+    const auto it = lookup_table.find(algorithm::to_lower_copy(src));
     if (it == lookup_table.cend())
-        throw boost::program_options::invalid_option_value(src);
-
+        throw invalid_option_value(src);
     dest = it->second;
-    return is;
 }
-
-namespace boost {
 
 inline void validate(any& dest, const std::vector<std::string>& values, aes::Block*, int) {
     const std::string& src = program_options::validators::get_single_string(values);

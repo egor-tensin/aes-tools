@@ -50,20 +50,14 @@ public:
     };
 
     explicit BlockSettings(std::string_view argv0) : SettingsParser{argv0} {
+        namespace po = boost::program_options;
+
+        visible.add_options()("verbose,v", po::bool_switch(&_verbose), "enable verbose output");
         visible.add_options()(
-            "verbose,v", boost::program_options::bool_switch(&_verbose), "enable verbose output"
+            "algorithm,a", po::value(&algorithm)->required()->value_name("NAME"), "set algorithm"
         );
         visible.add_options()(
-            "algorithm,a",
-            boost::program_options::value<aes::Algorithm>(&algorithm)
-                ->required()
-                ->value_name("NAME"),
-            "set algorithm"
-        );
-        visible.add_options()(
-            "mode,m",
-            boost::program_options::value<aes::Mode>(&mode)->required()->value_name("MODE"),
-            "set mode of operation"
+            "mode,m", po::value(&mode)->required()->value_name("MODE"), "set mode of operation"
         );
     }
 
@@ -74,11 +68,7 @@ public:
 
     void parse(int argc, char* argv[]) override {
         std::vector<std::string> args;
-        hidden.add_options()(
-            "args",
-            boost::program_options::value<std::vector<std::string>>(&args),
-            "shouldn't be visible"
-        );
+        hidden.add_options()("args", boost::program_options::value(&args), "shouldn't be visible");
         positional.add("args", -1);
 
         SettingsParser::parse(argc, argv);

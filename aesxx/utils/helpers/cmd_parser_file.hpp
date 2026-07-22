@@ -14,46 +14,32 @@
 #include <boost/program_options.hpp>
 
 #include <optional>
-#include <ostream>
 #include <string>
 #include <string_view>
-#include <utility>
 
 class FileSettings : public SettingsParser {
 public:
     explicit FileSettings(std::string_view argv0) : SettingsParser{argv0} {
+        namespace po = boost::program_options;
+
         visible.add_options()(
-            "algorithm,a",
-            boost::program_options::value<aes::Algorithm>(&algorithm)
-                ->required()
-                ->value_name("NAME"),
-            "set algorithm"
+            "algorithm,a", po::value(&algorithm)->required()->value_name("NAME"), "set algorithm"
         );
         visible.add_options()(
-            "mode,m",
-            boost::program_options::value<aes::Mode>(&mode)->required()->value_name("MODE"),
-            "set mode of operation"
+            "mode,m", po::value(&mode)->required()->value_name("MODE"), "set mode of operation"
         );
         visible.add_options()(
-            "key,k",
-            boost::program_options::value<std::string>(&key)->required()->value_name("KEY"),
-            "set encryption key"
+            "key,k", po::value(&key)->required()->value_name("KEY"), "set encryption key"
         );
         visible.add_options()(
-            "iv,v",
-            boost::program_options::value(&iv)->value_name("BLOCK"),
-            "set initialization vector"
+            "iv,v", po::value(&iv)->value_name("BLOCK"), "set initialization vector"
         );
         visible.add_options()(
-            "input,i",
-            boost::program_options::value<std::string>(&input_path)->required()->value_name("PATH"),
-            "set input file path"
+            "input,i", po::value(&input_path)->required()->value_name("PATH"), "set input file path"
         );
         visible.add_options()(
             "output,o",
-            boost::program_options::value<std::string>(&output_path)
-                ->required()
-                ->value_name("PATH"),
+            po::value(&output_path)->required()->value_name("PATH"),
             "set output file path"
         );
     }
