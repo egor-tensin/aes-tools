@@ -8,6 +8,7 @@
 #include <aesxx/all.hpp>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/optional.hpp>
 #include <boost/program_options.hpp>
 
 #include <istream>
@@ -53,3 +54,12 @@ inline std::istream& operator>>(std::istream& is, aes::Algorithm& dest) {
     dest = it->second;
     return is;
 }
+
+namespace boost {
+
+inline void validate(any& dest, const std::vector<std::string>& values, aes::Block*, int) {
+    const std::string& src = program_options::validators::get_single_string(values);
+    dest = aes::Block{src};
+}
+
+} // namespace boost

@@ -135,32 +135,29 @@ class Tools:
         return args
 
     @staticmethod
-    def _block_settings_to_args(algorithm, mode, use_boxes=False):
-        args = [
+    def _block_settings_to_args(algorithm, mode):
+        return [
             "--algorithm",
             str(algorithm),
             "--mode",
             str(mode),
         ]
-        if use_boxes:
-            args.append("--use-boxes")
-        return args
 
     @staticmethod
-    def _build_block_args(algorithm, mode, inputs, use_boxes=False):
-        args = Tools._block_settings_to_args(algorithm, mode, use_boxes)
+    def _build_block_args(algorithm, mode, inputs):
+        args = Tools._block_settings_to_args(algorithm, mode)
         if isinstance(inputs, Iterable):
             args.extend(Tools._block_inputs_to_args(iter(inputs)))
         else:
             args.extend(inputs.to_args())
         return args
 
-    def run_encrypt_block(self, algorithm, mode, inputs, use_boxes=False):
-        args = self._build_block_args(algorithm, mode, inputs, use_boxes)
+    def run_encrypt_block(self, algorithm, mode, inputs):
+        args = self._build_block_args(algorithm, mode, inputs)
         return self.run(self._ENCRYPT_BLOCK, args)
 
-    def run_decrypt_block(self, algorithm, mode, inputs, use_boxes=False):
-        args = self._build_block_args(algorithm, mode, inputs, use_boxes)
+    def run_decrypt_block(self, algorithm, mode, inputs):
+        args = self._build_block_args(algorithm, mode, inputs)
         return self.run(self._DECRYPT_BLOCK, args)
 
     @staticmethod

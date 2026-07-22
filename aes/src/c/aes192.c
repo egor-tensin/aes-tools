@@ -10,7 +10,7 @@
 #include <emmintrin.h>
 #include <wmmintrin.h>
 
-AES_Block __fastcall aes192_encrypt_block_(
+AES_Block __fastcall aes192_encrypt_block_internal(
     AES_Block plaintext,
     const AES192_RoundKeys* encryption_keys
 ) {
@@ -29,7 +29,7 @@ AES_Block __fastcall aes192_encrypt_block_(
     return _mm_aesenclast_si128(plaintext, encryption_keys->keys[12]);
 }
 
-AES_Block __fastcall aes192_decrypt_block_(
+AES_Block __fastcall aes192_decrypt_block_internal(
     AES_Block ciphertext,
     const AES192_RoundKeys* decryption_keys
 ) {
@@ -73,7 +73,7 @@ static void __fastcall aes192_expand_key_assist(
     *prev_hi = _mm_xor_si128(*prev_hi, tmp);
 }
 
-void __fastcall aes192_expand_key_(
+void __fastcall aes192_expand_key_internal(
     AES_Block key_lo,
     AES_Block key_hi,
     AES192_RoundKeys* encryption_keys
@@ -125,7 +125,7 @@ void __fastcall aes192_expand_key_(
     encryption_keys->keys[12] = key_lo;
 }
 
-void __fastcall aes192_derive_decryption_keys_(
+void __fastcall aes192_derive_decryption_keys_internal(
     const AES192_RoundKeys* encryption_keys,
     AES192_RoundKeys* decryption_keys
 ) {

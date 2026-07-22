@@ -19,6 +19,7 @@ typedef enum {
     AES_NOT_IMPLEMENTED_ERROR,
     AES_MISSING_PADDING_ERROR,
     AES_MEMORY_ALLOCATION_ERROR,
+    AES_MODE_REQUIRES_INIT_VECTOR_ERROR,
 } AES_StatusCode;
 
 static inline int aes_is_error(AES_StatusCode ec) {
@@ -68,6 +69,8 @@ AES_StatusCode aes_error_not_implemented(AES_ErrorDetails* err_details, const ch
 AES_StatusCode aes_error_missing_padding(AES_ErrorDetails* err_details);
 
 AES_StatusCode aes_error_memory_allocation(AES_ErrorDetails* err_details);
+
+AES_StatusCode aes_error_mode_requires_init_vector(AES_ErrorDetails* err_details);
 
 #ifdef __cplusplus
 }

@@ -9,7 +9,7 @@
 
 .code
 
-@aes128_encrypt_block_@20 proc
+@aes128_encrypt_block_internal@20 proc
     pxor xmm0, [ecx]
     aesenc xmm0, [ecx + 10h]
     aesenc xmm0, [ecx + 20h]
@@ -22,9 +22,9 @@
     aesenc xmm0, [ecx + 90h]
     aesenclast xmm0, [ecx + 0A0h]
     ret
-@aes128_encrypt_block_@20 endp
+@aes128_encrypt_block_internal@20 endp
 
-@aes128_decrypt_block_@20 proc
+@aes128_decrypt_block_internal@20 proc
     pxor xmm0, [ecx]
     aesdec xmm0, [ecx + 10h]
     aesdec xmm0, [ecx + 20h]
@@ -37,9 +37,9 @@
     aesdec xmm0, [ecx + 90h]
     aesdeclast xmm0, [ecx + 0A0h]
     ret
-@aes128_decrypt_block_@20 endp
+@aes128_decrypt_block_internal@20 endp
 
-@aes128_expand_key_@20 proc
+@aes128_expand_key_internal@20 proc
     ; A "word" (in terms of the FIPS 187 standard) is a 32-bit block.
     ; Words are denoted by `w[N]`.
     ;
@@ -166,9 +166,9 @@ aes128_keygen_assist:
     add ecx, 10h          ; ecx = &w[i+8]
 
     ret
-@aes128_expand_key_@20 endp
+@aes128_expand_key_internal@20 endp
 
-@aes128_derive_decryption_keys_@8 proc
+@aes128_derive_decryption_keys_internal@8 proc
     movdqa xmm5, [ecx]
     movdqa xmm4, [ecx + 0A0h]
     movdqa [edx], xmm4
@@ -198,6 +198,6 @@ aes128_keygen_assist:
     movdqa [edx + 50h], xmm5
 
     ret
-@aes128_derive_decryption_keys_@8 endp
+@aes128_derive_decryption_keys_internal@8 endp
 
 end

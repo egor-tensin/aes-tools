@@ -6,12 +6,14 @@
 #pragma once
 
 #include "algorithm.hpp"
+#include "data.hpp"
 #include "error.hpp"
 #include "mode.hpp"
 
 #include <aes/all.h>
 
 #include <cstddef>
+#include <iostream>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -20,43 +22,48 @@ namespace aes {
 
 class Box {
 public:
-    typedef AES_Block Block;
-    typedef AES_BoxKey Key;
+    using Key = AES_Key;
 
+    /*
     static std::string format_key(const Key& src, Algorithm algorithm) {
-        AES_BoxKeyString str;
-        aes_box_format_key(&str, algorithm, &src, ErrorDetailsThrowsInDestructor{});
+        AES_KeyString str;
+        aes_format_key(&str, algorithm, &src, ErrorDetailsThrowsInDestructor{});
         return reinterpret_cast<const char*>(&str);
     }
-
-    static std::string format_block(const Block& src) {
-        AES_BlockString str;
-        aes_format_block(&str, &src, ErrorDetailsThrowsInDestructor{});
-        return reinterpret_cast<const char*>(&str);
-    }
-
-    static void parse_block(Block& dest, std::string_view src) {
-        aes_parse_block(&dest, src.data(), ErrorDetailsThrowsInDestructor{});
-    }
+    */
 
     static void parse_key(Key& dest, Algorithm algorithm, std::string_view src) {
-        aes_box_parse_key(&dest, algorithm, src.data(), ErrorDetailsThrowsInDestructor{});
+        aes_parse_key(algorithm, &dest, src.data(), ErrorDetailsThrowsInDestructor{});
     }
 
-    Box(Algorithm algorithm, const Key& key) {
-        aes_box_init(&impl, algorithm, &key, AES_ECB, nullptr, ErrorDetailsThrowsInDestructor{});
+    Box(Algorithm algorithm, const Key& key, Mode mode, const std::optional<Block>& iv) {
+        aes_box_init(
+            &impl, algorithm, &key, mode, iv ? iv->ptr() : NULL, ErrorDetailsThrowsInDestructor{}
+        );
     }
 
-    Box(Algorithm algorithm, const Key& key, Mode mode, const Block& iv) {
-        aes_box_init(&impl, algorithm, &key, mode, &iv, ErrorDetailsThrowsInDestructor{});
+    Algorithm get_algorithm() const {
+        return impl.algorithm;
+    }
+
+    Mode get_mode() const {
+        return impl.mode;
     }
 
     void encrypt_block(const Block& plaintext, Block& ciphertext) {
-        aes_box_encrypt_block(&impl, &plaintext, &ciphertext, ErrorDetailsThrowsInDestructor{});
+        dump_block("Plaintext", plaintext);
+        aes_box_encrypt_block(
+            &impl, plaintext.ptr(), ciphertext.ptr(), ErrorDetailsThrowsInDestructor{}
+        );
+        dump_block("Ciphertext", ciphertext);
     }
 
     void decrypt_block(const Block& ciphertext, Block& plaintext) {
-        aes_box_decrypt_block(&impl, &ciphertext, &plaintext, ErrorDetailsThrowsInDestructor{});
+        dump_block("Ciphertext", ciphertext);
+        aes_box_decrypt_block(
+            &impl, ciphertext.ptr(), plaintext.ptr(), ErrorDetailsThrowsInDestructor{}
+        );
+        dump_block("Plaintext", plaintext);
     }
 
     std::vector<unsigned char> encrypt_buffer(const void* src_buf, std::size_t src_size) {
@@ -105,26 +112,16 @@ public:
         return dest_buf;
     }
 
-    std::string format_key(const Key& src) {
-        return format_key(src, get_algorithm());
-    }
-
-    void parse_key(Key& dest, std::string_view src) {
-        parse_key(dest, get_algorithm(), src);
-    }
-
-    Algorithm get_algorithm() const {
-        return impl.algorithm;
-    }
-
-    Mode get_mode() const {
-        return impl.mode;
-    }
-
 private:
-    Key key;
+    void dump_block(std::string_view header, const Block& block) {
+        if (verbose > 0)
+            std::cout << std::format("{}: {}\n", header, block.to_string());
+        if (verbose > 1)
+            std::cout << std::format("{}\n", block.to_matrix_string());
+    }
 
     AES_Box impl;
+    int verbose = 0;
 };
 
 } // namespace aes

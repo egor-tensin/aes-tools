@@ -12,8 +12,6 @@ Block encryption utilities can produce verbose human-readable output, including
 round keys, intermediate initialization vector values, etc.
 They are primarily intended for debugging purposes.
 Enable verbose output by passing the `--verbose` flag.
-Please note that verbose output can only be produced when *not* using the
-"boxes" interface (the `--use-boxes` flag).
 
 ### encrypt_block
 

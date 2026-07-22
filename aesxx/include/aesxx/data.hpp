@@ -5,40 +5,54 @@
 
 #pragma once
 
+#include "algorithm.hpp"
 #include "error.hpp"
 
 #include <aes/all.h>
 
+#include <string>
+#include <string_view>
+
 namespace aes {
 
-typedef AES_Block Block128;
+class Block {
+public:
+    static Block parse(std::string_view src) {
+        return Block{src};
+    }
 
-inline void make_block(Block128& dest, int hi3, int hi2, int lo1, int lo0) {
-    dest = aes_make_block(hi3, hi2, lo1, lo0);
-}
+    explicit Block(AES_Block impl) : impl{impl} {}
 
-inline void load_block(Block128& dest, const void* src) {
-    dest = aes_load_block(src);
-}
+    Block(int hi3, int hi2, int lo1, int lo0) : impl{aes_make_block(hi3, hi2, lo1, lo0)} {}
 
-inline void load_block_aligned(Block128& dest, const void* src) {
-    dest = aes_load_block_aligned(src);
-}
+    Block() : Block{0, 0, 0, 0} {}
 
-inline void store_block(void* dest, Block128& src) {
-    aes_store_block(dest, src);
-}
+    explicit Block(std::string_view src) {
+        aes_parse_block(&impl, src.data(), ErrorDetailsThrowsInDestructor{});
+    }
 
-inline void store_block_aligned(void* dest, Block128& src) {
-    aes_store_block_aligned(dest, src);
-}
+    AES_Block* ptr() {
+        return &impl;
+    }
 
-inline Block128 xor_blocks(Block128& a, Block128& b) {
-    return aes_xor_blocks(a, b);
-}
+    const AES_Block* ptr() const {
+        return &impl;
+    }
 
-inline Block128 inc_block(Block128& block) {
-    return aes_inc_block(block);
-}
+    std::string to_string() const {
+        AES_BlockString str;
+        aes_format_block(&str, &impl, ErrorDetailsThrowsInDestructor{});
+        return str.str;
+    }
+
+    std::string to_matrix_string() const {
+        AES_BlockMatrixString str;
+        aes_format_block_as_matrix(&str, &impl, ErrorDetailsThrowsInDestructor{});
+        return str.str;
+    }
+
+private:
+    AES_Block impl;
+};
 
 } // namespace aes

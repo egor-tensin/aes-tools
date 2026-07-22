@@ -6,8 +6,9 @@
 #pragma once
 
 #include "algorithm.h"
-#include "box_data.h"
+#include "block.h"
 #include "error.h"
+#include "mode.h"
 
 #include <stdlib.h>
 
@@ -15,40 +16,21 @@
 extern "C" {
 #endif
 
+typedef struct {
+    AES_Algorithm algorithm;
+    AES_Mode mode;
+    AES_Block iv;
+    AES_EncryptionRoundKeys encryption_keys;
+    AES_DecryptionRoundKeys decryption_keys;
+    const AES_Ops* ops;
+} AES_Box;
+
 AES_StatusCode aes_box_init(
     AES_Box* box,
     AES_Algorithm algorithm,
-    const AES_BoxKey* box_key,
+    const AES_Key* box_key,
     AES_Mode mode,
     const AES_Block* iv,
-    AES_ErrorDetails* err_details
-);
-
-AES_StatusCode aes_box_parse_key(
-    AES_BoxKey* dest,
-    AES_Algorithm algorithm,
-    const char* src,
-    AES_ErrorDetails* err_details
-);
-
-AES_StatusCode aes_box_parse_block(
-    AES_Block* dest,
-    AES_Algorithm algorithm,
-    const char* src,
-    AES_ErrorDetails* err_details
-);
-
-AES_StatusCode aes_box_format_key(
-    AES_BoxKeyString* dest,
-    AES_Algorithm algorithm,
-    const AES_BoxKey* src,
-    AES_ErrorDetails* err_details
-);
-
-AES_StatusCode aes_box_format_block(
-    AES_BlockString* dest,
-    AES_Algorithm algorithm,
-    const AES_Block* src,
     AES_ErrorDetails* err_details
 );
 

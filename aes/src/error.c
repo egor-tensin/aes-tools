@@ -220,3 +220,7 @@ AES_StatusCode aes_error_missing_padding(AES_ErrorDetails* err_details) {
 AES_StatusCode aes_error_memory_allocation(AES_ErrorDetails* err_details) {
     return aes_make_error(err_details, AES_MEMORY_ALLOCATION_ERROR);
 }
+
+AES_StatusCode aes_error_mode_requires_init_vector(AES_ErrorDetails* err_details) {
+    return aes_make_error(err_details, AES_MODE_REQUIRES_INIT_VECTOR_ERROR);
+}

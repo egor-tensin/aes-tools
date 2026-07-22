@@ -10,16 +10,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-static const AES_BoxOps* aes_box_ops_list[] = {
-    &aes128_box_ops,
-    &aes192_box_ops,
-    &aes256_box_ops,
-};
-
 AES_StatusCode aes_box_init(
     AES_Box* box,
     AES_Algorithm algorithm,
-    const AES_BoxKey* box_key,
+    const AES_Key* box_key,
     AES_Mode mode,
     const AES_Block* iv,
     AES_ErrorDetails* err_details
@@ -28,13 +22,16 @@ AES_StatusCode aes_box_init(
 
     box->algorithm = algorithm;
     box->mode = mode;
-    if (iv != NULL)
-        box->iv = *iv;
-    box->ops = aes_box_ops_list[algorithm];
 
-    status = box->ops->calc_round_keys(
-        box_key, &box->encryption_keys, &box->decryption_keys, err_details
-    );
+    if (!iv && aes_mode_requires_init_vector(mode))
+        return aes_error_mode_requires_init_vector(err_details);
+    if (iv)
+        box->iv = *iv;
+
+    box->ops = aes_get_ops(algorithm);
+
+    status =
+        box->ops->expand_key(box_key, &box->encryption_keys, &box->decryption_keys, err_details);
     if (aes_is_error(status))
         return status;
 
@@ -532,32 +529,4 @@ AES_StatusCode aes_box_decrypt_buffer(
         *dest_size -= padding_size;
         return status;
     }
-}
-
-AES_StatusCode aes_box_parse_key(
-    AES_BoxKey* dest,
-    AES_Algorithm algorithm,
-    const char* src,
-    AES_ErrorDetails* err_details
-) {
-    if (dest == NULL)
-        return aes_error_null_argument(err_details, "dest");
-    if (src == NULL)
-        return aes_error_null_argument(err_details, "src");
-
-    return aes_box_ops_list[algorithm]->parse_key(dest, src, err_details);
-}
-
-AES_StatusCode aes_box_format_key(
-    AES_BoxKeyString* dest,
-    AES_Algorithm algorithm,
-    const AES_BoxKey* src,
-    AES_ErrorDetails* err_details
-) {
-    if (dest == NULL)
-        return aes_error_null_argument(err_details, "dest");
-    if (src == NULL)
-        return aes_error_null_argument(err_details, "src");
-
-    return aes_box_ops_list[algorithm]->format_key(dest, src, err_details);
 }

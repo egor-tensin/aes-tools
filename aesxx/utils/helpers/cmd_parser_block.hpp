@@ -14,6 +14,7 @@
 
 #include <deque>
 #include <iterator>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -23,32 +24,29 @@ class BlockSettings : public SettingsParser {
 public:
     class Input {
     public:
-        Input(std::string_view key, std::string_view iv, std::vector<std::string>&& blocks)
-            : key{key}, iv{iv}, blocks{std::move(blocks)} {}
-
-        Input(std::string key, std::vector<std::string>&& blocks)
-            : key{key}, blocks{std::move(blocks)} {}
+        Input(
+            std::string_view key,
+            std::optional<aes::Block>&& iv,
+            std::vector<aes::Block>&& blocks
+        )
+            : key{key}, iv{std::move(iv)}, blocks{std::move(blocks)} {}
 
         std::string get_key() const {
             return key;
         }
 
-        bool has_iv() const {
-            return !iv.empty();
-        }
-
-        std::string get_iv() const {
+        std::optional<aes::Block> get_iv() const {
             return iv;
         }
 
-        std::vector<std::string> get_blocks() const {
+        std::vector<aes::Block> get_blocks() const {
             return blocks;
         }
 
     private:
         std::string key;
-        std::string iv;
-        std::vector<std::string> blocks;
+        std::optional<aes::Block> iv;
+        std::vector<aes::Block> blocks;
     };
 
     explicit BlockSettings(std::string_view argv0) : SettingsParser{argv0} {
@@ -66,11 +64,6 @@ public:
             "mode,m",
             boost::program_options::value<aes::Mode>(&mode)->required()->value_name("MODE"),
             "set mode of operation"
-        );
-        visible.add_options()(
-            "use-boxes,b",
-            boost::program_options::bool_switch(&_use_boxes),
-            "use the \"boxes\" interface"
         );
     }
 
@@ -111,10 +104,6 @@ public:
         return inputs;
     }
 
-    bool use_boxes() const {
-        return _use_boxes;
-    }
-
     bool verbose() const {
         return _verbose;
     }
@@ -129,35 +118,30 @@ private:
         std::string key{std::move(src.front())};
         src.pop_front();
 
-        std::string iv;
+        std::optional<aes::Block> iv;
 
-        if (aes::mode_requires_init_vector(mode)) {
+        if (aes_mode_requires_init_vector(mode)) {
             if (src.empty()) {
                 throw boost::program_options::error{
                     "an initialization vector is required for the selected mode of operation"
                 };
             }
-            iv = std::move(src.front());
+            iv = aes::Block{std::move(src.front())};
             src.pop_front();
         }
 
-        auto blocks = parse_blocks(src);
-
-        if (aes::mode_requires_init_vector(mode))
-            return {key, iv, std::move(blocks)};
-        else
-            return {key, std::move(blocks)};
+        return {key, std::move(iv), parse_blocks(src)};
     }
 
-    static std::vector<std::string> parse_blocks(std::deque<std::string>& src) {
-        std::vector<std::string> blocks;
+    static std::vector<aes::Block> parse_blocks(std::deque<std::string>& src) {
+        std::vector<aes::Block> blocks;
 
         while (!src.empty()) {
             std::string block{std::move(src.front())};
             src.pop_front();
             if (block == "--")
                 break;
-            blocks.emplace_back(std::move(block));
+            blocks.emplace_back(aes::Block{std::move(block)});
         }
 
         return blocks;
@@ -167,6 +151,5 @@ private:
     aes::Mode mode;
     std::vector<Input> inputs;
 
-    bool _use_boxes = false;
     bool _verbose = false;
 };

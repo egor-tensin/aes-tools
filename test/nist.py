@@ -184,7 +184,7 @@ class TestExitCode(Enum):
     SUCCESS, FAILURE, ERROR, SKIPPED = range(1, 5)
 
 
-def run_encryption_test(tools, algorithm, mode, use_boxes=False):
+def run_encryption_test(tools, algorithm, mode):
     logging.debug("Running encryption test...")
     logging.debug("Algorithm: %s", algorithm)
     logging.debug("Mode: %s", mode)
@@ -195,7 +195,7 @@ def run_encryption_test(tools, algorithm, mode, use_boxes=False):
         iv = get_test_iv(algorithm, mode)
         expected_ciphertexts = get_test_ciphertexts(algorithm, mode)
         input_ = BlockInput(key, plaintexts, iv=iv)
-        actual_ciphertexts = tools.run_encrypt_block(algorithm, mode, input_, use_boxes)
+        actual_ciphertexts = tools.run_encrypt_block(algorithm, mode, input_)
         if verify_test_output(actual_ciphertexts, expected_ciphertexts):
             return TestExitCode.SUCCESS
         return TestExitCode.FAILURE
@@ -205,7 +205,7 @@ def run_encryption_test(tools, algorithm, mode, use_boxes=False):
         return TestExitCode.ERROR
 
 
-def run_decryption_test(tools, algorithm, mode, use_boxes=False):
+def run_decryption_test(tools, algorithm, mode):
     logging.debug("Running decryption test...")
     logging.debug("Algorithm: %s", algorithm)
     logging.debug("Mode: %s", mode)
@@ -216,7 +216,7 @@ def run_decryption_test(tools, algorithm, mode, use_boxes=False):
         iv = get_test_iv(algorithm, mode)
         expected_plaintexts = get_test_plaintexts(algorithm, mode)
         input_ = BlockInput(key, ciphertexts, iv=iv)
-        actual_plaintexts = tools.run_decrypt_block(algorithm, mode, input_, use_boxes)
+        actual_plaintexts = tools.run_decrypt_block(algorithm, mode, input_)
         if verify_test_output(actual_plaintexts, expected_plaintexts):
             return TestExitCode.SUCCESS
         return TestExitCode.FAILURE
@@ -226,17 +226,13 @@ def run_decryption_test(tools, algorithm, mode, use_boxes=False):
         return TestExitCode.ERROR
 
 
-def run_tests(tools_path=(), use_sde=False, use_boxes=False, verbose=False):
+def run_tests(tools_path=(), use_sde=False, verbose=False):
     tools = Tools(tools_path, use_sde=use_sde)
 
     exit_codes = []
     for algorithm, mode in get_tested_algorithms_and_modes():
-        exit_codes.append(
-            run_encryption_test(tools, algorithm, mode, use_boxes=use_boxes)
-        )
-        exit_codes.append(
-            run_decryption_test(tools, algorithm, mode, use_boxes=use_boxes)
-        )
+        exit_codes.append(run_encryption_test(tools, algorithm, mode))
+        exit_codes.append(run_decryption_test(tools, algorithm, mode))
 
     logging.info("Test exit codes:")
     logging.info("\tSkipped:   %d", exit_codes.count(TestExitCode.SKIPPED))
@@ -271,13 +267,6 @@ def _parse_args(args=None):
         action="store_true",
         dest="use_sde",
         help="use Intel SDE to run the utilities",
-    )
-    parser.add_argument(
-        "--boxes",
-        "-b",
-        action="store_true",
-        dest="use_boxes",
-        help='use the "boxes" interface',
     )
     parser.add_argument(
         "--verbose", "-v", action="store_true", help="verbose log output"

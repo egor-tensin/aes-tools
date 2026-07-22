@@ -10,7 +10,7 @@
 #include <emmintrin.h>
 #include <wmmintrin.h>
 
-AES_Block __fastcall aes128_encrypt_block_(
+AES_Block __fastcall aes128_encrypt_block_internal(
     AES_Block plaintext,
     const AES128_RoundKeys* encryption_keys
 ) {
@@ -27,7 +27,7 @@ AES_Block __fastcall aes128_encrypt_block_(
     return _mm_aesenclast_si128(plaintext, encryption_keys->keys[10]);
 }
 
-AES_Block __fastcall aes128_decrypt_block_(
+AES_Block __fastcall aes128_decrypt_block_internal(
     AES_Block ciphertext,
     const AES128_RoundKeys* decryption_keys
 ) {
@@ -60,7 +60,7 @@ static AES_Block __fastcall aes128_expand_key_assist(AES_Block prev, AES_Block h
     return prev;
 }
 
-void __fastcall aes128_expand_key_(AES_Block key, AES128_RoundKeys* encryption_keys) {
+void __fastcall aes128_expand_key_internal(AES_Block key, AES128_RoundKeys* encryption_keys) {
     AES_Block prev = encryption_keys->keys[0] = key;
     prev = encryption_keys->keys[1] =
         aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x01));
@@ -84,7 +84,7 @@ void __fastcall aes128_expand_key_(AES_Block key, AES128_RoundKeys* encryption_k
         aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x36));
 }
 
-void __fastcall aes128_derive_decryption_keys_(
+void __fastcall aes128_derive_decryption_keys_internal(
     const AES128_RoundKeys* encryption_keys,
     AES128_RoundKeys* decryption_keys
 ) {

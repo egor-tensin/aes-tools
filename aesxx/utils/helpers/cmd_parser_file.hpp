@@ -10,8 +10,10 @@
 
 #include <aesxx/all.hpp>
 
+#include <boost/optional.hpp>
 #include <boost/program_options.hpp>
 
+#include <optional>
 #include <ostream>
 #include <string>
 #include <string_view>
@@ -39,7 +41,7 @@ public:
         );
         visible.add_options()(
             "iv,v",
-            boost::program_options::value<std::string>(&iv)->value_name("BLOCK"),
+            boost::program_options::value(&iv)->value_name("BLOCK"),
             "set initialization vector"
         );
         visible.add_options()(
@@ -66,12 +68,6 @@ public:
         SettingsParser::parse(argc, argv);
         if (exit_with_usage())
             return;
-
-        if (aes::mode_requires_init_vector(get_mode()) && iv.empty()) {
-            throw boost::program_options::error{
-                "an initialization vector is required for the selected mode of operation"
-            };
-        }
     }
 
     aes::Algorithm get_algorithm() const {
@@ -94,12 +90,10 @@ public:
         return key;
     }
 
-    bool has_iv() const {
-        return !iv.empty();
-    }
-
-    std::string get_iv() const {
-        return iv;
+    std::optional<aes::Block> get_iv() const {
+        if (iv)
+            return {*iv};
+        return {};
     }
 
 private:
@@ -110,5 +104,5 @@ private:
     std::string output_path;
 
     std::string key;
-    std::string iv;
+    boost::optional<aes::Block> iv;
 };

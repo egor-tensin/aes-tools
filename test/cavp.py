@@ -101,42 +101,36 @@ class TestFile:
         for i in range(0, len(inputs), max_len):
             yield expected_output[i : i + max_len], inputs[i : i + max_len]
 
-    def _run_tests(self, tool, inputs, expected_output, use_boxes=False):
+    def _run_tests(self, tool, inputs, expected_output):
         for expected_output_chunk, input_chunk in self._split_into_chunks(
             expected_output, list(inputs)
         ):
-            actual_output = tool(
-                self.algorithm(), self.mode(), input_chunk, use_boxes=use_boxes
-            )
+            actual_output = tool(self.algorithm(), self.mode(), input_chunk)
             if not verify_test_output(actual_output, expected_output_chunk):
                 return TestExitCode.FAILURE
         return TestExitCode.SUCCESS
 
-    def run_encryption_tests(self, tools, use_boxes=False):
+    def run_encryption_tests(self, tools):
         logging.debug("Running encryption tests...")
         if not self.recognized():
             return TestExitCode.SKIPPED
         try:
             keys, plaintexts, ciphertexts, init_vectors = self._encryption_data
             inputs = self._gen_inputs(keys, plaintexts, init_vectors)
-            return self._run_tests(
-                tools.run_encrypt_block, inputs, ciphertexts, use_boxes
-            )
+            return self._run_tests(tools.run_encrypt_block, inputs, ciphertexts)
         except CalledProcessError as e:
             logging.error("Encountered an exception!")
             logging.exception(e)
             return TestExitCode.ERROR
 
-    def run_decryption_tests(self, tools, use_boxes=False):
+    def run_decryption_tests(self, tools):
         logging.debug("Running decryption tests...")
         if not self.recognized():
             return TestExitCode.SKIPPED
         try:
             keys, plaintexts, ciphertexts, init_vectors = self._decryption_data
             inputs = self._gen_inputs(keys, ciphertexts, init_vectors)
-            return self._run_tests(
-                tools.run_decrypt_block, inputs, plaintexts, use_boxes
-            )
+            return self._run_tests(tools.run_decrypt_block, inputs, plaintexts)
         except CalledProcessError as e:
             logging.error("Encountered an exception!")
             logging.exception(e)
@@ -209,16 +203,14 @@ class TestArchive(zipfile.ZipFile):
 _script_dir = os.path.dirname(__file__)
 
 
-def run_tests(
-    archive_path, tools_path=(), use_sde=False, use_boxes=False, verbose=False
-):
+def run_tests(archive_path, tools_path=(), use_sde=False, verbose=False):
     tools = Tools(tools_path, use_sde=use_sde)
     archive = TestArchive(archive_path)
     exit_codes = []
 
     for test_file in archive.enum_test_files():
-        exit_codes.append(test_file.run_encryption_tests(tools, use_boxes))
-        exit_codes.append(test_file.run_decryption_tests(tools, use_boxes))
+        exit_codes.append(test_file.run_encryption_tests(tools))
+        exit_codes.append(test_file.run_decryption_tests(tools))
 
     logging.info("Test exit codes:")
     logging.info("\tSkipped:   %d", exit_codes.count(TestExitCode.SKIPPED))
@@ -253,13 +245,6 @@ def _parse_args(args=None):
         action="store_true",
         dest="use_sde",
         help="use Intel SDE to run the utilities",
-    )
-    parser.add_argument(
-        "--boxes",
-        "-b",
-        action="store_true",
-        dest="use_boxes",
-        help='use the "boxes" interface',
     )
     parser.add_argument(
         "--archive",
