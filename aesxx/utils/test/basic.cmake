@@ -63,4 +63,36 @@ foreach(action encrypt decrypt)
         --
         "$<TARGET_FILE:${tgt}>" -a aes192 -m cbc 000102030405060708090a0b0c0d0e0f1011121314151617
     )
+    add_test(NAME "${tgt}_invalid_key1" COMMAND Python3::Interpreter
+        "${CMAKE_SOURCE_DIR}/cmake/tools/ctest-driver.py"
+        run
+        --exit-code 1
+        --pass-regex [=[AES error: Couldn't parse '0001020304050607' \(possibly not complete input\) as a 256-bit block]=]
+        --
+        "$<TARGET_FILE:${tgt}>" -a aes256 -m ecb 0001020304050607
+    )
+    add_test(NAME "${tgt}_invalid_key2" COMMAND Python3::Interpreter
+        "${CMAKE_SOURCE_DIR}/cmake/tools/ctest-driver.py"
+        run
+        --exit-code 1
+        --pass-regex [=[AES error: Couldn't parse 'foobar' \(possibly not complete input\) as a 256-bit block]=]
+        --
+        "$<TARGET_FILE:${tgt}>" -a aes256 -m ecb foobar
+    )
+    add_test(NAME "${tgt}_invalid_iv" COMMAND Python3::Interpreter
+        "${CMAKE_SOURCE_DIR}/cmake/tools/ctest-driver.py"
+        run
+        --exit-code 1
+        --pass-regex [=[AES error: Couldn't parse '2222222222222222222222222222222' \(possibly not complete input\) as a 128-bit block]=]
+        --
+        "$<TARGET_FILE:${tgt}>" -a aes128 -m cbc 11111111111111111111111111111111 2222222222222222222222222222222
+    )
+    add_test(NAME "${tgt}_invalid_block" COMMAND Python3::Interpreter
+        "${CMAKE_SOURCE_DIR}/cmake/tools/ctest-driver.py"
+        run
+        --exit-code 1
+        --pass-regex [=[AES error: Couldn't parse '0' \(possibly not complete input\) as a 128-bit block]=]
+        --
+        "$<TARGET_FILE:${tgt}>" -a aes128 -m cbc 11111111111111111111111111111111 2222222222222222222222222222222 0
+    )
 endforeach()
