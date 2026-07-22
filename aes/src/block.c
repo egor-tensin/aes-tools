@@ -29,9 +29,6 @@ AES_StatusCode aes_format_block(
     const AES_Block* block,
     AES_ErrorDetails* err_details
 ) {
-    assert(str);
-    assert(block);
-
     if (str == NULL)
         return aes_error_null_argument(err_details, "str");
     if (block == NULL)
@@ -54,9 +51,6 @@ AES_StatusCode aes_format_block_as_matrix(
     const AES_Block* block,
     AES_ErrorDetails* err_details
 ) {
-    assert(str);
-    assert(block);
-
     if (str == NULL)
         return aes_error_null_argument(err_details, "str");
     if (block == NULL)
@@ -78,9 +72,6 @@ AES_StatusCode aes_format_block_as_matrix(
 }
 
 AES_StatusCode aes_parse_block(AES_Block* dest, const char* src, AES_ErrorDetails* err_details) {
-    assert(dest);
-    assert(src);
-
     if (dest == NULL)
         return aes_error_null_argument(err_details, "dest");
     if (src == NULL)

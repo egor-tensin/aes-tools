@@ -85,18 +85,37 @@ static AES_StatusCode aes_format_key_aes256(
     return aes256_format_key(&dest->aes256, &src->aes256_key, err_details);
 }
 
+static AES_StatusCode check_expand_key_params(
+    const AES_Key* key,
+    AES_EncryptionRoundKeys* encryption_keys,
+    AES_DecryptionRoundKeys* decryption_keys,
+    AES_ErrorDetails* err_details
+) {
+    if (key == NULL)
+        return aes_error_null_argument(err_details, "key");
+    if (encryption_keys == NULL)
+        return aes_error_null_argument(err_details, "encryption_keys");
+    if (decryption_keys == NULL)
+        return aes_error_null_argument(err_details, "decryption_keys");
+    return AES_SUCCESS;
+}
+
 static AES_StatusCode aes_expand_key_aes128(
     const AES_Key* key,
     AES_EncryptionRoundKeys* encryption_keys,
     AES_DecryptionRoundKeys* decryption_keys,
     AES_ErrorDetails* err_details
 ) {
-    AES_UNUSED_PARAMETER(err_details);
+    AES_StatusCode status =
+        check_expand_key_params(key, encryption_keys, decryption_keys, err_details);
+    if (aes_is_error(status))
+        return status;
+
     aes128_expand_key(&key->aes128_key, &encryption_keys->aes128_enc_keys);
     aes128_derive_decryption_keys(
         &encryption_keys->aes128_enc_keys, &decryption_keys->aes128_dec_keys
     );
-    return AES_SUCCESS;
+    return status;
 }
 
 static AES_StatusCode aes_expand_key_aes192(
@@ -105,12 +124,16 @@ static AES_StatusCode aes_expand_key_aes192(
     AES_DecryptionRoundKeys* decryption_keys,
     AES_ErrorDetails* err_details
 ) {
-    AES_UNUSED_PARAMETER(err_details);
+    AES_StatusCode status =
+        check_expand_key_params(key, encryption_keys, decryption_keys, err_details);
+    if (aes_is_error(status))
+        return status;
+
     aes192_expand_key(&key->aes192_key, &encryption_keys->aes192_enc_keys);
     aes192_derive_decryption_keys(
         &encryption_keys->aes192_enc_keys, &decryption_keys->aes192_dec_keys
     );
-    return AES_SUCCESS;
+    return status;
 }
 
 static AES_StatusCode aes_expand_key_aes256(
@@ -119,11 +142,45 @@ static AES_StatusCode aes_expand_key_aes256(
     AES_DecryptionRoundKeys* decryption_keys,
     AES_ErrorDetails* err_details
 ) {
-    AES_UNUSED_PARAMETER(err_details);
+    AES_StatusCode status =
+        check_expand_key_params(key, encryption_keys, decryption_keys, err_details);
+    if (aes_is_error(status))
+        return status;
+
     aes256_expand_key(&key->aes256_key, &encryption_keys->aes256_enc_keys);
     aes256_derive_decryption_keys(
         &encryption_keys->aes256_enc_keys, &decryption_keys->aes256_dec_keys
     );
+    return status;
+}
+
+static AES_StatusCode check_encrypt_params(
+    const AES_Block* input,
+    const AES_EncryptionRoundKeys* params,
+    AES_Block* output,
+    AES_ErrorDetails* err_details
+) {
+    if (input == NULL)
+        return aes_error_null_argument(err_details, "input");
+    if (params == NULL)
+        return aes_error_null_argument(err_details, "params");
+    if (output == NULL)
+        return aes_error_null_argument(err_details, "output");
+    return AES_SUCCESS;
+}
+
+static AES_StatusCode check_decrypt_params(
+    const AES_Block* input,
+    const AES_DecryptionRoundKeys* params,
+    AES_Block* output,
+    AES_ErrorDetails* err_details
+) {
+    if (input == NULL)
+        return aes_error_null_argument(err_details, "input");
+    if (params == NULL)
+        return aes_error_null_argument(err_details, "params");
+    if (output == NULL)
+        return aes_error_null_argument(err_details, "output");
     return AES_SUCCESS;
 }
 
@@ -133,9 +190,12 @@ static AES_StatusCode aes_encrypt_block_aes128(
     AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
-    AES_UNUSED_PARAMETER(err_details);
+    AES_StatusCode status = check_encrypt_params(input, params, output, err_details);
+    if (aes_is_error(status))
+        return status;
+
     *output = aes128_encrypt_block(*input, &params->aes128_enc_keys);
-    return AES_SUCCESS;
+    return status;
 }
 
 static AES_StatusCode aes_decrypt_block_aes128(
@@ -144,9 +204,12 @@ static AES_StatusCode aes_decrypt_block_aes128(
     AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
-    AES_UNUSED_PARAMETER(err_details);
+    AES_StatusCode status = check_decrypt_params(input, params, output, err_details);
+    if (aes_is_error(status))
+        return status;
+
     *output = aes128_decrypt_block(*input, &params->aes128_dec_keys);
-    return AES_SUCCESS;
+    return status;
 }
 
 static AES_StatusCode aes_encrypt_block_aes192(
@@ -155,9 +218,12 @@ static AES_StatusCode aes_encrypt_block_aes192(
     AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
-    AES_UNUSED_PARAMETER(err_details);
+    AES_StatusCode status = check_encrypt_params(input, params, output, err_details);
+    if (aes_is_error(status))
+        return status;
+
     *output = aes192_encrypt_block(*input, &params->aes192_enc_keys);
-    return AES_SUCCESS;
+    return status;
 }
 
 static AES_StatusCode aes_decrypt_block_aes192(
@@ -166,9 +232,12 @@ static AES_StatusCode aes_decrypt_block_aes192(
     AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
-    AES_UNUSED_PARAMETER(err_details);
+    AES_StatusCode status = check_decrypt_params(input, params, output, err_details);
+    if (aes_is_error(status))
+        return status;
+
     *output = aes192_decrypt_block(*input, &params->aes192_dec_keys);
-    return AES_SUCCESS;
+    return status;
 }
 
 static AES_StatusCode aes_encrypt_block_aes256(
@@ -177,9 +246,12 @@ static AES_StatusCode aes_encrypt_block_aes256(
     AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
-    AES_UNUSED_PARAMETER(err_details);
+    AES_StatusCode status = check_encrypt_params(input, params, output, err_details);
+    if (aes_is_error(status))
+        return status;
+
     *output = aes256_encrypt_block(*input, &params->aes256_enc_keys);
-    return AES_SUCCESS;
+    return status;
 }
 
 static AES_StatusCode aes_decrypt_block_aes256(
@@ -188,9 +260,12 @@ static AES_StatusCode aes_decrypt_block_aes256(
     AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
-    AES_UNUSED_PARAMETER(err_details);
+    AES_StatusCode status = check_decrypt_params(input, params, output, err_details);
+    if (aes_is_error(status))
+        return status;
+
     *output = aes256_decrypt_block(*input, &params->aes256_dec_keys);
-    return AES_SUCCESS;
+    return status;
 }
 
 static AES_Ops aes128_ops = {

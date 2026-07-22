@@ -139,6 +139,13 @@ AES_StatusCode aes_box_encrypt_block(
     AES_Block* output,
     AES_ErrorDetails* err_details
 ) {
+    if (box == NULL)
+        return aes_error_null_argument(err_details, "box");
+    if (input == NULL)
+        return aes_error_null_argument(err_details, "input");
+    if (output == NULL)
+        return aes_error_null_argument(err_details, "output");
+
     return aes_box_encrypt_block_in_mode[box->mode](box, input, output, err_details);
 }
 

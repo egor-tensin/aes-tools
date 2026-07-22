@@ -16,9 +16,6 @@ AES_StatusCode aes128_format_key(
     const AES128_Key* key,
     AES_ErrorDetails* err_details
 ) {
-    assert(str);
-    assert(key);
-
     if (str == NULL)
         return aes_error_null_argument(err_details, "str");
     if (key == NULL)
@@ -41,9 +38,6 @@ AES_StatusCode aes192_format_key(
     const AES192_Key* key,
     AES_ErrorDetails* err_details
 ) {
-    assert(str);
-    assert(key);
-
     if (str == NULL)
         return aes_error_null_argument(err_details, "str");
     if (key == NULL)
@@ -76,9 +70,6 @@ AES_StatusCode aes256_format_key(
     const AES256_Key* key,
     AES_ErrorDetails* err_details
 ) {
-    assert(str);
-    assert(key);
-
     if (str == NULL)
         return aes_error_null_argument(err_details, "str");
     if (key == NULL)
@@ -111,9 +102,6 @@ AES_StatusCode aes128_parse_key(AES128_Key* dest, const char* src, AES_ErrorDeta
 }
 
 AES_StatusCode aes192_parse_key(AES192_Key* dest, const char* src, AES_ErrorDetails* err_details) {
-    assert(dest);
-    assert(src);
-
     if (dest == NULL)
         return aes_error_null_argument(err_details, "dest");
     if (src == NULL)
@@ -156,9 +144,6 @@ AES_StatusCode aes192_parse_key(AES192_Key* dest, const char* src, AES_ErrorDeta
 }
 
 AES_StatusCode aes256_parse_key(AES256_Key* dest, const char* src, AES_ErrorDetails* err_details) {
-    assert(dest);
-    assert(src);
-
     if (dest == NULL)
         return aes_error_null_argument(err_details, "dest");
     if (src == NULL)

@@ -34,9 +34,6 @@ AES_StatusCode aes_extract_padding_size(
     size_t* padding_size,
     AES_ErrorDetails* err_details
 ) {
-    assert(src);
-    assert(padding_size);
-
     if (src == NULL)
         return aes_error_null_argument(err_details, "src");
     if (padding_size == NULL)
@@ -67,8 +64,6 @@ AES_StatusCode aes_fill_with_padding(
     size_t padding_size,
     AES_ErrorDetails* err_details
 ) {
-    assert(dest);
-
     if (dest == NULL)
         return aes_error_null_argument(err_details, "dest");
 
