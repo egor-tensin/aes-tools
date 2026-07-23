@@ -40,3 +40,19 @@ AES_StatusCode aes_parse_hex_string(
 
     return AES_SUCCESS;
 }
+
+char* aes_format_block_hex_partial(char* dest, AES_Block block, size_t numof_bytes) {
+    char* cursor = dest;
+
+    AES_ALIGN(unsigned char, 16) bytes[16];
+    aes_store_block_aligned(bytes, block);
+
+    for (size_t i = 0; i < numof_bytes; ++i, cursor += 2)
+        sprintf(cursor, "%02x", bytes[i]);
+
+    return cursor;
+}
+
+char* aes_format_block_hex(char* dest, AES_Block block) {
+    return aes_format_block_hex_partial(dest, block, 16);
+}

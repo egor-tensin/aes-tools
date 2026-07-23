@@ -21,14 +21,7 @@ AES_StatusCode aes128_format_key(
     if (key == NULL)
         return aes_error_null_argument(err_details, "key");
 
-    char* cursor = str->str;
-
-    AES_ALIGN(unsigned char, 16) bytes[16];
-    aes_store_block_aligned(bytes, key->key);
-
-    for (int i = 0; i < 16; ++i, cursor += 2)
-        sprintf(cursor, "%02x", bytes[i]);
-
+    char* cursor = aes_format_block_hex(str->str, key->key);
     *cursor = '\0';
     return AES_SUCCESS;
 }
@@ -43,24 +36,8 @@ AES_StatusCode aes192_format_key(
     if (key == NULL)
         return aes_error_null_argument(err_details, "key");
 
-    char* cursor = str->str;
-
-    {
-        AES_ALIGN(unsigned char, 16) bytes[16];
-        aes_store_block_aligned(bytes, key->lo);
-
-        for (int i = 0; i < 16; ++i, cursor += 2)
-            sprintf(cursor, "%02x", bytes[i]);
-    }
-
-    {
-        AES_ALIGN(unsigned char, 16) bytes[16];
-        aes_store_block_aligned(bytes, key->hi);
-
-        for (int i = 0; i < 8; ++i, cursor += 2)
-            sprintf(cursor, "%02x", bytes[i]);
-    }
-
+    char* cursor = aes_format_block_hex(str->str, key->lo);
+    cursor = aes_format_block_hex_partial(cursor, key->hi, 8);
     *cursor = '\0';
     return AES_SUCCESS;
 }
@@ -75,24 +52,8 @@ AES_StatusCode aes256_format_key(
     if (key == NULL)
         return aes_error_null_argument(err_details, "key");
 
-    char* cursor = str->str;
-
-    {
-        AES_ALIGN(unsigned char, 16) bytes[16];
-        aes_store_block_aligned(bytes, key->lo);
-
-        for (int i = 0; i < 16; ++i, cursor += 2)
-            sprintf(cursor, "%02x", bytes[i]);
-    }
-
-    {
-        AES_ALIGN(unsigned char, 16) bytes[16];
-        aes_store_block_aligned(bytes, key->hi);
-
-        for (int i = 0; i < 16; ++i, cursor += 2)
-            sprintf(cursor, "%02x", bytes[i]);
-    }
-
+    char* cursor = aes_format_block_hex(str->str, key->lo);
+    cursor = aes_format_block_hex(cursor, key->hi);
     *cursor = '\0';
     return AES_SUCCESS;
 }

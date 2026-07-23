@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "block.h"
 #include "error.h"
 
 #include <stdlib.h>
@@ -19,6 +20,9 @@ AES_StatusCode aes_parse_hex_string(
     size_t numof_bytes,
     AES_ErrorDetails* err_details
 );
+
+char* aes_format_block_hex(char* dest, AES_Block);
+char* aes_format_block_hex_partial(char* dest, AES_Block, size_t numof_bytes);
 
 #ifdef __cplusplus
 }

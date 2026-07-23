@@ -34,14 +34,7 @@ AES_StatusCode aes_format_block(
     if (block == NULL)
         return aes_error_null_argument(err_details, "block");
 
-    char* cursor = str->str;
-
-    AES_ALIGN(unsigned char, 16) bytes[16];
-    aes_store_block_aligned(bytes, *block);
-
-    for (int i = 0; i < 16; ++i, cursor += 2)
-        sprintf(cursor, "%02x", bytes[i]);
-
+    char* cursor = aes_format_block_hex(str->str, *block);
     *cursor = '\0';
     return AES_SUCCESS;
 }
