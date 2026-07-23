@@ -9,6 +9,7 @@
 
 #include "block.h"
 #include "round_keys.h"
+#include "workarounds.h"
 
 #include <assert.h>
 
@@ -16,13 +17,13 @@
 extern "C" {
 #endif
 
-AES_Block __fastcall aes128_encrypt_block_internal(AES_Block, const AES128_RoundKeys*);
-AES_Block __fastcall aes192_encrypt_block_internal(AES_Block, const AES192_RoundKeys*);
-AES_Block __fastcall aes256_encrypt_block_internal(AES_Block, const AES256_RoundKeys*);
+AES_Block AES_ASM_ATTR aes128_encrypt_block_internal(AES_Block, const AES128_RoundKeys*);
+AES_Block AES_ASM_ATTR aes192_encrypt_block_internal(AES_Block, const AES192_RoundKeys*);
+AES_Block AES_ASM_ATTR aes256_encrypt_block_internal(AES_Block, const AES256_RoundKeys*);
 
-AES_Block __fastcall aes128_decrypt_block_internal(AES_Block, const AES128_RoundKeys*);
-AES_Block __fastcall aes192_decrypt_block_internal(AES_Block, const AES192_RoundKeys*);
-AES_Block __fastcall aes256_decrypt_block_internal(AES_Block, const AES256_RoundKeys*);
+AES_Block AES_ASM_ATTR aes128_decrypt_block_internal(AES_Block, const AES128_RoundKeys*);
+AES_Block AES_ASM_ATTR aes192_decrypt_block_internal(AES_Block, const AES192_RoundKeys*);
+AES_Block AES_ASM_ATTR aes256_decrypt_block_internal(AES_Block, const AES256_RoundKeys*);
 
 static inline AES_Block aes128_encrypt_block(AES_Block plaintext, const AES128_RoundKeys* keys) {
     assert(keys);

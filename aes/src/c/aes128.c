@@ -10,10 +10,8 @@
 #include <emmintrin.h>
 #include <wmmintrin.h>
 
-AES_Block __fastcall aes128_encrypt_block_internal(
-    AES_Block plaintext,
-    const AES128_RoundKeys* encryption_keys
-) {
+AES_Block AES_ASM_ATTR
+aes128_encrypt_block_internal(AES_Block plaintext, const AES128_RoundKeys* encryption_keys) {
     plaintext = _mm_xor_si128(plaintext, encryption_keys->keys[0]);
     plaintext = _mm_aesenc_si128(plaintext, encryption_keys->keys[1]);
     plaintext = _mm_aesenc_si128(plaintext, encryption_keys->keys[2]);
@@ -27,10 +25,8 @@ AES_Block __fastcall aes128_encrypt_block_internal(
     return _mm_aesenclast_si128(plaintext, encryption_keys->keys[10]);
 }
 
-AES_Block __fastcall aes128_decrypt_block_internal(
-    AES_Block ciphertext,
-    const AES128_RoundKeys* decryption_keys
-) {
+AES_Block AES_ASM_ATTR
+aes128_decrypt_block_internal(AES_Block ciphertext, const AES128_RoundKeys* decryption_keys) {
     ciphertext = _mm_xor_si128(ciphertext, decryption_keys->keys[0]);
     ciphertext = _mm_aesdec_si128(ciphertext, decryption_keys->keys[1]);
     ciphertext = _mm_aesdec_si128(ciphertext, decryption_keys->keys[2]);
@@ -44,7 +40,7 @@ AES_Block __fastcall aes128_decrypt_block_internal(
     return _mm_aesdeclast_si128(ciphertext, decryption_keys->keys[10]);
 }
 
-static AES_Block __fastcall aes128_expand_key_assist(AES_Block prev, AES_Block hwgen) {
+static AES_Block AES_ASM_ATTR aes128_expand_key_assist(AES_Block prev, AES_Block hwgen) {
     AES_Block tmp = prev;
 
     tmp = _mm_slli_si128(tmp, 4);
@@ -60,7 +56,7 @@ static AES_Block __fastcall aes128_expand_key_assist(AES_Block prev, AES_Block h
     return prev;
 }
 
-void __fastcall aes128_expand_key_internal(AES_Block key, AES128_RoundKeys* encryption_keys) {
+void AES_ASM_ATTR aes128_expand_key_internal(AES_Block key, AES128_RoundKeys* encryption_keys) {
     AES_Block prev = encryption_keys->keys[0] = key;
     prev = encryption_keys->keys[1] =
         aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x01));
@@ -84,7 +80,7 @@ void __fastcall aes128_expand_key_internal(AES_Block key, AES128_RoundKeys* encr
         aes128_expand_key_assist(prev, _mm_aeskeygenassist_si128(prev, 0x36));
 }
 
-void __fastcall aes128_derive_decryption_keys_internal(
+void AES_ASM_ATTR aes128_derive_decryption_keys_internal(
     const AES128_RoundKeys* encryption_keys,
     AES128_RoundKeys* decryption_keys
 ) {

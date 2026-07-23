@@ -3,7 +3,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_library(aesxx INTERFACE)
 target_include_directories(aesxx INTERFACE include/)
-target_link_libraries(aesxx INTERFACE aes dbghelp)
+target_link_libraries(aesxx INTERFACE aes)
+if(WIN32)
+    target_link_libraries(aesxx INTERFACE dbghelp)
+endif()
 
 if(MSVC_VERSION EQUAL 1900)
     # These annoying dbghelp.h warnings:

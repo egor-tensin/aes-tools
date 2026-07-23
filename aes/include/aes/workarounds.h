@@ -16,3 +16,12 @@
 #endif
 
 #define AES_UNUSED_PARAMETER(...) (void)(__VA_ARGS__)
+
+/* Targetting 32-bit Windows, match the existing ASM implementation's behavior
+ * (__fastcall). Otherwise, do nothing, using the standard calling convention
+ * by default. */
+#if defined(_MSC_VER) && !defined(_WIN64)
+#define AES_ASM_ATTR __fastcall
+#else
+#define AES_ASM_ATTR
+#endif

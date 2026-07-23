@@ -10,6 +10,7 @@
 #include "block.h"
 #include "error.h"
 #include "key.h"
+#include "workarounds.h"
 
 #include <assert.h>
 
@@ -29,31 +30,25 @@ typedef struct {
     AES_Block keys[15];
 } AES256_RoundKeys;
 
-void __fastcall aes128_expand_key_internal(AES_Block key, AES128_RoundKeys* encryption_keys);
+void AES_ASM_ATTR aes128_expand_key_internal(AES_Block key, AES128_RoundKeys* encryption_keys);
 
-void __fastcall aes192_expand_key_internal(
-    AES_Block key_lo,
-    AES_Block key_hi,
-    AES192_RoundKeys* encryption_keys
-);
+void AES_ASM_ATTR
+aes192_expand_key_internal(AES_Block key_lo, AES_Block key_hi, AES192_RoundKeys* encryption_keys);
 
-void __fastcall aes256_expand_key_internal(
-    AES_Block key_lo,
-    AES_Block key_hi,
-    AES256_RoundKeys* encryption_keys
-);
+void AES_ASM_ATTR
+aes256_expand_key_internal(AES_Block key_lo, AES_Block key_hi, AES256_RoundKeys* encryption_keys);
 
-void __fastcall aes128_derive_decryption_keys_internal(
+void AES_ASM_ATTR aes128_derive_decryption_keys_internal(
     const AES128_RoundKeys* encryption_keys,
     AES128_RoundKeys* decryption_keys
 );
 
-void __fastcall aes192_derive_decryption_keys_internal(
+void AES_ASM_ATTR aes192_derive_decryption_keys_internal(
     const AES192_RoundKeys* encryption_keys,
     AES192_RoundKeys* decryption_keys
 );
 
-void __fastcall aes256_derive_decryption_keys_internal(
+void AES_ASM_ATTR aes256_derive_decryption_keys_internal(
     const AES256_RoundKeys* encryption_keys,
     AES256_RoundKeys* decryption_keys
 );

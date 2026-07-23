@@ -7,7 +7,7 @@ boost_dir   := $(build_dir)/boost
 cmake_dir   := $(build_dir)/cmake
 install_dir := $(build_dir)/install
 
-TOOLSET         ?= mingw
+TOOLSET         ?= auto
 PLATFORM        ?= auto
 CONFIGURATION   ?= Debug
 BOOST_VERSION   ?= 1.72.0

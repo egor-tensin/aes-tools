@@ -31,21 +31,19 @@ jobs:
   build:
     strategy:
       matrix:
-        toolset: [mingw, vs2022, vs2026]
+        toolset: [gcc, vs2022, vs2026]
         platform: [x64, x86]
         use_asm: [1, 0]
         configuration: [Debug, Release]
         include:
           - boost-version: 1.81.0
-          # MinGW builds are done on Linux, since it's more up-to-date there,
-          # and it's much faster.
-          - {toolset: mingw, os: ubuntu-latest}
+          - {toolset: gcc, os: ubuntu-latest}
           - {toolset: vs2022, os: windows-2022}
           # Boost only supports VS 2026 starting with version 1.91, I think?
           - {toolset: vs2026, os: windows-2025, boost-version: 1.91.0}
         exclude:
           - {platform: x64, use_asm: 1}
-          - {toolset: mingw, use_asm: 1}
+          - {toolset: gcc, use_asm: 1}
     runs-on: '${{ matrix.os }}'
     name: |
       Build: ${{ matrix.toolset }} / ${{ matrix.platform }} / ${{ matrix.use_asm && '+asm' || '-asm' }} / ${{ matrix.configuration }}
@@ -69,11 +67,11 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: '3.x'
-      - name: Set up MinGW
-        uses: egor-tensin/setup-mingw@v3
+      - name: Set up GCC
+        uses: egor-tensin/setup-gcc@v2
         with:
           platform: '${{ matrix.platform }}'
-        if: matrix.toolset == 'mingw'
+        if: matrix.toolset == 'gcc'
       - name: Build Boost
         run: make deps
       - name: Build
@@ -86,4 +84,3 @@ jobs:
           if-no-files-found: error
       - name: Test
         run: make test
-        if: runner.os == 'Windows'

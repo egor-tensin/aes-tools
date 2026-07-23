@@ -1,11 +1,16 @@
+list(APPEND utils block file)
+if(WIN32)
+    list(APPEND utils bmp)
+endif()
+
 foreach(action encrypt decrypt)
-    foreach(util block file bmp)
+    foreach(util ${utils})
         set(exe "${action}_${util}")
         set(tgt "util_${exe}")
         add_test(NAME "${tgt}_help" COMMAND Python3::Interpreter
             "${CMAKE_SOURCE_DIR}/cmake/tools/ctest-driver.py"
             run
-            --pass-regex "usage: ${exe}\\.exe" "set algorithm"
+            --pass-regex "usage: ${exe}" "set algorithm"
             --fail-regex "usage error:"
             --
             "$<TARGET_FILE:${tgt}>" -h
@@ -16,7 +21,7 @@ foreach(action encrypt decrypt)
             --exit-code 1
             --pass-regex
                 "usage error: the option '--algorithm' is required"
-                "usage: ${exe}\\.exe"
+                "usage: ${exe}"
                 "set algorithm"
             --
             "$<TARGET_FILE:${tgt}>"

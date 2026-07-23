@@ -10,10 +10,8 @@
 #include <emmintrin.h>
 #include <wmmintrin.h>
 
-AES_Block __fastcall aes192_encrypt_block_internal(
-    AES_Block plaintext,
-    const AES192_RoundKeys* encryption_keys
-) {
+AES_Block AES_ASM_ATTR
+aes192_encrypt_block_internal(AES_Block plaintext, const AES192_RoundKeys* encryption_keys) {
     plaintext = _mm_xor_si128(plaintext, encryption_keys->keys[0]);
     plaintext = _mm_aesenc_si128(plaintext, encryption_keys->keys[1]);
     plaintext = _mm_aesenc_si128(plaintext, encryption_keys->keys[2]);
@@ -29,10 +27,8 @@ AES_Block __fastcall aes192_encrypt_block_internal(
     return _mm_aesenclast_si128(plaintext, encryption_keys->keys[12]);
 }
 
-AES_Block __fastcall aes192_decrypt_block_internal(
-    AES_Block ciphertext,
-    const AES192_RoundKeys* decryption_keys
-) {
+AES_Block AES_ASM_ATTR
+aes192_decrypt_block_internal(AES_Block ciphertext, const AES192_RoundKeys* decryption_keys) {
     ciphertext = _mm_xor_si128(ciphertext, decryption_keys->keys[0]);
     ciphertext = _mm_aesdec_si128(ciphertext, decryption_keys->keys[1]);
     ciphertext = _mm_aesdec_si128(ciphertext, decryption_keys->keys[2]);
@@ -48,11 +44,8 @@ AES_Block __fastcall aes192_decrypt_block_internal(
     return _mm_aesdeclast_si128(ciphertext, decryption_keys->keys[12]);
 }
 
-static void __fastcall aes192_expand_key_assist(
-    AES_Block* prev_lo,
-    AES_Block* prev_hi,
-    AES_Block hwgen
-) {
+static void AES_ASM_ATTR
+aes192_expand_key_assist(AES_Block* prev_lo, AES_Block* prev_hi, AES_Block hwgen) {
     AES_Block tmp = *prev_lo;
 
     tmp = _mm_slli_si128(tmp, 4);
@@ -73,11 +66,8 @@ static void __fastcall aes192_expand_key_assist(
     *prev_hi = _mm_xor_si128(*prev_hi, tmp);
 }
 
-void __fastcall aes192_expand_key_internal(
-    AES_Block key_lo,
-    AES_Block key_hi,
-    AES192_RoundKeys* encryption_keys
-) {
+void AES_ASM_ATTR
+aes192_expand_key_internal(AES_Block key_lo, AES_Block key_hi, AES192_RoundKeys* encryption_keys) {
     encryption_keys->keys[0] = key_lo;
     encryption_keys->keys[1] = key_hi;
 
@@ -125,7 +115,7 @@ void __fastcall aes192_expand_key_internal(
     encryption_keys->keys[12] = key_lo;
 }
 
-void __fastcall aes192_derive_decryption_keys_internal(
+void AES_ASM_ATTR aes192_derive_decryption_keys_internal(
     const AES192_RoundKeys* encryption_keys,
     AES192_RoundKeys* decryption_keys
 ) {

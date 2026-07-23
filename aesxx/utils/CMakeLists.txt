@@ -35,13 +35,17 @@ set(file_util_headers
 add_util(encrypt_file encrypt_file.cpp ${file_util_headers})
 add_util(decrypt_file decrypt_file.cpp ${file_util_headers})
 
-set(bmp_util_headers ${file_util_headers} helpers/bmp.hpp)
+if(WIN32)
+    set(bmp_util_headers ${file_util_headers} helpers/bmp.hpp)
 
-add_util(encrypt_bmp encrypt_bmp.cpp ${bmp_util_headers})
-add_util(decrypt_bmp decrypt_bmp.cpp ${bmp_util_headers})
+    add_util(encrypt_bmp encrypt_bmp.cpp ${bmp_util_headers})
+    add_util(decrypt_bmp decrypt_bmp.cpp ${bmp_util_headers})
+endif()
 
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
 include(test/basic.cmake)
 include(test/block.cmake)
-include(test/bmp.cmake)
+if(WIN32)
+    include(test/bmp.cmake)
+endif()
