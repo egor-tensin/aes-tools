@@ -1,7 +1,8 @@
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-option(AES_TOOLS_ASM "Use the assembly language implementation instead of the one in C")
+option(AES_TOOLS_ASM "Use the 32-bit ASM implementation")
+option(AES_TOOLS_ASM64 "Use the 64-bit ASM implementation")
 
 file(GLOB_RECURSE aes_include CONFIGURE_DEPENDS "include/*.h")
 file(GLOB aes_src CONFIGURE_DEPENDS "src/*.c")
@@ -11,6 +12,9 @@ if(MSVC AND AES_TOOLS_ASM)
     file(GLOB aes_src_impl CONFIGURE_DEPENDS "src/asm/*.asm")
     set_source_files_properties(${aes_src_impl} PROPERTIES COMPILE_FLAGS /safeseh)
     # Setting CMAKE_ASM_MASM_FLAGS doesn't work: http://www.cmake.org/Bug/view.php?id=14711
+elseif(MSVC AND AES_TOOLS_ASM64)
+    enable_language(ASM_MASM)
+    file(GLOB aes_src_impl CONFIGURE_DEPENDS "src/asm64/*.asm")
 else()
     file(GLOB aes_src_impl CONFIGURE_DEPENDS "src/c/*.c")
 endif()

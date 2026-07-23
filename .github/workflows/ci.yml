@@ -37,12 +37,15 @@ jobs:
         configuration: [Debug, Release]
         include:
           - boost-version: 1.81.0
+
           - {toolset: gcc, os: ubuntu-latest}
           - {toolset: vs2022, os: windows-2022}
           # Boost only supports VS 2026 starting with version 1.91, I think?
           - {toolset: vs2026, os: windows-2025, boost-version: 1.91.0}
+
+          - {platform: x86, cmake_var: AES_TOOLS_ASM}
+          - {platform: x64, cmake_var: AES_TOOLS_ASM64}
         exclude:
-          - {platform: x64, use_asm: 1}
           - {toolset: gcc, use_asm: 1}
     runs-on: '${{ matrix.os }}'
     name: |
@@ -52,7 +55,7 @@ jobs:
       PLATFORM: '${{ matrix.platform }}'
       CONFIGURATION: '${{ matrix.configuration }}'
       BOOST_VERSION: '${{ matrix.boost-version }}'
-      CMAKE_FLAGS: '--cmake-arg=-DAES_TOOLS_ASM=${{ matrix.use_asm }}'
+      CMAKE_FLAGS: '--cmake-arg=-D${{ matrix.cmake_var }}=${{ matrix.use_asm }}'
     steps:
       - name: Checkout
         uses: actions/checkout@v7
