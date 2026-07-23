@@ -56,6 +56,7 @@ static const char* aes_strerror_messages[] = {
     "Not implemented",
     "Missing padding",
     "Couldn't allocate memory",
+    "Encryption mode requires init vector",
 };
 
 const char* aes_strerror(AES_StatusCode ec) {
@@ -131,6 +132,7 @@ static AES_ErrorFormatter err_formatters[] = {
     &aes_format_parse_error,
     &aes_format_error_strerror,
     &aes_format_not_implemented_error,
+    &aes_format_error_strerror,
     &aes_format_error_strerror,
     &aes_format_error_strerror,
 };

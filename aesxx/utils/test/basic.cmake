@@ -125,6 +125,8 @@ foreach(action encrypt decrypt)
     add_test(NAME "${tgt}_no_iv" COMMAND Python3::Interpreter
         "${CMAKE_SOURCE_DIR}/cmake/tools/ctest-driver.py"
         run
+        --exit-code 1
+        --pass-regex [=[AES error: Encryption mode requires init vector]=]
         --
         "$<TARGET_FILE:${tgt}>" -a aes128 -m cbc -k 11111111111111111111111111111111 -i in.txt -o out.txt
     )
