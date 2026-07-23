@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Egor Tensin <Egor.Tensin@gmail.com>
+// Copyright (c) 2017 Egor Tensin <egor@tensin.name>
 // This file is part of the "AES tools" project.
 // For details, see https://github.com/egor-tensin/aes-tools.
 // Distributed under the MIT License.
