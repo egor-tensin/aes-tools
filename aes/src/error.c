@@ -59,6 +59,11 @@ static const char* aes_strerror_messages[] = {
     "Encryption mode requires init vector",
 };
 
+_Static_assert(
+    sizeof(aes_strerror_messages) / sizeof(aes_strerror_messages[0]) == AesErrorCount,
+    "Missing error message"
+);
+
 const char* aes_strerror(AES_StatusCode ec) {
     return aes_strerror_messages[ec];
 }
@@ -136,6 +141,11 @@ static AES_ErrorFormatter err_formatters[] = {
     &aes_format_error_strerror,
     &aes_format_error_strerror,
 };
+
+_Static_assert(
+    sizeof(err_formatters) / sizeof(err_formatters[0]) == AesErrorCount,
+    "Missing error formatter"
+);
 
 size_t aes_format_error(const AES_ErrorDetails* err_details, char* dest, size_t dest_size) {
     assert(err_details);

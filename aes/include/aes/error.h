@@ -22,6 +22,7 @@ typedef enum {
     AES_MISSING_PADDING_ERROR,
     AES_MEMORY_ALLOCATION_ERROR,
     AES_MODE_REQUIRES_INIT_VECTOR_ERROR,
+    AesErrorCount,
 } AES_StatusCode;
 
 static inline int aes_is_error(AES_StatusCode ec) {

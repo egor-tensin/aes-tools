@@ -1,3 +1,6 @@
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
 option(AES_TOOLS_ASM "Use the assembly language implementation instead of the one in C")
 
 file(GLOB_RECURSE aes_include CONFIGURE_DEPENDS "include/*.h")
