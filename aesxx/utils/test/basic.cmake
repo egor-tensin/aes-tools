@@ -79,7 +79,7 @@ foreach(action encrypt decrypt)
         --
         "$<TARGET_FILE:${tgt}>" -a aes256 -m ecb foobar
     )
-    add_test(NAME "${tgt}_invalid_iv" COMMAND Python3::Interpreter
+    add_test(NAME "${tgt}_invalid_iv1" COMMAND Python3::Interpreter
         "${CMAKE_SOURCE_DIR}/cmake/tools/ctest-driver.py"
         run
         --exit-code 1
@@ -102,5 +102,30 @@ foreach(action encrypt decrypt)
         --pass-regex [=[AES error: Couldn't parse '0' \(possibly not complete input\) as a 16-byte hex string]=]
         --
         "$<TARGET_FILE:${tgt}>" -a aes128 -m cbc 11111111111111111111111111111111 22222222222222222222222222222222 0
+    )
+
+    set(exe "${action}_file")
+    set(tgt "util_${exe}")
+    add_test(NAME "${tgt}_no_key" COMMAND Python3::Interpreter
+        "${CMAKE_SOURCE_DIR}/cmake/tools/ctest-driver.py"
+        run
+        --exit-code 1
+        --pass-regex [=[the option '--key' is required but missing]=]
+        --
+        "$<TARGET_FILE:${tgt}>" -a aes128 -m ecb -i in.txt -o out.txt
+    )
+    add_test(NAME "${tgt}_no_files" COMMAND Python3::Interpreter
+        "${CMAKE_SOURCE_DIR}/cmake/tools/ctest-driver.py"
+        run
+        --exit-code 1
+        --pass-regex [=[the option '--input' is required but missing]=]
+        --
+        "$<TARGET_FILE:${tgt}>" -a aes128 -m ecb -k 11111111111111111111111111111111
+    )
+    add_test(NAME "${tgt}_no_iv" COMMAND Python3::Interpreter
+        "${CMAKE_SOURCE_DIR}/cmake/tools/ctest-driver.py"
+        run
+        --
+        "$<TARGET_FILE:${tgt}>" -a aes128 -m cbc -k 11111111111111111111111111111111 -i in.txt -o out.txt
     )
 endforeach()
