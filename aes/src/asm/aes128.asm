@@ -3,6 +3,9 @@
 ; For details, see https://github.com/egor-tensin/aes-tools.
 ; Distributed under the MIT License.
 
+; The best source about calling conventions is Agner's doc:
+; https://www.agner.org/optimize/calling_conventions.pdf
+
 .586
 .xmm
 .model flat

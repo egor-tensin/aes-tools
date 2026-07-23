@@ -3,7 +3,10 @@
 ; For details, see https://github.com/egor-tensin/aes-tools.
 ; Distributed under the MIT License.
 
-; Copied from asm/aes256.asm
+; Copied from asm/aes256.asm, accounting for the calling convention changes.
+; The biggest difference is that __m128 arguments are passed via a pointer, not
+; via XMM registers like in 32-bit __fastcall. The best source is Agner's doc:
+; https://www.agner.org/optimize/calling_conventions.pdf
 
 .code
 
