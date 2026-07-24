@@ -6,8 +6,8 @@
 #pragma once
 
 #include "algorithm.hpp"
+#include "block.hpp"
 #include "box.hpp"
-#include "data.hpp"
 #include "debug.hpp"
 #include "error.hpp"
 #include "mode.hpp"
