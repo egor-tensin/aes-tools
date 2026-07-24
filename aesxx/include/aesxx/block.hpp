@@ -17,25 +17,25 @@ namespace aes {
 
 class Block {
 public:
+    using Impl = AES_Block;
+
     static Block parse(std::string_view src) {
-        return Block{src};
+        Impl dest;
+        aes_parse_block(&dest, src.data(), ErrorDetailsThrowsInDestructor{});
+        return Block{dest};
     }
 
-    explicit Block(AES_Block impl) : impl{impl} {}
+    explicit Block(Impl impl) : impl{impl} {}
 
     Block(int hi3, int hi2, int lo1, int lo0) : impl{aes_make_block(hi3, hi2, lo1, lo0)} {}
 
     Block() : Block{0, 0, 0, 0} {}
 
-    explicit Block(std::string_view src) {
-        aes_parse_block(&impl, src.data(), ErrorDetailsThrowsInDestructor{});
-    }
-
-    AES_Block* ptr() {
+    Impl* ptr() {
         return &impl;
     }
 
-    const AES_Block* ptr() const {
+    const Impl* ptr() const {
         return &impl;
     }
 
@@ -52,7 +52,7 @@ public:
     }
 
 private:
-    AES_Block impl;
+    Impl impl;
 };
 
 } // namespace aes

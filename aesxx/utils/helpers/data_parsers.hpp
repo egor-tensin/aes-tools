@@ -57,7 +57,7 @@ inline void validate(any& dest, const std::vector<std::string>& values, aes::Alg
 
 inline void validate(any& dest, const std::vector<std::string>& values, aes::Block*, int) {
     const std::string& src = program_options::validators::get_single_string(values);
-    dest = aes::Block{src};
+    dest = aes::Block::parse(src);
 }
 
 } // namespace boost

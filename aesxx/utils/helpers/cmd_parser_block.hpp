@@ -116,7 +116,7 @@ private:
                     "an initialization vector is required for the selected mode of operation"
                 };
             }
-            iv = aes::Block{std::move(src.front())};
+            iv = aes::Block::parse(src.front());
             src.pop_front();
         }
 
@@ -131,7 +131,7 @@ private:
             src.pop_front();
             if (block == "--")
                 break;
-            blocks.emplace_back(aes::Block{std::move(block)});
+            blocks.emplace_back(aes::Block::parse(block));
         }
 
         return blocks;
