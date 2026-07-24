@@ -17,11 +17,16 @@
 
 namespace {
 
-void encrypt_blocks(aes::Algorithm algorithm, aes::Mode mode, const BlockSettings::Input& input) {
+void encrypt_blocks(
+    aes::Algorithm algorithm,
+    aes::Mode mode,
+    const BlockSettings::Input& input,
+    bool verbose = false
+) {
     aes::Box::Key key;
     aes::Box::parse_key(key, algorithm, input.get_key());
 
-    aes::Box box{algorithm, key, mode, input.get_iv()};
+    aes::Box box{algorithm, key, mode, input.get_iv(), verbose};
 
     for (const auto& plaintext : input.get_blocks()) {
         aes::Block ciphertext;
@@ -49,7 +54,9 @@ int main(int argc, char** argv) {
         }
 
         for (const auto& input : settings.get_inputs()) {
-            encrypt_blocks(settings.get_algorithm(), settings.get_mode(), input);
+            encrypt_blocks(
+                settings.get_algorithm(), settings.get_mode(), input, settings.get_verbose()
+            );
         }
     } catch (const aes::Error& e) {
         std::cerr << e;

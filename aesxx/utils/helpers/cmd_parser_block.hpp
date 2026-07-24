@@ -52,7 +52,7 @@ public:
     explicit BlockSettings(std::string_view argv0) : SettingsParser{argv0} {
         namespace po = boost::program_options;
 
-        visible.add_options()("verbose,v", po::bool_switch(&_verbose), "enable verbose output");
+        visible.add_options()("verbose,v", po::bool_switch(&verbose), "enable verbose output");
         visible.add_options()(
             "algorithm,a", po::value(&algorithm)->required()->value_name("NAME"), "set algorithm"
         );
@@ -94,8 +94,8 @@ public:
         return inputs;
     }
 
-    bool verbose() const {
-        return _verbose;
+    bool get_verbose() const {
+        return verbose;
     }
 
 private:
@@ -140,6 +140,5 @@ private:
     aes::Algorithm algorithm;
     aes::Mode mode;
     std::vector<Input> inputs;
-
-    bool _verbose = false;
+    bool verbose = false;
 };
