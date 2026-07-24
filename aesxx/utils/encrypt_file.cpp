@@ -31,9 +31,7 @@ void encrypt_file(
 void encrypt_file(const FileSettings& settings) {
     const auto algorithm = settings.get_algorithm();
     const auto mode = settings.get_mode();
-
-    aes::Box::Key key;
-    aes::Box::parse_key(key, algorithm, settings.get_key());
+    const auto key = aes::Key::parse(settings.get_key(), algorithm);
 
     aes::Box box{algorithm, key, mode, settings.get_iv()};
     encrypt_file(box, settings.get_input_path(), settings.get_output_path());

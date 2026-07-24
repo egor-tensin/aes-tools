@@ -23,9 +23,7 @@ void encrypt_blocks(
     const BlockSettings::Input& input,
     bool verbose = false
 ) {
-    aes::Box::Key key;
-    aes::Box::parse_key(key, algorithm, input.get_key());
-
+    const auto key = aes::Key::parse(input.get_key(), algorithm);
     aes::Box box{algorithm, key, mode, input.get_iv(), verbose};
 
     for (const auto& plaintext : input.get_blocks()) {

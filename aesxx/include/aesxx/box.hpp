@@ -8,6 +8,7 @@
 #include "algorithm.hpp"
 #include "block.hpp"
 #include "error.hpp"
+#include "key.hpp"
 #include "mode.hpp"
 
 #include <aes/all.h>
@@ -22,12 +23,6 @@ namespace aes {
 
 class Box {
 public:
-    using Key = AES_Key;
-
-    static void parse_key(Key& dest, Algorithm algorithm, std::string_view src) {
-        aes_parse_key(algorithm, &dest, src.data(), ErrorDetailsThrowsInDestructor{});
-    }
-
     Box(Algorithm algorithm,
         const Key& key,
         Mode mode,
@@ -35,7 +30,12 @@ public:
         bool verbose = false)
         : verbose{verbose} {
         aes_box_init(
-            &impl, algorithm, &key, mode, iv ? iv->ptr() : NULL, ErrorDetailsThrowsInDestructor{}
+            &impl,
+            algorithm,
+            key.ptr(),
+            mode,
+            iv ? iv->ptr() : NULL,
+            ErrorDetailsThrowsInDestructor{}
         );
         dump_key(key);
     }
@@ -113,15 +113,9 @@ public:
     }
 
 private:
-    static std::string format_key(const Key& src, Algorithm algorithm) {
-        AES_KeyString str;
-        aes_format_key(algorithm, &str, &src, ErrorDetailsThrowsInDestructor{});
-        return reinterpret_cast<const char*>(&str);
-    }
-
     void dump_key(const Key& src) const {
         if (verbose)
-            std::cout << std::format("Key         : {}\n", format_key(src, get_algorithm()));
+            std::cout << std::format("Key         : {}\n", src.to_string());
     }
 
     Block get_iv() const {
