@@ -183,12 +183,13 @@ AES_StatusCode aes_success(AES_ErrorDetails* err_details) {
 AES_StatusCode aes_error_null_argument(AES_ErrorDetails* err_details, const char* param_name) {
     AES_StatusCode status = aes_make_error(err_details, AES_NULL_ARGUMENT_ERROR);
 
-    if (err_details != NULL)
+    if (err_details != NULL) {
         aes_fill_string(
             err_details->params.null_arg.param_name,
             sizeof(err_details->params.null_arg.param_name),
             param_name
         );
+    }
 
     return status;
 }
@@ -215,12 +216,13 @@ AES_StatusCode aes_error_invalid_pkcs7_padding(AES_ErrorDetails* err_details) {
 AES_StatusCode aes_error_not_implemented(AES_ErrorDetails* err_details, const char* what) {
     AES_StatusCode status = aes_make_error(err_details, AES_NOT_IMPLEMENTED_ERROR);
 
-    if (err_details != NULL)
+    if (err_details != NULL) {
         aes_fill_string(
             err_details->params.not_implemented.what,
             sizeof(err_details->params.not_implemented.what),
             what
         );
+    }
 
     return status;
 }
