@@ -9,12 +9,10 @@ Development
 -----------
 
 Build using CMake.
-Depends on Boost.{Filesystem,Program_options}.
-The project is Windows-only, so building with either MSVC or MinGW-w64 is
-required.
+Depends on Boost.Program_options.
 
 There's a Makefile with useful shortcuts to build the project in the build/
-directory along with the dependencies (defaults to building with MinGW-w64):
+directory along with the dependencies:
 
     make deps
     make build

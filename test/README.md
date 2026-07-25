@@ -57,33 +57,28 @@ parameter.
 To allow the utilities to run on older CPUs, pass the `--sde` flag.
 Pass the `--help` flag to a script to examine its detailed usage information.
 
-### Prerequisites
-
-To run the test scripts, Python 3.4 or higher is required.
-CPython 3.5.1 has been verified to work properly.
-
 ### NIST Special Publication 800-38A
 
 To validate the implementation using the inputs from [NIST SP 800-38A], use
 `nist.py`:
 
 ```
-> nist.py -p C:\workspace\personal\build\aes-tools\utils\Debug
+> nist.py -p C:\workspace\personal\aes-tools\build\install\bin
 ```
 
-[NIST SP 800-38A]: http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf
+[NIST SP 800-38A]: https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38a.pdf
 
 ### Cryptographic Algorithm Validation Program
 
 To validate the implementation using the inputs from [CAVP], use `cavp.py`.
 
 ```
-> cavp.py -p C:\workspace\personal\build\aes-tools\utils\Debug
+> cavp.py -p C:\workspace\personal\aes-tools\build\install\bin
 ```
 
 The AES Known Answer Test (KAT) Vectors are used and read from "KAT_AES.zip".
 
-[CAVP]: http://csrc.nist.gov/groups/STM/cavp/
+[CAVP]: https://csrc.nist.gov/projects/cryptographic-algorithm-validation-program/block-ciphers#AES
 
 File encryption
 ---------------
