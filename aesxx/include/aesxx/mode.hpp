@@ -9,6 +9,6 @@
 
 namespace aes {
 
-typedef AES_Mode Mode;
+using Mode = AES_Mode;
 
 } // namespace aes

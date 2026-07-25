@@ -17,7 +17,7 @@ namespace file {
 inline std::size_t cast_to_size_t(std::streamoff size) {
     if (size < 0)
         throw std::range_error{"file::cast_to_size_t: something went really wrong"};
-    typedef std::make_unsigned<std::streamoff>::type unsigned_streamoff;
+    using unsigned_streamoff = std::make_unsigned<std::streamoff>::type;
     if (static_cast<unsigned_streamoff>(size) > std::numeric_limits<std::size_t>::max())
         throw std::range_error{"file::cast_to_size_t: this file is too large"};
     return static_cast<std::size_t>(size);

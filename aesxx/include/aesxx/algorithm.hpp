@@ -9,6 +9,6 @@
 
 namespace aes {
 
-typedef AES_Algorithm Algorithm;
+using Algorithm = AES_Algorithm;
 
 }
