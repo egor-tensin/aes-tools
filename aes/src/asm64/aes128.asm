@@ -1,6 +1,6 @@
 ; Copyright (c) 2026 Egor Tensin <egor@tensin.name>
 ; This file is part of the "AES tools" project.
-; For details, see https://github.com/egor-tensin/aes-tools.
+; For details, see https://github.com/egor-tensin/aes-tools
 ; Distributed under the MIT License.
 
 ; Copied from asm/aes128.asm, accounting for the calling convention changes.
