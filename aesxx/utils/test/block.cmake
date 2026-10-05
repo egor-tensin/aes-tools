@@ -67,13 +67,10 @@ foreach(algorithm ${algorithms})
         string(JOIN "\n" output ${ciphertexts_${algorithm}_${mode}})
 
         message(STATUS "Adding test for encrypt_block (${algorithm}/${mode})")
-        add_test(NAME "util_encrypt_block_${algorithm}_${mode}"
-            COMMAND Python3::Interpreter
-                "${CMAKE_SOURCE_DIR}/cmake/tools/ctest-driver.py"
-                run
-                --pass-regex "^${output}$"
-                --
-                "$<TARGET_FILE:util_encrypt_block>" -a "${algorithm}" -m "${mode}" ${input}
+        add_test(NAME "util_encrypt_block_${algorithm}_${mode}" ${test_run}
+            --pass-regex "^${output}$"
+            --
+            "$<TARGET_FILE:util_encrypt_block>" -a "${algorithm}" -m "${mode}" ${input}
         )
 
         set(input "")
@@ -87,13 +84,10 @@ foreach(algorithm ${algorithms})
         string(JOIN "\n" output ${plaintexts})
 
         message(STATUS "Adding test for decrypt_block (${algorithm}/${mode})")
-        add_test(NAME "util_decrypt_block_${algorithm}_${mode}"
-            COMMAND Python3::Interpreter
-                "${CMAKE_SOURCE_DIR}/cmake/tools/ctest-driver.py"
-                run
-                --pass-regex "^${output}$"
-                --
-                "$<TARGET_FILE:util_decrypt_block>" -a "${algorithm}" -m "${mode}" ${input}
+        add_test(NAME "util_decrypt_block_${algorithm}_${mode}" ${test_run}
+            --pass-regex "^${output}$"
+            --
+            "$<TARGET_FILE:util_decrypt_block>" -a "${algorithm}" -m "${mode}" ${input}
         )
     endforeach()
 endforeach()

@@ -44,6 +44,13 @@ endif()
 
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
+set(test_run
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/cmake"
+    COMMAND Python3::Interpreter
+    -m project.ctest_driver
+    run
+)
+
 include(test/basic.cmake)
 include(test/block.cmake)
 if(WIN32)
