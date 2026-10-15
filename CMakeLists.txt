@@ -3,7 +3,7 @@
 # CMAKE_MSVC_RUNTIME_LIBRARY and stuff.
 cmake_minimum_required(VERSION 3.25)
 
-project(aes_tools C CXX ASM)
+project(aes_tools C CXX)
 enable_testing()
 
 if (MSVC)
